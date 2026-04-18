@@ -36,20 +36,22 @@ export default function HeroSection() {
             </Badge>
           </motion.div>
 
-          {/* Name */}
-          <h1 className="font-bold tracking-tight mb-4">
-            <span className="text-foreground">{resumeData.name.split(" ")[0]} </span>
-            <span className="text-primary glow-text">
+          {/* Name — big, embossed, high contrast */}
+          <h1 className="font-bold tracking-tight mb-4 hero-title">
+            <span className="text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+              {resumeData.name.split(" ")[0]}{" "}
+            </span>
+            <span className="text-primary glow-text-strong drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
               {resumeData.name.split(" ").slice(1).join(" ")}
             </span>
           </h1>
 
-          {/* Headline */}
+          {/* Headline — also higher contrast */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 font-mono"
+            className="text-lg md:text-xl text-foreground/80 max-w-2xl mx-auto mb-8 font-mono drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
           >
             {resumeData.headline}
           </motion.p>
@@ -112,7 +114,7 @@ export default function HeroSection() {
               { label: "CGPA", value: resumeData.education.cgpa },
               { label: "Languages", value: `${resumeData.skills.languages.length}+` },
               { label: "Companies", value: "4" },
-              { label: "Projects", value: "6+" },
+              { label: "Projects", value: `${resumeData.projects.length}+` },
             ].map((stat, i) => (
               <div
                 key={i}

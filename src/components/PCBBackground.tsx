@@ -47,7 +47,7 @@ function PCBTrace({
       </line>
       {/* Pulse dot */}
       <mesh ref={pulseRef}>
-        <sphereGeometry args={[0.04, 8, 8]} />
+        <sphereGeometry args={[0.05, 8, 8]} />
         <meshBasicMaterial color={color} transparent opacity={0.9} />
       </mesh>
     </group>
@@ -58,10 +58,12 @@ function PCBNode({
   position,
   label,
   color,
+  size = 1,
 }: {
   position: [number, number, number];
   label: string;
   color: string;
+  size?: number;
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const ringRef = useRef<THREE.Mesh>(null);
@@ -81,17 +83,17 @@ function PCBNode({
     <group position={position}>
       {/* Outer ring */}
       <mesh ref={ringRef}>
-        <ringGeometry args={[0.22, 0.28, 6]} />
+        <ringGeometry args={[0.28 * size, 0.35 * size, 6]} />
         <meshBasicMaterial color={color} transparent opacity={0.5} side={THREE.DoubleSide} />
       </mesh>
       {/* Inner node */}
       <mesh ref={meshRef}>
-        <circleGeometry args={[0.15, 6]} />
+        <circleGeometry args={[0.2 * size, 6]} />
         <meshBasicMaterial color={color} transparent opacity={0.8} side={THREE.DoubleSide} />
       </mesh>
       {/* Center dot */}
       <mesh>
-        <circleGeometry args={[0.05, 16]} />
+        <circleGeometry args={[0.06 * size, 16]} />
         <meshBasicMaterial color="#ffffff" transparent opacity={0.9} side={THREE.DoubleSide} />
       </mesh>
     </group>
@@ -101,7 +103,7 @@ function PCBNode({
 function GridLines() {
   const lines = useMemo(() => {
     const group: React.ReactNode[] = [];
-    const gridSize = 8;
+    const gridSize = 12;
     const step = 0.8;
 
     for (let i = -gridSize; i <= gridSize; i++) {
@@ -145,11 +147,17 @@ function PCBScene() {
     }
   });
 
+  // Wider, bigger node positions to fill more viewport
   const nodes: { pos: [number, number, number]; label: string; color: string }[] = [
-    { pos: [-2.5, 1.5, 0], label: "About", color: "#00ffaa" },
-    { pos: [2.5, 1.8, 0], label: "Projects", color: "#00ccff" },
-    { pos: [-2.8, -1.5, 0], label: "Skills", color: "#aa55ff" },
-    { pos: [2.8, -1.8, 0], label: "Contact", color: "#ff5599" },
+    { pos: [-4, 2.5, 0], label: "About", color: "#00ffaa" },
+    { pos: [4, 2.8, 0], label: "Projects", color: "#00ccff" },
+    { pos: [-4.5, -2.5, 0], label: "Skills", color: "#aa55ff" },
+    { pos: [4.5, -2.8, 0], label: "Contact", color: "#ff5599" },
+    // Additional peripheral nodes for width
+    { pos: [-6, 0.5, 0], label: "ML", color: "#ffaa00" },
+    { pos: [6, -0.5, 0], label: "Infra", color: "#44ddff" },
+    { pos: [0, 3.5, 0], label: "Cloud", color: "#00ccff" },
+    { pos: [0, -3.5, 0], label: "Data", color: "#aa55ff" },
   ];
 
   const center = new THREE.Vector3(0, 0, 0);
@@ -169,17 +177,17 @@ function PCBScene() {
     return {
       points: [center, mid1, mid2, target],
       color: node.color,
-      speed: 0.3 + i * 0.1,
+      speed: 0.3 + i * 0.08,
     };
   });
 
-  // Cross-connections between nodes
+  // Cross-connections between peripheral nodes
   const crossTraces = [
     {
       points: [
         new THREE.Vector3(...nodes[0].pos),
-        new THREE.Vector3(-1.5, 0.5, 0),
-        new THREE.Vector3(-2, -0.5, 0),
+        new THREE.Vector3(-2.5, 0.8, 0),
+        new THREE.Vector3(-3.5, -0.5, 0),
         new THREE.Vector3(...nodes[2].pos),
       ],
       color: "#00ffaa",
@@ -188,20 +196,40 @@ function PCBScene() {
     {
       points: [
         new THREE.Vector3(...nodes[1].pos),
-        new THREE.Vector3(2, 0.5, 0),
-        new THREE.Vector3(2.2, -0.5, 0),
+        new THREE.Vector3(3, 0.8, 0),
+        new THREE.Vector3(3.5, -0.5, 0),
         new THREE.Vector3(...nodes[3].pos),
       ],
       color: "#00ccff",
       speed: 0.25,
+    },
+    {
+      points: [
+        new THREE.Vector3(...nodes[4].pos),
+        new THREE.Vector3(-5, 2, 0),
+        new THREE.Vector3(-4.5, 2.5, 0),
+        new THREE.Vector3(...nodes[0].pos),
+      ],
+      color: "#ffaa00",
+      speed: 0.18,
+    },
+    {
+      points: [
+        new THREE.Vector3(...nodes[5].pos),
+        new THREE.Vector3(5.5, -2, 0),
+        new THREE.Vector3(4.8, -2.5, 0),
+        new THREE.Vector3(...nodes[3].pos),
+      ],
+      color: "#44ddff",
+      speed: 0.22,
     },
   ];
 
   return (
     <group ref={groupRef}>
       <GridLines />
-      {/* Central processor node */}
-      <PCBNode position={[0, 0, 0]} label="CPU" color="#00ffaa" />
+      {/* Central processor node - larger */}
+      <PCBNode position={[0, 0, 0]} label="CPU" color="#00ffaa" size={1.3} />
       {/* Section nodes */}
       {nodes.map((node, i) => (
         <PCBNode key={i} position={node.pos} label={node.label} color={node.color} />
@@ -222,7 +250,7 @@ export default function PCBBackground() {
   return (
     <div className="absolute inset-0 z-0">
       <Canvas
-        camera={{ position: [0, 0, 5], fov: 60 }}
+        camera={{ position: [0, 0, 7], fov: 60 }}
         dpr={[1, 2]}
         gl={{ antialias: true, alpha: true }}
         style={{ background: "transparent" }}

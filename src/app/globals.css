@@ -146,6 +146,11 @@ h1 {
   font-size: clamp(2rem, 5vw + 1rem, 4.5rem);
   line-height: 1.1;
 }
+.hero-title {
+  font-size: clamp(2.8rem, 7vw + 1rem, 6rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
 h2 {
   font-size: clamp(1.5rem, 3vw + 0.5rem, 3rem);
   line-height: 1.2;
@@ -158,6 +163,9 @@ h3 {
 /* Neon Glow Utilities */
 .glow-text {
   text-shadow: 0 0 10px var(--neon-glow), 0 0 40px var(--neon-glow);
+}
+.glow-text-strong {
+  text-shadow: 0 0 15px var(--neon-glow), 0 0 50px var(--neon-glow), 0 0 80px oklch(0.75 0.18 165 / 20%);
 }
 .glow-box {
   box-shadow: 0 0 15px var(--neon-glow), inset 0 0 15px oklch(0.75 0.18 165 / 5%);
@@ -185,7 +193,7 @@ h3 {
 
 /* Subtle dot pattern for full-page background */
 .dot-pattern {
-  background-image: radial-gradient(circle, oklch(0.75 0.18 165 / 6%) 1px, transparent 1px);
+  background-image: radial-gradient(circle, oklch(0.75 0.18 165 / 10%) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
