@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { motion, useMotionValue, useTransform, PanInfo } from "framer-motion";
+import { useRef } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { resumeData } from "@/lib/data";
 import { Badge } from "@/components/ui/badge";
 
@@ -13,32 +13,39 @@ function ProjectCard({
   index: number;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(0);
-  const rotateY = useTransform(x, [-200, 200], [-10, 10]);
-  const [isDragging, setIsDragging] = useState(false);
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
 
-  const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    setIsDragging(false);
+  const rotateX = useSpring(useTransform(mouseY, [0, 1], [6, -6]), { stiffness: 200, damping: 20 });
+  const rotateY = useSpring(useTransform(mouseX, [0, 1], [-6, 6]), { stiffness: 200, damping: 20 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = cardRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    mouseX.set((e.clientX - rect.left) / rect.width);
+    mouseY.set((e.clientY - rect.top) / rect.height);
   };
 
-  const colors = ["#00ffaa", "#00ccff", "#aa55ff", "#ff5599"];
+  const handleMouseLeave = () => {
+    mouseX.set(0.5);
+    mouseY.set(0.5);
+  };
+
+  const colors = ["#00ffaa", "#00ccff", "#aa55ff", "#ff5599", "#ffaa00", "#ff6644", "#44ddff"];
   const color = colors[index % colors.length];
 
   return (
     <motion.div
       ref={cardRef}
-      drag="x"
-      dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.1}
-      onDragStart={() => setIsDragging(true)}
-      onDragEnd={handleDragEnd}
-      style={{ x, rotateY }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ rotateX, rotateY, transformPerspective: 800 }}
       whileHover={{ scale: 1.02 }}
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.15 }}
-      className="glass rounded-xl overflow-hidden cursor-grab active:cursor-grabbing group"
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      className="glass rounded-xl overflow-hidden group"
     >
       {/* Top accent bar */}
       <div
@@ -94,17 +101,12 @@ function ProjectCard({
         </ul>
 
         {/* Impact */}
-        <div
-          className="pt-3 border-t border-border/50 flex items-center justify-between"
-        >
+        <div className="pt-3 border-t border-border/50 flex items-center justify-between">
           <div className="font-mono text-xs">
             <span className="text-muted-foreground">MEASURABLE IMPACT: </span>
             <span className="font-bold" style={{ color }}>
               {project.impact}
             </span>
-          </div>
-          <div className="text-xs text-muted-foreground/50 font-mono select-none">
-            ← DRAG →
           </div>
         </div>
       </div>
@@ -115,7 +117,7 @@ function ProjectCard({
 export default function ProjectsSection() {
   return (
     <section id="projects" className="py-24 px-6 relative">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -133,7 +135,7 @@ export default function ProjectsSection() {
         </motion.div>
 
         {/* Projects Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {resumeData.projects.map((project, idx) => (
             <ProjectCard key={idx} project={project} index={idx} />
           ))}

@@ -19,7 +19,7 @@ const ChatWidget = dynamic(() => import("@/components/ChatWidget"), {
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen bg-background">
+    <div className="relative min-h-screen bg-background dot-pattern">
       {/* Navigation */}
       <Navbar />
 

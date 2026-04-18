@@ -183,6 +183,12 @@ h3 {
   background-size: 40px 40px;
 }
 
+/* Subtle dot pattern for full-page background */
+.dot-pattern {
+  background-image: radial-gradient(circle, oklch(0.75 0.18 165 / 6%) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
 /* Custom scrollbar for webkit */
 ::-webkit-scrollbar {
   width: 6px;
