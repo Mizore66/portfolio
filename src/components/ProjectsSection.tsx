@@ -92,7 +92,7 @@ export default function ProjectsSection() {
         </motion.div>
 
         {/* Carousel Container */}
-        <div className="relative h-[800px] md:h-[650px] w-full max-w-5xl mx-auto perspective-[1200px]">
+        <div className="relative min-h-[700px] w-full max-w-5xl mx-auto perspective-[1200px]">
           <AnimatePresence initial={false} custom={direction} mode="wait">
             <motion.div
               key={page}
@@ -116,7 +116,7 @@ export default function ProjectsSection() {
                   paginate(-1);
                 }
               }}
-              className="absolute inset-0 w-full glass shadow-2xl overflow-hidden cursor-grab active:cursor-grabbing border-border"
+              className="w-full glass shadow-2xl overflow-hidden cursor-grab active:cursor-grabbing border-border"
               // Sharper corners for a more serious/technical look
               style={{ borderRadius: '4px' }}
             >
@@ -128,7 +128,7 @@ export default function ProjectsSection() {
                 }}
               />
               
-              <div className="p-8 md:p-12 h-full flex flex-col md:grid md:grid-cols-12 gap-8 md:gap-12">
+              <div className="p-8 md:p-12 w-full flex flex-col md:grid md:grid-cols-12 gap-8 md:gap-12">
                 {/* Left side: Context & Links */}
                 <div className="md:col-span-4 flex flex-col justify-between">
                   <div>
@@ -209,7 +209,7 @@ export default function ProjectsSection() {
                     </svg>
                   </div>
                   
-                  <div className="space-y-4 text-muted-foreground lg:text-lg flex-1 overflow-y-auto pr-4 thin-scrollbar">
+                  <div className="space-y-4 text-muted-foreground lg:text-lg pr-4">
                     {project.bullets.map((bullet, i) => (
                       <div key={i} className="flex gap-4">
                         <span style={{ color }} className="shrink-0 font-mono mt-1 opacity-70">
