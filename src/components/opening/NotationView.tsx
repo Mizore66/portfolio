@@ -132,7 +132,7 @@ function MoveButton({
       onClick={() => onSelect(node.id)}
       className={cn(
         "group inline-flex flex-wrap items-baseline gap-x-2 text-left focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2",
-        node.type === "not-taken" && "text-faded",
+        node.type === "not-taken" && "border border-dashed border-ink text-ink",
       )}
     >
       <span

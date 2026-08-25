@@ -43,21 +43,23 @@ export function OpeningApp() {
 
   return (
     <div className="min-h-screen text-ink" data-hydrated={hydrated ? "true" : "false"}>
-      <Masthead view={view} onView={setView} />
-      <div className="mx-auto flex max-w-[1400px] flex-col min-[980px]:flex-row">
-        <section className="min-w-0 flex-1 min-[980px]:border-r-2 min-[980px]:border-ink">
-          <div className={cn(view === "tree" ? "hidden min-[980px]:block" : "hidden")}>
-            <TreeView selectedId={selectedId} onSelect={onSelect} />
-          </div>
-          <div className={cn(view === "notation" ? "block" : "block min-[980px]:hidden")}>
-            <NotationView selectedId={selectedId} onSelect={onSelect} />
-          </div>
-        </section>
-        <aside className="newsprint-deep w-full shrink-0 border-t-2 border-ink min-[980px]:sticky min-[980px]:top-[4.75rem] min-[980px]:h-[calc(100vh-4.75rem)] min-[980px]:w-[360px] min-[980px]:overflow-y-auto min-[980px]:border-t-0">
-          <BoardDiagram plies={plies} highlight={node.hl} caption={node.cap} />
-          <div className="mx-4 border-t-2 border-ink" />
-          <AnnotationPanel node={node} />
-        </aside>
+      <div className="relative z-[1] mx-auto max-w-[1440px] px-3 py-3 sm:px-5 sm:py-4">
+        <Masthead view={view} onView={setView} />
+        <div className="mt-3 flex flex-col gap-3 min-[980px]:flex-row min-[980px]:items-start">
+          <section className="sheet min-w-0 flex-1">
+            <div className={cn(view === "tree" ? "hidden min-[980px]:block" : "hidden")}>
+              <TreeView selectedId={selectedId} onSelect={onSelect} />
+            </div>
+            <div className={cn(view === "notation" ? "block" : "block min-[980px]:hidden")}>
+              <NotationView selectedId={selectedId} onSelect={onSelect} />
+            </div>
+          </section>
+          <aside className="sheet w-full shrink-0 min-[980px]:sticky min-[980px]:top-28 min-[980px]:max-h-[calc(100vh-8rem)] min-[980px]:w-[360px] min-[980px]:overflow-y-auto">
+            <BoardDiagram plies={plies} highlight={node.hl} caption={node.cap} />
+            <div className="mx-4 border-t border-ink" />
+            <AnnotationPanel node={node} />
+          </aside>
+        </div>
       </div>
     </div>
   );

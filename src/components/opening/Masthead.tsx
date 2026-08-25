@@ -14,7 +14,7 @@ export function Masthead({
   onView: (view: View) => void;
 }) {
   return (
-    <header className="newsprint-mast sticky top-0 z-20">
+    <header className="sheet sticky top-3 z-20">
       <div className="border-b-2 border-ink">
         <div className="mx-auto flex max-w-[1400px] flex-wrap items-end justify-between gap-3 px-4 py-3 sm:px-6">
           <div className="min-w-0">
@@ -78,7 +78,7 @@ function ToggleButton({
       className={cn(
         "px-3 py-1.5 font-mono text-[11px] uppercase tracking-widest",
         edge && "border-l-2 border-ink",
-        active ? "bg-book-blue text-paper" : "bg-paper text-ink hover:bg-paper-deep",
+        active ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-paper-deep",
       )}
     >
       {children}

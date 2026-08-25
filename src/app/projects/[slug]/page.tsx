@@ -16,28 +16,27 @@ export default async function ProjectPage({
 
   return (
     <div className="min-h-screen text-ink">
-      <header className="border-b-2 border-ink">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
-          <Link
-            href="/"
-            className="font-mono text-[11px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4 hover:text-score-red"
-          >
-            ← Opening Preparation
-          </Link>
-          <span className="font-mono text-[11px] text-faded">{project.date}</span>
-        </div>
-      </header>
-      <div className="h-1" />
-      <div className="border-b-2 border-ink" />
+      <div className="relative z-[1] mx-auto max-w-3xl px-3 py-3 sm:px-5 sm:py-4">
+        <header className="sheet px-6 py-4">
+          <div className="flex items-center justify-between">
+            <Link
+              href="/"
+              className="font-mono text-[11px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4 hover:text-score-red"
+            >
+              ← Opening Preparation
+            </Link>
+            <span className="font-mono text-[11px] text-faded">{project.date}</span>
+          </div>
+        </header>
 
-      <main className="mx-auto max-w-3xl px-6 py-10">
-        <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-faded">
-          Exhibit · {project.subtitle}
-        </p>
-        <h1 className="mt-2 font-display text-4xl text-ink">{project.name}</h1>
-        <p className="mt-4 font-lora text-lg leading-relaxed italic text-ink">
-          {project.description}
-        </p>
+        <main className="sheet mt-3 px-6 py-10">
+          <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-faded">
+            Exhibit · {project.subtitle}
+          </p>
+          <h1 className="mt-2 font-display text-4xl text-ink">{project.name}</h1>
+          <p className="mt-4 font-lora text-lg leading-relaxed italic text-ink">
+            {project.description}
+          </p>
 
         <section className="mt-10">
           <h2 className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
@@ -94,7 +93,8 @@ export default async function ProjectPage({
             Back to the scoresheet
           </Link>
         </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

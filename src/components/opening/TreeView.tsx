@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import {
-  getMainline,
+  getChildren,
   getNode,
   layoutTree,
   moveHeading,
@@ -12,16 +12,14 @@ import {
 import type { OpeningNode } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
 
-const STEM_INSET = 18;
-const RUN_INSET = 28;
+const STEM = 30;
 
-function stem(from: Point, to: Point) {
-  const dir = to.y > from.y ? 1 : -1;
-  return `M ${from.x} ${from.y + dir * STEM_INSET} V ${to.y - dir * STEM_INSET}`;
-}
-
-function run(from: Point, to: Point) {
-  return `M ${from.x + RUN_INSET} ${from.y} H ${to.x - RUN_INSET}`;
+function branchPath(from: Point, to: Point) {
+  const midY = from.y + (to.y - from.y) / 2;
+  if (from.x === to.x) {
+    return `M ${from.x} ${from.y + STEM} V ${to.y - STEM}`;
+  }
+  return `M ${from.x} ${from.y + STEM} V ${midY} H ${to.x} V ${to.y - STEM}`;
 }
 
 export function TreeView({
@@ -32,55 +30,63 @@ export function TreeView({
   onSelect: (id: string) => void;
 }) {
   const layout = useMemo(() => layoutTree(), []);
-  const mainline = useMemo(() => getMainline(), []);
   const selected = getNode(selectedId);
-  const mainPts = mainline.map((n) => layout.positions[n.id]).filter(Boolean);
 
   return (
     <div className="relative px-4 py-5 sm:px-6" data-testid="tree-view">
-      <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.28em] text-faded">
-        Life above · the mainline · variations below · dashed = not taken
-      </p>
+      <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+        <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-faded">
+          Life left · mainline the trunk · variations right · dashed = not taken
+        </p>
+        <p className="font-mono text-[11px] text-ink">Click a move · ← → steps the trunk</p>
+      </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-auto">
         <div
-          className="relative"
+          className="relative mx-auto"
           style={{ width: layout.width, height: layout.height }}
         >
+          <span
+            className="pointer-events-none absolute font-mono text-[10px] uppercase tracking-[0.22em] text-faded"
+            style={{ left: layout.trunkX - 168, top: 8 }}
+          >
+            Life
+          </span>
+          <span
+            className="pointer-events-none absolute font-mono text-[10px] uppercase tracking-[0.22em] text-faded"
+            style={{ left: layout.trunkX, top: 8, transform: "translateX(-50%)" }}
+          >
+            Mainline
+          </span>
+          <span
+            className="pointer-events-none absolute font-mono text-[10px] uppercase tracking-[0.22em] text-faded"
+            style={{ left: layout.trunkX + 88, top: 8 }}
+          >
+            Variations
+          </span>
+
           <svg
             aria-hidden
             className="pointer-events-none absolute inset-0"
             width={layout.width}
             height={layout.height}
           >
-            {mainPts.slice(0, -1).map((from, i) => {
-              const to = mainPts[i + 1];
-              if (!to) return null;
-              return (
-                <path
-                  key={`run-${i}`}
-                  d={run(from, to)}
-                  fill="none"
-                  stroke="#1d1a14"
-                  strokeWidth="1"
-                  opacity="0.35"
-                />
-              );
-            })}
-            {OPENING_NODES.filter((n) => n.parent && n.type !== "mainline").map((n) => {
+            {OPENING_NODES.filter((n) => n.parent).map((n) => {
               const from = layout.positions[n.parent!];
               const to = layout.positions[n.id];
               if (!from || !to) return null;
               const dashed = n.type === "not-taken";
+              const stroke =
+                n.type === "life" ? "#1e3a72" : n.type === "mainline" ? "#1a120c" : "#4a3f34";
               return (
                 <path
                   key={`${n.parent}-${n.id}`}
-                  d={stem(from, to)}
+                  d={branchPath(from, to)}
                   fill="none"
-                  stroke={n.type === "life" ? "#25457f" : "#8d8574"}
-                  strokeWidth="1"
-                  strokeDasharray={dashed ? "3 3" : undefined}
-                  opacity={dashed ? 0.55 : 0.7}
+                  stroke={stroke}
+                  strokeWidth={n.type === "mainline" ? 1.6 : 1.15}
+                  strokeDasharray={dashed ? "4 3" : undefined}
+                  opacity={dashed ? 0.75 : 1}
                 />
               );
             })}
@@ -105,7 +111,7 @@ export function TreeView({
 
       <p
         data-testid="tree-caption"
-        className="mt-5 max-w-2xl font-display text-[18px] leading-snug text-ink"
+        className="mt-5 border-t border-ink pt-3 font-display text-[18px] leading-snug text-ink"
       >
         <span className="text-book-blue">
           {selected.fig} {moveHeading(selected)}
@@ -115,7 +121,7 @@ export function TreeView({
         ) : null}
         <span className="mx-2 text-faded">·</span>
         <span>{selected.title}</span>
-        <span className="ml-2 font-mono text-[10px] uppercase tracking-[0.2em] text-faded">
+        <span className="ml-2 font-mono text-[11px] uppercase tracking-[0.18em] text-faded">
           {selected.kind}
         </span>
       </p>
@@ -137,6 +143,7 @@ function TreeNode({
   onSelect: (id: string) => void;
 }) {
   const label = node.moveNumber === 0 ? "start" : node.san;
+  const replies = getChildren(node.id).filter((n) => n.type !== "mainline").length;
 
   return (
     <button
@@ -147,50 +154,42 @@ function TreeNode({
       onClick={() => onSelect(node.id)}
       style={{ left: x, top: y }}
       className={cn(
-        "absolute z-10 flex h-11 min-w-11 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center px-1.5",
-        "font-display tracking-tight transition-colors",
+        "absolute z-10 flex w-[148px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center px-1.5 py-1.5 text-center",
+        "bg-paper font-display tracking-tight transition-colors",
         "hover:text-score-red",
-        node.type === "mainline" && "text-[15px] font-semibold text-book-blue",
-        node.type === "life" && "text-[13px] text-book-blue",
-        node.type === "variation" && "text-[13px] italic text-ink/80",
-        node.type === "not-taken" && "text-[13px] italic text-ink/55",
-        selected && "z-20 text-score-red not-italic",
+        node.type === "mainline" && "text-book-blue",
+        node.type === "life" && "text-book-blue",
+        node.type === "variation" && "italic text-ink",
+        node.type === "not-taken" && "border border-dashed border-ink italic text-ink",
+        selected && "z-20 text-score-red not-italic outline outline-2 outline-score-red",
       )}
     >
-      {node.color === "w" && node.moveNumber > 0 ? (
-        <span className="font-mono text-[9px] font-normal not-italic leading-none text-faded">
-          {node.moveNumber}.
+      <span className="relative leading-none">
+        {node.color === "w" && node.moveNumber > 0 ? (
+          <span className="mr-1 font-mono text-[10px] font-normal not-italic text-faded">
+            {node.moveNumber}.
+          </span>
+        ) : null}
+        {node.moveNumber === 0 ? (
+          <span className="font-mono text-[11px] uppercase tracking-widest">{label}</span>
+        ) : (
+          <>
+            <span className="mr-0.5 text-[15px] font-semibold not-italic">{node.fig}</span>
+            <span className="text-[15px] font-semibold">{node.san}</span>
+            {node.sym ? (
+              <span className="ml-0.5 text-[15px] font-bold not-italic text-score-red">{node.sym}</span>
+            ) : null}
+          </>
+        )}
+      </span>
+      <span className="mt-1 line-clamp-2 font-lora text-[11px] font-normal not-italic leading-tight text-ink">
+        {node.title}
+      </span>
+      {replies > 0 ? (
+        <span className="mt-0.5 font-mono text-[9px] uppercase tracking-wider text-faded">
+          {replies} alt{replies === 1 ? "" : "s"}
         </span>
       ) : null}
-      {node.moveNumber === 0 ? (
-        <span className="relative font-mono text-[10px] uppercase tracking-widest">
-          {label}
-          {selected ? (
-            <span aria-hidden className="absolute inset-x-0 -bottom-1.5 h-0.5 bg-score-red" />
-          ) : null}
-        </span>
-      ) : (
-        <span className="relative leading-none">
-          <span className="mr-0.5 text-[0.92em] not-italic">{node.fig}</span>
-          {node.san}
-          {node.sym ? (
-            <span
-              className={cn(
-                "ml-0.5 font-bold not-italic",
-                node.type === "not-taken" ? "text-ink/55" : "text-score-red",
-              )}
-            >
-              {node.sym}
-            </span>
-          ) : null}
-          {selected ? (
-            <span
-              aria-hidden
-              className="absolute inset-x-0 -bottom-1.5 h-0.5 bg-score-red"
-            />
-          ) : null}
-        </span>
-      )}
     </button>
   );
 }

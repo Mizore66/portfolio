@@ -139,14 +139,13 @@ export type TreeLayout = {
   width: number;
   height: number;
   positions: Record<string, Point>;
-  mainY: number;
+  trunkX: number;
 };
 
-/** Horizontal pitch of mainline moves. Sized for 44px targets with air between. */
-const COL = 92;
-const PAD_X = 36;
-const PAD_Y = 20;
-const LANE = 56;
+const COL = 168;
+const ROW = 86;
+const PAD_X = 56;
+const PAD_Y = 52;
 
 function mainlineOf(nodes: OpeningNode[]): OpeningNode[] {
   const line: OpeningNode[] = [];
@@ -164,51 +163,51 @@ function kidsOf(nodes: OpeningNode[], parentId: string): OpeningNode[] {
 }
 
 /**
- * Score layout, not a flowchart.
- * Mainline is one horizontal row. Life hangs off the parent above;
- * variations and not-taken hang off the parent below.
+ * Top-down repertoire tree.
+ * Trunk is the mainline. Life forks left, variations fork right,
+ * sitting on the same rank as the next mainline ply.
  */
 export function layoutTree(nodes: OpeningNode[] = OPENING_NODES): TreeLayout {
   const mainline = mainlineOf(nodes);
-  const maxUp = Math.max(
-    1,
-    ...mainline.map((n) => kidsOf(nodes, n.id).filter((c) => c.type === "life").length),
-  );
-  const maxDown = Math.max(
-    1,
-    ...mainline.map(
-      (n) =>
-        kidsOf(nodes, n.id).filter((c) => c.type === "variation" || c.type === "not-taken").length,
-    ),
-  );
+  let maxLeft = 1;
+  let maxRight = 1;
+  for (const n of mainline) {
+    const kids = kidsOf(nodes, n.id);
+    maxLeft = Math.max(maxLeft, kids.filter((c) => c.type === "life").length);
+    maxRight = Math.max(
+      maxRight,
+      kids.filter((c) => c.type === "variation" || c.type === "not-taken").length,
+    );
+  }
 
-  const mainY = PAD_Y + maxUp * LANE;
+  const trunkX = PAD_X + maxLeft * COL;
   const positions: Record<string, Point> = {};
 
   mainline.forEach((n, i) => {
-    positions[n.id] = { x: PAD_X + i * COL, y: mainY };
+    positions[n.id] = { x: trunkX, y: PAD_Y + i * ROW };
   });
 
-  for (const parent of mainline) {
+  mainline.forEach((parent) => {
     const origin = positions[parent.id];
+    const childY = origin.y + ROW;
     const kids = kidsOf(nodes, parent.id);
     kids
       .filter((n) => n.type === "life")
-      .forEach((n, i) => {
-        positions[n.id] = { x: origin.x, y: mainY - LANE * (i + 1) };
+      .forEach((n, j) => {
+        positions[n.id] = { x: trunkX - COL * (j + 1), y: childY };
       });
     kids
       .filter((n) => n.type === "variation" || n.type === "not-taken")
-      .forEach((n, i) => {
-        positions[n.id] = { x: origin.x, y: mainY + LANE * (i + 1) };
+      .forEach((n, j) => {
+        positions[n.id] = { x: trunkX + COL * (j + 1), y: childY };
       });
-  }
+  });
 
   return {
-    width: PAD_X + Math.max(0, mainline.length - 1) * COL + 48,
-    height: mainY + maxDown * LANE + PAD_Y,
+    width: trunkX + maxRight * COL + PAD_X,
+    height: PAD_Y + Math.max(0, mainline.length - 1) * ROW + PAD_Y,
     positions,
-    mainY,
+    trunkX,
   };
 }
 

@@ -3,14 +3,14 @@
 @import "shadcn/tailwind.css";
 
 @theme inline {
-  --color-paper: #d9d5c8;
-  --color-paper-deep: #cfcabe;
-  --color-ink: #1d1a14;
-  --color-book-blue: #25457f;
-  --color-score-red: #a2322a;
-  --color-faded: #8d8574;
-  --color-board-light: #d2d0c8;
-  --color-board-dark: #9f9e97;
+  --color-paper: #f6eedc;
+  --color-paper-deep: #efe4cc;
+  --color-ink: #1a120c;
+  --color-book-blue: #1e3a72;
+  --color-score-red: #8b241c;
+  --color-faded: #4a3f34;
+  --color-board-light: #e8dcc4;
+  --color-board-dark: #8f8574;
   --color-background: var(--paper);
   --color-foreground: var(--ink);
   --font-sans: var(--font-lora);
@@ -44,29 +44,17 @@
 }
 
 :root {
-  --paper: #d9d5c8;
-  --paper-deep: #cfcabe;
-  --ink: #1d1a14;
-  --book-blue: #25457f;
-  --score-red: #a2322a;
-  --faded: #8d8574;
-  --board-light: #d2d0c8;
-  --board-dark: #9f9e97;
-  --background: #d9d5c8;
-  --foreground: #1d1a14;
+  --paper: #f6eedc;
+  --paper-deep: #efe4cc;
+  --ink: #1a120c;
+  --book-blue: #1e3a72;
+  --score-red: #8b241c;
+  --faded: #4a3f34;
+  --board-light: #e8dcc4;
+  --board-dark: #8f8574;
+  --background: #f6eedc;
+  --foreground: #1a120c;
   --radius: 0px;
-  /* Laid lines only. Pulp/fiber lives in newsprint-grain.png, blended into the
-     surface so type stays sharp (chess.com textures the paper, not the ink). */
-  --newsprint-laid: repeating-linear-gradient(
-    0deg,
-    rgba(29, 26, 20, 0.04) 0px,
-    rgba(29, 26, 20, 0.04) 1px,
-    transparent 1px,
-    transparent 5px
-  );
-  --newsprint:
-    url("/newsprint-grain.png"),
-    var(--newsprint-laid);
 }
 
 @layer base {
@@ -76,14 +64,29 @@
   html {
     font-family: var(--font-lora), "Lora", serif;
     scrollbar-width: thin;
-    scrollbar-color: #8d8574 transparent;
-    background-color: var(--paper);
-    background-image: var(--newsprint);
-    background-size: 320px 320px, auto;
-    background-blend-mode: multiply, normal;
+    scrollbar-color: #4a3f34 transparent;
+    background-color: #2c1c12;
+    background-image: url("/newsprint-collage.jpg");
+    background-size: cover;
+    background-position: center;
     background-attachment: fixed;
+    color: var(--ink);
+  }
+  html::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(
+      ellipse at 50% 38%,
+      rgba(44, 28, 18, 0.12) 0%,
+      rgba(44, 28, 18, 0.52) 100%
+    );
   }
   body {
+    position: relative;
+    z-index: 1;
     background: transparent;
     color: var(--ink);
   }
@@ -99,46 +102,42 @@
   }
 }
 
+/* Readable writing surface. Collage stays in the gutters (Apple: content on a surface). */
+.sheet {
+  background-color: var(--paper);
+  background-image: url("/newsprint-grain.png");
+  background-size: 280px 280px;
+  background-blend-mode: multiply;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  box-shadow: 0 12px 32px rgba(28, 14, 8, 0.38);
+}
+
 .newsprint-deep {
   background-color: var(--paper-deep);
-  background-image: var(--newsprint);
-  background-size: 320px 320px, auto;
-  background-blend-mode: multiply, normal;
-  background-attachment: fixed;
+  background-image: url("/newsprint-grain.png");
+  background-size: 280px 280px;
+  background-blend-mode: multiply;
 }
 
 .newsprint-mast {
   background-color: var(--paper);
-  background-image: var(--newsprint);
-  background-size: 320px 320px, auto;
-  background-blend-mode: multiply, normal;
-  background-attachment: fixed;
+  background-image: url("/newsprint-grain.png");
+  background-size: 280px 280px;
+  background-blend-mode: multiply;
 }
 
 .board-sq-light {
   background-color: var(--board-light);
-  background-image: url("/newsprint-grain.png");
-  background-size: 160px 160px;
-  background-blend-mode: multiply;
 }
 
 .board-sq-dark {
   background-color: var(--board-dark);
-  background-image:
-    repeating-linear-gradient(
-      -45deg,
-      #9f9e97 0 4px,
-      #5a5957 4px 6px
-    ),
-    url("/newsprint-grain.png");
-  background-size: auto, 160px 160px;
-  background-blend-mode: normal, multiply;
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .newsprint-mast {
-    background-color: var(--paper);
-  }
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #8f8574 0 4px,
+    #5c5548 4px 6px
+  );
 }
 
 ::-webkit-scrollbar {
@@ -149,5 +148,5 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #8d8574;
+  background: #4a3f34;
 }
