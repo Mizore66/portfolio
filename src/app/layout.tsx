@@ -1,40 +1,46 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { IBM_Plex_Mono, Libre_Baskerville, Lora } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-sans",
+const display = Libre_Baskerville({
+  weight: ["400", "700"],
+  style: ["normal", "italic"],
   subsets: ["latin"],
+  variable: "--font-display",
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-geist-mono",
+const lora = Lora({
   subsets: ["latin"],
+  style: ["normal", "italic"],
+  variable: "--font-lora",
+  display: "swap",
+});
+
+const mono = IBM_Plex_Mono({
+  weight: ["400", "500"],
+  subsets: ["latin"],
+  variable: "--font-mono",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Anas Qumhiyeh | Software Engineer — MLOps & Full-Stack",
+  title: "A. T. Qumhiyeh — Opening Preparation",
   description:
-    "Portfolio of Anas Tarek Qumhiyeh — Software Engineer specializing in MLOps, Data Pipelines, and Full-Stack development. Experience with AWS, Kubernetes, and AI Infrastructure.",
+    "An annotated Italian Game: the portfolio of Anas Tarek Qumhiyeh, software engineer. Moves are facts. Annotations are voice.",
   keywords: [
     "Software Engineer",
     "MLOps",
     "Full-Stack",
-    "Data Pipelines",
-    "AWS",
-    "Kubernetes",
-    "AI Infrastructure",
-    "React",
-    "Next.js",
-    "Python",
+    "Anas Qumhiyeh",
+    "Opening Preparation",
+    "chess",
   ],
   authors: [{ name: "Anas Tarek Qumhiyeh" }],
   openGraph: {
-    title: "Anas Qumhiyeh | Software Engineer",
+    title: "A. T. Qumhiyeh — Opening Preparation",
     description:
-      "Software Engineer specializing in MLOps, Data Pipelines, and Full-Stack development.",
+      "An annotated Italian Game: jobs as moves, the rest of a life as annotations.",
     type: "website",
   },
 };
@@ -47,9 +53,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} dark`}
+      className={`${display.variable} ${lora.variable} ${mono.variable}`}
     >
-      <body className="min-h-screen bg-background text-foreground antialiased">
+      <body className="min-h-screen bg-paper font-lora text-ink antialiased">
         {children}
       </body>
     </html>
