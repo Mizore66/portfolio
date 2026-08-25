@@ -80,8 +80,8 @@
     z-index: 0;
     background: radial-gradient(
       ellipse at 50% 38%,
-      rgba(44, 28, 18, 0.12) 0%,
-      rgba(44, 28, 18, 0.52) 100%
+      rgba(44, 28, 18, 0.04) 0%,
+      rgba(44, 28, 18, 0.28) 100%
     );
   }
   body {
@@ -105,9 +105,6 @@
 /* Readable writing surface. Collage stays in the gutters (Apple: content on a surface). */
 .sheet {
   background-color: var(--paper);
-  background-image: url("/newsprint-grain.png");
-  background-size: 280px 280px;
-  background-blend-mode: multiply;
   color: var(--ink);
   border: 1px solid var(--ink);
   box-shadow: 0 12px 32px rgba(28, 14, 8, 0.38);
@@ -115,16 +112,10 @@
 
 .newsprint-deep {
   background-color: var(--paper-deep);
-  background-image: url("/newsprint-grain.png");
-  background-size: 280px 280px;
-  background-blend-mode: multiply;
 }
 
 .newsprint-mast {
   background-color: var(--paper);
-  background-image: url("/newsprint-grain.png");
-  background-size: 280px 280px;
-  background-blend-mode: multiply;
 }
 
 .board-sq-light {

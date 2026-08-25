@@ -155,13 +155,13 @@ function TreeNode({
       style={{ left: x, top: y }}
       className={cn(
         "absolute z-10 flex w-[148px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center px-1.5 py-1.5 text-center",
-        "bg-paper font-display tracking-tight transition-colors",
+        "font-display tracking-tight transition-colors",
         "hover:text-score-red",
         node.type === "mainline" && "text-book-blue",
         node.type === "life" && "text-book-blue",
         node.type === "variation" && "italic text-ink",
         node.type === "not-taken" && "border border-dashed border-ink italic text-ink",
-        selected && "z-20 text-score-red not-italic outline outline-2 outline-score-red",
+        selected && "z-20 bg-paper text-score-red not-italic outline outline-2 outline-score-red",
       )}
     >
       <span className="relative leading-none">

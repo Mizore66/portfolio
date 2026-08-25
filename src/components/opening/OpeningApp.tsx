@@ -43,18 +43,27 @@ export function OpeningApp() {
 
   return (
     <div className="min-h-screen text-ink" data-hydrated={hydrated ? "true" : "false"}>
-      <div className="relative z-[1] mx-auto max-w-[1440px] px-3 py-3 sm:px-5 sm:py-4">
-        <Masthead view={view} onView={setView} />
-        <div className="mt-3 flex flex-col gap-3 min-[980px]:flex-row min-[980px]:items-start">
-          <section className="sheet min-w-0 flex-1">
-            <div className={cn(view === "tree" ? "hidden min-[980px]:block" : "hidden")}>
-              <TreeView selectedId={selectedId} onSelect={onSelect} />
-            </div>
-            <div className={cn(view === "notation" ? "block" : "block min-[980px]:hidden")}>
-              <NotationView selectedId={selectedId} onSelect={onSelect} />
+      <div className="relative z-[1] mx-auto px-5 py-6 sm:px-10 sm:py-8 lg:px-16">
+        <div className="mx-auto max-w-[1080px]">
+          <Masthead view={view} onView={setView} />
+        </div>
+        <div className="mx-auto mt-5 flex max-w-[1080px] flex-col gap-5 min-[980px]:flex-row min-[980px]:items-start min-[980px]:justify-center">
+          <section className="min-w-0 min-[980px]:flex-none">
+            <div
+              className={cn(
+                "sheet w-full",
+                view === "tree" && "min-[980px]:w-max",
+              )}
+            >
+              <div className={cn(view === "tree" ? "hidden min-[980px]:block" : "hidden")}>
+                <TreeView selectedId={selectedId} onSelect={onSelect} />
+              </div>
+              <div className={cn(view === "notation" ? "block" : "block min-[980px]:hidden")}>
+                <NotationView selectedId={selectedId} onSelect={onSelect} />
+              </div>
             </div>
           </section>
-          <aside className="sheet w-full shrink-0 min-[980px]:sticky min-[980px]:top-28 min-[980px]:max-h-[calc(100vh-8rem)] min-[980px]:w-[360px] min-[980px]:overflow-y-auto">
+          <aside className="sheet w-full shrink-0 min-[980px]:sticky min-[980px]:top-6 min-[980px]:max-h-[calc(100vh-3rem)] min-[980px]:w-[360px] min-[980px]:overflow-y-auto">
             <BoardDiagram plies={plies} highlight={node.hl} caption={node.cap} />
             <div className="mx-4 border-t border-ink" />
             <AnnotationPanel node={node} />
