@@ -7,13 +7,21 @@ import {
   layoutTree,
   moveHeading,
   OPENING_NODES,
+  type Point,
 } from "@/lib/opening/tree";
 import type { OpeningNode } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
 
-function elbow(from: { x: number; y: number }, to: { x: number; y: number }) {
-  const midX = (from.x + to.x) / 2;
-  return `M ${from.x} ${from.y} H ${midX} V ${to.y} H ${to.x}`;
+const STEM_INSET = 18;
+const RUN_INSET = 28;
+
+function stem(from: Point, to: Point) {
+  const dir = to.y > from.y ? 1 : -1;
+  return `M ${from.x} ${from.y + dir * STEM_INSET} V ${to.y - dir * STEM_INSET}`;
+}
+
+function run(from: Point, to: Point) {
+  return `M ${from.x + RUN_INSET} ${from.y} H ${to.x - RUN_INSET}`;
 }
 
 export function TreeView({
@@ -26,18 +34,12 @@ export function TreeView({
   const layout = useMemo(() => layoutTree(), []);
   const mainline = useMemo(() => getMainline(), []);
   const selected = getNode(selectedId);
-  const mainPts = mainline
-    .map((n) => layout.positions[n.id])
-    .filter(Boolean);
-
-  const staff = mainPts.length
-    ? `M ${mainPts[0].x} ${layout.mainY} H ${mainPts[mainPts.length - 1].x}`
-    : "";
+  const mainPts = mainline.map((n) => layout.positions[n.id]).filter(Boolean);
 
   return (
-    <div className="relative px-4 py-6 sm:px-6" data-testid="tree-view">
-      <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.28em] text-faded">
-        Life above · mainline on the staff · variations below · dashed = not taken
+    <div className="relative px-4 py-5 sm:px-6" data-testid="tree-view">
+      <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.28em] text-faded">
+        Life above · the mainline · variations below · dashed = not taken
       </p>
 
       <div className="overflow-x-auto">
@@ -45,34 +47,26 @@ export function TreeView({
           className="relative"
           style={{ width: layout.width, height: layout.height }}
         >
-          <span
-            className="pointer-events-none absolute left-0 font-mono text-[9px] uppercase tracking-[0.28em] text-faded"
-            style={{ top: Math.max(6, layout.mainY - 70) }}
-          >
-            Life
-          </span>
-          <span
-            className="pointer-events-none absolute left-0 font-mono text-[9px] uppercase tracking-[0.28em] text-faded"
-            style={{ top: layout.mainY - 7 }}
-          >
-            Main
-          </span>
-          <span
-            className="pointer-events-none absolute left-0 font-mono text-[9px] uppercase tracking-[0.28em] text-faded"
-            style={{ top: layout.mainY + 62 }}
-          >
-            Vars
-          </span>
-
           <svg
             aria-hidden
             className="pointer-events-none absolute inset-0"
             width={layout.width}
             height={layout.height}
           >
-            {staff ? (
-              <path d={staff} fill="none" stroke="#1d1a14" strokeWidth="1.5" />
-            ) : null}
+            {mainPts.slice(0, -1).map((from, i) => {
+              const to = mainPts[i + 1];
+              if (!to) return null;
+              return (
+                <path
+                  key={`run-${i}`}
+                  d={run(from, to)}
+                  fill="none"
+                  stroke="#1d1a14"
+                  strokeWidth="1"
+                  opacity="0.35"
+                />
+              );
+            })}
             {OPENING_NODES.filter((n) => n.parent && n.type !== "mainline").map((n) => {
               const from = layout.positions[n.parent!];
               const to = layout.positions[n.id];
@@ -81,12 +75,12 @@ export function TreeView({
               return (
                 <path
                   key={`${n.parent}-${n.id}`}
-                  d={elbow(from, to)}
+                  d={stem(from, to)}
                   fill="none"
                   stroke={n.type === "life" ? "#25457f" : "#8d8574"}
                   strokeWidth="1"
-                  strokeDasharray={dashed ? "5 4" : undefined}
-                  opacity="0.85"
+                  strokeDasharray={dashed ? "3 3" : undefined}
+                  opacity={dashed ? 0.55 : 0.7}
                 />
               );
             })}
@@ -111,7 +105,7 @@ export function TreeView({
 
       <p
         data-testid="tree-caption"
-        className="mt-6 max-w-2xl border-t border-ink/20 pt-3 font-display text-[17px] leading-snug text-ink"
+        className="mt-5 max-w-2xl font-display text-[18px] leading-snug text-ink"
       >
         <span className="text-book-blue">
           {selected.fig} {moveHeading(selected)}
@@ -153,23 +147,40 @@ function TreeNode({
       onClick={() => onSelect(node.id)}
       style={{ left: x, top: y }}
       className={cn(
-        "absolute z-10 flex h-11 min-w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center px-1.5 font-display tracking-tight",
-        "hover:bg-ink/[0.05]",
+        "absolute z-10 flex h-11 min-w-11 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center px-1.5",
+        "font-display tracking-tight transition-colors",
+        "hover:text-score-red",
         node.type === "mainline" && "text-[15px] font-semibold text-book-blue",
         node.type === "life" && "text-[13px] text-book-blue",
-        node.type === "variation" && "text-[13px] text-ink/75",
-        node.type === "not-taken" && "text-[13px] text-faded",
-        selected && "z-20 bg-score-red/10 text-score-red shadow-[0_2px_0_0_#a2322a]",
+        node.type === "variation" && "text-[13px] italic text-ink/70",
+        node.type === "not-taken" && "text-[13px] italic text-faded",
+        selected && "z-20 text-score-red not-italic",
       )}
     >
+      {node.color === "w" && node.moveNumber > 0 ? (
+        <span className="font-mono text-[9px] font-normal not-italic leading-none text-faded">
+          {node.moveNumber}.
+        </span>
+      ) : null}
       {node.moveNumber === 0 ? (
-        <span className="font-mono text-[10px] uppercase tracking-widest">{label}</span>
+        <span className="relative font-mono text-[10px] uppercase tracking-widest">
+          {label}
+          {selected ? (
+            <span aria-hidden className="absolute inset-x-0 -bottom-1.5 h-0.5 bg-score-red" />
+          ) : null}
+        </span>
       ) : (
-        <span>
-          <span className="mr-0.5 text-[0.92em]">{node.fig}</span>
+        <span className="relative leading-none">
+          <span className="mr-0.5 text-[0.92em] not-italic">{node.fig}</span>
           {node.san}
           {node.sym ? (
-            <span className="ml-0.5 font-bold text-score-red">{node.sym}</span>
+            <span className="ml-0.5 font-bold not-italic text-score-red">{node.sym}</span>
+          ) : null}
+          {selected ? (
+            <span
+              aria-hidden
+              className="absolute inset-x-0 -bottom-1.5 h-0.5 bg-score-red"
+            />
           ) : null}
         </span>
       )}

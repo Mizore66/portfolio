@@ -47,7 +47,7 @@ export function BoardDiagram({
       squares.push(
         <div
           key={sq}
-          className={dark ? "bg-board-dark" : "bg-board-light"}
+          className={dark ? "board-sq-dark" : "board-sq-light"}
           style={marked ? { boxShadow: "inset 0 0 0 100px rgba(162, 50, 42, 0.28)" } : undefined}
         />,
       );
@@ -70,7 +70,13 @@ export function BoardDiagram({
             aria-label={caption}
             className="relative aspect-square w-full border-2 border-ink"
           >
-            <div className="grid h-full w-full grid-cols-8 grid-rows-8">{squares}</div>
+            <div className="relative grid h-full w-full grid-cols-8 grid-rows-8">
+              {squares}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 bg-[url('/newsprint-grain.png')] bg-[length:160px_160px] mix-blend-multiply opacity-50"
+              />
+            </div>
             {pieces.map((piece) => {
               const file = squareFile(piece.square);
               const rank = squareRank(piece.square);

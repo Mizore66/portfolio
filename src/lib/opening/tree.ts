@@ -142,65 +142,70 @@ export type TreeLayout = {
   mainY: number;
 };
 
-const COL = 80;
-const PAD_X = 72;
-const PAD_Y = 40;
-const LANE = 70;
+/** Horizontal pitch of mainline moves. Sized for 44px targets with air between. */
+const COL = 92;
+const PAD_X = 36;
+const PAD_Y = 20;
+const LANE = 56;
 
+function mainlineOf(nodes: OpeningNode[]): OpeningNode[] {
+  const line: OpeningNode[] = [];
+  let current = nodes.find((n) => n.parent === null && n.type === "mainline");
+  while (current) {
+    line.push(current);
+    const parentId = current.id;
+    current = nodes.find((n) => n.parent === parentId && n.type === "mainline");
+  }
+  return line;
+}
+
+function kidsOf(nodes: OpeningNode[], parentId: string): OpeningNode[] {
+  return nodes.filter((n) => n.parent === parentId);
+}
+
+/**
+ * Score layout, not a flowchart.
+ * Mainline is one horizontal row. Life hangs off the parent above;
+ * variations and not-taken hang off the parent below.
+ */
 export function layoutTree(nodes: OpeningNode[] = OPENING_NODES): TreeLayout {
-  const depth = new Map<string, number>();
-
-  function dep(id: string): number {
-    const cached = depth.get(id);
-    if (cached !== undefined) return cached;
-    const node = byId[id];
-    const value = node.parent === null ? 0 : dep(node.parent) + 1;
-    depth.set(id, value);
-    return value;
-  }
-
-  for (const n of nodes) dep(n.id);
-
-  const atDepth = new Map<number, OpeningNode[]>();
-  for (const n of nodes) {
-    const d = depth.get(n.id)!;
-    const list = atDepth.get(d) ?? [];
-    list.push(n);
-    atDepth.set(d, list);
-  }
-
-  const maxD = Math.max(0, ...depth.values());
+  const mainline = mainlineOf(nodes);
   const maxUp = Math.max(
-    0,
-    ...[...atDepth.values()].map((list) => list.filter((n) => n.type === "life").length),
+    1,
+    ...mainline.map((n) => kidsOf(nodes, n.id).filter((c) => c.type === "life").length),
   );
   const maxDown = Math.max(
-    0,
-    ...[...atDepth.values()].map(
-      (list) => list.filter((n) => n.type === "variation" || n.type === "not-taken").length,
+    1,
+    ...mainline.map(
+      (n) =>
+        kidsOf(nodes, n.id).filter((c) => c.type === "variation" || c.type === "not-taken").length,
     ),
   );
 
   const mainY = PAD_Y + maxUp * LANE;
   const positions: Record<string, Point> = {};
 
-  for (const [d, list] of atDepth) {
-    const x = PAD_X + Number(d) * COL;
-    const life = list.filter((n) => n.type === "life");
-    const main = list.filter((n) => n.type === "mainline");
-    const down = list.filter((n) => n.type === "variation" || n.type === "not-taken");
+  mainline.forEach((n, i) => {
+    positions[n.id] = { x: PAD_X + i * COL, y: mainY };
+  });
 
-    for (const n of main) positions[n.id] = { x, y: mainY };
-    life.forEach((n, i) => {
-      positions[n.id] = { x, y: mainY - LANE * (i + 1) };
-    });
-    down.forEach((n, i) => {
-      positions[n.id] = { x, y: mainY + LANE * (i + 1) };
-    });
+  for (const parent of mainline) {
+    const origin = positions[parent.id];
+    const kids = kidsOf(nodes, parent.id);
+    kids
+      .filter((n) => n.type === "life")
+      .forEach((n, i) => {
+        positions[n.id] = { x: origin.x, y: mainY - LANE * (i + 1) };
+      });
+    kids
+      .filter((n) => n.type === "variation" || n.type === "not-taken")
+      .forEach((n, i) => {
+        positions[n.id] = { x: origin.x, y: mainY + LANE * (i + 1) };
+      });
   }
 
   return {
-    width: PAD_X + maxD * COL + 72,
+    width: PAD_X + Math.max(0, mainline.length - 1) * COL + 48,
     height: mainY + maxDown * LANE + PAD_Y,
     positions,
     mainY,

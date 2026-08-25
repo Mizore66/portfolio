@@ -3,14 +3,14 @@
 @import "shadcn/tailwind.css";
 
 @theme inline {
-  --color-paper: #e8e4d6;
-  --color-paper-deep: #dcd6c6;
+  --color-paper: #d9d5c8;
+  --color-paper-deep: #cfcabe;
   --color-ink: #1d1a14;
   --color-book-blue: #25457f;
   --color-score-red: #a2322a;
   --color-faded: #8d8574;
-  --color-board-light: #cac8c0;
-  --color-board-dark: #a3a29b;
+  --color-board-light: #d2d0c8;
+  --color-board-dark: #9f9e97;
   --color-background: var(--paper);
   --color-foreground: var(--ink);
   --font-sans: var(--font-lora);
@@ -44,30 +44,29 @@
 }
 
 :root {
-  --paper: #e8e4d6;
-  --paper-deep: #dcd6c6;
+  --paper: #d9d5c8;
+  --paper-deep: #cfcabe;
   --ink: #1d1a14;
   --book-blue: #25457f;
   --score-red: #a2322a;
   --faded: #8d8574;
-  --background: #e8e4d6;
+  --board-light: #d2d0c8;
+  --board-dark: #9f9e97;
+  --background: #d9d5c8;
   --foreground: #1d1a14;
   --radius: 0px;
+  /* Laid lines only. Pulp/fiber lives in newsprint-grain.png, blended into the
+     surface so type stays sharp (chess.com textures the paper, not the ink). */
+  --newsprint-laid: repeating-linear-gradient(
+    0deg,
+    rgba(29, 26, 20, 0.04) 0px,
+    rgba(29, 26, 20, 0.04) 1px,
+    transparent 1px,
+    transparent 5px
+  );
   --newsprint:
-    repeating-linear-gradient(
-      0deg,
-      rgba(29, 26, 20, 0.055) 0px,
-      rgba(29, 26, 20, 0.055) 1px,
-      transparent 1px,
-      transparent 4px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      transparent 0,
-      transparent 79px,
-      rgba(29, 26, 20, 0.06) 79px,
-      rgba(29, 26, 20, 0.06) 80px
-    );
+    url("/newsprint-grain.png"),
+    var(--newsprint-laid);
 }
 
 @layer base {
@@ -80,23 +79,13 @@
     scrollbar-color: #8d8574 transparent;
     background-color: var(--paper);
     background-image: var(--newsprint);
-    background-size: auto, auto;
+    background-size: 320px 320px, auto;
+    background-blend-mode: multiply, normal;
     background-attachment: fixed;
   }
   body {
     background: transparent;
     color: var(--ink);
-  }
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 80;
-    opacity: 0.22;
-    mix-blend-mode: multiply;
-    background-image: url("/newsprint-grain.png");
-    background-size: 256px 256px;
   }
   ::selection {
     background: color-mix(in srgb, var(--score-red) 28%, transparent);
@@ -113,15 +102,30 @@
 .newsprint-deep {
   background-color: var(--paper-deep);
   background-image: var(--newsprint);
-  background-size: auto, auto;
+  background-size: 320px 320px, auto;
+  background-blend-mode: multiply, normal;
   background-attachment: fixed;
 }
 
 .newsprint-mast {
-  background-color: color-mix(in srgb, var(--paper) 92%, transparent);
+  background-color: var(--paper);
   background-image: var(--newsprint);
-  background-size: auto, auto;
+  background-size: 320px 320px, auto;
+  background-blend-mode: multiply, normal;
   background-attachment: fixed;
+}
+
+.board-sq-light {
+  background-color: var(--board-light);
+}
+
+.board-sq-dark {
+  background-color: var(--board-dark);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0 2px,
+    rgba(90, 89, 87, 0.42) 2px 3px
+  );
 }
 
 @media (prefers-reduced-transparency: reduce) {
