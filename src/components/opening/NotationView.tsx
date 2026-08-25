@@ -63,7 +63,7 @@ function NotationMove({
         node.type === "not-taken" && "opacity-80",
       )}
     >
-      <MoveButton node={node} selected={selected} variationStart={block.variationStart} onSelect={onSelect} />
+      <MoveButton node={node} selected={selected} onSelect={onSelect} />
       {node.fact && (
         <p className="mt-1 max-w-prose font-display text-[15px] leading-relaxed text-ink">
           {node.fact}
@@ -118,12 +118,10 @@ function NotationMove({
 function MoveButton({
   node,
   selected,
-  variationStart,
   onSelect,
 }: {
   node: OpeningNode;
   selected: boolean;
-  variationStart: boolean;
   onSelect: (id: string) => void;
 }) {
   return (
@@ -145,7 +143,7 @@ function MoveButton({
         )}
       >
         <span className="mr-1 text-[0.95em]">{node.fig}</span>
-        {moveHeading(node, variationStart)}
+        {moveHeading(node)}
         {node.sym ? <span className="ml-1 font-bold text-score-red">{node.sym}</span> : null}
       </span>
       <span className="font-display text-base text-ink">{node.title}</span>

@@ -7,6 +7,7 @@ test.describe("Opening Preparation", () => {
   }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await page.getByRole("button", { name: "Notation" }).click();
     await expect(page.getByTestId("notation-view")).toBeVisible();
@@ -17,15 +18,16 @@ test.describe("Opening Preparation", () => {
       ).toBeVisible();
     }
 
-    await page.locator('[data-node-id="d4"]').first().click();
+    await page.locator('[data-testid="notation-view"] [data-node-id="d4"]').click();
     await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
     await expect(page.getByText("The line so far")).toBeVisible();
-    await expect(page.getByText("5. d4!!")).toBeVisible();
+    await expect(page.getByText("1. e4! e5 2. Nf3 Nc6 3. Bc4 Bc5 4. O-O! Nf6! 5. d4!!")).toBeVisible();
   });
 
   test("arrow keys walk the mainline", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await expect(page.getByRole("heading", { level: 2, name: "Opening Preparation" })).toBeVisible();
 
@@ -42,6 +44,7 @@ test.describe("Opening Preparation", () => {
   test("tree and notation stay in sync", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await expect(page.getByTestId("tree-view")).toBeVisible();
     await page.locator('[data-testid="tree-view"] [data-node-id="oo"]').click();
@@ -57,6 +60,7 @@ test.describe("Opening Preparation", () => {
   test("mobile viewport shows notation, not the tree", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await expect(page.getByTestId("notation-view")).toBeVisible();
     await expect(page.getByTestId("tree-view")).toBeHidden();

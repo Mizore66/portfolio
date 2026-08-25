@@ -83,12 +83,10 @@ export function formatLine(id: string): string {
   return parts.join(" ") || "Start";
 }
 
-export function moveHeading(node: OpeningNode, variationStart: boolean): string {
+export function moveHeading(node: OpeningNode): string {
   if (!node.color || node.moveNumber === 0) return node.san;
-  const glyph = node.san;
-  if (node.color === "w") return `${node.moveNumber}. ${glyph}`;
-  if (variationStart) return `${node.moveNumber}…${glyph}`;
-  return glyph;
+  if (node.color === "w") return `${node.moveNumber}. ${node.san}`;
+  return `${node.moveNumber}…${node.san}`;
 }
 
 export type NotationBlock = {
@@ -144,10 +142,10 @@ export type TreeLayout = {
   mainY: number;
 };
 
-const COL = 78;
-const PAD_X = 96;
-const PAD_Y = 52;
-const LANE = 96;
+const COL = 70;
+const PAD_X = 80;
+const PAD_Y = 48;
+const LANE = 92;
 
 export function layoutTree(nodes: OpeningNode[] = OPENING_NODES): TreeLayout {
   const depth = new Map<string, number>();

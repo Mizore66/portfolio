@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { AnnotationPanel } from "@/components/opening/AnnotationPanel";
 import { BoardDiagram } from "@/components/opening/BoardDiagram";
 import { Masthead } from "@/components/opening/Masthead";
@@ -17,6 +17,11 @@ import { cn } from "@/lib/utils";
 export function OpeningApp() {
   const [selectedId, setSelectedId] = useState(ROOT_ID);
   const [view, setView] = useState<"tree" | "notation">("tree");
+  const hydrated = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
   const node = getNode(selectedId);
   const plies = useMemo(() => collectPlies(selectedId), [selectedId]);
 
@@ -37,7 +42,7 @@ export function OpeningApp() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-paper text-ink">
+    <div className="min-h-screen bg-paper text-ink" data-hydrated={hydrated ? "true" : "false"}>
       <Masthead view={view} onView={setView} />
       <div className="mx-auto flex max-w-[1400px] flex-col min-[980px]:flex-row">
         <section className="min-w-0 flex-1 min-[980px]:border-r-2 min-[980px]:border-ink">

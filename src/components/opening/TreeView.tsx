@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { layoutTree, OPENING_NODES } from "@/lib/opening/tree";
 import type { OpeningNode } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
@@ -13,80 +13,112 @@ export function TreeView({
   onSelect: (id: string) => void;
 }) {
   const layout = useMemo(() => layoutTree(), []);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+
+    const measure = () => {
+      const available = el.clientWidth;
+      if (available <= 0) return;
+      setScale(Math.min(1, available / layout.width));
+    };
+
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [layout.width]);
+
   return (
-    <div className="relative overflow-auto px-3 py-4 sm:px-4" data-testid="tree-view">
+    <div className="relative px-3 py-4 sm:px-4" data-testid="tree-view">
       <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.25em] text-faded">
         Life above · mainline centre · variations below · dashed = not taken
       </p>
-      <div
-        className="relative"
-        style={{ width: layout.width, height: layout.height }}
-      >
-        <span
-          className="pointer-events-none absolute left-2 font-mono text-[9px] uppercase tracking-[0.22em] text-faded"
-          style={{ top: Math.max(8, layout.mainY - 96) }}
+      <div ref={wrapRef} className="w-full overflow-x-auto">
+        <div
+          style={{
+            width: layout.width * scale,
+            height: layout.height * scale,
+          }}
         >
-          Life
-        </span>
-        <span
-          className="pointer-events-none absolute left-2 font-mono text-[9px] uppercase tracking-[0.22em] text-faded"
-          style={{ top: layout.mainY - 8 }}
-        >
-          Main
-        </span>
-        <span
-          className="pointer-events-none absolute left-2 font-mono text-[9px] uppercase tracking-[0.22em] text-faded"
-          style={{ top: layout.mainY + 88 }}
-        >
-          Vars
-        </span>
+          <div
+            className="relative origin-top-left"
+            style={{
+              width: layout.width,
+              height: layout.height,
+              transform: `scale(${scale})`,
+            }}
+          >
+            <span
+              className="pointer-events-none absolute left-2 font-mono text-[9px] uppercase tracking-[0.22em] text-faded"
+              style={{ top: Math.max(8, layout.mainY - 96) }}
+            >
+              Life
+            </span>
+            <span
+              className="pointer-events-none absolute left-2 font-mono text-[9px] uppercase tracking-[0.22em] text-faded"
+              style={{ top: layout.mainY - 8 }}
+            >
+              Main
+            </span>
+            <span
+              className="pointer-events-none absolute left-2 font-mono text-[9px] uppercase tracking-[0.22em] text-faded"
+              style={{ top: layout.mainY + 88 }}
+            >
+              Vars
+            </span>
 
-        <svg
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          width={layout.width}
-          height={layout.height}
-        >
-          {OPENING_NODES.filter((n) => n.parent).map((n) => {
-            const from = layout.positions[n.parent!];
-            const to = layout.positions[n.id];
-            if (!from || !to) return null;
-            const dashed = n.type === "not-taken";
-            const color =
-              n.type === "mainline"
-                ? "#1D1A14"
-                : n.type === "life"
-                  ? "#25457F"
-                  : "#8D8574";
-            return (
-              <line
-                key={`${n.parent}-${n.id}`}
-                x1={from.x}
-                y1={from.y}
-                x2={to.x}
-                y2={to.y}
-                stroke={color}
-                strokeWidth={n.type === "mainline" ? 2.5 : 1.5}
-                strokeDasharray={dashed ? "6 5" : undefined}
-              />
-            );
-          })}
-        </svg>
+            <svg
+              aria-hidden
+              className="pointer-events-none absolute inset-0"
+              width={layout.width}
+              height={layout.height}
+            >
+              {OPENING_NODES.filter((n) => n.parent).map((n) => {
+                const from = layout.positions[n.parent!];
+                const to = layout.positions[n.id];
+                if (!from || !to) return null;
+                const dashed = n.type === "not-taken";
+                const color =
+                  n.type === "mainline"
+                    ? "#1D1A14"
+                    : n.type === "life"
+                      ? "#25457F"
+                      : "#8D8574";
+                return (
+                  <line
+                    key={`${n.parent}-${n.id}`}
+                    x1={from.x}
+                    y1={from.y}
+                    x2={to.x}
+                    y2={to.y}
+                    stroke={color}
+                    strokeWidth={n.type === "mainline" ? 2.5 : 1.5}
+                    strokeDasharray={dashed ? "6 5" : undefined}
+                  />
+                );
+              })}
+            </svg>
 
-        {OPENING_NODES.map((node) => {
-          const pos = layout.positions[node.id];
-          if (!pos) return null;
-          return (
-            <TreeNode
-              key={node.id}
-              node={node}
-              x={pos.x}
-              y={pos.y}
-              selected={node.id === selectedId}
-              onSelect={onSelect}
-            />
-          );
-        })}
+            {OPENING_NODES.map((node) => {
+              const pos = layout.positions[node.id];
+              if (!pos) return null;
+              return (
+                <TreeNode
+                  key={node.id}
+                  node={node}
+                  x={pos.x}
+                  y={pos.y}
+                  selected={node.id === selectedId}
+                  onSelect={onSelect}
+                />
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -118,7 +150,7 @@ function TreeNode({
         node.type === "life" && "border-book-blue bg-paper text-book-blue",
         node.type === "variation" && "border-faded bg-paper text-ink",
         node.type === "not-taken" && "border-dashed border-faded bg-paper text-faded",
-        selected && "border-score-red bg-paper-deep z-20",
+        selected && "z-20 border-score-red bg-paper-deep",
       )}
     >
       <span>
