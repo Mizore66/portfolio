@@ -70,13 +70,7 @@ export function BoardDiagram({
             aria-label={caption}
             className="relative aspect-square w-full border-2 border-ink"
           >
-            <div className="relative grid h-full w-full grid-cols-8 grid-rows-8">
-              {squares}
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0 bg-[url('/newsprint-grain.png')] bg-[length:160px_160px] mix-blend-multiply opacity-50"
-              />
-            </div>
+            <div className="grid h-full w-full grid-cols-8 grid-rows-8">{squares}</div>
             {pieces.map((piece) => {
               const file = squareFile(piece.square);
               const rank = squareRank(piece.square);

@@ -117,15 +117,22 @@
 
 .board-sq-light {
   background-color: var(--board-light);
+  background-image: url("/newsprint-grain.png");
+  background-size: 160px 160px;
+  background-blend-mode: multiply;
 }
 
 .board-sq-dark {
   background-color: var(--board-dark);
-  background-image: repeating-linear-gradient(
-    -45deg,
-    transparent 0 2px,
-    rgba(90, 89, 87, 0.42) 2px 3px
-  );
+  background-image:
+    repeating-linear-gradient(
+      -45deg,
+      #9f9e97 0 4px,
+      #5a5957 4px 6px
+    ),
+    url("/newsprint-grain.png");
+  background-size: auto, 160px 160px;
+  background-blend-mode: normal, multiply;
 }
 
 @media (prefers-reduced-transparency: reduce) {

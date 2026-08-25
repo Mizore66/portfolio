@@ -152,8 +152,8 @@ function TreeNode({
         "hover:text-score-red",
         node.type === "mainline" && "text-[15px] font-semibold text-book-blue",
         node.type === "life" && "text-[13px] text-book-blue",
-        node.type === "variation" && "text-[13px] italic text-ink/70",
-        node.type === "not-taken" && "text-[13px] italic text-faded",
+        node.type === "variation" && "text-[13px] italic text-ink/80",
+        node.type === "not-taken" && "text-[13px] italic text-ink/55",
         selected && "z-20 text-score-red not-italic",
       )}
     >
@@ -174,7 +174,14 @@ function TreeNode({
           <span className="mr-0.5 text-[0.92em] not-italic">{node.fig}</span>
           {node.san}
           {node.sym ? (
-            <span className="ml-0.5 font-bold not-italic text-score-red">{node.sym}</span>
+            <span
+              className={cn(
+                "ml-0.5 font-bold not-italic",
+                node.type === "not-taken" ? "text-ink/55" : "text-score-red",
+              )}
+            >
+              {node.sym}
+            </span>
           ) : null}
           {selected ? (
             <span
