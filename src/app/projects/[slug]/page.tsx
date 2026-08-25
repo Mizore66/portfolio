@@ -15,7 +15,7 @@ export default async function ProjectPage({
   }
 
   return (
-    <div className="min-h-screen bg-paper text-ink">
+    <div className="min-h-screen text-ink">
       <header className="border-b-2 border-ink">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
           <Link
@@ -27,7 +27,7 @@ export default async function ProjectPage({
           <span className="font-mono text-[11px] text-faded">{project.date}</span>
         </div>
       </header>
-      <div className="h-1 bg-paper" />
+      <div className="h-1" />
       <div className="border-b-2 border-ink" />
 
       <main className="mx-auto max-w-3xl px-6 py-10">
@@ -71,7 +71,7 @@ export default async function ProjectPage({
           </ol>
         </section>
 
-        <section className="mt-10 border-2 border-ink bg-paper-deep p-4">
+        <section className="mt-10 border-2 border-ink p-4 newsprint-deep">
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
             Measurable impact
           </p>

@@ -47,8 +47,10 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await expect(page.getByTestId("tree-view")).toBeVisible();
+    await expect(page.getByTestId("tree-caption")).toContainText("Opening Preparation");
     await page.locator('[data-testid="tree-view"] [data-node-id="oo"]').click();
     await expect(page.getByRole("heading", { level: 2, name: "Castling" })).toBeVisible();
+    await expect(page.getByTestId("tree-caption")).toContainText("Castling");
 
     await page.getByRole("button", { name: "Notation" }).click();
     await expect(page.getByTestId("notation-view")).toBeVisible();

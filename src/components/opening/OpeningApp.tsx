@@ -42,7 +42,7 @@ export function OpeningApp() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-paper text-ink" data-hydrated={hydrated ? "true" : "false"}>
+    <div className="min-h-screen text-ink" data-hydrated={hydrated ? "true" : "false"}>
       <Masthead view={view} onView={setView} />
       <div className="mx-auto flex max-w-[1400px] flex-col min-[980px]:flex-row">
         <section className="min-w-0 flex-1 min-[980px]:border-r-2 min-[980px]:border-ink">
@@ -53,7 +53,7 @@ export function OpeningApp() {
             <NotationView selectedId={selectedId} onSelect={onSelect} />
           </div>
         </section>
-        <aside className="w-full shrink-0 border-t-2 border-ink bg-paper-deep min-[980px]:sticky min-[980px]:top-[4.75rem] min-[980px]:h-[calc(100vh-4.75rem)] min-[980px]:w-[360px] min-[980px]:overflow-y-auto min-[980px]:border-t-0">
+        <aside className="newsprint-deep w-full shrink-0 border-t-2 border-ink min-[980px]:sticky min-[980px]:top-[4.75rem] min-[980px]:h-[calc(100vh-4.75rem)] min-[980px]:w-[360px] min-[980px]:overflow-y-auto min-[980px]:border-t-0">
           <BoardDiagram plies={plies} highlight={node.hl} caption={node.cap} />
           <div className="mx-4 border-t-2 border-ink" />
           <AnnotationPanel node={node} />

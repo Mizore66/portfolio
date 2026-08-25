@@ -55,7 +55,7 @@ export default function RootLayout({
       lang="en"
       className={`${display.variable} ${lora.variable} ${mono.variable}`}
     >
-      <body className="min-h-screen bg-paper font-lora text-ink antialiased">
+      <body className="min-h-screen font-lora text-ink antialiased">
         {children}
       </body>
     </html>

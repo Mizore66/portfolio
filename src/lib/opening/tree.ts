@@ -142,10 +142,10 @@ export type TreeLayout = {
   mainY: number;
 };
 
-const COL = 70;
-const PAD_X = 80;
-const PAD_Y = 48;
-const LANE = 92;
+const COL = 80;
+const PAD_X = 72;
+const PAD_Y = 40;
+const LANE = 70;
 
 export function layoutTree(nodes: OpeningNode[] = OPENING_NODES): TreeLayout {
   const depth = new Map<string, number>();

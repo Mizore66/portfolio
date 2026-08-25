@@ -14,7 +14,7 @@ export function Masthead({
   onView: (view: View) => void;
 }) {
   return (
-    <header className="sticky top-0 z-20 bg-paper">
+    <header className="newsprint-mast sticky top-0 z-20">
       <div className="border-b-2 border-ink">
         <div className="mx-auto flex max-w-[1400px] flex-wrap items-end justify-between gap-3 px-4 py-3 sm:px-6">
           <div className="min-w-0">
@@ -53,7 +53,7 @@ export function Masthead({
           </div>
         </div>
       </div>
-      <div className="h-1 bg-paper" />
+      <div className="h-1" />
       <div className="border-b-2 border-ink" />
     </header>
   );
