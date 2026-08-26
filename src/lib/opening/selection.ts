@@ -5,7 +5,9 @@ export type Selection = {
   tape: boolean;
 };
 
+export const SERVER_SELECTION: Selection = { move: FLAGSHIP_ID, tape: false };
 const listeners = new Set<() => void>();
+let cached: Selection = SERVER_SELECTION;
 
 export function parseSelection(search: string): Selection {
   const q = search.startsWith("?") ? search.slice(1) : search;
@@ -26,8 +28,11 @@ export function selectionHref(pathname: string, move: string, tape: boolean): st
 }
 
 export function getSelection(): Selection {
-  if (typeof window === "undefined") return { move: FLAGSHIP_ID, tape: false };
-  return parseSelection(window.location.search);
+  if (typeof window === "undefined") return SERVER_SELECTION;
+  const next = parseSelection(window.location.search);
+  if (cached.move === next.move && cached.tape === next.tape) return cached;
+  cached = next;
+  return cached;
 }
 
 export function subscribeSelection(onStoreChange: () => void): () => void {
@@ -50,5 +55,7 @@ export function replaceSelection(move: string, tape: boolean): void {
   if (current !== href) {
     window.history.replaceState(window.history.state, "", href);
   }
+  const next = { move, tape };
+  if (cached.move !== next.move || cached.tape !== next.tape) cached = next;
   emit();
 }

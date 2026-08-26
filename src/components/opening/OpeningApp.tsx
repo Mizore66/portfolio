@@ -35,13 +35,13 @@ import { visibleEngineLine } from "@/lib/chess/engine-view";
 import {
   getSelection,
   replaceSelection,
+  SERVER_SELECTION,
   subscribeSelection,
 } from "@/lib/opening/selection";
 import type { Ply } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
 
 const NO_EXTRA: Ply[] = [];
-const SERVER_SELECTION = { move: FLAGSHIP_ID, tape: false };
 
 function reducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
