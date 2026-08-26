@@ -306,7 +306,7 @@
 }
 
 .chapter-copy {
-  overflow: auto;
+  display: flow-root;
 }
 
 .plate-inset {

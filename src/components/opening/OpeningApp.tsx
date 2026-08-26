@@ -106,13 +106,15 @@ export function OpeningApp() {
     if (!el) return;
     skipSpy.current = true;
     window.clearTimeout(skipSpyTimer.current);
-    el.scrollIntoView({ behavior: reducedMotion() ? "instant" : "smooth", block: "start" });
-    skipSpyTimer.current = window.setTimeout(
-      () => {
-        skipSpy.current = false;
-      },
-      reducedMotion() ? 80 : 900,
-    );
+    const top = window.scrollY + el.getBoundingClientRect().top - 12;
+    const reduced = reducedMotion();
+    window.scrollTo({ top: Math.max(0, top), behavior: reduced ? "auto" : "smooth" });
+    const release = () => {
+      skipSpy.current = false;
+      window.removeEventListener("scrollend", release);
+    };
+    window.addEventListener("scrollend", release, { once: true });
+    skipSpyTimer.current = window.setTimeout(release, reduced ? 80 : 1000);
   }, []);
 
   const userSelect = useCallback(
@@ -251,20 +253,36 @@ export function OpeningApp() {
   useEffect(() => {
     const chapters = [...document.querySelectorAll<HTMLElement>("[data-chapter]")];
     if (chapters.length === 0) return;
+    let frame = 0;
+    const pick = () => {
+      frame = 0;
+      if (skipSpy.current) return;
+      const lead = chapters[0];
+      if (lead.getBoundingClientRect().top > window.innerHeight * 0.42) return;
+      const line = window.innerHeight * 0.28;
+      let best: { id: string; dist: number } | null = null;
+      for (const el of chapters) {
+        const rect = el.getBoundingClientRect();
+        if (rect.bottom < 64 || rect.top > window.innerHeight - 48) continue;
+        const id = el.dataset.chapter;
+        if (!id) continue;
+        const dist = Math.abs(rect.top - line);
+        if (!best || dist < best.dist) best = { id, dist };
+      }
+      if (best && best.id !== selectedRef.current) onSelect(best.id);
+    };
     const io = new IntersectionObserver(
-      (entries) => {
+      () => {
         if (skipSpy.current) return;
-        const visible = entries.filter((e) => e.isIntersecting);
-        if (visible.length === 0) return;
-        visible.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        const id = visible[0].target.getAttribute("data-chapter");
-        if (!id || id === selectedRef.current) return;
-        onSelect(id);
+        if (!frame) frame = window.requestAnimationFrame(pick);
       },
-      { rootMargin: "-18% 0px -62% 0px", threshold: [0, 0.1, 0.25] },
+      { rootMargin: "-8% 0px -45% 0px", threshold: [0, 0.1, 0.25, 0.5] },
     );
     for (const el of chapters) io.observe(el);
-    return () => io.disconnect();
+    return () => {
+      io.disconnect();
+      if (frame) window.cancelAnimationFrame(frame);
+    };
   }, [onSelect, hydrated]);
 
   useEffect(() => {
@@ -383,7 +401,7 @@ export function OpeningApp() {
             <NewspaperColumn />
             <section
               data-testid="tree-column"
-              className="col-stack flex min-w-0 flex-1 flex-col overflow-x-hidden"
+              className="col-stack flex min-w-0 flex-1 flex-col"
             >
               <div className="max-[979px]:hidden">
                 <TreeView

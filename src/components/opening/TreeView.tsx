@@ -43,7 +43,6 @@ export function TreeView({
   const layout = useMemo(() => layoutTree(), []);
   const onPath = useMemo(() => pathIdSet(selectedId), [selectedId]);
   const prevId = useRef(selectedId);
-  const skipScroll = useRef(true);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [inkEdge, setInkEdge] = useState<string | null>(null);
@@ -70,17 +69,6 @@ export function TreeView({
     ro.observe(el);
     return () => ro.disconnect();
   }, [layout.width]);
-
-  useEffect(() => {
-    if (skipScroll.current) {
-      skipScroll.current = false;
-      return;
-    }
-    const el = document.querySelector(
-      `[data-testid="tree-view"] [data-node-id="${CSS.escape(selectedId)}"]`,
-    );
-    el?.scrollIntoView({ block: "nearest", inline: "nearest" });
-  }, [selectedId]);
 
   return (
     <div ref={wrapRef} className="relative w-full overflow-x-hidden" data-testid="tree-view">

@@ -346,6 +346,8 @@ test.describe("Opening Preparation", () => {
 
     const overflowY = await page.getByTestId("board-column").evaluate((el) => getComputedStyle(el).overflowY);
     expect(overflowY === "auto" || overflowY === "scroll").toBe(false);
+    const treeOverflowY = await page.getByTestId("tree-column").evaluate((el) => getComputedStyle(el).overflowY);
+    expect(treeOverflowY === "auto" || treeOverflowY === "scroll").toBe(false);
 
     await expect(page.getByTestId("broadsheet-filler")).toBeVisible();
     await expect(page.getByTestId("broadsheet-filler")).toContainText("Situations Wanted");
@@ -381,5 +383,33 @@ test.describe("Opening Preparation", () => {
     const after = await pawn.boundingBox();
     expect(before && after).toBeTruthy();
     expect(after!.y).toBeLessThan(before!.y - 8);
+  });
+
+  test("reading the article does not yank the page back to the tree", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+
+    await page.locator("#chapter-e4").evaluate((el) => el.scrollIntoView({ block: "start" }));
+    const y = await page.evaluate(() => window.scrollY);
+    expect(y).toBeGreaterThan(200);
+    await page.waitForTimeout(500);
+    const y2 = await page.evaluate(() => window.scrollY);
+    expect(Math.abs(y2 - y)).toBeLessThan(80);
+  });
+
+  test("a tree click scrolls the window to that chapter", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    const startY = await page.evaluate(() => window.scrollY);
+    await page.locator('[data-testid="tree-view"] [data-node-id="re1"]').click();
+    await expect
+      .poll(async () => page.evaluate(() => window.scrollY), { timeout: 2000 })
+      .toBeGreaterThan(startY + 200);
+    await expect(page.locator('[data-testid="tree-view"] [data-node-id="re1"]')).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
   });
 });
