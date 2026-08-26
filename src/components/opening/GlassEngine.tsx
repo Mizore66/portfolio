@@ -10,6 +10,7 @@ import {
   type SearchInfo,
 } from "@/lib/chess/engine";
 import { positionAfter } from "@/lib/chess/replay";
+import { GLIDE_MS } from "@/lib/opening/motion";
 import { lastPly, sideToMove } from "@/lib/opening/tree";
 import type { Ply } from "@/lib/opening/types";
 
@@ -25,18 +26,20 @@ export function useEngineSearch(selectedId: string, plies: Ply[]) {
     let nodes = 0;
 
     async function run() {
-      await Promise.resolve();
+      await new Promise((r) => window.setTimeout(r, GLIDE_MS));
+      if (cancelled) return;
       try {
         const pos = fromPieces(positionAfter(plies), sideToMove(selectedId), lastPly(selectedId));
         prepareSearch();
         for (let depth = 1; depth <= MAX_DEPTH && !cancelled; depth++) {
-          const remain = THINK_MS - (performance.now() - t0);
+          const remain = THINK_MS - (performance.now() - t0 - GLIDE_MS);
           if (depth > 1 && remain < 12) break;
           const result = search(clonePos(pos), depth, { timeMs: Math.max(remain, 16) });
           if (cancelled) return;
+          if (result.timedOut && result.pv.length === 0) break;
           nodes += result.nodes;
-          const ms = Math.max(1, performance.now() - t0);
-          const thinking = depth < MAX_DEPTH && ms < THINK_MS - 12;
+          const ms = Math.max(1, performance.now() - t0 - GLIDE_MS);
+          const thinking = !result.timedOut && depth < MAX_DEPTH && ms < THINK_MS - 12;
           setInfo({
             depth: result.depth,
             nodes,

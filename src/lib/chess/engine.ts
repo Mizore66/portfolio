@@ -797,7 +797,7 @@ function alphabeta(
   return alpha;
 }
 
-type SearchResult = { score: number; nodes: number; pv: string[]; depth: number };
+type SearchResult = { score: number; nodes: number; pv: string[]; depth: number; timedOut: boolean };
 
 /** Score is always from White's point of view, in centipawns. */
 export function search(
@@ -816,8 +816,12 @@ export function search(
   };
   const pv: string[] = [];
   const raw = alphabeta(pos, depth, 0, -30000, 30000, stats, pv, true);
+  if (stats.timedOut && pv.length === 0) {
+    return { score: 0, nodes: stats.nodes, pv: [], depth: 0, timedOut: true };
+  }
   const evalCp = pos.side === 1 ? raw : -raw;
-  return { score: evalCp, nodes: stats.nodes, pv: formatPv(pos, pv), depth };
+  const clamped = Math.max(-1500, Math.min(1500, evalCp));
+  return { score: clamped, nodes: stats.nodes, pv: formatPv(pos, pv), depth, timedOut: stats.timedOut };
 }
 
 export function clonePos(pos: EnginePos): EnginePos {
