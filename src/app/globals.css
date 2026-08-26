@@ -136,6 +136,110 @@
   background-color: var(--board-light);
 }
 
+.tree-edge {
+  transition: stroke-opacity 180ms ease;
+}
+.tree-edge-dim {
+  stroke-opacity: 0.34;
+}
+.tree-edge-dashed:not(.tree-edge-dim) {
+  stroke-opacity: 0.75;
+}
+.tree-edge-ink {
+  stroke-dasharray: var(--path-len);
+  stroke-dashoffset: var(--path-len);
+  animation: tree-ink 200ms ease-out forwards;
+}
+@keyframes tree-ink {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes glyph-stamp {
+  from {
+    transform: scale(1.55);
+    opacity: 0.4;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.tree-life-clip {
+  background-color: var(--paper);
+  box-shadow:
+    2px 3px 0 rgba(26, 18, 12, 0.12),
+    0 0 0 1px var(--ink);
+}
+.tree-life-clip::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: 16px;
+  width: 28px;
+  height: 12px;
+  background: rgba(214, 196, 150, 0.88);
+  box-shadow: 0 0 0 1px rgba(26, 18, 12, 0.22);
+  transform: rotate(8deg);
+  pointer-events: none;
+}
+
+.exhibit-clip {
+  position: relative;
+  transform: rotate(-0.35deg);
+}
+.exhibit-clip::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: 32px;
+  width: 76px;
+  height: 18px;
+  background: rgba(232, 220, 180, 0.78);
+  border: 1px solid rgba(26, 18, 12, 0.22);
+  transform: rotate(-2deg);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.artifact-link {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .view-turn {
+    transition-property: opacity, visibility;
+    transition-duration: 160ms;
+    transition-timing-function: ease;
+    transition-behavior: allow-discrete;
+  }
+  .glyph-stamp {
+    animation: glyph-stamp 150ms ease-out;
+  }
+  .artifact-link {
+    transition:
+      transform 120ms ease,
+      color 120ms ease;
+  }
+  .artifact-link:hover,
+  .artifact-link:focus-visible {
+    transform: translateY(-1px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tree-edge {
+    transition: none;
+  }
+  .tree-edge-ink {
+    animation: none;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+  }
+}
+
 .board-sq-dark {
   background-color: var(--board-dark);
   background-image: repeating-linear-gradient(

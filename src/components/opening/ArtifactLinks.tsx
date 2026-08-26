@@ -11,7 +11,7 @@ export function ArtifactLinks({ artifacts }: { artifacts: Artifact[] }) {
       {artifacts.map((a) => {
         const external = a.href.startsWith("http") || a.href.startsWith("mailto:");
         const className =
-          "text-book-blue underline decoration-2 underline-offset-4 hover:text-score-red focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2";
+          "artifact-link text-book-blue underline decoration-2 underline-offset-4 hover:text-score-red focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2";
         return (
           <li key={a.href + a.label}>
             {external ? (

@@ -1,9 +1,14 @@
 "use client";
 
+import { useMemo } from "react";
 import { ArtifactLinks } from "@/components/opening/ArtifactLinks";
 import { EvalBar } from "@/components/opening/EvalBar";
 import { formatLine } from "@/lib/opening/tree";
 import type { OpeningNode } from "@/lib/opening/types";
+import { cn } from "@/lib/utils";
+
+/** Once per visit, in memory — no storage. */
+const stampedIds = new Set<string>();
 
 export function AnnotationPanel({ node }: { node: OpeningNode }) {
   return (
@@ -18,9 +23,7 @@ export function AnnotationPanel({ node }: { node: OpeningNode }) {
               <span className="text-book-blue">
                 {node.fig} {node.san}
               </span>
-              {node.sym ? (
-                <span className="ml-1 text-2xl font-bold text-score-red">{node.sym}</span>
-              ) : null}
+              {node.sym ? <GlyphStamp nodeId={node.id} sym={node.sym} /> : null}
             </p>
           </div>
         </div>
@@ -48,6 +51,27 @@ export function AnnotationPanel({ node }: { node: OpeningNode }) {
         <span className="text-ink">{formatLine(node.id)}</span>
       </p>
     </section>
+  );
+}
+
+function GlyphStamp({ nodeId, sym }: { nodeId: string; sym: string }) {
+  const press = useMemo(() => {
+    if (stampedIds.has(nodeId)) return false;
+    stampedIds.add(nodeId);
+    return true;
+  }, [nodeId]);
+
+  return (
+    <span
+      data-testid="glyph-stamp"
+      data-stamp={press ? "press" : "seen"}
+      className={cn(
+        "ml-1 inline-block text-2xl font-bold text-score-red",
+        press && "glyph-stamp",
+      )}
+    >
+      {sym}
+    </span>
   );
 }
 

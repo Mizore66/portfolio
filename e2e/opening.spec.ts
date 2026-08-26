@@ -110,4 +110,90 @@ test.describe("Opening Preparation", () => {
     expect(Math.abs(after - mid)).toBeGreaterThan(2);
     expect(after).not.toBe(before);
   });
+
+  test("a single trunk step inks that edge and dims off-path strokes", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+
+    await page.locator('[data-testid="tree-view"] [data-node-id="e4"]').click();
+    await expect(page.locator('[data-edge="start-e4"]')).toHaveAttribute(
+      "data-ink",
+      "true",
+    );
+    await expect(page.locator('[data-edge="e4-alekhine"]')).toHaveAttribute(
+      "data-on-path",
+      "false",
+    );
+    await expect(page.locator('[data-edge="start-e4"]')).toHaveAttribute(
+      "data-on-path",
+      "true",
+    );
+
+    await page.locator('[data-testid="tree-view"] [data-node-id="d4"]').click();
+    await expect(page.locator('[data-edge="start-e4"]')).toHaveAttribute(
+      "data-ink",
+      "false",
+    );
+    await expect(page.locator('[data-edge="e4-e5"]')).toHaveAttribute(
+      "data-on-path",
+      "true",
+    );
+    await expect(page.locator('[data-edge="e4-alekhine"]')).toHaveAttribute(
+      "data-on-path",
+      "false",
+    );
+  });
+
+  test("the panel glyph stamps once, and Read the game steps the trunk", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+
+    await page.locator('[data-testid="tree-view"] [data-node-id="d4"]').click();
+    await expect(page.getByTestId("glyph-stamp")).toHaveAttribute("data-stamp", "press");
+    await page.locator('[data-testid="tree-view"] [data-node-id="e4"]').click();
+    await page.locator('[data-testid="tree-view"] [data-node-id="d4"]').click();
+    await expect(page.getByTestId("glyph-stamp")).toHaveAttribute("data-stamp", "seen");
+
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await page.getByTestId("read-the-game").click();
+    await expect(page.getByRole("heading", { level: 2, name: "The University Opening" })).toBeVisible({
+      timeout: 2000,
+    });
+    await page.locator('[data-testid="tree-view"] [data-node-id="e5"]').click();
+    await expect(page.getByTestId("read-the-game")).toHaveText("Read the game");
+  });
+
+  test("hover tints a sideline square; tape clippings stay behind the flag", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+
+    await expect(page.locator('[data-life-clip="true"]')).toHaveCount(0);
+    await page.locator('[data-testid="tree-view"] [data-node-id="hike"]').hover();
+    await expect(page.locator('[data-sq="g6"][data-hl="preview"]')).toBeVisible({
+      timeout: 1000,
+    });
+
+    await page.goto("/?tape=1");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.locator('[data-life-clip="true"]').first()).toBeVisible();
+  });
+
+  test("exhibits read as a pasted clipping", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/projects/veridian");
+    await expect(page.getByRole("heading", { level: 1, name: "Veridian" })).toBeVisible();
+    await expect(page.getByText("Pasted from the desk")).toBeVisible();
+    await expect(page.getByText("Clipping · Exhibit")).toBeVisible();
+  });
 });

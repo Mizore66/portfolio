@@ -40,6 +40,17 @@ export function getPath(id: string): OpeningNode[] {
   return path.reverse();
 }
 
+export function pathIdSet(id: string): Set<string> {
+  return new Set(getPath(id).map((n) => n.id));
+}
+
+/** True when `toId` is the mainline child of `fromId` — one trunk ply, not a jump. */
+export function isSingleMainlineAdvance(fromId: string, toId: string): boolean {
+  if (fromId === toId) return false;
+  const to = getNode(toId);
+  return to.type === "mainline" && to.parent === fromId;
+}
+
 export function collectPlies(id: string): Ply[] {
   return getPath(id).flatMap((n) => n.plies);
 }

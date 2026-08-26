@@ -12,9 +12,11 @@ import { cn } from "@/lib/utils";
 export function NotationView({
   selectedId,
   onSelect,
+  onPreview,
 }: {
   selectedId: string;
   onSelect: (id: string) => void;
+  onPreview?: (id: string | null) => void;
 }) {
   const blocks = buildNotation();
 
@@ -34,6 +36,7 @@ export function NotationView({
             block={block}
             selectedId={selectedId}
             onSelect={onSelect}
+            onPreview={onPreview}
           />
         ))}
       </ol>
@@ -45,11 +48,13 @@ function NotationMove({
   block,
   selectedId,
   onSelect,
+  onPreview,
   nested = false,
 }: {
   block: NotationBlock;
   selectedId: string;
   onSelect: (id: string) => void;
+  onPreview?: (id: string | null) => void;
   nested?: boolean;
 }) {
   const { node } = block;
@@ -63,7 +68,12 @@ function NotationMove({
         node.type === "not-taken" && "opacity-80",
       )}
     >
-      <MoveButton node={node} selected={selected} onSelect={onSelect} />
+      <MoveButton
+        node={node}
+        selected={selected}
+        onSelect={onSelect}
+        onPreview={onPreview}
+      />
       {node.fact && (
         <p className="mt-1 max-w-prose font-display text-[15px] leading-relaxed text-ink">
           {node.fact}
@@ -103,6 +113,7 @@ function NotationMove({
                     block={child}
                     selectedId={selectedId}
                     onSelect={onSelect}
+                    onPreview={onPreview}
                     nested
                   />
                 ))}
@@ -119,10 +130,12 @@ function MoveButton({
   node,
   selected,
   onSelect,
+  onPreview,
 }: {
   node: OpeningNode;
   selected: boolean;
   onSelect: (id: string) => void;
+  onPreview?: (id: string | null) => void;
 }) {
   return (
     <button
@@ -130,6 +143,10 @@ function MoveButton({
       data-node-id={node.id}
       aria-current={selected ? "true" : undefined}
       onClick={() => onSelect(node.id)}
+      onMouseEnter={() => onPreview?.(node.id)}
+      onMouseLeave={() => onPreview?.(null)}
+      onFocus={() => onPreview?.(node.id)}
+      onBlur={() => onPreview?.(null)}
       className={cn(
         "group inline-flex flex-wrap items-baseline gap-x-2 text-left focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2",
         node.type === "not-taken" && "border border-dashed border-ink text-ink",

@@ -10,17 +10,18 @@ import {
   squareRank,
   type AnimatedPiece,
 } from "@/lib/chess/replay";
+import { GLIDE_MS } from "@/lib/opening/motion";
 import type { Ply } from "@/lib/opening/types";
-
-const DURATION_MS = 380;
 
 export function BoardDiagram({
   plies,
   highlight,
+  preview,
   caption,
 }: {
   plies: Ply[];
   highlight: [string, string] | null;
+  preview?: [string, string] | null;
   caption: string;
 }) {
   const prevPlies = useRef<Ply[] | null>(null);
@@ -55,12 +56,21 @@ export function BoardDiagram({
     for (let file = 0; file < 8; file++) {
       const sq = `${FILES[file]}${rank + 1}`;
       const dark = (file + rank) % 2 === 0;
-      const markedSq = highlight && (highlight[0] === sq || highlight[1] === sq);
+      const committed = highlight && (highlight[0] === sq || highlight[1] === sq);
+      const ghost = !committed && preview && (preview[0] === sq || preview[1] === sq);
       squares.push(
         <div
           key={sq}
+          data-sq={sq}
+          data-hl={committed ? "true" : ghost ? "preview" : undefined}
           className={dark ? "board-sq-dark" : "board-sq-light"}
-          style={markedSq ? { boxShadow: "inset 0 0 0 100px rgba(162, 50, 42, 0.28)" } : undefined}
+          style={
+            committed
+              ? { boxShadow: "inset 0 0 0 100px rgba(162, 50, 42, 0.28)" }
+              : ghost
+                ? { boxShadow: "inset 0 0 0 100px rgba(30, 58, 114, 0.18)" }
+                : undefined
+          }
         />,
       );
     }
@@ -99,7 +109,7 @@ export function BoardDiagram({
                     transform: `translate(${file * 100}%, ${(7 - rank) * 100}%)`,
                     color: piece.color === "w" ? "#1e3a72" : "#1a120c",
                     opacity: piece.captured ? 0 : 1,
-                    transition: `transform ${DURATION_MS}ms ease, opacity ${DURATION_MS}ms ease`,
+                    transition: `transform ${GLIDE_MS}ms ease, opacity ${GLIDE_MS}ms ease`,
                     transitionDelay: `${piece.delay}ms`,
                     pointerEvents: "none",
                     zIndex: piece.captured ? 0 : 1,

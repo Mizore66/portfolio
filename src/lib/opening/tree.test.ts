@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isOpeningId, layoutTree } from "./tree";
+import { isOpeningId, isSingleMainlineAdvance, layoutTree, pathIdSet } from "./tree";
 import { OPENING_NODES, ROOT_ID } from "@/content/opening";
 
 describe("layoutTree", () => {
@@ -34,5 +34,24 @@ describe("layoutTree", () => {
     expect(isOpeningId(ROOT_ID)).toBe(true);
     expect(isOpeningId("d4")).toBe(true);
     expect(isOpeningId("not-a-node")).toBe(false);
+  });
+});
+
+describe("single mainline advance", () => {
+  it("is true only for one trunk ply", () => {
+    expect(isSingleMainlineAdvance("start", "e4")).toBe(true);
+    expect(isSingleMainlineAdvance("e4", "e5")).toBe(true);
+    expect(isSingleMainlineAdvance("start", "d4")).toBe(false);
+    expect(isSingleMainlineAdvance("e4", "hike")).toBe(false);
+    expect(isSingleMainlineAdvance("e4", "e4")).toBe(false);
+  });
+
+  it("path-to-root includes the sideline, not the unused fork", () => {
+    const path = pathIdSet("hike");
+    expect(path.has("start")).toBe(true);
+    expect(path.has("e4")).toBe(true);
+    expect(path.has("hike")).toBe(true);
+    expect(path.has("e5")).toBe(false);
+    expect(path.has("alekhine")).toBe(false);
   });
 });

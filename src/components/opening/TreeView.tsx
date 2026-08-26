@@ -1,12 +1,21 @@
 "use client";
 
-import { useMemo } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import {
   getChildren,
   getNode,
+  isSingleMainlineAdvance,
   layoutTree,
   moveHeading,
   OPENING_NODES,
+  pathIdSet,
   type Point,
 } from "@/lib/opening/tree";
 import type { OpeningNode } from "@/lib/opening/types";
@@ -25,12 +34,29 @@ function branchPath(from: Point, to: Point) {
 export function TreeView({
   selectedId,
   onSelect,
+  onPreview,
+  tape = false,
 }: {
   selectedId: string;
   onSelect: (id: string) => void;
+  onPreview?: (id: string | null) => void;
+  tape?: boolean;
 }) {
   const layout = useMemo(() => layoutTree(), []);
   const selected = getNode(selectedId);
+  const onPath = useMemo(() => pathIdSet(selectedId), [selectedId]);
+  const prevId = useRef(selectedId);
+  const [inkEdge, setInkEdge] = useState<string | null>(null);
+
+  useEffect(() => {
+    const prev = prevId.current;
+    prevId.current = selectedId;
+    if (isSingleMainlineAdvance(prev, selectedId)) {
+      setInkEdge(`${prev}-${selectedId}`);
+    } else {
+      setInkEdge(null);
+    }
+  }, [selectedId]);
 
   return (
     <div className="relative px-4 py-5 sm:px-6" data-testid="tree-view">
@@ -75,18 +101,15 @@ export function TreeView({
               const from = layout.positions[n.parent!];
               const to = layout.positions[n.id];
               if (!from || !to) return null;
-              const dashed = n.type === "not-taken";
-              const stroke =
-                n.type === "life" ? "#1e3a72" : n.type === "mainline" ? "#1a120c" : "#4a3f34";
+              const edgeId = `${n.parent}-${n.id}`;
               return (
-                <path
-                  key={`${n.parent}-${n.id}`}
-                  d={branchPath(from, to)}
-                  fill="none"
-                  stroke={stroke}
-                  strokeWidth={n.type === "mainline" ? 1.6 : 1.15}
-                  strokeDasharray={dashed ? "4 3" : undefined}
-                  opacity={dashed ? 0.75 : 1}
+                <TreeEdge
+                  key={edgeId}
+                  child={n}
+                  from={from}
+                  to={to}
+                  onPath={onPath.has(n.id)}
+                  ink={inkEdge === edgeId}
                 />
               );
             })}
@@ -102,7 +125,9 @@ export function TreeView({
                 x={pos.x}
                 y={pos.y}
                 selected={node.id === selectedId}
+                tape={tape}
                 onSelect={onSelect}
+                onPreview={onPreview}
               />
             );
           })}
@@ -129,30 +154,99 @@ export function TreeView({
   );
 }
 
+function TreeEdge({
+  child,
+  from,
+  to,
+  onPath,
+  ink,
+}: {
+  child: OpeningNode;
+  from: Point;
+  to: Point;
+  onPath: boolean;
+  ink: boolean;
+}) {
+  const ref = useRef<SVGPathElement>(null);
+  const [len, setLen] = useState(0);
+  const d = branchPath(from, to);
+
+  useLayoutEffect(() => {
+    if (ref.current) setLen(ref.current.getTotalLength());
+  }, [d]);
+
+  const dashed = child.type === "not-taken";
+  const stroke =
+    child.type === "life" ? "#1e3a72" : child.type === "mainline" ? "#1a120c" : "#4a3f34";
+  const width = onPath
+    ? child.type === "mainline"
+      ? 2.2
+      : 1.45
+    : child.type === "mainline"
+      ? 1.6
+      : 1.15;
+
+  return (
+    <path
+      ref={ref}
+      data-edge={`${child.parent}-${child.id}`}
+      data-on-path={onPath ? "true" : "false"}
+      data-ink={ink ? "true" : "false"}
+      d={d}
+      fill="none"
+      stroke={stroke}
+      strokeWidth={width}
+      strokeDasharray={ink && len ? undefined : dashed ? "4 3" : undefined}
+      className={cn(
+        "tree-edge",
+        !onPath && "tree-edge-dim",
+        dashed && "tree-edge-dashed",
+        ink && len > 0 && "tree-edge-ink",
+      )}
+      style={ink && len > 0 ? ({ ["--path-len"]: `${len}` } as CSSProperties) : undefined}
+    />
+  );
+}
+
 function TreeNode({
   node,
   x,
   y,
   selected,
+  tape,
   onSelect,
+  onPreview,
 }: {
   node: OpeningNode;
   x: number;
   y: number;
   selected: boolean;
+  tape: boolean;
   onSelect: (id: string) => void;
+  onPreview?: (id: string | null) => void;
 }) {
   const label = node.moveNumber === 0 ? "start" : node.san;
   const replies = getChildren(node.id).filter((n) => n.type !== "mainline").length;
+  const clipping = tape && node.type === "life";
+  const tilt = node.id.charCodeAt(0) % 2 === 0 ? -1.4 : 1.2;
 
   return (
     <button
       type="button"
       data-node-id={node.id}
+      data-life-clip={clipping ? "true" : undefined}
       aria-current={selected ? "true" : undefined}
       aria-label={`${label} ${node.sym} ${node.title}`.trim()}
       onClick={() => onSelect(node.id)}
-      style={{ left: x, top: y }}
+      onMouseEnter={() => onPreview?.(node.id)}
+      onMouseLeave={() => onPreview?.(null)}
+      onFocus={() => onPreview?.(node.id)}
+      onBlur={() => onPreview?.(null)}
+      style={{
+        left: x,
+        top: y,
+        ...(clipping ? { transform: `translate(-50%, -50%) rotate(${tilt}deg)` } : {}),
+      }}
       className={cn(
         "absolute z-10 flex w-[148px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center px-1.5 py-1.5 text-center",
         "font-display tracking-tight transition-colors",
@@ -161,6 +255,7 @@ function TreeNode({
         node.type === "life" && "text-book-blue",
         node.type === "variation" && "italic text-ink",
         node.type === "not-taken" && "border border-dashed border-ink italic text-ink",
+        clipping && "tree-life-clip",
         selected && "z-20 bg-paper text-score-red not-italic outline outline-2 outline-score-red",
       )}
     >
