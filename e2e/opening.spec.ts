@@ -225,24 +225,23 @@ test.describe("Opening Preparation", () => {
 
     const before = await yAt();
     await page.locator('[data-testid="tree-view"] [data-node-id="e4"]').click();
-    await expect(page.locator('[data-testid="tree-view"] [data-node-id="e4"]')).toHaveAttribute(
-      "aria-current",
-      "true",
-    );
 
-    // Router replace can take longer than a single timeout. Poll until the pawn
-    // has left e2, then confirm it is still travelling — a teleport would already
-    // be parked on e4.
+    // Sample as soon as the pawn leaves e2 — waiting for aria-current first
+    // lets a 380ms glide finish, which looks like a teleport.
     await expect
-      .poll(async () => Math.abs((await yAt()) - before), { timeout: 1500 })
+      .poll(async () => Math.abs((await yAt()) - before), { timeout: 800, intervals: [16, 32, 32] })
       .toBeGreaterThan(2);
     const mid = await yAt();
-    await page.waitForTimeout(120);
+    await page.waitForTimeout(80);
     const later = await yAt();
     expect(Math.abs(later - mid)).toBeGreaterThan(0.4);
     await page.waitForTimeout(400);
     const after = await yAt();
     expect(after).not.toBe(before);
+    await expect(page.locator('[data-testid="tree-view"] [data-node-id="e4"]')).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
   });
 
   test("a single trunk step inks that edge and dims off-path strokes", async ({
