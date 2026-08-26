@@ -286,7 +286,12 @@ test.describe("Opening Preparation", () => {
 
     await page.goto("/?move=start");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(
+      page.locator('[data-testid="tree-view"] [data-node-id="start"]'),
+    ).toHaveAttribute("aria-current", "true");
+    await expect(page.getByTestId("read-the-game")).toHaveAttribute("aria-pressed", "false");
     await page.getByTestId("read-the-game").click();
+    await expect(page.getByTestId("read-the-game")).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="e4"]')).toHaveAttribute(
       "aria-current",
       "true",
