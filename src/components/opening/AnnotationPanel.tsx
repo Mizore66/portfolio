@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import { ArtifactLinks } from "@/components/opening/ArtifactLinks";
 import { EvalBar } from "@/components/opening/EvalBar";
 import { HalftonePlate } from "@/components/opening/HalftonePlate";
@@ -48,10 +48,6 @@ export function AnnotationPanel({
       <Block kicker="The move" body={node.fact} serif />
       <Block kicker="The annotation" body={node.commentary} italic drop />
 
-      {node.plate ? (
-        <HalftonePlate src={node.plate.src} caption={node.plate.caption} alt={node.title} />
-      ) : null}
-
       {node.artifacts.length > 0 && (
         <div>
           <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
@@ -60,6 +56,10 @@ export function AnnotationPanel({
           <ArtifactLinks artifacts={node.artifacts} />
         </div>
       )}
+
+      {node.plate ? (
+        <HalftonePlate src={node.plate.src} caption={node.plate.caption} alt={node.title} />
+      ) : null}
 
       <EvalBar value={liveValue} label={liveLabel} live={Boolean(live)} />
       </div>
@@ -74,11 +74,15 @@ export function AnnotationPanel({
 }
 
 function GlyphStamp({ nodeId, sym }: { nodeId: string; sym: string }) {
-  const press = useMemo(() => {
-    if (stampedIds.has(nodeId)) return false;
-    stampedIds.add(nodeId);
-    return true;
-  }, [nodeId]);
+  const [press] = useState(() => !stampedIds.has(nodeId));
+
+  useEffect(() => {
+    if (!press) return;
+    const timer = window.setTimeout(() => {
+      stampedIds.add(nodeId);
+    }, 150);
+    return () => window.clearTimeout(timer);
+  }, [nodeId, press]);
 
   return (
     <span

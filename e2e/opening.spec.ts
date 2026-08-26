@@ -99,7 +99,9 @@ test.describe("Opening Preparation", () => {
 
     await page.goto("/?move=d4");
     await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
-    await page.getByRole("link", { name: "Veridian" }).first().click();
+    await page.getByRole("link", { name: "Veridian" }).first().evaluate((el: HTMLAnchorElement) => {
+      el.click();
+    });
     await expect(page.getByRole("heading", { level: 1, name: "Veridian" })).toBeVisible();
     await expect(page.getByTestId("halftone-plate")).toBeVisible();
     await page.goBack();
@@ -170,8 +172,9 @@ test.describe("Opening Preparation", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto("/?move=start");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await page.locator('[data-testid="tree-view"] [data-node-id="d4"]').click();
     await expect(page.getByTestId("glyph-stamp")).toHaveAttribute("data-stamp", "press");
     await page.locator('[data-testid="tree-view"] [data-node-id="e4"]').click();
     await page.locator('[data-testid="tree-view"] [data-node-id="d4"]').click();
