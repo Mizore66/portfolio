@@ -2,6 +2,7 @@ import { NewspaperPiece } from "@/components/opening/NewspaperPiece";
 import {
   FILES,
   positionAfter,
+  squareBox,
   squareFile,
   squareRank,
 } from "@/lib/chess/replay";
@@ -40,27 +41,24 @@ export function MiniBoard({
   return (
     <figure
       data-testid="inline-diagram"
-      className="my-4 w-[160px] border-2 border-ink bg-paper p-1.5"
+      className="my-4 w-[160px] border-2 border-ink bg-paper p-2"
     >
       <div
         role="img"
         aria-label={caption}
-        className="newspaper-board relative aspect-square w-full border border-ink"
+        className="newspaper-board relative mx-auto h-[144px] w-[144px] border border-ink"
       >
         <div className="grid h-full w-full grid-cols-8 grid-rows-8">{squares}</div>
         {pieces.map((piece) => {
           const file = squareFile(piece.square);
           const rank = squareRank(piece.square);
+          const box = squareBox(file, rank);
           return (
             <span
               key={piece.id}
               className="absolute flex items-center justify-center"
               style={{
-                left: 0,
-                top: 0,
-                width: "12.5%",
-                height: "12.5%",
-                transform: `translate(${file * 100}%, ${(7 - rank) * 100}%)`,
+                ...box,
                 pointerEvents: "none",
               }}
             >

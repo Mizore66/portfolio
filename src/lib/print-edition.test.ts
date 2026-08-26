@@ -10,5 +10,9 @@ describe("print edition", () => {
     expect(text).toContain("%%EOF");
     expect(text).toContain(resumeData.name);
     expect(text).toContain("Print edition");
+    expect(text).toContain("/Count 1");
+    expect(text).toContain("5. d4 - the Italian break");
+    expect(text).toMatch(/\(N\)|\(n\)|\(K\)|\(k\)/);
+    expect(text).not.toContain("/Count 2");
   });
 });

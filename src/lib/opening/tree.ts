@@ -76,6 +76,18 @@ export function getMainline(): OpeningNode[] {
   return line;
 }
 
+/** White's six trunk moves — the sticky-rail contents list. */
+export function issueChapters(): OpeningNode[] {
+  return getMainline().filter((n) => n.color === "w");
+}
+
+/** Next annotated ply on the trunk — the tiny book so the glass case does not advertise 1.Nc3. */
+export function nextMainlineBook(id: string): { san: string; plies: Ply[] } | null {
+  const next = getChildren(id).find((n) => n.type === "mainline");
+  if (!next || next.plies.length === 0) return null;
+  return { san: next.san, plies: next.plies };
+}
+
 /** Nearest mainline node on the path (the node itself if it is mainline). */
 export function mainlineAnchor(id: string): OpeningNode {
   const path = getPath(id);

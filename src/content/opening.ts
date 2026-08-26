@@ -40,6 +40,7 @@ export const BROADSHEET = {
   gameKicker: "The game",
   printEdition: "Print edition",
   printHref: "/print-edition",
+  issueKicker: "In this issue",
 };
 
 /**

@@ -412,4 +412,55 @@ test.describe("Opening Preparation", () => {
       "true",
     );
   });
+
+  test("the start-position PV is the repertoire ply, not a shallow Nc3", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/?move=start");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.getByTestId("engine-pv")).toHaveText("1. e4");
+    await expect(page.getByTestId("engine-pv")).not.toHaveText(/Nc3/);
+    await expect(page.getByTestId("pv-arrow")).toBeVisible();
+  });
+
+  test("IN THIS ISSUE lists the six White chapters and marks the current one", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    const index = page.getByTestId("issue-index");
+    await expect(index).toBeVisible();
+    await expect(index.getByRole("button")).toHaveCount(6);
+    await expect(index.locator('[data-node-id="d4"]')).toHaveAttribute("aria-current", "true");
+    await index.locator('[data-node-id="re1"]').click();
+    await expect
+      .poll(async () => page.evaluate(() => window.scrollY), { timeout: 2000 })
+      .toBeGreaterThan(200);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(page.getByTestId("issue-index")).toBeHidden();
+  });
+
+  test("right-file pieces stay inside the board at a 390px viewport", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/?move=start");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    const plane = page.getByTestId("board-plane");
+    await expect(plane).toBeVisible();
+    await expect
+      .poll(async () => {
+        const b = await plane.boundingBox();
+        return b ? Math.round(b.width) % 8 : -1;
+      })
+      .toBe(0);
+    const box = (await plane.boundingBox())!;
+
+    for (const id of ["bNg8", "wRh1", "wNg1"]) {
+      const piece = (await page.locator(`[data-piece-id="${id}"]`).boundingBox())!;
+      expect(piece.x).toBeGreaterThanOrEqual(box.x - 1);
+      expect(piece.x + piece.width).toBeLessThanOrEqual(box.x + box.width + 1);
+      expect(piece.y).toBeGreaterThanOrEqual(box.y - 1);
+      expect(piece.y + piece.height).toBeLessThanOrEqual(box.y + box.height + 1);
+    }
+  });
 });

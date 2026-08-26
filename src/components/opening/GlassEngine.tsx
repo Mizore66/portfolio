@@ -10,6 +10,7 @@ import {
   type SearchInfo,
 } from "@/lib/chess/engine";
 import { positionAfter } from "@/lib/chess/replay";
+import { visibleEngineLine, type BookLine } from "@/lib/chess/engine-view";
 import { GLIDE_MS } from "@/lib/opening/motion";
 import type { Color } from "@/lib/chess/replay";
 import type { Ply } from "@/lib/opening/types";
@@ -72,15 +73,18 @@ export function useEngineSearch(plies: Ply[], side: Color) {
 
 export function GlassEngine({
   info,
+  book,
   side,
   moveNumber,
   lampshade,
 }: {
   info: SearchInfo | null;
+  book?: BookLine | null;
   side: "w" | "b";
   moveNumber: number;
   lampshade?: string | null;
 }) {
+  const line = visibleEngineLine(book ?? null, info);
   return (
     <section
       className="box-inset border-2 border-ink"
@@ -92,7 +96,7 @@ export function GlassEngine({
         Engine · 2200
       </p>
       <p className="mt-1 truncate font-mono text-[13px] text-book-blue" data-testid="engine-pv">
-        {info?.pv.length ? numberPv(info.pv, side, moveNumber) : "…"}
+        {line.pv.length ? numberPv(line.pv, side, moveNumber) : "…"}
       </p>
       <p className="mt-1 font-mono text-[10px] text-faded">
         {info

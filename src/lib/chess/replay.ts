@@ -43,6 +43,26 @@ export function squareRank(sq: string): number {
   return Number(sq[1]) - 1;
 }
 
+/** Percent of the board — not of the piece — so files do not drift when width/8 is fractional. */
+export function squareBox(file: number, rank: number): {
+  left: string;
+  top: string;
+  width: string;
+  height: string;
+} {
+  return {
+    left: `${file * 12.5}%`,
+    top: `${(7 - rank) * 12.5}%`,
+    width: "12.5%",
+    height: "12.5%",
+  };
+}
+
+/** Inner plane width so each file is a whole pixel after a 2px border on each side. */
+export function snapInnerEdge(avail: number, border = 2): number {
+  return Math.max(8, Math.floor((avail - border * 2) / 8) * 8);
+}
+
 export function figurine(type: PieceType, color: Color): string {
   return color === "w" ? WHITE_FIG[type] : BLACK_FIG[type];
 }

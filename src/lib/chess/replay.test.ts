@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { OPENING_NODES } from "../../content/opening";
 import { collectPlies, getMainline } from "../opening/tree";
-import { occupancy, positionAfter } from "./replay";
+import { occupancy, positionAfter, snapInnerEdge, squareBox } from "./replay";
 
 describe("Italian Game replay", () => {
   it("castles as two raw plies: king g1, rook f1", () => {
@@ -64,6 +64,14 @@ describe("Italian Game replay", () => {
     expect(occ.g8).toBeUndefined();
     expect(occ.b8).toBeUndefined();
     expect(Object.keys(occ)).toHaveLength(31);
+  });
+
+  it("places squares in board-relative percents so files cannot drift", () => {
+    expect(squareBox(0, 7)).toEqual({ left: "0%", top: "0%", width: "12.5%", height: "12.5%" });
+    expect(squareBox(6, 7)).toEqual({ left: "75%", top: "0%", width: "12.5%", height: "12.5%" });
+    expect(squareBox(7, 0)).toEqual({ left: "87.5%", top: "87.5%", width: "12.5%", height: "12.5%" });
+    expect(snapInnerEdge(390)).toBe(384);
+    expect(snapInnerEdge(390) % 8).toBe(0);
   });
 
   it("replays every content node without illegal plies", () => {

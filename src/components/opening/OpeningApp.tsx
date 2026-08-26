@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { BoardDiagram } from "@/components/opening/BoardDiagram";
 import { BroadsheetFiller } from "@/components/opening/BroadsheetFiller";
 import { GlassEngine, useEngineSearch } from "@/components/opening/GlassEngine";
+import { IssueIndex } from "@/components/opening/IssueIndex";
 import { Masthead } from "@/components/opening/Masthead";
 import { NewspaperColumn } from "@/components/opening/NewspaperColumn";
 import { NotationView } from "@/components/opening/NotationView";
@@ -27,10 +28,12 @@ import {
   getNode,
   isOpeningId,
   lastPly,
+  nextMainlineBook,
   ROOT_ID,
   sideToMove,
   stepMainline,
 } from "@/lib/opening/tree";
+import { visibleEngineLine } from "@/lib/chess/engine-view";
 import type { Ply } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
 
@@ -81,6 +84,8 @@ export function OpeningApp() {
   const startSide = sideToMove(selectedId);
   const side = sideAfter(startSide, extra.length);
   const engine = useEngineSearch(displayPlies, side);
+  const book = extra.length === 0 ? nextMainlineBook(selectedId) : null;
+  const engineLine = visibleEngineLine(book, engine);
   const atEnd = stepMainline(selectedId, 1) === selectedId;
   const piecesNow = useMemo(() => positionAfter(displayPlies), [displayPlies]);
   const pos = useMemo(
@@ -349,7 +354,7 @@ export function OpeningApp() {
                   caption={node.cap}
                   evalCp={engine ? engine.evalCp / 100 : null}
                   evalLabel={evalLabel}
-                  arrow={engine?.best ?? null}
+                  arrow={engineLine.best}
                   legal={legal}
                   playable
                   playSide={side}
@@ -361,6 +366,7 @@ export function OpeningApp() {
                 />
                 <GlassEngine
                   info={engine}
+                  book={book}
                   side={side}
                   moveNumber={playMoveNumber}
                   lampshade={lampshade}
@@ -396,6 +402,7 @@ export function OpeningApp() {
                 {playHint ? (
                   <p className="font-display text-[13px] italic text-ink">{BROADSHEET.playHint}</p>
                 ) : null}
+                <IssueIndex selectedId={selectedId} onSelect={userSelect} />
               </div>
             </aside>
             <NewspaperColumn />

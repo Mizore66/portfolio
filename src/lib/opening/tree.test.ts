@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   isOpeningId,
   isSingleMainlineAdvance,
+  issueChapters,
   layoutTree,
+  nextMainlineBook,
   pathIdSet,
   TREE_NODE_W,
 } from "./tree";
@@ -70,5 +72,17 @@ describe("single mainline advance", () => {
     expect(path.has("hike")).toBe(true);
     expect(path.has("e5")).toBe(false);
     expect(path.has("alekhine")).toBe(false);
+  });
+});
+
+describe("repertoire book and issue index", () => {
+  it("seeds the next trunk ply so the engine never has to advertise Nc3", () => {
+    expect(nextMainlineBook("start")).toEqual({ san: "e4", plies: [{ from: "e2", to: "e4" }] });
+    expect(nextMainlineBook("d4")?.san).toBe("exd4");
+    expect(nextMainlineBook("re1")).toBeNull();
+  });
+
+  it("lists White's six mainline chapters for the sticky rail", () => {
+    expect(issueChapters().map((n) => n.id)).toEqual(["e4", "nf3", "bc4", "oo", "d4", "re1"]);
   });
 });

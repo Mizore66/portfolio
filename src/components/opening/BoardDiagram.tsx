@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { EvalBar } from "@/components/opening/EvalBar";
 import { NewspaperPiece } from "@/components/opening/NewspaperPiece";
 import {
   animationPlan,
   FILES,
   positionAfter,
+  snapInnerEdge,
+  squareBox,
   squareFile,
   squareRank,
   type AnimatedPiece,
@@ -50,6 +52,8 @@ export function BoardDiagram({
 }) {
   const prevPlies = useRef<Ply[] | null>(null);
   const boardRef = useRef<HTMLDivElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [edge, setEdge] = useState(0);
   const plySig = plies.map((p) => `${p.from}${p.to}`).join(",");
   const [fromSel, setFromSel] = useState<{ sig: string; sq: string | null }>({
     sig: plySig,
@@ -97,6 +101,19 @@ export function BoardDiagram({
 
   const dests = fromSq ? (legal ?? []).filter((p) => p.from === fromSq).map((p) => p.to) : [];
   const occ = new Map(pieces.filter((p) => !p.captured).map((p) => [p.square, p]));
+
+  useLayoutEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const fit = () => {
+      if (el.clientWidth < 16) return;
+      setEdge(snapInnerEdge(el.clientWidth));
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   function squareFromPoint(clientX: number, clientY: number): string | null {
     const board = boardRef.current;
@@ -198,68 +215,74 @@ export function BoardDiagram({
           ) : null}
         </p>
       ) : null}
-      <div className="flex items-stretch gap-0">
+      <div className="flex items-start gap-0">
         <EvalBar value={evalCp ?? 0} label={evalLabel} />
-        <div className="min-w-0 flex-1">
-          <div className="flex">
-            <div className="flex w-3.5 flex-col-reverse justify-around py-0.5 font-mono text-[9px] text-faded">
-              {Array.from({ length: 8 }, (_, i) => (
-                <span key={i} className="leading-none">
-                  {i + 1}
-                </span>
-              ))}
+        <div className="flex min-w-0 flex-1 items-start">
+          <div
+            className="flex w-3.5 flex-col-reverse justify-around py-0.5 font-mono text-[9px] text-faded"
+            style={edge ? { height: edge + 4 } : undefined}
+          >
+            {Array.from({ length: 8 }, (_, i) => (
+              <span key={i} className="leading-none">
+                {i + 1}
+              </span>
+            ))}
+          </div>
+          <div ref={wrapRef} className="min-w-0 flex-1">
+            <div
+              className="border-2 border-ink"
+              style={edge ? { width: edge + 4, height: edge + 4 } : { width: "100%", aspectRatio: "1" }}
+            >
+              <div
+                ref={boardRef}
+                role="img"
+                aria-label={caption}
+                data-testid="board-plane"
+                className={cn("newspaper-board relative h-full w-full", playable && "cursor-pointer")}
+                tabIndex={playable ? 0 : undefined}
+                id="play-board"
+                onPointerDown={onBoardPointerDown}
+                onPointerUp={onBoardPointerUp}
+              >
+                <div className="grid h-full w-full grid-cols-8 grid-rows-8">{squares}</div>
+                {arrow ? <PvArrow ply={arrow} /> : null}
+                {pieces.map((piece) => {
+                  const file = squareFile(piece.square);
+                  const rank = squareRank(piece.square);
+                  const box = squareBox(file, rank);
+                  return (
+                    <span
+                      key={piece.id}
+                      data-piece-id={piece.id}
+                      className="absolute flex items-center justify-center"
+                      style={{
+                        ...box,
+                        opacity: piece.captured ? 0 : 1,
+                        transition: `left ${GLIDE_MS}ms ease, top ${GLIDE_MS}ms ease, opacity ${GLIDE_MS}ms ease`,
+                        transitionDelay: `${piece.delay}ms`,
+                        pointerEvents: "none",
+                        zIndex: piece.captured ? 0 : liftIds.has(piece.id) ? 3 : 2,
+                      }}
+                    >
+                      <span
+                        className={liftIds.has(piece.id) ? "piece-lift" : undefined}
+                        style={{ animationDelay: `${piece.delay}ms` }}
+                      >
+                        <NewspaperPiece type={piece.type} color={piece.color} />
+                      </span>
+                    </span>
+                  );
+                })}
+              </div>
             </div>
             <div
-              ref={boardRef}
-              role="img"
-              aria-label={caption}
-              className={cn(
-                "newspaper-board relative aspect-square w-full border-2 border-ink",
-                playable && "cursor-pointer",
-              )}
-              tabIndex={playable ? 0 : undefined}
-              id="play-board"
-              onPointerDown={onBoardPointerDown}
-              onPointerUp={onBoardPointerUp}
+              className="flex justify-around font-mono text-[9px] text-faded"
+              style={edge ? { width: edge + 4 } : undefined}
             >
-              <div className="grid h-full w-full grid-cols-8 grid-rows-8">{squares}</div>
-              {arrow ? <PvArrow ply={arrow} /> : null}
-              {pieces.map((piece) => {
-                const file = squareFile(piece.square);
-                const rank = squareRank(piece.square);
-                return (
-                  <span
-                    key={piece.id}
-                    data-piece-id={piece.id}
-                    className="absolute flex items-center justify-center"
-                    style={{
-                      left: 0,
-                      top: 0,
-                      width: "12.5%",
-                      height: "12.5%",
-                      transform: `translate(${file * 100}%, ${(7 - rank) * 100}%)`,
-                      opacity: piece.captured ? 0 : 1,
-                      transition: `transform ${GLIDE_MS}ms ease, opacity ${GLIDE_MS}ms ease`,
-                      transitionDelay: `${piece.delay}ms`,
-                      pointerEvents: "none",
-                      zIndex: piece.captured ? 0 : liftIds.has(piece.id) ? 3 : 2,
-                    }}
-                  >
-                    <span
-                      className={liftIds.has(piece.id) ? "piece-lift" : undefined}
-                      style={{ animationDelay: `${piece.delay}ms` }}
-                    >
-                      <NewspaperPiece type={piece.type} color={piece.color} />
-                    </span>
-                  </span>
-                );
-              })}
+              {FILES.split("").map((f) => (
+                <span key={f}>{f}</span>
+              ))}
             </div>
-          </div>
-          <div className="ml-3.5 flex justify-around font-mono text-[9px] text-faded">
-            {FILES.split("").map((f) => (
-              <span key={f}>{f}</span>
-            ))}
           </div>
         </div>
       </div>
