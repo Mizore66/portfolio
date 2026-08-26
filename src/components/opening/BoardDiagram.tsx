@@ -63,6 +63,7 @@ export function BoardDiagram({
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const from = prevPlies.current;
+    const fromSig = from?.map((p) => `${p.from}${p.to}`).join(",") ?? null;
 
     if (reduced || from === null) {
       prevPlies.current = plies;
@@ -71,11 +72,17 @@ export function BoardDiagram({
       return;
     }
 
-    const plan = animationPlan(from, plies);
-    prevPlies.current = plies;
-    const moving = new Set(plan.filter((p) => p.delay > 0 || squareShifted(from, plies, p.id)).map((p) => p.id));
+    if (fromSig === plySig) return;
 
+    const plan = animationPlan(from, plies);
+    const moving = new Set(
+      plan.filter((p) => p.delay > 0 || squareShifted(from, plies, p.id)).map((p) => p.id),
+    );
+
+    // Assign prev *inside* the timeout. Setting it earlier meant a React Strict
+    // Mode cleanup cancelled the paint, and the second run saw from===to and snapped.
     const timer = window.setTimeout(() => {
+      prevPlies.current = plies;
       setPieces(plan);
       setLiftIds(moving);
     }, 0);
@@ -84,7 +91,7 @@ export function BoardDiagram({
       window.clearTimeout(timer);
       window.clearTimeout(clear);
     };
-  }, [plies]);
+  }, [plies, plySig]);
 
   const dests = fromSq ? (legal ?? []).filter((p) => p.from === fromSq).map((p) => p.to) : [];
   const occ = new Map(pieces.filter((p) => !p.captured).map((p) => [p.square, p]));
