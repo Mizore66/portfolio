@@ -32,7 +32,6 @@ export function OpeningApp() {
   const [playing, setPlaying] = useState(false);
   const [previewHl, setPreviewHl] = useState<[string, string] | null>(null);
   const playingRef = useRef(false);
-  playingRef.current = playing;
   const hoverTimer = useRef<number>(0);
   const hydrated = useSyncExternalStore(
     () => () => {},
@@ -45,13 +44,14 @@ export function OpeningApp() {
 
   const onSelect = useCallback(
     (id: string) => {
+      setPreviewHl(null);
       const params = new URLSearchParams();
       if (id !== ROOT_ID) params.set("move", id);
       if (tape) params.set("tape", "1");
       const q = params.toString();
       router.replace(q ? `${pathname}?${q}` : pathname, { scroll: false });
     },
-    [pathname, router, tape],
+    [pathname, router, tape, setPreviewHl],
   );
 
   const userSelect = useCallback(
@@ -59,7 +59,7 @@ export function OpeningApp() {
       setPlaying(false);
       onSelect(id);
     },
-    [onSelect],
+    [onSelect, setPlaying],
   );
 
   const onPreview = useCallback(
@@ -73,16 +73,12 @@ export function OpeningApp() {
         setPreviewHl(getNode(id).hl);
       }, HOVER_PREVIEW_MS);
     },
-    [selectedId],
+    [selectedId, setPreviewHl],
   );
 
   useEffect(() => {
     return () => window.clearTimeout(hoverTimer.current);
   }, []);
-
-  useEffect(() => {
-    setPreviewHl(null);
-  }, [selectedId]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -98,17 +94,21 @@ export function OpeningApp() {
   }, [onSelect, selectedId]);
 
   useEffect(() => {
-    if (!playing) return;
-    if (atEnd) {
-      setPlaying(false);
-      return;
-    }
+    playingRef.current = playing;
+  }, [playing]);
+
+  useEffect(() => {
+    if (!playing || atEnd) return;
     const wait = playDelayMs(node.plies.length);
     const timer = window.setTimeout(() => {
       if (!playingRef.current) return;
       const next = stepMainline(selectedId, 1);
-      if (next === selectedId) setPlaying(false);
-      else onSelect(next);
+      if (next === selectedId) {
+        setPlaying(false);
+        return;
+      }
+      onSelect(next);
+      if (stepMainline(next, 1) === next) setPlaying(false);
     }, wait);
     return () => window.clearTimeout(timer);
   }, [playing, selectedId, atEnd, node.plies.length, onSelect]);
