@@ -55,13 +55,13 @@ function Knight({ fill, stroke }: Paths) {
 
 function Bishop({ fill, stroke }: Paths) {
   return (
-    <g fill="none" stroke={stroke} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-      <g fill={fill} strokeLinecap="butt">
-        <path d="M9 36C12.39 35.03 19.11 36.43 22.5 34C25.89 36.43 32.61 35.03 36 36C36 36 37.65 36.54 39 38C38.32 38.97 37.35 38.99 36 38.5C32.61 37.53 25.89 38.96 22.5 37.54C19.11 38.96 12.39 37.53 9 38.5C7.646 38.97 6.678 38.97 6 38C7.354 36.11 9 36 9 36z" />
-        <path d="M15 32C17.5 34.5 27.5 34.5 30 32C30.5 30.5 30 30 30 30C30 27.5 27.5 26 27.5 26C33 24.5 33.5 14.5 22.5 10.5C11.5 14.5 12 24.5 17.5 26C17.5 26 15 27.5 15 30C15 30 14.5 30.5 15 32z" />
-        <circle cx={22.5} cy={8} r={2.5} />
-      </g>
-      <path d="M17.5 26h10M15 30h15M22.5 15.5v5M20 18h5" strokeLinejoin="miter" />
+    <g fill={fill} stroke={stroke} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      <circle cx={22.5} cy={6.8} r={2.2} />
+      <path d="M22.5 9.2 29.6 21.6C30.2 25.6 27.2 29.2 22.5 29.2C17.8 29.2 14.8 25.6 15.4 21.6Z" />
+      <path d="M19.6 13.4 25.8 22.2" fill="none" />
+      <path d="M16.4 29.8h12.2" fill="none" />
+      <path d="M17.2 31.4c-.6 2.4-2 4.4-5.2 6.4h21c-3.2-2-4.6-4-5.2-6.4z" />
+      <path d="M10.5 38h24v2.6h-24z" />
     </g>
   );
 }
