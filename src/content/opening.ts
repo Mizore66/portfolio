@@ -2,6 +2,8 @@ import { resumeData } from "@/lib/data";
 import type { OpeningNode } from "@/lib/opening/types";
 
 export const ROOT_ID = "start";
+export const FLAGSHIP_ID = "d4";
+export const ENGINE_NODE_ID = "club";
 
 function project(slug: string) {
   const p = resumeData.projects.find((x) => x.slug === slug);
@@ -118,6 +120,10 @@ export const OPENING_NODES: OpeningNode[] = [
       { label: risk.name, href: `/projects/${risk.slug}` },
       { label: "Repository", href: risk.github },
     ],
+    plate: {
+      src: "/plates/plate-risk.jpg",
+      caption: "Plate · Financial Risk Predictor — the ledger, not the slogan.",
+    },
     plies: [{ from: "g8", to: "f6" }],
     hl: ["g8", "f6"],
     cap: "Position after 1…Nf6 (Alekhine’s Defence)",
@@ -187,6 +193,10 @@ export const OPENING_NODES: OpeningNode[] = [
       { label: lead.name, href: `/projects/${lead.slug}` },
       { label: "Repository", href: lead.github },
     ],
+    plate: {
+      src: "/plates/plate-leads.jpg",
+      caption: "Plate · Distributed Lead Scorer — 100 million events a day on the belt.",
+    },
     plies: [{ from: "d7", to: "d5" }],
     hl: ["d7", "d5"],
     cap: "Position after 2…d5 (Elephant Gambit)",
@@ -278,6 +288,10 @@ export const OPENING_NODES: OpeningNode[] = [
       { label: circuit.name, href: `/projects/${circuit.slug}` },
       { label: "Repository", href: circuit.github },
     ],
+    plate: {
+      src: "/plates/plate-circuitmind.jpg",
+      caption: "Plate · CircuitMindAI — copper under the loupe.",
+    },
     plies: [{ from: "f8", to: "c5" }],
     hl: ["f8", "c5"],
     cap: "Position after 3…Bc5",
@@ -319,9 +333,9 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "Club Years",
     kind: "Life",
     title: "Club Years",
-    fact: "Competitive chess as a teenager — club and tournament years. Casual now. Still interested in how engines think, which is why one will live in this site later, measured, not costumed.",
+    fact: "Competitive chess as a teenager — club and tournament years. Casual now. Still interested in how engines think, which is why one searches this position live: alpha-beta, nodes on the clock, a PV you can disagree with.",
     commentary:
-      "Before any of these jobs I sat at boards with clocks. The opening tree is not a costume. It is the notation I already knew how to read. When the engine arrives, this node is why the claims will come with a methodology.",
+      "Before any of these jobs I sat at boards with clocks. The opening tree is not a costume. It is the notation I already knew how to read. The glass on the right is the search: nodes a second, a principal variation, an eval that is no longer a wink. Methodology lives here so the claims stay measured.",
     eval: 0.5,
     evalText: "!",
     artifacts: [],
@@ -350,6 +364,10 @@ export const OPENING_NODES: OpeningNode[] = [
       { label: mirrorfi.name, href: `/projects/${mirrorfi.slug}` },
       { label: "Repository", href: mirrorfi.github },
     ],
+    plate: {
+      src: "/plates/plate-mirrorfi.jpg",
+      caption: "Plate · MirrorFi — vault strategies, grand prize 2025.",
+    },
     plies: [{ from: "g8", to: "f6" }],
     hl: ["g8", "f6"],
     cap: "Position after 4…Nf6",
@@ -377,6 +395,10 @@ export const OPENING_NODES: OpeningNode[] = [
       { label: slm.name, href: `/projects/${slm.slug}` },
       { label: "GitHub", href: github },
     ],
+    plate: {
+      src: "/plates/plate-veridian.jpg",
+      caption: "Plate · Veridian — the central break, intercepted as infrastructure.",
+    },
     plies: [{ from: "d2", to: "d4" }],
     hl: ["d2", "d4"],
     cap: "Position after 5. d4",
@@ -399,6 +421,10 @@ export const OPENING_NODES: OpeningNode[] = [
     eval: 0.7,
     evalText: "+0.70",
     artifacts: [{ label: slm.name, href: `/projects/${slm.slug}` }],
+    plate: {
+      src: "/plates/plate-slm.jpg",
+      caption: "Plate · SLM Distillation — the teacher cabinet and the small machine.",
+    },
     plies: [{ from: "e5", to: "d4" }],
     hl: ["e5", "d4"],
     cap: "Position after 5…exd4",

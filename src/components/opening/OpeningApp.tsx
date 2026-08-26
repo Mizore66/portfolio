@@ -4,22 +4,24 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { AnnotationPanel } from "@/components/opening/AnnotationPanel";
 import { BoardDiagram } from "@/components/opening/BoardDiagram";
+import { GlassEngine, useEngineSearch } from "@/components/opening/GlassEngine";
 import { Masthead } from "@/components/opening/Masthead";
 import { NotationView } from "@/components/opening/NotationView";
 import { TreeView } from "@/components/opening/TreeView";
 import { HOVER_PREVIEW_MS, playDelayMs } from "@/lib/opening/motion";
 import {
   collectPlies,
+  FLAGSHIP_ID,
   getNode,
   isOpeningId,
-  ROOT_ID,
   stepMainline,
 } from "@/lib/opening/tree";
 import { cn } from "@/lib/utils";
 
 function moveFromSearch(params: URLSearchParams): string {
   const move = params.get("move");
-  return move && isOpeningId(move) ? move : ROOT_ID;
+  if (!move) return FLAGSHIP_ID;
+  return isOpeningId(move) ? move : FLAGSHIP_ID;
 }
 
 export function OpeningApp() {
@@ -40,13 +42,14 @@ export function OpeningApp() {
   );
   const node = getNode(selectedId);
   const plies = useMemo(() => collectPlies(selectedId), [selectedId]);
+  const engine = useEngineSearch(selectedId, plies);
   const atEnd = stepMainline(selectedId, 1) === selectedId;
 
   const onSelect = useCallback(
     (id: string) => {
       setPreviewHl(null);
       const params = new URLSearchParams();
-      if (id !== ROOT_ID) params.set("move", id);
+      if (id !== FLAGSHIP_ID) params.set("move", id);
       if (tape) params.set("tape", "1");
       const q = params.toString();
       router.replace(q ? `${pathname}?${q}` : pathname, { scroll: false });
@@ -133,11 +136,43 @@ export function OpeningApp() {
 
   return (
     <div className="min-h-screen text-ink" data-hydrated={hydrated ? "true" : "false"}>
-      <div className="relative z-[1] mx-auto px-5 py-6 sm:px-10 sm:py-8 lg:px-16">
-        <div className="mx-auto max-w-[1080px]">
-          <Masthead view={view} onView={setView} />
+      <div className="relative z-[1] mx-auto px-4 py-5 sm:px-8 sm:py-7 lg:px-12">
+        <div className="mx-auto max-w-[1240px]">
+          <Masthead view={view} onView={setView} onSelect={userSelect} />
         </div>
-        <div className="mx-auto mt-5 flex max-w-[1080px] flex-col gap-5 min-[980px]:flex-row min-[980px]:items-start min-[980px]:justify-center">
+        <div className="mx-auto mt-5 flex max-w-[1240px] flex-col gap-5 min-[980px]:flex-row min-[980px]:items-start min-[980px]:justify-center">
+          <aside className="sheet w-full shrink-0 min-[980px]:sticky min-[980px]:top-5 min-[980px]:max-h-[calc(100vh-2.5rem)] min-[980px]:w-[460px] min-[980px]:overflow-y-auto">
+            <BoardDiagram
+              plies={plies}
+              highlight={node.hl}
+              preview={previewHl}
+              caption={node.cap}
+            />
+            <GlassEngine info={engine} />
+            <div className="mx-4 flex items-center justify-between gap-3 border-t border-ink px-0 py-3">
+              <button
+                type="button"
+                data-play-control=""
+                data-testid="read-the-game"
+                aria-pressed={playing}
+                disabled={!playing && atEnd}
+                onClick={() => setPlaying((p) => !p)}
+                className={cn(
+                  "border-2 border-ink px-3 py-1.5 font-mono text-[11px] uppercase tracking-widest",
+                  playing
+                    ? "bg-ink text-paper"
+                    : "bg-paper text-ink hover:bg-paper-deep disabled:opacity-40",
+                )}
+              >
+                {playing ? "Pause" : "Read the game"}
+              </button>
+              <p className="font-mono text-[10px] uppercase tracking-widest text-faded">
+                Off by default
+              </p>
+            </div>
+            <div className="mx-4 border-t border-ink" />
+            <AnnotationPanel node={node} engine={engine} />
+          </aside>
           <section className="min-w-0 min-[980px]:flex-none">
             <div
               className={cn(
@@ -176,37 +211,6 @@ export function OpeningApp() {
               </div>
             </div>
           </section>
-          <aside className="sheet w-full shrink-0 min-[980px]:sticky min-[980px]:top-6 min-[980px]:max-h-[calc(100vh-3rem)] min-[980px]:w-[360px] min-[980px]:overflow-y-auto">
-            <BoardDiagram
-              plies={plies}
-              highlight={node.hl}
-              preview={previewHl}
-              caption={node.cap}
-            />
-            <div className="mx-4 flex items-center justify-between gap-3 border-t border-ink px-0 py-3">
-              <button
-                type="button"
-                data-play-control=""
-                data-testid="read-the-game"
-                aria-pressed={playing}
-                disabled={!playing && atEnd}
-                onClick={() => setPlaying((p) => !p)}
-                className={cn(
-                  "border-2 border-ink px-3 py-1.5 font-mono text-[11px] uppercase tracking-widest",
-                  playing
-                    ? "bg-ink text-paper"
-                    : "bg-paper text-ink hover:bg-paper-deep disabled:opacity-40",
-                )}
-              >
-                {playing ? "Pause" : "Read the game"}
-              </button>
-              <p className="font-mono text-[10px] uppercase tracking-widest text-faded">
-                Off by default
-              </p>
-            </div>
-            <div className="mx-4 border-t border-ink" />
-            <AnnotationPanel node={node} />
-          </aside>
         </div>
       </div>
     </div>

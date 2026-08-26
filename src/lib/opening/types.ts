@@ -37,4 +37,6 @@ export type OpeningNode = {
   plies: Ply[];
   hl: [string, string] | null;
   cap: string;
+  /** Newspaper plate — project photograph, when the node has one. */
+  plate?: { src: string; caption: string };
 };

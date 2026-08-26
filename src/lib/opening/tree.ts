@@ -1,4 +1,4 @@
-import { OPENING_NODES, ROOT_ID } from "@/content/opening";
+import { ENGINE_NODE_ID, FLAGSHIP_ID, OPENING_NODES, ROOT_ID } from "@/content/opening";
 import type { OpeningNode, Ply } from "@/lib/opening/types";
 
 const byId: Record<string, OpeningNode> = Object.fromEntries(
@@ -53,6 +53,17 @@ export function isSingleMainlineAdvance(fromId: string, toId: string): boolean {
 
 export function collectPlies(id: string): Ply[] {
   return getPath(id).flatMap((n) => n.plies);
+}
+
+export function lastPly(id: string): Ply | null {
+  const plies = collectPlies(id);
+  return plies[plies.length - 1] ?? null;
+}
+
+export function sideToMove(id: string): "w" | "b" {
+  const node = getNode(id);
+  if (!node.color) return "w";
+  return node.color === "w" ? "b" : "w";
 }
 
 export function getMainline(): OpeningNode[] {
@@ -226,4 +237,4 @@ export function layoutTree(nodes: OpeningNode[] = OPENING_NODES): TreeLayout {
   };
 }
 
-export { OPENING_NODES, ROOT_ID };
+export { ENGINE_NODE_ID, FLAGSHIP_ID, OPENING_NODES, ROOT_ID };

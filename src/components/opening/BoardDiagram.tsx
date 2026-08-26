@@ -66,9 +66,9 @@ export function BoardDiagram({
           className={dark ? "board-sq-dark" : "board-sq-light"}
           style={
             committed
-              ? { boxShadow: "inset 0 0 0 100px rgba(162, 50, 42, 0.28)" }
+              ? { boxShadow: "inset 0 0 0 100px rgba(139, 36, 28, 0.42)" }
               : ghost
-                ? { boxShadow: "inset 0 0 0 100px rgba(30, 58, 114, 0.18)" }
+                ? { boxShadow: "inset 0 0 0 100px rgba(30, 58, 114, 0.38)" }
                 : undefined
           }
         />,
@@ -78,7 +78,7 @@ export function BoardDiagram({
 
   return (
     <figure className="px-4 pt-4">
-      <div className="mx-auto max-w-[320px]">
+      <div className="mx-auto max-w-[420px]">
         <div className="flex">
           <div className="flex w-4 flex-col-reverse justify-around py-0.5 font-mono text-[9px] text-faded">
             {Array.from({ length: 8 }, (_, i) => (
@@ -100,7 +100,7 @@ export function BoardDiagram({
                 <span
                   key={piece.id}
                   data-piece-id={piece.id}
-                  className="absolute flex items-center justify-center text-[clamp(1.15rem,4.6vw,1.85rem)] leading-none"
+                    className="absolute flex items-center justify-center text-[clamp(1.35rem,5.2vw,2.15rem)] leading-none"
                   style={{
                     left: 0,
                     top: 0,

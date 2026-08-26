@@ -3,9 +3,11 @@
 export function EvalBar({
   value,
   label,
+  live,
 }: {
   value: number;
   label: string;
+  live?: boolean;
 }) {
   const pct = Math.max(8, Math.min(92, 50 + value * 18));
 
@@ -13,14 +15,14 @@ export function EvalBar({
     <div>
       <div className="mb-1 flex items-baseline justify-between gap-2">
         <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
-          Narrative eval
+          {live ? "Live search" : "Narrative eval"}
         </p>
         <p className="font-mono text-[11px] text-score-red">{label}</p>
       </div>
       <div
         className="relative h-3 border-2 border-ink bg-ink"
         role="meter"
-        aria-label="Narrative evaluation — not an engine"
+        aria-label={live ? "Live engine evaluation" : "Narrative evaluation — not an engine"}
         aria-valuemin={-3}
         aria-valuemax={3}
         aria-valuenow={Number(value.toFixed(2))}
@@ -35,7 +37,7 @@ export function EvalBar({
         />
       </div>
       <p className="mt-1 font-mono text-[9px] uppercase tracking-wider text-faded">
-        Playful bar · dips on ?! · not a search
+        {live ? "Alpha-beta on this position · not a wink" : "Playful bar · dips on ?! · not a search"}
       </p>
     </div>
   );

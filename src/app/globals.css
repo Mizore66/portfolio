@@ -108,9 +108,12 @@
 /* Readable writing surface. Collage stays in the gutters (Apple: content on a surface). */
 .sheet {
   background-color: var(--paper);
+  background-image: url("/newsprint-grain.png");
+  background-size: 340px;
+  background-blend-mode: overlay;
   color: var(--ink);
   border: 1px solid var(--ink);
-  box-shadow: 0 12px 32px rgba(28, 14, 8, 0.38);
+  box-shadow: 0 16px 40px rgba(28, 14, 8, 0.48);
 }
 
 .newsprint-deep {
@@ -134,6 +137,7 @@
 
 .board-sq-light {
   background-color: var(--board-light);
+  transition: box-shadow 160ms ease;
 }
 
 .tree-edge {
@@ -229,6 +233,38 @@
   }
 }
 
+.drop-cap::first-letter {
+  float: left;
+  font-family: var(--font-display), "Libre Baskerville", serif;
+  font-size: 3.5rem;
+  font-weight: 700;
+  font-style: normal;
+  line-height: 0.82;
+  padding-right: 0.1em;
+  color: var(--score-red);
+}
+
+.halftone-plate-frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--ink);
+  background: var(--paper-deep);
+}
+.halftone-plate-img {
+  width: 100%;
+  height: auto;
+  filter: grayscale(1) contrast(1.28) sepia(0.22);
+}
+.halftone-plate-screen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(#1a120c 0.55px, transparent 0.62px);
+  background-size: 3px 3px;
+  mix-blend-mode: multiply;
+  opacity: 0.52;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .tree-edge {
     transition: none;
@@ -237,6 +273,10 @@
     animation: none;
     stroke-dasharray: none;
     stroke-dashoffset: 0;
+  }
+  .board-sq-light,
+  .board-sq-dark {
+    transition: none;
   }
 }
 
@@ -247,6 +287,7 @@
     #8f8574 0 4px,
     #5c5548 4px 6px
   );
+  transition: box-shadow 160ms ease;
 }
 
 ::-webkit-scrollbar {

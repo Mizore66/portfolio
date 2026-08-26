@@ -3,14 +3,29 @@
 import { useMemo } from "react";
 import { ArtifactLinks } from "@/components/opening/ArtifactLinks";
 import { EvalBar } from "@/components/opening/EvalBar";
-import { formatLine } from "@/lib/opening/tree";
+import { HalftonePlate } from "@/components/opening/HalftonePlate";
+import type { SearchInfo } from "@/lib/chess/engine";
+import { ENGINE_NODE_ID, formatLine } from "@/lib/opening/tree";
 import type { OpeningNode } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
 
 /** Once per visit, in memory — no storage. */
 const stampedIds = new Set<string>();
 
-export function AnnotationPanel({ node }: { node: OpeningNode }) {
+export function AnnotationPanel({
+  node,
+  engine,
+}: {
+  node: OpeningNode;
+  engine: SearchInfo | null;
+}) {
+  const live = Boolean(engine) && node.id === ENGINE_NODE_ID;
+  const liveValue = live && engine ? engine.evalCp / 100 : node.eval;
+  const liveLabel =
+    live && engine
+      ? `${engine.evalCp >= 0 ? "+" : ""}${(engine.evalCp / 100).toFixed(2)}`
+      : node.evalText;
+
   return (
     <section className="flex flex-col gap-4 px-4 py-4" aria-label="Annotation">
       <div key={node.id} className="sheet-fade flex flex-col gap-4">
@@ -28,10 +43,14 @@ export function AnnotationPanel({ node }: { node: OpeningNode }) {
           </div>
         </div>
 
-      <h2 className="font-display text-2xl leading-snug text-ink">{node.title}</h2>
+      <h2 className="font-display text-[clamp(1.8rem,3vw,2.4rem)] leading-snug text-ink">{node.title}</h2>
 
       <Block kicker="The move" body={node.fact} serif />
-      <Block kicker="The annotation" body={node.commentary} italic />
+      <Block kicker="The annotation" body={node.commentary} italic drop />
+
+      {node.plate ? (
+        <HalftonePlate src={node.plate.src} caption={node.plate.caption} alt={node.title} />
+      ) : null}
 
       {node.artifacts.length > 0 && (
         <div>
@@ -42,7 +61,7 @@ export function AnnotationPanel({ node }: { node: OpeningNode }) {
         </div>
       )}
 
-      <EvalBar value={node.eval} label={node.evalText} />
+      <EvalBar value={liveValue} label={liveLabel} live={Boolean(live)} />
       </div>
 
       <p className="font-mono text-[11px] leading-relaxed text-faded">
@@ -80,11 +99,13 @@ function Block({
   body,
   italic,
   serif,
+  drop,
 }: {
   kicker: string;
   body: string;
   italic?: boolean;
   serif?: boolean;
+  drop?: boolean;
 }) {
   return (
     <div>
@@ -92,13 +113,14 @@ function Block({
         {kicker}
       </p>
       <p
-        className={
+        className={cn(
           italic
-            ? "font-lora text-[15px] leading-relaxed text-ink italic"
+            ? "font-lora text-[16px] leading-relaxed text-ink italic"
             : serif
-              ? "font-display text-[15px] leading-relaxed text-ink"
-              : "text-[15px] leading-relaxed text-ink"
-        }
+              ? "font-display text-[16px] leading-relaxed text-ink"
+              : "text-[16px] leading-relaxed text-ink",
+          drop && "drop-cap",
+        )}
       >
         {body}
       </p>

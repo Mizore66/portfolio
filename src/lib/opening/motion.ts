@@ -9,7 +9,7 @@ export const INK_MS = 200;
 export const STROKE_DIM_MS = 180;
 export const VIEW_TURN_MS = 160;
 export const STAMP_MS = 150;
-export const HOVER_PREVIEW_MS = 120;
+export const HOVER_PREVIEW_MS = 50;
 
 export function playDelayMs(plyCount: number): number {
   const extra = Math.max(0, plyCount - 1) * STAGGER_MS;

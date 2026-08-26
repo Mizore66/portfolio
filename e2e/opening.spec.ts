@@ -5,7 +5,7 @@ test.describe("Opening Preparation", () => {
   test("notation lists every node and stays in sync with the panel", async ({
     page,
   }) => {
-    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
@@ -24,9 +24,26 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByText("1. e4! e5 2. Nf3 Nc6 3. Bc4 Bc5 4. O-O! Nf6! 5. d4!!")).toBeVisible();
   });
 
-  test("arrow keys walk the mainline", async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 800 });
+  test("lands on the flagship and the lead headline holds the node", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
+    await expect(page.getByTestId("lead-headline")).toContainText("The Central Break");
+    await expect(page.getByTestId("halftone-plate")).toBeVisible();
+    await expect(page.getByTestId("glass-engine")).toBeVisible();
+
+    await page.locator('[data-testid="tree-view"] [data-node-id="e4"]').click();
+    await expect(page.getByRole("heading", { level: 2, name: "The University Opening" })).toBeVisible();
+    await page.getByTestId("lead-headline").click();
+    await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
+  });
+
+  test("arrow keys walk the mainline", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/?move=start");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await expect(page.getByRole("heading", { level: 2, name: "Opening Preparation" })).toBeVisible();
@@ -42,8 +59,8 @@ test.describe("Opening Preparation", () => {
   });
 
   test("tree and notation stay in sync", async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 800 });
-    await page.goto("/");
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/?move=start");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await expect(page.getByTestId("tree-view")).toBeVisible();
@@ -72,18 +89,19 @@ test.describe("Opening Preparation", () => {
   test("move query selects a node and survives an exhibit round-trip", async ({
     page,
   }) => {
-    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/?move=d4");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
 
     await page.goto("/?move=not-a-node");
-    await expect(page.getByRole("heading", { level: 2, name: "Opening Preparation" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
 
     await page.goto("/?move=d4");
     await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
     await page.getByRole("link", { name: "Veridian" }).first().click();
     await expect(page.getByRole("heading", { level: 1, name: "Veridian" })).toBeVisible();
+    await expect(page.getByTestId("halftone-plate")).toBeVisible();
     await page.goBack();
     await expect(page).toHaveURL(/move=d4/);
     await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
@@ -91,8 +109,8 @@ test.describe("Opening Preparation", () => {
 
   test("the e-pawn glides on 1.e4 instead of teleporting", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
-    await page.setViewportSize({ width: 1280, height: 800 });
-    await page.goto("/");
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/?move=start");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     const pawn = page.locator('[data-piece-id="wPe2"]');
@@ -115,8 +133,8 @@ test.describe("Opening Preparation", () => {
     page,
   }) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
-    await page.setViewportSize({ width: 1280, height: 800 });
-    await page.goto("/");
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/?move=start");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await page.locator('[data-testid="tree-view"] [data-node-id="e4"]').click();
@@ -151,17 +169,15 @@ test.describe("Opening Preparation", () => {
   test("the panel glyph stamps once, and Read the game steps the trunk", async ({
     page,
   }) => {
-    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
-
-    await page.locator('[data-testid="tree-view"] [data-node-id="d4"]').click();
     await expect(page.getByTestId("glyph-stamp")).toHaveAttribute("data-stamp", "press");
     await page.locator('[data-testid="tree-view"] [data-node-id="e4"]').click();
     await page.locator('[data-testid="tree-view"] [data-node-id="d4"]').click();
     await expect(page.getByTestId("glyph-stamp")).toHaveAttribute("data-stamp", "seen");
 
-    await page.goto("/");
+    await page.goto("/?move=start");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await page.getByTestId("read-the-game").click();
     await expect(page.getByRole("heading", { level: 2, name: "The University Opening" })).toBeVisible({
@@ -174,7 +190,7 @@ test.describe("Opening Preparation", () => {
   test("hover tints a sideline square; tape clippings stay behind the flag", async ({
     page,
   }) => {
-    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
@@ -189,11 +205,20 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator('[data-life-clip="true"]').first()).toBeVisible();
   });
 
+  test("the engine prints a live PV", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.getByTestId("engine-pv")).not.toHaveText("pv …", { timeout: 4000 });
+    await expect(page.getByTestId("engine-eval")).not.toHaveText("…");
+  });
+
   test("exhibits read as a pasted clipping", async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/projects/veridian");
     await expect(page.getByRole("heading", { level: 1, name: "Veridian" })).toBeVisible();
     await expect(page.getByText("Pasted from the desk")).toBeVisible();
     await expect(page.getByText("Clipping · Exhibit")).toBeVisible();
+    await expect(page.getByTestId("halftone-plate")).toBeVisible();
   });
 });

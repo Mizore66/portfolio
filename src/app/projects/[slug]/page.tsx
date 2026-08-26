@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { HalftonePlate } from "@/components/opening/HalftonePlate";
 import { resumeData } from "@/lib/data";
 
 export default async function ProjectPage({
@@ -41,6 +42,14 @@ export default async function ProjectPage({
             <p className="mt-4 font-lora text-lg leading-relaxed italic text-ink">
               {project.description}
             </p>
+
+            <div className="mt-8">
+              <HalftonePlate
+                src={project.plate}
+                caption={project.plateCaption}
+                alt={project.name}
+              />
+            </div>
 
             <section className="mt-10">
               <h2 className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
