@@ -260,6 +260,7 @@ export function OpeningApp() {
                   onSquare={onPuzzleSquare}
                   puzzlePrompt={node.puzzle && extra.length === 0 ? node.puzzle.prompt : null}
                   puzzleNote={puzzleNote}
+                  puzzleTarget={node.puzzle && extra.length === 0 ? node.puzzle.target : null}
                 />
                 <GlassEngine
                   info={engine}

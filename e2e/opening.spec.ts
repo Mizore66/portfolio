@@ -323,6 +323,7 @@ test.describe("Opening Preparation", () => {
     await page.goto("/?move=nf6");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByTestId("find-the-break")).toBeVisible();
+    await page.locator('[data-sq="d2"]').click();
     await page.locator('[data-sq="d4"]').click();
     await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
 

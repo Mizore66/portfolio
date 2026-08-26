@@ -30,6 +30,7 @@ export function BoardDiagram({
   onSquare,
   puzzlePrompt,
   puzzleNote,
+  puzzleTarget,
 }: {
   plies: Ply[];
   highlight: [string, string] | null;
@@ -45,6 +46,7 @@ export function BoardDiagram({
   onSquare?: (sq: string) => void;
   puzzlePrompt?: string | null;
   puzzleNote?: string | null;
+  puzzleTarget?: string | null;
 }) {
   const prevPlies = useRef<Ply[] | null>(null);
   const boardRef = useRef<HTMLDivElement>(null);
@@ -117,6 +119,12 @@ export function BoardDiagram({
   function onBoardPointerDown(e: React.PointerEvent) {
     const sq = squareFromPoint(e.clientX, e.clientY);
     if (!sq) return;
+    // Clicking the quiz square always stamps — even if a pawn is already selected.
+    if (puzzleTarget && sq === puzzleTarget) {
+      onSquare?.(sq);
+      setFromSq(null);
+      return;
+    }
     if (!playable) {
       onSquare?.(sq);
       return;
@@ -137,7 +145,13 @@ export function BoardDiagram({
   function onBoardPointerUp(e: React.PointerEvent) {
     if (!playable || !fromSq) return;
     const sq = squareFromPoint(e.clientX, e.clientY);
-    if (sq && sq !== fromSq) attempt(fromSq, sq);
+    if (!sq || sq === fromSq) return;
+    if (puzzleTarget && sq === puzzleTarget) {
+      onSquare?.(sq);
+      setFromSq(null);
+      return;
+    }
+    attempt(fromSq, sq);
   }
 
   const squares = [];
