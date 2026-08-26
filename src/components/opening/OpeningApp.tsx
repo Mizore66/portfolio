@@ -191,13 +191,13 @@ export function OpeningApp() {
             data-testid="tree-column"
             className="min-w-0 min-[980px]:w-max min-[980px]:max-w-[calc(100%-660px)] min-[980px]:self-start"
           >
-            <div className="sheet relative h-fit w-full min-[980px]:w-max overflow-x-auto">
+            <div className="sheet relative h-fit w-full overflow-x-auto overflow-y-hidden min-[980px]:w-max">
               <div
                 className={cn(
                   "view-turn max-[979px]:hidden",
                   view === "tree"
                     ? "min-[980px]:relative min-[980px]:visible min-[980px]:opacity-100"
-                    : "min-[980px]:pointer-events-none min-[980px]:absolute min-[980px]:inset-x-0 min-[980px]:top-0 min-[980px]:invisible min-[980px]:opacity-0",
+                    : "min-[980px]:pointer-events-none min-[980px]:absolute min-[980px]:inset-x-0 min-[980px]:top-0 min-[980px]:h-0 min-[980px]:overflow-hidden min-[980px]:invisible min-[980px]:opacity-0",
                 )}
               >
                 <TreeView
@@ -212,7 +212,7 @@ export function OpeningApp() {
                   "view-turn",
                   view === "notation"
                     ? "relative visible opacity-100"
-                    : "max-[979px]:relative max-[979px]:visible max-[979px]:opacity-100 min-[980px]:pointer-events-none min-[980px]:absolute min-[980px]:inset-x-0 min-[980px]:top-0 min-[980px]:invisible min-[980px]:opacity-0",
+                    : "max-[979px]:relative max-[979px]:visible max-[979px]:opacity-100 min-[980px]:pointer-events-none min-[980px]:absolute min-[980px]:inset-x-0 min-[980px]:top-0 min-[980px]:h-0 min-[980px]:overflow-hidden min-[980px]:invisible min-[980px]:opacity-0",
                 )}
               >
                 <NotationView

@@ -26,7 +26,7 @@ export function EvalBar({
       />
       <p
         data-testid="engine-eval"
-        className="absolute inset-x-0 px-0.5 text-center font-mono text-[9px] leading-tight tracking-tight"
+        className="absolute inset-x-0 px-0.5 text-center font-mono text-[10px] font-medium leading-tight tracking-tight"
         style={{
           top: whiteAhead ? undefined : 6,
           bottom: whiteAhead ? 6 : undefined,
