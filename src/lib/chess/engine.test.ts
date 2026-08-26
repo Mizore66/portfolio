@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { collectPlies } from "@/lib/opening/tree";
 import { positionAfter } from "@/lib/chess/replay";
-import { fromPieces, numberPv, perft, prepareSearch, search, startPos } from "./engine";
+import { fromPieces, legalPlies, numberPv, perft, prepareSearch, search, startPos } from "./engine";
 
 describe("engine move generator", () => {
   it("matches start-position perft", () => {
@@ -15,6 +15,7 @@ describe("engine move generator", () => {
     const pieces = positionAfter(collectPlies("e4"));
     const pos = fromPieces(pieces, "b", { from: "e2", to: "e4" });
     expect(perft(pos, 1)).toBe(20);
+    expect(legalPlies(pos)).toHaveLength(20);
   });
 });
 
@@ -40,6 +41,9 @@ describe("engine search", () => {
     const pos = fromPieces(positionAfter(plies), "b", last);
     const r = search(pos, 3);
     expect(r.pv.length).toBeGreaterThan(0);
+    expect(r.best).toBeTruthy();
+    expect(r.best!.from).toMatch(/^[a-h][1-8]$/);
+    expect(r.best!.to).toMatch(/^[a-h][1-8]$/);
     expect(r.nodes).toBeGreaterThan(50);
   });
 

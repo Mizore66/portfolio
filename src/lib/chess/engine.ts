@@ -124,6 +124,7 @@ export type SearchInfo = {
   nps: number;
   evalCp: number;
   pv: string[];
+  best: Ply | null;
   thinking: boolean;
 };
 
@@ -447,6 +448,14 @@ function legalMoves(pos: EnginePos): Move[] {
     if (ok) out.push(m);
   }
   return out;
+}
+
+export function legalPlies(pos: EnginePos): Ply[] {
+  return legalMoves(pos).map((m) => ({ from: alg(m.from), to: alg(m.to) }));
+}
+
+export function isLegalPly(pos: EnginePos, ply: Ply): boolean {
+  return legalMoves(pos).some((m) => alg(m.from) === ply.from && alg(m.to) === ply.to);
 }
 
 export function perft(pos: EnginePos, depth: number): number {
@@ -797,7 +806,14 @@ function alphabeta(
   return alpha;
 }
 
-type SearchResult = { score: number; nodes: number; pv: string[]; depth: number; timedOut: boolean };
+type SearchResult = {
+  score: number;
+  nodes: number;
+  pv: string[];
+  best: Ply | null;
+  depth: number;
+  timedOut: boolean;
+};
 
 /** Score is always from White's point of view, in centipawns. */
 export function search(
@@ -817,11 +833,21 @@ export function search(
   const pv: string[] = [];
   const raw = alphabeta(pos, depth, 0, -30000, 30000, stats, pv, true);
   if (stats.timedOut && pv.length === 0) {
-    return { score: 0, nodes: stats.nodes, pv: [], depth: 0, timedOut: true };
+    return { score: 0, nodes: stats.nodes, pv: [], best: null, depth: 0, timedOut: true };
   }
   const evalCp = pos.side === 1 ? raw : -raw;
   const clamped = Math.max(-1500, Math.min(1500, evalCp));
-  return { score: clamped, nodes: stats.nodes, pv: formatPv(pos, pv), depth, timedOut: stats.timedOut };
+  const best: Ply | null = pv[0]
+    ? { from: pv[0].slice(0, 2), to: pv[0].slice(2, 4) }
+    : null;
+  return {
+    score: clamped,
+    nodes: stats.nodes,
+    pv: formatPv(pos, pv),
+    best,
+    depth,
+    timedOut: stats.timedOut,
+  };
 }
 
 export function clonePos(pos: EnginePos): EnginePos {

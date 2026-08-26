@@ -23,7 +23,7 @@ export function NotationView({
   return (
     <article
       aria-label="Scoresheet"
-      className="px-4 py-5 sm:px-6"
+      className="p-0"
       data-testid="notation-view"
     >
       <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.25em] text-faded">

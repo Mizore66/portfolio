@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArchitectureFigure } from "@/components/opening/ArchitectureFigure";
 import { HalftonePlate } from "@/components/opening/HalftonePlate";
 import { resumeData } from "@/lib/data";
 
@@ -39,7 +40,7 @@ export default async function ProjectPage({
               Pasted from the desk
             </p>
             <h1 className="mt-2 font-display text-4xl text-ink">{project.name}</h1>
-            <p className="mt-4 font-lora text-lg leading-relaxed italic text-ink">
+            <p className="mt-4 drop-cap font-lora text-lg leading-relaxed italic text-ink">
               {project.description}
             </p>
 
@@ -49,6 +50,10 @@ export default async function ProjectPage({
                 caption={project.plateCaption}
                 alt={project.name}
               />
+            </div>
+
+            <div className="mt-8">
+              <ArchitectureFigure name={project.name} tech={project.tech} />
             </div>
 
             <section className="mt-10">

@@ -24,6 +24,20 @@ const mail = `mailto:${resumeData.email}`;
 const github = `https://${resumeData.github}`;
 const linkedin = `https://${resumeData.linkedin}`;
 
+/** Period filler for empty column space. Copy lives here, not in the renderer. */
+export const BROADSHEET = {
+  correspondenceKicker: "Correspondence",
+  correspondence: resumeData.email,
+  classifiedKicker: "Situations Wanted",
+  classified:
+    "Engineer, MLOps & full-stack, seeks fintech/AI infrastructure post. Apply within →",
+  weatherKicker: "Weather",
+  weather: "Outlook: shipping",
+  stamp: "C50",
+  playInvite: "Play the position — the annotator will respond",
+  lampshade: "Annotators and engines have disagreed since 1997.",
+};
+
 /**
  * The opening tree. Adding or editing a node happens only here.
  * Renderers (tree, notation, board, panel) never hardcode ids or copy.
@@ -371,6 +385,12 @@ export const OPENING_NODES: OpeningNode[] = [
     plies: [{ from: "g8", to: "f6" }],
     hl: ["g8", "f6"],
     cap: "Position after 4…Nf6",
+    puzzle: {
+      prompt: "White to move — find the break.",
+      target: "d4",
+      hit: "d4!! — the annotator agrees.",
+      miss: "A developing move. The break was d4.",
+    },
   },
   {
     id: "d4",

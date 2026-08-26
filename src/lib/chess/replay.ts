@@ -85,13 +85,23 @@ export function initialPieces(): Piece[] {
 
 export function applyPly(pieces: Piece[], ply: Ply): Piece[] {
   const next = pieces.map((p) => ({ ...p }));
-  const victim = next.find((p) => !p.captured && p.square === ply.to);
-  if (victim) victim.captured = true;
   const mover = next.find((p) => !p.captured && p.square === ply.from);
   if (!mover) {
     throw new Error(`Illegal ply: no piece on ${ply.from} (to ${ply.to})`);
   }
+  const victim = next.find((p) => !p.captured && p.square === ply.to);
+  if (victim) {
+    victim.captured = true;
+  } else if (mover.type === "P" && squareFile(ply.from) !== squareFile(ply.to)) {
+    const ep = `${ply.to[0]}${ply.from[1]}`;
+    const behind = next.find((p) => !p.captured && p.square === ep && p.type === "P");
+    if (behind) behind.captured = true;
+  }
   mover.square = ply.to;
+  if (mover.type === "P") {
+    const rank = squareRank(ply.to);
+    if (rank === 7 || rank === 0) mover.type = "Q";
+  }
   return next;
 }
 

@@ -39,4 +39,11 @@ export type OpeningNode = {
   cap: string;
   /** Newspaper plate — project photograph, when the node has one. */
   plate?: { src: string; caption: string };
+  /** Optional one-move diagram quiz. Never a lock. */
+  puzzle?: {
+    prompt: string;
+    target: string;
+    hit: string;
+    miss: string;
+  };
 };

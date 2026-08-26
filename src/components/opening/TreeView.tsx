@@ -83,7 +83,7 @@ export function TreeView({
   }, [selectedId]);
 
   return (
-    <div ref={wrapRef} className="relative w-full overflow-x-hidden py-2" data-testid="tree-view">
+    <div ref={wrapRef} className="relative w-full overflow-x-hidden" data-testid="tree-view">
       <div
         className="relative mx-auto"
         data-testid="tree-canvas"

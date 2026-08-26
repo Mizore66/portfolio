@@ -12,7 +12,7 @@ const stampedIds = new Set<string>();
 
 export function AnnotationPanel({ node }: { node: OpeningNode }) {
   return (
-    <section className="flex flex-col gap-4 px-4 py-4" aria-label="Annotation">
+    <section className="flex flex-col gap-4" aria-label="Annotation" data-testid="annotation-panel">
       <div key={node.id} className="sheet-fade flex flex-col gap-4">
         <div className="flex items-baseline justify-between gap-3 border-b-2 border-ink pb-2">
           <div className="min-w-0">
@@ -30,6 +30,10 @@ export function AnnotationPanel({ node }: { node: OpeningNode }) {
 
       <h2 className="font-display text-[clamp(1.8rem,3vw,2.4rem)] leading-snug text-ink">{node.title}</h2>
 
+      {node.plate ? (
+        <HalftonePlate src={node.plate.src} caption={node.plate.caption} alt={node.title} />
+      ) : null}
+
       <Block kicker="The move" body={node.fact} serif />
       <Block kicker="The annotation" body={node.commentary} italic drop />
 
@@ -41,10 +45,6 @@ export function AnnotationPanel({ node }: { node: OpeningNode }) {
           <ArtifactLinks artifacts={node.artifacts} />
         </div>
       )}
-
-      {node.plate ? (
-        <HalftonePlate src={node.plate.src} caption={node.plate.caption} alt={node.title} />
-      ) : null}
       </div>
 
       <p className="font-mono text-[11px] leading-relaxed text-faded">

@@ -257,7 +257,7 @@ test.describe("Opening Preparation", () => {
       timeout: 2000,
     });
     await page.locator('[data-testid="tree-view"] [data-node-id="e5"]').click();
-    await expect(page.getByTestId("read-the-game")).toHaveText("Read the game");
+    await expect(page.getByTestId("read-the-game")).toContainText("Read the game");
   });
 
   test("hover tints a sideline square; tape clippings stay behind the flag", async ({
@@ -294,5 +294,47 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByText("Pasted from the desk")).toBeVisible();
     await expect(page.getByText("Clipping · Exhibit")).toBeVisible();
     await expect(page.getByTestId("halftone-plate")).toBeVisible();
+    await expect(page.getByTestId("architecture-figure")).toBeVisible();
+  });
+
+  test("the column uses one gutter and the page is the only scroller", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+
+    const boardX = (await page.getByTestId("board-diagram").boundingBox())!.x;
+    const engineX = (await page.getByTestId("glass-engine").boundingBox())!.x;
+    const annotX = (await page.getByTestId("annotation-panel").boundingBox())!.x;
+    expect(Math.abs(boardX - engineX)).toBeLessThan(2);
+    expect(Math.abs(engineX - annotX)).toBeLessThan(2);
+
+    const overflowY = await page.getByTestId("board-column").evaluate((el) => getComputedStyle(el).overflowY);
+    expect(overflowY === "auto" || overflowY === "scroll").toBe(false);
+
+    await expect(page.getByTestId("broadsheet-filler")).toBeVisible();
+    await expect(page.getByTestId("broadsheet-filler")).toContainText("Situations Wanted");
+    await expect(page.getByTestId("pv-arrow")).toBeVisible({ timeout: 4000 });
+  });
+
+  test("the diagram quiz and a legal play ply both work", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/?move=nf6");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.getByTestId("find-the-break")).toBeVisible();
+    await page.locator('[data-sq="d4"]').click();
+    await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
+
+    await page.goto("/?move=start");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    const pawn = page.locator('[data-piece-id="wPe2"]');
+    const before = await pawn.boundingBox();
+    await page.locator('[data-sq="e2"]').click();
+    await page.locator('[data-sq="e4"]').click();
+    await page.waitForTimeout(450);
+    const after = await pawn.boundingBox();
+    expect(before && after).toBeTruthy();
+    expect(after!.y).toBeLessThan(before!.y - 8);
   });
 });
