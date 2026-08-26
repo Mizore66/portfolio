@@ -217,6 +217,8 @@ export function BoardDiagram({
                 "newspaper-board relative aspect-square w-full border-2 border-ink",
                 playable && "cursor-pointer",
               )}
+              tabIndex={playable ? 0 : undefined}
+              id="play-board"
               onPointerDown={onBoardPointerDown}
               onPointerUp={onBoardPointerUp}
             >

@@ -4,19 +4,25 @@ export function HalftonePlate({
   src,
   caption,
   alt,
+  inset,
 }: {
   src: string;
   caption: string;
   alt: string;
+  inset?: boolean;
 }) {
   return (
-    <figure className="halftone-plate" data-testid="halftone-plate">
+    <figure
+      className={inset ? "halftone-plate plate-inset" : "halftone-plate"}
+      data-testid="halftone-plate"
+    >
       <div className="halftone-plate-frame">
         <Image
           src={src}
           alt={alt}
           width={1400}
           height={933}
+          sizes={inset ? "(max-width: 639px) 280px, 200px" : "(max-width: 980px) 92vw, 480px"}
           className="halftone-plate-img"
         />
         <span className="halftone-plate-screen" aria-hidden="true" />

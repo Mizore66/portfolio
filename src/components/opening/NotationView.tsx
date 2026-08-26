@@ -1,8 +1,16 @@
 "use client";
 
+import { Fragment } from "react";
 import { ArtifactLinks } from "@/components/opening/ArtifactLinks";
+import { GlyphStamp } from "@/components/opening/GlyphStamp";
+import { HalftonePlate } from "@/components/opening/HalftonePlate";
+import { MiniBoard } from "@/components/opening/MiniBoard";
+import { BROADSHEET } from "@/content/opening";
 import {
   buildNotation,
+  collectPlies,
+  FLAGSHIP_ID,
+  formatLine,
   moveHeading,
   type NotationBlock,
 } from "@/lib/opening/tree";
@@ -21,17 +29,13 @@ export function NotationView({
   const blocks = buildNotation();
 
   return (
-    <article
-      aria-label="Scoresheet"
-      className="p-0"
-      data-testid="notation-view"
-    >
-      <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.25em] text-faded">
-        Scoresheet · a plain rendering of every node
+    <article aria-label="Scoresheet" className="p-0" data-testid="notation-view">
+      <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.25em] text-faded">
+        {BROADSHEET.gameKicker} · every node, in order
       </p>
-      <ol className="m-0 list-none p-0">
+      <div className="m-0">
         {blocks.map((block) => (
-          <NotationMove
+          <Chapter
             key={block.node.id}
             block={block}
             selectedId={selectedId}
@@ -39,103 +43,167 @@ export function NotationView({
             onPreview={onPreview}
           />
         ))}
-      </ol>
+      </div>
     </article>
   );
 }
 
-function NotationMove({
+function Chapter({
   block,
   selectedId,
   onSelect,
   onPreview,
-  nested = false,
 }: {
   block: NotationBlock;
   selectedId: string;
   onSelect: (id: string) => void;
   onPreview?: (id: string | null) => void;
-  nested?: boolean;
 }) {
   const { node } = block;
   const selected = node.id === selectedId;
+  const flagship = node.id === FLAGSHIP_ID;
 
   return (
-    <li
+    <section
+      id={`chapter-${node.id}`}
+      data-chapter={node.id}
       className={cn(
-        "mb-4",
-        nested && "mb-2 border-l-2 border-faded/50 pl-3",
-        node.type === "not-taken" && "opacity-80",
+        "scroll-mt-4 border-t-2 border-ink py-6",
+        flagship && "border-t-[3px]",
       )}
     >
-      <MoveButton
-        node={node}
-        selected={selected}
-        onSelect={onSelect}
-        onPreview={onPreview}
-      />
-      {node.fact && (
-        <p className="mt-1 max-w-prose font-display text-[15px] leading-relaxed text-ink">
-          {node.fact}
+      <header className="mb-3">
+        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
+          {node.kind}
         </p>
-      )}
-      {node.commentary && (
-        <p className="mt-1 max-w-prose font-lora text-[14.5px] leading-relaxed text-ink/90 italic">
-          {node.commentary}
-        </p>
-      )}
-      <div className="mt-2">
+        <h2
+          className={cn(
+            "font-display leading-tight text-ink",
+            flagship
+              ? "mt-1 text-[clamp(2rem,4vw,2.8rem)]"
+              : "mt-1 text-[clamp(1.35rem,2.4vw,1.75rem)]",
+          )}
+        >
+          <ChapterButton
+            node={node}
+            selected={selected}
+            onSelect={onSelect}
+            onPreview={onPreview}
+            stamp={selected && Boolean(node.sym)}
+          />
+        </h2>
+      </header>
+
+      <div className="chapter-copy">
+        {node.plate ? (
+          <HalftonePlate
+            src={node.plate.src}
+            caption={node.plate.caption}
+            alt={node.title}
+            inset
+          />
+        ) : null}
+        {node.fact ? (
+          <p className="drop-cap max-w-prose font-display text-[15.5px] leading-relaxed text-ink">
+            {node.fact}
+          </p>
+        ) : null}
+        {node.commentary ? (
+          <p className="mt-3 max-w-prose font-lora text-[15px] leading-relaxed italic text-ink">
+            {node.commentary}
+          </p>
+        ) : null}
+      </div>
+
+      {node.inlineDiagram ? (
+        <MiniBoard plies={collectPlies(node.id)} highlight={node.hl} caption={node.cap} />
+      ) : null}
+
+      <div className="mt-3">
         <ArtifactLinks artifacts={node.artifacts} />
       </div>
-      {block.variations.length > 0 && (
-        <div className="mt-3 space-y-3 border-l-2 border-ink/20 pl-3">
+
+      {block.variations.length > 0 ? (
+        <p className="mt-3 max-w-prose font-lora text-[13px] leading-relaxed italic text-ink/90">
           {block.variations.map((line) => (
-            <div
+            <VariationRun
               key={line[0]?.node.id}
-              className={cn(
-                "text-ink",
-                line[0]?.node.type === "not-taken" && "border-l-2 border-dashed border-faded pl-3",
-                line[0]?.node.type === "life" && "border-l-2 border-book-blue pl-3",
-              )}
-            >
-              <p className="mb-1 font-mono text-[10px] uppercase tracking-widest text-faded">
-                {line[0]?.node.type === "life"
-                  ? "Life"
-                  : line[0]?.node.type === "not-taken"
-                    ? "Not taken"
-                    : "Variation"}
-                {line[0]?.node.label ? ` · ${line[0].node.label}` : ""}
-              </p>
-              <ol className="m-0 list-none p-0">
-                {line.map((child) => (
-                  <NotationMove
-                    key={child.node.id}
-                    block={child}
-                    selectedId={selectedId}
-                    onSelect={onSelect}
-                    onPreview={onPreview}
-                    nested
-                  />
-                ))}
-              </ol>
-            </div>
+              line={line}
+              selectedId={selectedId}
+              onSelect={onSelect}
+              onPreview={onPreview}
+            />
           ))}
-        </div>
-      )}
-    </li>
+        </p>
+      ) : null}
+
+      <p className="mt-4 font-mono text-[11px] leading-relaxed text-faded">
+        <span className="uppercase tracking-[0.18em]">The line so far</span>
+        <br />
+        <span className="text-ink">{formatLine(node.id)}</span>
+      </p>
+    </section>
   );
 }
 
-function MoveButton({
+function VariationRun({
+  line,
+  selectedId,
+  onSelect,
+  onPreview,
+}: {
+  line: NotationBlock[];
+  selectedId: string;
+  onSelect: (id: string) => void;
+  onPreview?: (id: string | null) => void;
+}) {
+  return (
+    <>
+      {" ("}
+      {line.map((child, i) => (
+        <Fragment key={child.node.id}>
+          {i > 0 ? " " : null}
+          <ChapterButton
+            node={child.node}
+            selected={child.node.id === selectedId}
+            onSelect={onSelect}
+            onPreview={onPreview}
+            compact
+          />
+          {child.node.title ? (
+            <span className="not-italic text-faded"> — {child.node.title}</span>
+          ) : null}
+          {child.node.fact ? <span> {child.node.fact}</span> : null}
+          {child.variations.map((nested) => (
+            <VariationRun
+              key={nested[0]?.node.id}
+              line={nested}
+              selectedId={selectedId}
+              onSelect={onSelect}
+              onPreview={onPreview}
+            />
+          ))}
+        </Fragment>
+      ))}
+      {")"}
+    </>
+  );
+}
+
+function ChapterButton({
   node,
   selected,
   onSelect,
   onPreview,
+  compact,
+  stamp,
 }: {
   node: OpeningNode;
   selected: boolean;
   onSelect: (id: string) => void;
   onPreview?: (id: string | null) => void;
+  compact?: boolean;
+  stamp?: boolean;
 }) {
   return (
     <button
@@ -148,25 +216,24 @@ function MoveButton({
       onFocus={() => onPreview?.(node.id)}
       onBlur={() => onPreview?.(null)}
       className={cn(
-        "group inline-flex flex-wrap items-baseline gap-x-2 text-left focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2",
-        node.type === "not-taken" && "border border-dashed border-ink text-ink",
+        "inline text-left focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2",
+        compact && "font-display text-[13px] not-italic",
+        node.type === "not-taken" && "border border-dashed border-ink px-0.5",
+        selected && "bg-score-red/15 box-decoration-clone",
       )}
     >
-      <span
-        className={cn(
-          "font-display text-lg",
-          node.type === "mainline" ? "font-bold text-book-blue" : "text-ink",
-          selected && "bg-score-red/15 box-decoration-clone px-0.5",
-        )}
-      >
-        <span className="mr-1 text-[0.95em]">{node.fig}</span>
+      <span className={cn(compact ? "text-book-blue" : "text-book-blue")}>
+        <span className="mr-1">{node.fig}</span>
         {moveHeading(node)}
-        {node.sym ? <span className="ml-1 font-bold text-score-red">{node.sym}</span> : null}
       </span>
-      <span className="font-display text-base text-ink">{node.title}</span>
-      <span className="font-mono text-[10px] uppercase tracking-widest text-faded">
-        {node.kind}
-      </span>
+      {node.sym ? (
+        stamp ? (
+          <GlyphStamp nodeId={node.id} sym={node.sym} />
+        ) : (
+          <span className="ml-1 font-bold text-score-red">{node.sym}</span>
+        )
+      ) : null}
+      {!compact ? <span className="ml-2 text-ink">{node.title}</span> : null}
     </button>
   );
 }

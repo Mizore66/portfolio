@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { AnnotationPanel } from "@/components/opening/AnnotationPanel";
 import { BoardDiagram } from "@/components/opening/BoardDiagram";
 import { BroadsheetFiller } from "@/components/opening/BroadsheetFiller";
 import { GlassEngine, useEngineSearch } from "@/components/opening/GlassEngine";
@@ -28,6 +27,7 @@ import {
   getNode,
   isOpeningId,
   lastPly,
+  ROOT_ID,
   sideToMove,
   stepMainline,
 } from "@/lib/opening/tree";
@@ -42,14 +42,18 @@ function moveFromSearch(params: URLSearchParams): string {
   return isOpeningId(move) ? move : FLAGSHIP_ID;
 }
 
+function reducedMotion(): boolean {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 export function OpeningApp() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const selectedId = moveFromSearch(searchParams);
   const tape = searchParams.get("tape") === "1";
-  const [view, setView] = useState<"tree" | "notation">("tree");
   const [playing, setPlaying] = useState(false);
+  const [playHint, setPlayHint] = useState(false);
   const [previewHl, setPreviewHl] = useState<[string, string] | null>(null);
   const [play, setPlay] = useState<{ id: string; extra: Ply[]; note: string | null }>({
     id: selectedId,
@@ -63,6 +67,10 @@ export function OpeningApp() {
   const puzzleNote = play.id === selectedId ? play.note : null;
   const playingRef = useRef(false);
   const hoverTimer = useRef<number>(0);
+  const skipSpy = useRef(false);
+  const skipSpyTimer = useRef<number>(0);
+  const selectedRef = useRef(selectedId);
+  selectedRef.current = selectedId;
   const hydrated = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -94,12 +102,27 @@ export function OpeningApp() {
     [pathname, router, tape, setPreviewHl],
   );
 
+  const scrollToChapter = useCallback((id: string) => {
+    const el = document.getElementById(`chapter-${id}`);
+    if (!el) return;
+    skipSpy.current = true;
+    window.clearTimeout(skipSpyTimer.current);
+    el.scrollIntoView({ behavior: reducedMotion() ? "instant" : "smooth", block: "start" });
+    skipSpyTimer.current = window.setTimeout(
+      () => {
+        skipSpy.current = false;
+      },
+      reducedMotion() ? 80 : 900,
+    );
+  }, []);
+
   const userSelect = useCallback(
     (id: string) => {
       setPlaying(false);
       onSelect(id);
+      scrollToChapter(id);
     },
-    [onSelect, setPlaying],
+    [onSelect, scrollToChapter],
   );
 
   const onPreview = useCallback(
@@ -119,6 +142,7 @@ export function OpeningApp() {
   function onPlay(ply: Ply) {
     if (!isLegalPly(pos, ply)) return;
     setPlaying(false);
+    setPlayHint(false);
     setPlay((cur) => ({
       id: selectedId,
       extra: [...(cur.id === selectedId ? cur.extra : []), ply],
@@ -161,7 +185,10 @@ export function OpeningApp() {
   }
 
   useEffect(() => {
-    return () => window.clearTimeout(hoverTimer.current);
+    return () => {
+      window.clearTimeout(hoverTimer.current);
+      window.clearTimeout(skipSpyTimer.current);
+    };
   }, []);
 
   useEffect(() => {
@@ -171,11 +198,13 @@ export function OpeningApp() {
       if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return;
       e.preventDefault();
       setPlaying(false);
-      onSelect(stepMainline(selectedId, e.key === "ArrowRight" ? 1 : -1));
+      const next = stepMainline(selectedId, e.key === "ArrowRight" ? 1 : -1);
+      onSelect(next);
+      scrollToChapter(next);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onSelect, selectedId]);
+  }, [onSelect, scrollToChapter, selectedId]);
 
   useEffect(() => {
     playingRef.current = playing;
@@ -192,10 +221,11 @@ export function OpeningApp() {
         return;
       }
       onSelect(next);
+      scrollToChapter(next);
       if (stepMainline(next, 1) === next) setPlaying(false);
     }, wait);
     return () => window.clearTimeout(timer);
-  }, [playing, selectedId, atEnd, node.plies.length, onSelect]);
+  }, [playing, selectedId, atEnd, node.plies.length, onSelect, scrollToChapter]);
 
   useEffect(() => {
     if (!playing) return;
@@ -214,6 +244,35 @@ export function OpeningApp() {
       document.removeEventListener("visibilitychange", onVis);
     };
   }, [playing]);
+
+  useEffect(() => {
+    const chapters = [...document.querySelectorAll<HTMLElement>("[data-chapter]")];
+    if (chapters.length === 0) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (skipSpy.current) return;
+        const visible = entries.filter((e) => e.isIntersecting);
+        if (visible.length === 0) return;
+        visible.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        const id = visible[0].target.getAttribute("data-chapter");
+        if (!id || id === selectedRef.current) return;
+        onSelect(id);
+      },
+      { rootMargin: "-18% 0px -62% 0px", threshold: [0, 0.1, 0.25] },
+    );
+    for (const el of chapters) io.observe(el);
+    return () => io.disconnect();
+  }, [onSelect, hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    const move = searchParams.get("move");
+    if (!move || !isOpeningId(move) || move === FLAGSHIP_ID) return;
+    const timer = window.setTimeout(() => scrollToChapter(move), 40);
+    return () => window.clearTimeout(timer);
+    // Deep-link once after hydration — not on every selectedId change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
 
   const lastExtra = extra[extra.length - 1];
   const highlight: [string, string] | null = lastExtra
@@ -234,11 +293,28 @@ export function OpeningApp() {
         : node.moveNumber + 1;
   const playMoveNumber = extra.length === 0 ? moveNumber : moveNumber + Math.floor((extra.length + (startSide === "b" ? 1 : 0)) / 2);
 
+  function onReadTheGame() {
+    if (playing) {
+      setPlaying(false);
+      return;
+    }
+    if (atEnd) {
+      onSelect(ROOT_ID);
+      scrollToChapter(ROOT_ID);
+    }
+    setPlaying(true);
+  }
+
+  function onPlayThePosition() {
+    setPlayHint(true);
+    document.getElementById("play-board")?.focus();
+  }
+
   return (
     <div className="min-h-screen text-ink" data-hydrated={hydrated ? "true" : "false"}>
       <div className="relative z-[1] flex justify-center px-2 py-3 sm:px-3">
         <div data-testid="newspaper-spread" className="sheet w-full max-w-[1180px]">
-          <Masthead view={view} onView={setView} />
+          <Masthead />
           <div className="flex flex-col min-[980px]:flex-row-reverse min-[980px]:items-stretch">
             <aside
               data-testid="board-column"
@@ -274,59 +350,52 @@ export function OpeningApp() {
                     data-play-control=""
                     data-testid="read-the-game"
                     aria-pressed={playing}
-                    disabled={!playing && atEnd}
-                    onClick={() => setPlaying((p) => !p)}
+                    onClick={onReadTheGame}
                     className={cn(
                       "inline-flex items-center gap-2 border-2 border-ink px-3 py-2 font-mono text-[11px] uppercase tracking-widest",
                       playing ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-paper-deep",
-                      "disabled:opacity-40",
                     )}
                   >
                     <span aria-hidden>{playing ? "❚❚" : "▶"}</span>
                     {playing ? "Pause" : "Read the game"}
                   </button>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-faded">
+                  <button
+                    type="button"
+                    data-testid="play-the-position"
+                    onClick={onPlayThePosition}
+                    className={cn(
+                      "inline-flex items-center gap-2 border-2 border-ink px-3 py-2 font-mono text-[11px] uppercase tracking-widest",
+                      playHint ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-paper-deep",
+                    )}
+                  >
+                    <span aria-hidden>♟</span>
                     {BROADSHEET.playInvite}
-                  </p>
+                  </button>
                 </div>
+                {playHint ? (
+                  <p className="font-display text-[13px] italic text-ink">{BROADSHEET.playHint}</p>
+                ) : null}
               </div>
-              <AnnotationPanel node={node} />
             </aside>
             <NewspaperColumn />
             <section
               data-testid="tree-column"
               className="col-stack flex min-w-0 flex-1 flex-col overflow-x-hidden"
             >
-              <div
-                className={cn(
-                  "view-turn max-[979px]:hidden",
-                  view === "tree"
-                    ? "min-[980px]:relative min-[980px]:visible min-[980px]:opacity-100"
-                    : "min-[980px]:pointer-events-none min-[980px]:absolute min-[980px]:inset-x-0 min-[980px]:top-0 min-[980px]:h-0 min-[980px]:overflow-hidden min-[980px]:invisible min-[980px]:opacity-0",
-                )}
-              >
+              <div className="max-[979px]:hidden">
                 <TreeView
                   selectedId={selectedId}
                   onSelect={userSelect}
                   onPreview={onPreview}
                   tape={tape}
                 />
-                <BroadsheetFiller />
               </div>
-              <div
-                className={cn(
-                  "view-turn",
-                  view === "notation"
-                    ? "relative visible opacity-100"
-                    : "max-[979px]:relative max-[979px]:visible max-[979px]:opacity-100 min-[980px]:pointer-events-none min-[980px]:absolute min-[980px]:inset-x-0 min-[980px]:top-0 min-[980px]:h-0 min-[980px]:overflow-hidden min-[980px]:invisible min-[980px]:opacity-0",
-                )}
-              >
-                <NotationView
-                  selectedId={selectedId}
-                  onSelect={userSelect}
-                  onPreview={onPreview}
-                />
-              </div>
+              <NotationView
+                selectedId={selectedId}
+                onSelect={userSelect}
+                onPreview={onPreview}
+              />
+              <BroadsheetFiller />
             </section>
           </div>
         </div>

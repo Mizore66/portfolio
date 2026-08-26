@@ -7,28 +7,28 @@ export function BroadsheetFiller() {
   return (
     <aside
       data-testid="broadsheet-filler"
-      className="mt-6 flex flex-1 flex-col justify-end gap-6 border-t-2 border-ink pt-6"
+      className="mt-2 flex flex-col gap-6 border-t-2 border-ink pt-6"
       aria-label="Classifieds"
     >
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="border-2 border-ink p-3">
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
-            {BROADSHEET.correspondenceKicker}
+            {BROADSHEET.errataKicker}
           </p>
-          <a
-            href={`mailto:${resumeData.email}`}
-            className="mt-2 block font-mono text-[12px] text-book-blue underline decoration-1 underline-offset-4 hover:text-score-red"
-          >
-            {BROADSHEET.correspondence}
-          </a>
+          <p className="mt-2 font-display text-[13px] leading-snug italic text-ink">
+            {BROADSHEET.errata}
+          </p>
         </div>
         <div className="border-2 border-dashed border-ink p-3">
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
             {BROADSHEET.classifiedKicker}
           </p>
-          <p className="mt-2 font-display text-[13px] leading-snug italic text-ink">
+          <a
+            href={`mailto:${resumeData.email}`}
+            className="mt-2 block font-display text-[13px] leading-snug italic text-ink hover:text-score-red"
+          >
             {BROADSHEET.classified}
-          </p>
+          </a>
         </div>
       </div>
       <div className="flex items-end justify-between gap-4">

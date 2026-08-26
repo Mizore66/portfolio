@@ -305,6 +305,24 @@
   color: var(--score-red);
 }
 
+.chapter-copy {
+  overflow: auto;
+}
+
+.plate-inset {
+  float: right;
+  width: min(200px, 46%);
+  margin: 0 0 12px 16px;
+}
+
+@media (max-width: 639px) {
+  .plate-inset {
+    float: none;
+    width: min(280px, 100%);
+    margin: 0 0 16px 0;
+  }
+}
+
 .halftone-plate-frame {
   position: relative;
   overflow: hidden;

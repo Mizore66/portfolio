@@ -26,16 +26,20 @@ const linkedin = `https://${resumeData.linkedin}`;
 
 /** Period filler for empty column space. Copy lives here, not in the renderer. */
 export const BROADSHEET = {
-  correspondenceKicker: "Correspondence",
-  correspondence: resumeData.email,
+  errataKicker: "Errata",
+  errata: "None reported. Corrections to the address above.",
   classifiedKicker: "Situations Wanted",
   classified:
     "Engineer, MLOps & full-stack, seeks fintech/AI infrastructure post. Apply within →",
   weatherKicker: "Weather",
   weather: "Outlook: shipping",
   stamp: "C50",
-  playInvite: "Play the position — the annotator will respond",
+  playInvite: "Play the position",
+  playHint: "The annotator will respond",
   lampshade: "Annotators and engines have disagreed since 1997.",
+  gameKicker: "The game",
+  printEdition: "Print edition",
+  printHref: "/print-edition",
 };
 
 /**
@@ -60,11 +64,7 @@ export const OPENING_NODES: OpeningNode[] = [
       "The board is set before the first pawn moves. What follows is not a puzzle. It is the line I actually played — jobs as moves, the rest of a life as annotations. Step with the arrow keys, or skip the diagram and read the scoresheet. Chess is the content, never the lock.",
     eval: 0.2,
     evalText: "+0.2",
-    artifacts: [
-      { label: "Email", href: mail },
-      { label: "GitHub", href: github },
-      { label: "LinkedIn", href: linkedin },
-    ],
+    artifacts: [],
     plies: [],
     hl: null,
     cap: "Starting position",
@@ -334,6 +334,7 @@ export const OPENING_NODES: OpeningNode[] = [
     ],
     hl: ["e1", "g1"],
     cap: "Position after 4. O-O",
+    inlineDiagram: true,
   },
   {
     id: "club",
@@ -413,7 +414,6 @@ export const OPENING_NODES: OpeningNode[] = [
       { label: veridian.name, href: `/projects/${veridian.slug}` },
       { label: graphrag.name, href: `/projects/${graphrag.slug}` },
       { label: slm.name, href: `/projects/${slm.slug}` },
-      { label: "GitHub", href: github },
     ],
     plate: {
       src: "/plates/plate-veridian.jpg",
@@ -422,6 +422,7 @@ export const OPENING_NODES: OpeningNode[] = [
     plies: [{ from: "d2", to: "d4" }],
     hl: ["d2", "d4"],
     cap: "Position after 5. d4",
+    inlineDiagram: true,
   },
   {
     id: "exd4",
@@ -470,9 +471,11 @@ export const OPENING_NODES: OpeningNode[] = [
       { label: "Email", href: mail },
       { label: "GitHub", href: github },
       { label: "LinkedIn", href: linkedin },
+      { label: BROADSHEET.printEdition, href: BROADSHEET.printHref },
     ],
     plies: [{ from: "f1", to: "e1" }],
     hl: ["f1", "e1"],
     cap: "Position after 6. Re1",
+    inlineDiagram: true,
   },
 ];

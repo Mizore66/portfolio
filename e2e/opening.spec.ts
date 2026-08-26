@@ -2,15 +2,17 @@ import { expect, test } from "@playwright/test";
 import { OPENING_NODES } from "../src/content/opening";
 
 test.describe("Opening Preparation", () => {
-  test("notation lists every node and stays in sync with the panel", async ({
+  test("notation lists every node and stays in sync with the board", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
-    await page.getByRole("button", { name: "Notation" }).click();
     await expect(page.getByTestId("notation-view")).toBeVisible();
+    await expect(page.getByTestId("tree-view")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Notation" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Tree" })).toHaveCount(0);
 
     for (const node of OPENING_NODES) {
       await expect(
@@ -19,9 +21,12 @@ test.describe("Opening Preparation", () => {
     }
 
     await page.locator('[data-testid="notation-view"] [data-node-id="d4"]').click();
+    await expect(
+      page.locator('[data-testid="notation-view"] [data-node-id="d4"]'),
+    ).toHaveAttribute("aria-current", "true");
     await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
-    await expect(page.getByText("The line so far")).toBeVisible();
-    await expect(page.getByText("1. e4! e5 2. Nf3 Nc6 3. Bc4 Bc5 4. O-O! Nf6! 5. d4!!")).toBeVisible();
+    await expect(page.getByText("The line so far").first()).toBeVisible();
+    await expect(page.getByText("1. e4! e5 2. Nf3 Nc6 3. Bc4 Bc5 4. O-O! Nf6! 5. d4!!").first()).toBeVisible();
   });
 
   test("lands on the flagship as a single newspaper page", async ({
@@ -37,7 +42,8 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("lead-headline")).toHaveCount(0);
     await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
     await expect(page.getByText(/^\d+ alts?$/i)).toHaveCount(0);
-    await expect(page.getByTestId("halftone-plate")).toBeVisible();
+    await expect(page.getByTestId("inline-diagram")).toHaveCount(3);
+    await expect(page.getByTestId("halftone-plate").first()).toBeVisible();
     await expect(page.getByTestId("glass-engine")).toBeVisible();
     await expect(page.getByTestId("eval-bar")).toBeVisible();
     await expect(page.getByTestId("newspaper-column")).toBeVisible();
@@ -71,9 +77,15 @@ test.describe("Opening Preparation", () => {
     expect(gutterBox!.width).toBeLessThan(28);
 
     await page.locator('[data-testid="tree-view"] [data-node-id="e4"]').click();
-    await expect(page.getByRole("heading", { level: 2, name: "The University Opening" })).toBeVisible();
+    await expect(page.locator('[data-testid="tree-view"] [data-node-id="e4"]')).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
     await page.locator('[data-testid="tree-view"] [data-node-id="d4"]').click();
-    await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
+    await expect(page.locator('[data-testid="tree-view"] [data-node-id="d4"]')).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
   });
 
   test("the engine eval stays inside the bar", async ({ page }) => {
@@ -111,16 +123,28 @@ test.describe("Opening Preparation", () => {
     await page.goto("/?move=start");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
-    await expect(page.getByRole("heading", { level: 2, name: "Opening Preparation" })).toBeVisible();
+    await expect(page.locator('[data-testid="tree-view"] [data-node-id="start"]')).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
 
     await page.keyboard.press("ArrowRight");
-    await expect(page.getByRole("heading", { level: 2, name: "The University Opening" })).toBeVisible();
+    await expect(page.locator('[data-testid="tree-view"] [data-node-id="e4"]')).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
 
     await page.keyboard.press("ArrowRight");
-    await expect(page.getByRole("heading", { level: 2, name: "Meeting e4 with e5" })).toBeVisible();
+    await expect(page.locator('[data-testid="tree-view"] [data-node-id="e5"]')).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
 
     await page.keyboard.press("ArrowLeft");
-    await expect(page.getByRole("heading", { level: 2, name: "The University Opening" })).toBeVisible();
+    await expect(page.locator('[data-testid="tree-view"] [data-node-id="e4"]')).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
   });
 
   test("tree and notation stay in sync", async ({ page }) => {
@@ -133,14 +157,10 @@ test.describe("Opening Preparation", () => {
       "true",
     );
     await page.locator('[data-testid="tree-view"] [data-node-id="oo"]').click();
-    await expect(page.getByRole("heading", { level: 2, name: "Castling" })).toBeVisible();
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="oo"]')).toHaveAttribute(
       "aria-current",
       "true",
     );
-
-    await page.getByRole("button", { name: "Notation" }).click();
-    await expect(page.getByTestId("notation-view")).toBeVisible();
     await expect(
       page.locator('[data-testid="notation-view"] [data-node-id="oo"]'),
     ).toHaveAttribute("aria-current", "true");
@@ -165,7 +185,10 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
 
     await page.goto("/?move=not-a-node");
-    await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
+    await expect(page.locator('[data-testid="tree-view"] [data-node-id="d4"]')).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
 
     await page.goto("/?move=d4");
     await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
@@ -191,7 +214,10 @@ test.describe("Opening Preparation", () => {
 
     const before = await yAt();
     await page.locator('[data-testid="tree-view"] [data-node-id="e4"]').click();
-    await expect(page.getByRole("heading", { level: 2, name: "The University Opening" })).toBeVisible();
+    await expect(page.locator('[data-testid="tree-view"] [data-node-id="e4"]')).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
 
     // Router replace can take longer than a single timeout. Poll until the pawn
     // has left e2, then confirm it is still travelling — a teleport would already
@@ -261,9 +287,11 @@ test.describe("Opening Preparation", () => {
     await page.goto("/?move=start");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await page.getByTestId("read-the-game").click();
-    await expect(page.getByRole("heading", { level: 2, name: "The University Opening" })).toBeVisible({
-      timeout: 2000,
-    });
+    await expect(page.locator('[data-testid="tree-view"] [data-node-id="e4"]')).toHaveAttribute(
+      "aria-current",
+      "true",
+      { timeout: 2000 },
+    );
     await page.locator('[data-testid="tree-view"] [data-node-id="e5"]').click();
     await expect(page.getByTestId("read-the-game")).toContainText("Read the game");
   });
@@ -314,16 +342,22 @@ test.describe("Opening Preparation", () => {
 
     const boardX = (await page.getByTestId("board-diagram").boundingBox())!.x;
     const engineX = (await page.getByTestId("glass-engine").boundingBox())!.x;
-    const annotX = (await page.getByTestId("annotation-panel").boundingBox())!.x;
     expect(Math.abs(boardX - engineX)).toBeLessThan(2);
-    expect(Math.abs(engineX - annotX)).toBeLessThan(2);
 
     const overflowY = await page.getByTestId("board-column").evaluate((el) => getComputedStyle(el).overflowY);
     expect(overflowY === "auto" || overflowY === "scroll").toBe(false);
 
     await expect(page.getByTestId("broadsheet-filler")).toBeVisible();
     await expect(page.getByTestId("broadsheet-filler")).toContainText("Situations Wanted");
+    await expect(page.getByTestId("broadsheet-filler")).toContainText("Errata");
+    await expect(page.getByTestId("broadsheet-filler")).not.toContainText(/anasqumhiyeh@/i);
+    await expect(page.getByRole("link", { name: "Print edition" }).first()).toBeVisible();
+    await expect(page.getByTestId("play-the-position")).toBeVisible();
     await expect(page.getByTestId("pv-arrow")).toBeVisible({ timeout: 4000 });
+
+    const pdf = await page.request.get("/print-edition");
+    expect(pdf.ok()).toBe(true);
+    expect(pdf.headers()["content-type"]).toContain("pdf");
   });
 
   test("the diagram quiz and a legal play ply both work", async ({ page }) => {
@@ -333,7 +367,9 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("find-the-break")).toBeVisible();
     await page.locator('[data-sq="d2"]').click();
     await page.locator('[data-sq="d4"]').click();
-    await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
+    await expect(
+      page.locator('[data-testid="notation-view"] [data-node-id="d4"]'),
+    ).toHaveAttribute("aria-current", "true");
 
     await page.goto("/?move=start");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();

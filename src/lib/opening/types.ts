@@ -39,6 +39,8 @@ export type OpeningNode = {
   cap: string;
   /** Newspaper plate — project photograph, when the node has one. */
   plate?: { src: string; caption: string };
+  /** Small static diagram in the scoresheet (flagship, castle, finale). */
+  inlineDiagram?: boolean;
   /** Optional one-move diagram quiz. Never a lock. */
   puzzle?: {
     prompt: string;
