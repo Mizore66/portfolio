@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { BoardDiagram } from "@/components/opening/BoardDiagram";
 import { BroadsheetFiller } from "@/components/opening/BroadsheetFiller";
 import { GlassEngine, useEngineSearch } from "@/components/opening/GlassEngine";
@@ -26,7 +25,6 @@ import {
   collectPlies,
   FLAGSHIP_ID,
   getNode,
-  isOpeningId,
   lastPly,
   nextMainlineBook,
   ROOT_ID,
@@ -34,27 +32,29 @@ import {
   stepMainline,
 } from "@/lib/opening/tree";
 import { visibleEngineLine } from "@/lib/chess/engine-view";
+import {
+  getSelection,
+  replaceSelection,
+  subscribeSelection,
+} from "@/lib/opening/selection";
 import type { Ply } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
 
 const NO_EXTRA: Ply[] = [];
-
-function moveFromSearch(params: URLSearchParams): string {
-  const move = params.get("move");
-  if (!move) return FLAGSHIP_ID;
-  return isOpeningId(move) ? move : FLAGSHIP_ID;
-}
+const SERVER_SELECTION = { move: FLAGSHIP_ID, tape: false };
 
 function reducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
 export function OpeningApp() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const selectedId = moveFromSearch(searchParams);
-  const tape = searchParams.get("tape") === "1";
+  const selection = useSyncExternalStore(
+    subscribeSelection,
+    getSelection,
+    () => SERVER_SELECTION,
+  );
+  const selectedId = selection.move;
+  const tape = selection.tape;
   const [playing, setPlaying] = useState(false);
   const [playHint, setPlayHint] = useState(false);
   const [previewHl, setPreviewHl] = useState<[string, string] | null>(null);
@@ -97,13 +97,9 @@ export function OpeningApp() {
   const onSelect = useCallback(
     (id: string) => {
       setPreviewHl(null);
-      const params = new URLSearchParams();
-      if (id !== FLAGSHIP_ID) params.set("move", id);
-      if (tape) params.set("tape", "1");
-      const q = params.toString();
-      router.replace(q ? `${pathname}?${q}` : pathname, { scroll: false });
+      replaceSelection(id, tape);
     },
-    [pathname, router, tape, setPreviewHl],
+    [tape, setPreviewHl],
   );
 
   const scrollToChapter = useCallback((id: string) => {
@@ -292,9 +288,8 @@ export function OpeningApp() {
 
   useEffect(() => {
     if (!hydrated) return;
-    const move = searchParams.get("move");
-    if (!move || !isOpeningId(move) || move === FLAGSHIP_ID) return;
-    const timer = window.setTimeout(() => scrollToChapter(move), 40);
+    if (selectedId === FLAGSHIP_ID) return;
+    const timer = window.setTimeout(() => scrollToChapter(selectedId), 40);
     return () => window.clearTimeout(timer);
     // Deep-link once after hydration — not on every selectedId change.
     // eslint-disable-next-line react-hooks/exhaustive-deps

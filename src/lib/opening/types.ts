@@ -37,10 +37,14 @@ export type OpeningNode = {
   plies: Ply[];
   hl: [string, string] | null;
   cap: string;
-  /** Newspaper plate — project photograph, when the node has one. */
+  /** Newspaper plate — flagship and major projects only. */
   plate?: { src: string; caption: string };
-  /** Small static diagram in the scoresheet (flagship, castle, finale). */
+  /** Small static diagram in the scoresheet (career figures, castle, flagship, finale). */
   inlineDiagram?: boolean;
+  /** Inked apparatus sketch for a technical/career chapter. */
+  figure?: { name: string; tech: string[] };
+  /** Quarter-column engraving for a life branch. */
+  spot?: "trail" | "clock";
   /** Optional one-move diagram quiz. Never a lock. */
   puzzle?: {
     prompt: string;

@@ -11,6 +11,15 @@ function project(slug: string) {
   return p;
 }
 
+function job(company: string) {
+  const j = resumeData.experience.find((x) => x.company === company);
+  if (!j) throw new Error(`Missing job: ${company}`);
+  return j;
+}
+
+const petronas = job("Petronas");
+const setel = job("Setel");
+const wd = job("Western Digital");
 const edu = resumeData.education;
 const veridian = project("veridian");
 const circuit = project("circuitmindai");
@@ -91,6 +100,7 @@ export const OPENING_NODES: OpeningNode[] = [
     plies: [{ from: "e2", to: "e4" }],
     hl: ["e2", "e4"],
     cap: "Position after 1. e4",
+    inlineDiagram: true,
   },
   {
     id: "hike",
@@ -113,6 +123,7 @@ export const OPENING_NODES: OpeningNode[] = [
     plies: [{ from: "g7", to: "g6" }],
     hl: ["g7", "g6"],
     cap: "Position after 1…g6 (High Ground)",
+    spot: "trail",
   },
   {
     id: "alekhine",
@@ -186,6 +197,7 @@ export const OPENING_NODES: OpeningNode[] = [
     plies: [{ from: "g1", to: "f3" }],
     hl: ["g1", "f3"],
     cap: "Position after 2. Nf3",
+    figure: { name: petronas.company ?? petronas.title, tech: petronas.tech },
   },
   {
     id: "elephant",
@@ -259,6 +271,7 @@ export const OPENING_NODES: OpeningNode[] = [
     plies: [{ from: "b8", to: "c6" }],
     hl: ["b8", "c6"],
     cap: "Position after 2…Nc6",
+    figure: { name: setel.company ?? setel.title, tech: setel.tech },
   },
   {
     id: "bc4",
@@ -281,6 +294,7 @@ export const OPENING_NODES: OpeningNode[] = [
     plies: [{ from: "f1", to: "c4" }],
     hl: ["f1", "c4"],
     cap: "Position after 3. Bc4",
+    figure: { name: wd.company ?? wd.title, tech: wd.tech },
   },
   {
     id: "bc5",
@@ -358,6 +372,7 @@ export const OPENING_NODES: OpeningNode[] = [
     plies: [{ from: "d7", to: "d6" }],
     hl: ["d7", "d6"],
     cap: "Position after 4…d6 (Club Years)",
+    spot: "clock",
   },
   {
     id: "nf6",
@@ -443,10 +458,6 @@ export const OPENING_NODES: OpeningNode[] = [
     eval: 0.7,
     evalText: "+0.70",
     artifacts: [{ label: slm.name, href: `/projects/${slm.slug}` }],
-    plate: {
-      src: "/plates/plate-slm.jpg",
-      caption: "Plate · SLM Distillation — the teacher cabinet and the small machine.",
-    },
     plies: [{ from: "e5", to: "d4" }],
     hl: ["e5", "d4"],
     cap: "Position after 5…exd4",

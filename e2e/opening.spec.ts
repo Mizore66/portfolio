@@ -42,8 +42,14 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("lead-headline")).toHaveCount(0);
     await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
     await expect(page.getByText(/^\d+ alts?$/i)).toHaveCount(0);
-    await expect(page.getByTestId("inline-diagram")).toHaveCount(3);
+    await expect(page.getByTestId("inline-diagram")).toHaveCount(4);
     await expect(page.getByTestId("halftone-plate").first()).toBeVisible();
+    await expect(page.getByTestId("spot-illustration")).toHaveCount(2);
+    await expect(
+      page.locator('[data-testid="notation-view"] [data-testid="architecture-figure"]'),
+    ).toHaveCount(3);
+    await expect(page.locator("#chapter-e5 [data-testid='halftone-plate']")).toHaveCount(0);
+    await expect(page.locator("#chapter-exd4 [data-testid='halftone-plate']")).toHaveCount(0);
     await expect(page.getByTestId("glass-engine")).toBeVisible();
     await expect(page.getByTestId("eval-bar")).toBeVisible();
     await expect(page.getByTestId("newspaper-column")).toBeVisible();
@@ -323,9 +329,11 @@ test.describe("Opening Preparation", () => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
-    await expect(page.getByTestId("engine-pv")).not.toHaveText("…", { timeout: 4000 });
+    await expect.poll(async () => page.getByTestId("engine-pv").innerText(), { timeout: 5000 }).not.toBe("…");
     await expect(page.getByTestId("engine-pv")).not.toHaveText(/^[a-h][1-8][a-h][1-8]/);
     await expect(page.getByTestId("engine-eval")).not.toHaveText("…");
+    const depth = await page.getByTestId("engine-depth").innerText();
+    expect(Number(depth.match(/^d(\d+)/)?.[1] ?? 0)).toBeGreaterThanOrEqual(5);
   });
 
   test("exhibits read as a pasted clipping", async ({ page }) => {
@@ -360,7 +368,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("broadsheet-filler")).not.toContainText(/anasqumhiyeh@/i);
     await expect(page.getByRole("link", { name: "Print edition" }).first()).toBeVisible();
     await expect(page.getByTestId("play-the-position")).toBeVisible();
-    await expect(page.getByTestId("pv-arrow")).toBeVisible({ timeout: 4000 });
+    await expect(page.getByTestId("pv-arrow")).toBeVisible({ timeout: 5000 });
 
     const pdf = await page.request.get("/print-edition");
     expect(pdf.ok()).toBe(true);
@@ -422,8 +430,13 @@ test.describe("Opening Preparation", () => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/?move=start");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
-    await expect(page.getByTestId("engine-pv")).toHaveText("1. e4");
+    await expect
+      .poll(async () => page.getByTestId("engine-pv").innerText(), { timeout: 5000 })
+      .toMatch(/^(…|1\. e4)/);
     await expect(page.getByTestId("engine-pv")).not.toHaveText(/Nc3/);
+    await expect
+      .poll(async () => page.getByTestId("engine-pv").innerText(), { timeout: 5000 })
+      .toBe("1. e4");
     await expect(page.getByTestId("pv-arrow")).toBeVisible();
   });
 
@@ -466,6 +479,32 @@ test.describe("Opening Preparation", () => {
       expect(piece.x + piece.width).toBeLessThanOrEqual(box.x + box.width + 1);
       expect(piece.y).toBeGreaterThanOrEqual(box.y - 1);
       expect(piece.y + piece.height).toBeLessThanOrEqual(box.y + box.height + 1);
+    }
+  });
+
+  test("scroll-spy updates the URL without snapping the page to the top", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+
+    const target = await page.locator("#chapter-oo").evaluate((el) => {
+      return window.scrollY + el.getBoundingClientRect().top - 40;
+    });
+    await page.evaluate((y) => window.scrollTo(0, y), target);
+    const y0 = await page.evaluate(() => window.scrollY);
+    expect(y0).toBeGreaterThan(400);
+
+    await expect
+      .poll(async () => page.evaluate(() => window.location.search), { timeout: 2500 })
+      .toMatch(/move=oo/);
+
+    const samples: number[] = [];
+    for (let i = 0; i < 6; i++) {
+      samples.push(await page.evaluate(() => window.scrollY));
+      await page.waitForTimeout(100);
+    }
+    for (const y of samples) {
+      expect(Math.abs(y - y0)).toBeLessThan(80);
     }
   });
 });

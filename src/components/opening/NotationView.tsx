@@ -1,10 +1,12 @@
 "use client";
 
 import { Fragment } from "react";
+import { ArchitectureFigure } from "@/components/opening/ArchitectureFigure";
 import { ArtifactLinks } from "@/components/opening/ArtifactLinks";
 import { GlyphStamp } from "@/components/opening/GlyphStamp";
 import { HalftonePlate } from "@/components/opening/HalftonePlate";
 import { MiniBoard } from "@/components/opening/MiniBoard";
+import { SpotIllustration } from "@/components/opening/SpotIllustration";
 import { BROADSHEET } from "@/content/opening";
 import {
   buildNotation,
@@ -95,6 +97,7 @@ function Chapter({
       </header>
 
       <div className="chapter-copy">
+        {node.spot ? <SpotIllustration mark={node.spot} /> : null}
         {node.plate ? (
           <HalftonePlate
             src={node.plate.src}
@@ -114,6 +117,16 @@ function Chapter({
           </p>
         ) : null}
       </div>
+
+      {node.figure ? (
+        <div className="mt-4">
+          <ArchitectureFigure
+            name={node.figure.name}
+            tech={node.figure.tech}
+            kicker="Fig. · The apparatus"
+          />
+        </div>
+      ) : null}
 
       {node.inlineDiagram ? (
         <MiniBoard plies={collectPlies(node.id)} highlight={node.hl} caption={node.cap} />

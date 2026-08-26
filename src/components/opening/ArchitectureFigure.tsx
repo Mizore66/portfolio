@@ -1,14 +1,16 @@
 export function ArchitectureFigure({
   name,
   tech,
+  kicker = "Fig. 2 · The apparatus",
 }: {
   name: string;
   tech: string[];
+  kicker?: string;
 }) {
   return (
     <figure className="border-2 border-ink" data-testid="architecture-figure">
       <p className="border-b border-ink px-3 py-2 font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
-        Fig. 2 · The apparatus · {name}
+        {kicker} · {name}
       </p>
       <ol className="flex flex-wrap items-center gap-x-1 gap-y-2 p-3">
         {tech.map((step, i) => (

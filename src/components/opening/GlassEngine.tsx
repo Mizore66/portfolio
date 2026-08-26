@@ -16,7 +16,7 @@ import type { Color } from "@/lib/chess/replay";
 import type { Ply } from "@/lib/opening/types";
 
 const MAX_DEPTH = 11;
-const THINK_MS = 560;
+const THINK_MS = 960;
 
 export function useEngineSearch(plies: Ply[], side: Color) {
   const [info, setInfo] = useState<SearchInfo | null>(null);
@@ -98,7 +98,10 @@ export function GlassEngine({
       <p className="mt-1 truncate font-mono text-[13px] text-book-blue" data-testid="engine-pv">
         {line.pv.length ? numberPv(line.pv, side, moveNumber) : "…"}
       </p>
-      <p className="mt-1 font-mono text-[10px] text-faded">
+      <p
+        className="mt-1 font-mono text-[10px] text-faded"
+        data-testid="engine-depth"
+      >
         {info
           ? `d${info.depth} · ${info.nps.toLocaleString()} n/s${info.thinking ? " · …" : ""}`
           : "searching"}

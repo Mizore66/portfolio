@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  getNode,
   isOpeningId,
   isSingleMainlineAdvance,
   issueChapters,
@@ -84,5 +85,24 @@ describe("repertoire book and issue index", () => {
 
   it("lists White's six mainline chapters for the sticky rail", () => {
     expect(issueChapters().map((n) => n.id)).toEqual(["e4", "nf3", "bc4", "oo", "d4", "re1"]);
+  });
+});
+
+describe("art taxonomy", () => {
+  it("leaves connective moves without plates, figures, or spots", () => {
+    for (const id of ["e5", "exd4"]) {
+      const n = getNode(id);
+      expect(n.plate).toBeUndefined();
+      expect(n.figure).toBeUndefined();
+      expect(n.spot).toBeUndefined();
+      expect(n.inlineDiagram).toBeFalsy();
+    }
+  });
+
+  it("gives life branches a spot and career chapters a figure, not another plate", () => {
+    expect(getNode("hike").spot).toBe("trail");
+    expect(getNode("club").spot).toBe("clock");
+    expect(getNode("nf3").figure?.tech.length).toBeGreaterThan(0);
+    expect(getNode("d4").plate).toBeTruthy();
   });
 });
