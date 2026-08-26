@@ -50,6 +50,22 @@ export const BROADSHEET = {
   printHref: "/print-edition",
   issueKicker: "In this issue",
   skipLink: "Skip to the game",
+  dek: "Software Engineer — MLOps & Full-Stack",
+  leadProof: "5. d4!! · Veridian · +45% retrieval vs vector-only RAG",
+  availability: "Open to 1–3 year fintech and AI infrastructure roles. Replies within two days.",
+  puzzleKicker: "Today's puzzle",
+  classifiedSticky: "Situations Wanted — apply within",
+  colophonKicker: "How this paper was set",
+  colophon:
+    "Type: Libre Baskerville, Lora, IBM Plex Mono. Ink #1a120c on cream #f6eedc. The tree is the repertoire; the scoresheet is the CV; the glass case is mailbox-64 alpha-beta with PeSTO tables. The 2200 on the masthead of that case is club strength, not a published Elo. No template. Chess is content, never a lock.",
+  perftKicker: "Perft — the generator's receipt",
+  correctionKicker: "Correction",
+  correctionHed: "The page you requested was a misprint.",
+  correctionDek: "It never made the plate. The game is still on the front page.",
+  homeLink: "Back to the game",
+  searching: "going to press…",
+  pressMark: "Set by hand. No template survived.",
+  weatherCycle: ["Outlook: shipping", "Fog on the e-file", "High pressure on d4"],
 };
 
 /**

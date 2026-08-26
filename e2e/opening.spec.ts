@@ -333,7 +333,7 @@ test.describe("Opening Preparation", () => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
-    await expect.poll(async () => page.getByTestId("engine-pv").innerText(), { timeout: 5000 }).not.toBe("…");
+    await expect.poll(async () => page.getByTestId("engine-pv").innerText(), { timeout: 7000 }).not.toBe("…");
     await expect(page.getByTestId("engine-pv")).not.toHaveText(/^[a-h][1-8][a-h][1-8]/);
     await expect(page.getByTestId("engine-eval")).not.toHaveText("…");
     const depth = await page.getByTestId("engine-depth").innerText();
@@ -435,11 +435,11 @@ test.describe("Opening Preparation", () => {
     await page.goto("/?move=start");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect
-      .poll(async () => page.getByTestId("engine-pv").innerText(), { timeout: 5000 })
+      .poll(async () => page.getByTestId("engine-pv").innerText(), { timeout: 7000 })
       .toMatch(/^(…|1\. e4)/);
     await expect(page.getByTestId("engine-pv")).not.toHaveText(/Nc3/);
     await expect
-      .poll(async () => page.getByTestId("engine-pv").innerText(), { timeout: 5000 })
+      .poll(async () => page.getByTestId("engine-pv").innerText(), { timeout: 7000 })
       .toBe("1. e4");
     await expect(page.getByTestId("pv-arrow")).toBeVisible();
   });
@@ -556,5 +556,77 @@ test.describe("Opening Preparation", () => {
     for (const y of samples) {
       expect(y).toBeGreaterThan(400);
     }
+  });
+
+  test("the first viewport carries name, role, and one proof", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    const inFold = async (testId: string) => {
+      const box = await page.getByTestId(testId).boundingBox();
+      expect(box).toBeTruthy();
+      expect(box!.y).toBeGreaterThanOrEqual(0);
+      expect(box!.y + box!.height).toBeLessThan(900);
+    };
+    await expect(page.getByRole("heading", { level: 1, name: "Anas T. Qumhiyeh" })).toBeVisible();
+    await inFold("masthead-role");
+    await inFold("masthead-proof");
+    await expect(page.getByTestId("masthead-role")).toHaveText(/Software Engineer/i);
+    await expect(page.getByTestId("masthead-proof")).toHaveText(/Veridian/);
+  });
+
+  test("the engine depth climbs in view before the PV is honest", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    const seen: number[] = [];
+    await expect
+      .poll(
+        async () => {
+          const d = Number(await page.getByTestId("engine-depth").getAttribute("data-depth"));
+          if (d > 0 && seen[seen.length - 1] !== d) seen.push(d);
+          return Math.max(0, ...seen);
+        },
+        { timeout: 6000, intervals: [24, 32, 40] },
+      )
+      .toBeGreaterThanOrEqual(5);
+    expect(seen.some((d) => d > 0 && d < 5)).toBe(true);
+    await expect(page.getByTestId("engine-pv")).not.toHaveText(/Nc3/);
+  });
+
+  test("a misprint page runs a correction, not a default 404", async ({ page }) => {
+    await page.goto("/this-plate-was-never-set");
+    await expect(page.getByTestId("correction")).toBeVisible();
+    await expect(page.getByRole("heading", { name: /misprint/i })).toBeVisible();
+    await page.getByRole("link", { name: /Back to the game/i }).click();
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+  });
+
+  test("the colophon, puzzle, and situations-wanted box are on the paper", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.getByTestId("todays-puzzle")).toBeVisible();
+    await expect(page.getByTestId("todays-puzzle")).toContainText(/find the break/i);
+    await expect(page.getByTestId("situations-wanted").first()).toBeVisible();
+    await expect(page.getByTestId("situations-wanted").first()).toContainText(/Replies within two days/i);
+    await expect(page.getByTestId("colophon")).toBeVisible();
+    await expect(page.getByTestId("colophon")).toContainText("8902");
+    await page.getByTestId("weather-cycle").click();
+    await expect(page.getByTestId("weather-cycle")).toContainText(/Fog on the e-file|High pressure/);
+    await page.getByTestId("press-stamp").click();
+    await expect(page.getByTestId("press-stamp")).toContainText(/No template survived/);
+  });
+
+  test("the mobile board stays in view while reading", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await page.locator("#chapter-re1").evaluate((el) => el.scrollIntoView({ block: "start" }));
+    const box = await page.getByTestId("board-diagram").boundingBox();
+    expect(box).toBeTruthy();
+    expect(box!.y).toBeGreaterThanOrEqual(-4);
+    expect(box!.y).toBeLessThan(280);
+    await expect(page.getByTestId("situations-dock")).toBeVisible();
   });
 });

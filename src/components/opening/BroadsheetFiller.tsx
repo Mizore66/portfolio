@@ -1,9 +1,15 @@
 "use client";
 
+import { useState } from "react";
+import { Colophon } from "@/components/opening/Colophon";
 import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
 
 export function BroadsheetFiller() {
+  const [weather, setWeather] = useState(0);
+  const [pressed, setPressed] = useState(false);
+  const forecast = BROADSHEET.weatherCycle[weather] ?? BROADSHEET.weather;
+
   return (
     <aside
       data-testid="broadsheet-filler"
@@ -29,20 +35,30 @@ export function BroadsheetFiller() {
           >
             {BROADSHEET.classified}
           </a>
+          <p className="mt-2 font-mono text-[10px] text-faded">{BROADSHEET.availability}</p>
         </div>
       </div>
+      <Colophon />
       <div className="flex items-end justify-between gap-4">
-        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
+        <button
+          type="button"
+          data-testid="weather-cycle"
+          onClick={() => setWeather((n) => (n + 1) % BROADSHEET.weatherCycle.length)}
+          className="text-left font-mono text-[10px] uppercase tracking-[0.22em] text-faded hover:text-ink"
+        >
           {BROADSHEET.weatherKicker}
           <span className="mx-2 text-ink">·</span>
-          <span className="text-ink">{BROADSHEET.weather}</span>
-        </p>
-        <span
+          <span className="text-ink">{forecast}</span>
+        </button>
+        <button
+          type="button"
+          data-testid="press-stamp"
+          aria-pressed={pressed}
+          onClick={() => setPressed(true)}
           className="border-2 border-ink px-2 py-1 font-display text-[11px] italic text-score-red"
-          aria-hidden
         >
-          {BROADSHEET.stamp}
-        </span>
+          {pressed ? BROADSHEET.pressMark : BROADSHEET.stamp}
+        </button>
       </div>
     </aside>
   );

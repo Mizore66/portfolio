@@ -458,6 +458,13 @@ export function isLegalPly(pos: EnginePos, ply: Ply): boolean {
   return legalMoves(pos).some((m) => alg(m.from) === ply.from && alg(m.to) === ply.to);
 }
 
+/** Start-position node counts — the generator's receipt, shown in the colophon. */
+export const START_PERFT = [
+  { depth: 1, nodes: 20 },
+  { depth: 2, nodes: 400 },
+  { depth: 3, nodes: 8902 },
+] as const;
+
 export function perft(pos: EnginePos, depth: number): number {
   if (depth === 0) return 1;
   const moves = legalMoves(pos);

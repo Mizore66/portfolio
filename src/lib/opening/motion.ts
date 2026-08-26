@@ -10,8 +10,14 @@ export const STROKE_DIM_MS = 180;
 export const VIEW_TURN_MS = 160;
 export const STAMP_MS = 150;
 export const HOVER_PREVIEW_MS = 50;
+/** Time on each depth so d1→d8 is visible, not a single paint at d8. */
+export const DEPTH_PAINT_MS = 72;
 
 export function playDelayMs(plyCount: number): number {
   const extra = Math.max(0, plyCount - 1) * STAGGER_MS;
   return GLIDE_MS + extra + PLAY_TAIL_MS;
+}
+
+export function depthPaintMs(reducedMotion: boolean): number {
+  return reducedMotion ? 0 : DEPTH_PAINT_MS;
 }

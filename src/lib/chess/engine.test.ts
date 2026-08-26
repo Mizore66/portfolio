@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { collectPlies } from "@/lib/opening/tree";
 import { positionAfter } from "@/lib/chess/replay";
-import { fromPieces, legalPlies, numberPv, perft, prepareSearch, search, startPos } from "./engine";
+import { fromPieces, legalPlies, numberPv, perft, prepareSearch, search, startPos, START_PERFT } from "./engine";
 
 describe("engine move generator", () => {
-  it("matches start-position perft", () => {
+  it("matches start-position perft receipts", () => {
     const pos = startPos();
-    expect(perft(pos, 1)).toBe(20);
-    expect(perft(pos, 2)).toBe(400);
-    expect(perft(pos, 3)).toBe(8902);
+    for (const row of START_PERFT) {
+      expect(perft(pos, row.depth)).toBe(row.nodes);
+    }
   });
 
   it("still has 20 replies after 1. e4", () => {

@@ -2,6 +2,8 @@ import type { SearchInfo } from "@/lib/chess/engine";
 import type { Ply } from "@/lib/opening/types";
 
 export const PV_MIN_DEPTH = 5;
+/** Depths the glass case must paint, in order, before it may race ahead. */
+export const SHOW_DEPTHS = 8;
 
 export type BookLine = { san: string; plies: Ply[] };
 

@@ -328,6 +328,13 @@
 .chapter-copy {
   display: flow-root;
 }
+.chapter-copy p {
+  text-align: justify;
+  hyphens: auto;
+  hyphenate-limit-chars: 6 3 2;
+  orphans: 2;
+  widows: 2;
+}
 
 .plate-inset {
   float: right;
@@ -435,4 +442,67 @@
 }
 ::-webkit-scrollbar-thumb {
   background: #4a3f34;
+}
+
+@media (max-width: 979px) {
+  [data-testid="board-column"].col-stack {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    gap: 8px;
+  }
+  .board-engine-cluster {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .board-engine-cluster [data-testid="glass-engine"] {
+    flex: 1;
+    min-width: 0;
+    padding: 8px;
+  }
+  .board-size-wrap {
+    width: 136px;
+    max-width: 136px;
+    flex: 0 0 136px;
+  }
+  [data-testid="find-the-break"] {
+    display: none;
+  }
+  .situations-dock {
+    position: fixed;
+    right: 8px;
+    bottom: 8px;
+    left: 8px;
+    z-index: 30;
+    background: var(--paper);
+    box-shadow: 0 -8px 24px rgba(28, 14, 8, 0.28);
+  }
+}
+
+@media print {
+  .desk-collage,
+  .skip-link,
+  .situations-dock,
+  [data-testid="tree-view"],
+  [data-testid="issue-index"],
+  [data-testid="todays-puzzle"],
+  [data-play-control],
+  [data-testid="play-the-position"],
+  [data-testid="read-the-game"] {
+    display: none !important;
+  }
+  html,
+  body {
+    background: #fff;
+    color: #1a120c;
+  }
+  .sheet {
+    box-shadow: none;
+    border: 0;
+    max-width: none;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 }

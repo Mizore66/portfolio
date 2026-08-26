@@ -8,6 +8,8 @@ import { IssueIndex } from "@/components/opening/IssueIndex";
 import { Masthead } from "@/components/opening/Masthead";
 import { NewspaperColumn } from "@/components/opening/NewspaperColumn";
 import { NotationView } from "@/components/opening/NotationView";
+import { SituationsWanted } from "@/components/opening/SituationsWanted";
+import { TodaysPuzzle } from "@/components/opening/TodaysPuzzle";
 import { TreeView } from "@/components/opening/TreeView";
 import { BROADSHEET } from "@/content/opening";
 import {
@@ -332,7 +334,7 @@ export function OpeningApp() {
   }
 
   return (
-    <div className="min-h-screen text-ink" data-hydrated={hydrated ? "true" : "false"}>
+    <div className="min-h-screen text-ink max-[979px]:pb-24" data-hydrated={hydrated ? "true" : "false"}>
       <a href="#the-game" className="skip-link">
         {BROADSHEET.skipLink}
       </a>
@@ -343,9 +345,10 @@ export function OpeningApp() {
           <div className="flex flex-col min-[980px]:flex-row-reverse min-[980px]:items-stretch">
             <aside
               data-testid="board-column"
-              className="col-stack w-full shrink-0 min-[980px]:w-[min(520px,46%)]"
+              className="col-stack w-full shrink-0 min-[980px]:w-[min(520px,46%)] max-[979px]:sticky max-[979px]:top-0 max-[979px]:z-20"
             >
-              <div className="flex flex-col gap-4 min-[980px]:sticky min-[980px]:top-3 newsprint-sticky z-10">
+              <div className="flex flex-col gap-3 min-[980px]:gap-4 sticky top-0 min-[980px]:top-3 newsprint-sticky z-10 max-[979px]:border-b-2 max-[979px]:border-ink max-[979px]:py-2">
+                <div className="board-engine-cluster">
                 <BoardDiagram
                   plies={displayPlies}
                   highlight={highlight}
@@ -370,6 +373,7 @@ export function OpeningApp() {
                   moveNumber={playMoveNumber}
                   lampshade={lampshade}
                 />
+                </div>
                 <div className="flex flex-wrap items-center gap-3">
                   <button
                     type="button"
@@ -402,6 +406,12 @@ export function OpeningApp() {
                   <p className="font-display text-[13px] italic text-ink">{BROADSHEET.playHint}</p>
                 ) : null}
                 <IssueIndex selectedId={selectedId} onSelect={userSelect} />
+                <div className="max-[979px]:hidden">
+                  <TodaysPuzzle selectedId={selectedId} onSelect={userSelect} />
+                  <div className="mt-3">
+                    <SituationsWanted />
+                  </div>
+                </div>
               </div>
             </aside>
             <NewspaperColumn />
@@ -427,6 +437,9 @@ export function OpeningApp() {
           </div>
           </main>
         </div>
+      </div>
+      <div className="situations-dock min-[980px]:hidden" data-testid="situations-dock">
+        <SituationsWanted />
       </div>
     </div>
   );

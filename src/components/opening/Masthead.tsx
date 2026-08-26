@@ -18,8 +18,14 @@ export function Masthead() {
           <h1 className="font-display text-[clamp(2.15rem,6.4vw,4.5rem)] leading-[0.95] tracking-tight text-ink">
             Anas T. Qumhiyeh
           </h1>
+          <p data-testid="masthead-role" className="mt-2 font-mono text-[12px] uppercase tracking-[0.16em] text-book-blue">
+            {BROADSHEET.dek}
+          </p>
           <p className="mt-2 font-display text-xl italic text-faded sm:text-2xl">
             Opening Preparation
+          </p>
+          <p data-testid="masthead-proof" className="mt-2 font-display text-[15px] text-score-red">
+            {BROADSHEET.leadProof}
           </p>
           <p className="mt-3 max-w-3xl font-mono text-[11px] text-faded">
             <a

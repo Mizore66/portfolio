@@ -251,4 +251,9 @@ export function layoutTree(nodes: OpeningNode[] = OPENING_NODES): TreeLayout {
   };
 }
 
+/** The scoresheet node that carries today's diagram quiz — never a lock. */
+export function todaysPuzzle(): OpeningNode | null {
+  return OPENING_NODES.find((n) => n.puzzle) ?? null;
+}
+
 export { ENGINE_NODE_ID, FLAGSHIP_ID, OPENING_NODES, ROOT_ID };

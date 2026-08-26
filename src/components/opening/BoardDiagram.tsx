@@ -228,7 +228,7 @@ export function BoardDiagram({
               </span>
             ))}
           </div>
-          <div ref={wrapRef} className="min-w-0 flex-1">
+          <div ref={wrapRef} className="board-size-wrap min-w-0 flex-1">
             <div
               className="border-2 border-ink"
               style={edge ? { width: edge + 4, height: edge + 4 } : { width: "100%", aspectRatio: "1" }}

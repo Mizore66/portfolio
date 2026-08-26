@@ -7,6 +7,7 @@ import {
   layoutTree,
   nextMainlineBook,
   pathIdSet,
+  todaysPuzzle,
   TREE_NODE_W,
 } from "./tree";
 import { OPENING_NODES, ROOT_ID } from "@/content/opening";
@@ -113,5 +114,10 @@ describe("art taxonomy", () => {
 
   it("files an empty frame on the declined startup", () => {
     expect(getNode("philidor").emptyFrame).toBe("No photograph was filed.");
+  });
+
+  it("files today's puzzle on a scoresheet node, not a hardcoded id", () => {
+    const puzzle = todaysPuzzle();
+    expect(puzzle?.puzzle?.target).toBe("d4");
   });
 });
