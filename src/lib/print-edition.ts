@@ -38,7 +38,8 @@ function wrap(text: string, width: number): string[] {
   return lines;
 }
 
-type Cmd = { kind: "gap"; h: number } | { kind: "text"; font: "F1" | "F2" | "F3"; size: number; line: string };
+type FontId = "F1" | "F2" | "F3";
+type Cmd = { kind: "gap"; h: number } | { kind: "text"; font: FontId; size: number; line: string };
 
 function lineWidth(size: number): number {
   return Math.floor(CONTENT_W / (size * 0.5));
@@ -53,7 +54,7 @@ export function buildPrintEditionPdf(): Uint8Array {
     push({ kind: "text", font: "F2", size: 11, line: t.toUpperCase() });
     push({ kind: "gap", h: 6 });
   };
-  const para = (t: string, font: Cmd["font"] = "F1", size = 10) => {
+  const para = (t: string, font: FontId = "F1", size = 10) => {
     for (const line of wrap(t, lineWidth(size))) {
       push({ kind: "text", font, size, line });
     }
