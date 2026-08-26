@@ -70,7 +70,6 @@ export function OpeningApp() {
   const skipSpy = useRef(false);
   const skipSpyTimer = useRef<number>(0);
   const selectedRef = useRef(selectedId);
-  selectedRef.current = selectedId;
   const hydrated = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -122,7 +121,7 @@ export function OpeningApp() {
       onSelect(id);
       scrollToChapter(id);
     },
-    [onSelect, scrollToChapter],
+    [onSelect, scrollToChapter, setPlaying],
   );
 
   const onPreview = useCallback(
@@ -205,6 +204,10 @@ export function OpeningApp() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onSelect, scrollToChapter, selectedId]);
+
+  useEffect(() => {
+    selectedRef.current = selectedId;
+  }, [selectedId]);
 
   useEffect(() => {
     playingRef.current = playing;
