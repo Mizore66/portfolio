@@ -346,7 +346,7 @@ export function OpeningApp() {
               data-testid="board-column"
               className="col-stack w-full shrink-0 min-[980px]:w-[min(520px,46%)]"
             >
-              <div className="flex flex-col gap-6 min-[980px]:sticky min-[980px]:top-3 newsprint-sticky z-10">
+              <div className="flex flex-col gap-4 min-[980px]:sticky min-[980px]:top-3 newsprint-sticky z-10">
                 <BoardDiagram
                   plies={displayPlies}
                   highlight={highlight}

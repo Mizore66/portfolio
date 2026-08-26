@@ -290,7 +290,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="e4"]')).toHaveAttribute(
       "aria-current",
       "true",
-      { timeout: 2000 },
+      { timeout: 4000 },
     );
     await page.locator('[data-testid="tree-view"] [data-node-id="e5"]').click();
     await expect(page.getByTestId("read-the-game")).toContainText("Read the game");

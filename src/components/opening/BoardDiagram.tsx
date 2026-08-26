@@ -255,14 +255,16 @@ export function BoardDiagram({
                       key={piece.id}
                       data-piece-id={piece.id}
                       className="absolute flex items-center justify-center"
-                      style={{
-                        ...box,
-                        opacity: piece.captured ? 0 : 1,
-                        transition: `left ${GLIDE_MS}ms ease, top ${GLIDE_MS}ms ease, opacity ${GLIDE_MS}ms ease`,
-                        transitionDelay: `${piece.delay}ms`,
-                        pointerEvents: "none",
-                        zIndex: piece.captured ? 0 : liftIds.has(piece.id) ? 3 : 2,
-                      }}
+                    style={{
+                      ...box,
+                      opacity: piece.captured ? 0 : 1,
+                      transitionProperty: "left, top, opacity",
+                      transitionDuration: `${GLIDE_MS}ms`,
+                      transitionTimingFunction: "ease",
+                      transitionDelay: `${piece.delay}ms`,
+                      pointerEvents: "none",
+                      zIndex: piece.captured ? 0 : liftIds.has(piece.id) ? 3 : 2,
+                    }}
                     >
                       <span
                         className={liftIds.has(piece.id) ? "piece-lift" : undefined}
