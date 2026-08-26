@@ -24,7 +24,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByText("1. e4! e5 2. Nf3 Nc6 3. Bc4 Bc5 4. O-O! Nf6! 5. d4!!")).toBeVisible();
   });
 
-  test("lands on the flagship and the lead headline holds the node", async ({
+  test("lands on the flagship as a single newspaper page", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
@@ -34,26 +34,74 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByText("A. T. Qumhiyeh", { exact: true })).toHaveCount(0);
     await expect(page.getByTestId("tree-caption")).toHaveCount(0);
     await expect(page.getByText(/LEAD · FLAGSHIP/i)).toHaveCount(0);
+    await expect(page.getByTestId("lead-headline")).toHaveCount(0);
     await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
-    await expect(page.getByTestId("lead-headline")).toContainText("The Central Break");
-    await expect(page.getByTestId("lead-headline")).not.toContainText("THE CENTRAL BREAK");
-    await expect(page.getByTestId("lead-headline")).not.toContainText("You castle");
     await expect(page.getByText(/^\d+ alts?$/i)).toHaveCount(0);
     await expect(page.getByTestId("halftone-plate")).toBeVisible();
     await expect(page.getByTestId("glass-engine")).toBeVisible();
     await expect(page.getByTestId("eval-bar")).toBeVisible();
+    await expect(page.getByTestId("newspaper-column")).toBeVisible();
 
     const boardBox = await page.getByTestId("board-column").boundingBox();
     const treeBox = await page.getByTestId("tree-column").boundingBox();
-    expect(boardBox && treeBox).toBeTruthy();
-    expect(boardBox!.x).toBeGreaterThan(treeBox!.x);
-    await expect(page.getByTestId("halftone-plate")).toBeVisible();
-    await expect(page.getByTestId("glass-engine")).toBeVisible();
+    const gutterBox = await page.getByTestId("newspaper-column").boundingBox();
+    const spreadBox = await page.getByTestId("newspaper-spread").boundingBox();
+    expect(boardBox && treeBox && gutterBox && spreadBox).toBeTruthy();
+    expect(boardBox!.x).toBeGreaterThan(gutterBox!.x);
+    expect(gutterBox!.x).toBeGreaterThan(treeBox!.x);
+    expect(Math.abs(gutterBox!.x - (treeBox!.x + treeBox!.width))).toBeLessThan(3);
+    expect(Math.abs(boardBox!.x - (gutterBox!.x + gutterBox!.width))).toBeLessThan(3);
+    const leftGutter = spreadBox!.x;
+    const rightGutter = 1280 - (spreadBox!.x + spreadBox!.width);
+    expect(Math.abs(leftGutter - rightGutter)).toBeLessThan(24);
+
+    const treeOverflow = await page.getByTestId("tree-view").evaluate((el) => {
+      return el.scrollWidth <= el.clientWidth + 1;
+    });
+    expect(treeOverflow).toBe(true);
+
+    const canvasBox = await page.getByTestId("tree-canvas").boundingBox();
+    expect(canvasBox).toBeTruthy();
+    const leftPad = canvasBox!.x - treeBox!.x;
+    const rightPad = treeBox!.x + treeBox!.width - (canvasBox!.x + canvasBox!.width);
+    expect(Math.abs(leftPad - rightPad)).toBeLessThan(16);
+
+    await expect(page.locator('[data-piece-id="wNb1"]')).toContainText("♘");
 
     await page.locator('[data-testid="tree-view"] [data-node-id="e4"]').click();
     await expect(page.getByRole("heading", { level: 2, name: "The University Opening" })).toBeVisible();
-    await page.getByTestId("lead-headline").click();
+    await page.locator('[data-testid="tree-view"] [data-node-id="d4"]').click();
     await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
+  });
+
+  test("the engine eval stays inside the bar", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.getByTestId("engine-eval")).not.toHaveText("…", { timeout: 4000 });
+
+    const bar = page.getByTestId("eval-bar");
+    const score = page.getByTestId("engine-eval");
+    const barBox = await bar.boundingBox();
+    const scoreBox = await score.boundingBox();
+    expect(barBox && scoreBox).toBeTruthy();
+    expect(scoreBox!.x).toBeGreaterThanOrEqual(barBox!.x - 0.5);
+    expect(scoreBox!.x + scoreBox!.width).toBeLessThanOrEqual(barBox!.x + barBox!.width + 0.5);
+    expect(scoreBox!.y).toBeGreaterThanOrEqual(barBox!.y - 0.5);
+    expect(scoreBox!.y + scoreBox!.height).toBeLessThanOrEqual(barBox!.y + barBox!.height + 0.5);
+
+    const inkFits = await score.evaluate((el) => {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const ink = range.getBoundingClientRect();
+      const barRect = (el.closest("[data-testid='eval-bar']") as HTMLElement).getBoundingClientRect();
+      return (
+        ink.width <= barRect.width - 2 &&
+        ink.left >= barRect.left + 1 &&
+        ink.right <= barRect.right - 1
+      );
+    });
+    expect(inkFits).toBe(true);
   });
 
   test("arrow keys walk the mainline", async ({ page }) => {

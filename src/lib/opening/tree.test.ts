@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { isOpeningId, isSingleMainlineAdvance, layoutTree, pathIdSet } from "./tree";
+import {
+  isOpeningId,
+  isSingleMainlineAdvance,
+  layoutTree,
+  pathIdSet,
+  TREE_NODE_W,
+} from "./tree";
 import { OPENING_NODES, ROOT_ID } from "@/content/opening";
 
 describe("layoutTree", () => {
@@ -30,6 +36,15 @@ describe("layoutTree", () => {
 
     expect(positions.club.x).toBeLessThan(positions.oo.x);
     expect(positions.club.y).toBe(positions.nf6.y);
+  });
+
+  it("keeps every node inside a newspaper-column canvas", () => {
+    const { width, positions } = layoutTree(OPENING_NODES);
+    expect(width).toBeLessThanOrEqual(480);
+    for (const point of Object.values(positions)) {
+      expect(point.x - TREE_NODE_W / 2).toBeGreaterThanOrEqual(0);
+      expect(point.x + TREE_NODE_W / 2).toBeLessThanOrEqual(width);
+    }
   });
 
   it("accepts only known node ids", () => {

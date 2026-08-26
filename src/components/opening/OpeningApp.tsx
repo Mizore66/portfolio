@@ -6,6 +6,7 @@ import { AnnotationPanel } from "@/components/opening/AnnotationPanel";
 import { BoardDiagram } from "@/components/opening/BoardDiagram";
 import { GlassEngine, useEngineSearch } from "@/components/opening/GlassEngine";
 import { Masthead } from "@/components/opening/Masthead";
+import { NewspaperColumn } from "@/components/opening/NewspaperColumn";
 import { NotationView } from "@/components/opening/NotationView";
 import { TreeView } from "@/components/opening/TreeView";
 import { HOVER_PREVIEW_MS, playDelayMs } from "@/lib/opening/motion";
@@ -137,61 +138,62 @@ export function OpeningApp() {
 
   return (
     <div className="min-h-screen text-ink" data-hydrated={hydrated ? "true" : "false"}>
-      <div className="relative z-[1] px-2 py-3 sm:px-3">
-        <Masthead view={view} onView={setView} onSelect={userSelect} />
-        <div className="mt-3 flex flex-col gap-3 min-[980px]:flex-row-reverse min-[980px]:items-start min-[980px]:justify-end">
-          <aside
-            data-testid="board-column"
-            className="sheet w-full shrink-0 min-[980px]:sticky min-[980px]:top-3 min-[980px]:max-h-[calc(100vh-1.5rem)] min-[980px]:w-[min(640px,48vw)] min-[980px]:overflow-y-auto"
-          >
-            <BoardDiagram
-              plies={plies}
-              highlight={node.hl}
-              preview={previewHl}
-              caption={node.cap}
-              evalCp={engine ? engine.evalCp / 100 : null}
-              evalLabel={
-                engine
-                  ? `${engine.evalCp >= 0 ? "+" : ""}${(engine.evalCp / 100).toFixed(2)}`
-                  : "…"
-              }
-            />
-            <GlassEngine
-              info={engine}
-              side={sideToMove(selectedId)}
-              moveNumber={
-                !node.color || node.moveNumber === 0
-                  ? 1
-                  : node.color === "w"
-                    ? node.moveNumber
-                    : node.moveNumber + 1
-              }
-            />
-            <div className="mx-3 flex items-center py-1.5">
-              <button
-                type="button"
-                data-play-control=""
-                data-testid="read-the-game"
-                aria-pressed={playing}
-                disabled={!playing && atEnd}
-                onClick={() => setPlaying((p) => !p)}
-                className={cn(
-                  "font-mono text-[11px] uppercase tracking-widest underline decoration-1 underline-offset-4",
-                  playing ? "text-score-red" : "text-book-blue hover:text-score-red",
-                  "disabled:opacity-40 disabled:no-underline",
-                )}
-              >
-                {playing ? "Pause" : "Read the game"}
-              </button>
-            </div>
-            <div className="mx-3 border-t border-ink" />
-            <AnnotationPanel node={node} />
-          </aside>
-          <section
-            data-testid="tree-column"
-            className="min-w-0 min-[980px]:w-max min-[980px]:max-w-[calc(100%-660px)] min-[980px]:self-start"
-          >
-            <div className="sheet relative h-fit w-full overflow-x-auto overflow-y-hidden min-[980px]:w-max">
+      <div className="relative z-[1] flex justify-center px-2 py-3 sm:px-3">
+        <div data-testid="newspaper-spread" className="sheet w-full max-w-[1180px]">
+          <Masthead view={view} onView={setView} />
+          <div className="flex flex-col min-[980px]:flex-row-reverse min-[980px]:items-stretch">
+            <aside
+              data-testid="board-column"
+              className="w-full shrink-0 min-[980px]:sticky min-[980px]:top-3 min-[980px]:max-h-[calc(100vh-1.5rem)] min-[980px]:w-[min(520px,46%)] min-[980px]:overflow-y-auto"
+            >
+              <BoardDiagram
+                plies={plies}
+                highlight={node.hl}
+                preview={previewHl}
+                caption={node.cap}
+                evalCp={engine ? engine.evalCp / 100 : null}
+                evalLabel={
+                  engine
+                    ? `${engine.evalCp >= 0 ? "+" : ""}${(engine.evalCp / 100).toFixed(2)}`
+                    : "…"
+                }
+              />
+              <GlassEngine
+                info={engine}
+                side={sideToMove(selectedId)}
+                moveNumber={
+                  !node.color || node.moveNumber === 0
+                    ? 1
+                    : node.color === "w"
+                      ? node.moveNumber
+                      : node.moveNumber + 1
+                }
+              />
+              <div className="mx-3 flex items-center py-1.5">
+                <button
+                  type="button"
+                  data-play-control=""
+                  data-testid="read-the-game"
+                  aria-pressed={playing}
+                  disabled={!playing && atEnd}
+                  onClick={() => setPlaying((p) => !p)}
+                  className={cn(
+                    "font-mono text-[11px] uppercase tracking-widest underline decoration-1 underline-offset-4",
+                    playing ? "text-score-red" : "text-book-blue hover:text-score-red",
+                    "disabled:opacity-40 disabled:no-underline",
+                  )}
+                >
+                  {playing ? "Pause" : "Read the game"}
+                </button>
+              </div>
+              <div className="mx-3 border-t border-ink" />
+              <AnnotationPanel node={node} />
+            </aside>
+            <NewspaperColumn />
+            <section
+              data-testid="tree-column"
+              className="flex min-w-0 flex-1 flex-col justify-start overflow-x-hidden"
+            >
               <div
                 className={cn(
                   "view-turn max-[979px]:hidden",
@@ -221,8 +223,8 @@ export function OpeningApp() {
                   onPreview={onPreview}
                 />
               </div>
-            </div>
-          </section>
+            </section>
+          </div>
         </div>
       </div>
     </div>

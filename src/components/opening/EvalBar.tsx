@@ -13,7 +13,7 @@ export function EvalBar({
   return (
     <div
       data-testid="eval-bar"
-      className="relative w-[28px] shrink-0 self-stretch border-2 border-ink bg-ink"
+      className="relative w-10 shrink-0 self-stretch overflow-hidden border-2 border-ink bg-ink"
       role="meter"
       aria-label="Engine evaluation"
       aria-valuemin={-8}
@@ -26,10 +26,10 @@ export function EvalBar({
       />
       <p
         data-testid="engine-eval"
-        className="absolute inset-x-0 px-0.5 text-center font-mono text-[10px] font-medium leading-tight tracking-tight"
+        className="absolute inset-x-0 overflow-hidden whitespace-nowrap px-px text-center font-mono text-[9px] font-semibold leading-none tracking-tighter tabular-nums"
         style={{
-          top: whiteAhead ? undefined : 6,
-          bottom: whiteAhead ? 6 : undefined,
+          top: whiteAhead ? undefined : 5,
+          bottom: whiteAhead ? 5 : undefined,
           color: whiteAhead ? "#1a120c" : "#f6eedc",
         }}
       >

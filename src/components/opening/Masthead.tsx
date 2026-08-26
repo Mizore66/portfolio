@@ -2,7 +2,6 @@
 
 import type { ReactNode } from "react";
 import { resumeData } from "@/lib/data";
-import { FLAGSHIP_ID, getNode, moveHeading } from "@/lib/opening/tree";
 import { cn } from "@/lib/utils";
 
 type View = "tree" | "notation";
@@ -10,17 +9,14 @@ type View = "tree" | "notation";
 export function Masthead({
   view,
   onView,
-  onSelect,
 }: {
   view: View;
   onView: (view: View) => void;
-  onSelect: (id: string) => void;
 }) {
-  const flagship = getNode(FLAGSHIP_ID);
   const year = new Date().getFullYear();
 
   return (
-    <header className="sheet overflow-hidden">
+    <header>
       <div className="border-b-2 border-ink px-4 py-2 sm:px-6">
         <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-faded">
           C50 · Italian Game · Vol. {year} · Moves are facts · Annotations are voice
@@ -61,23 +57,6 @@ export function Masthead({
           </div>
         </div>
       </div>
-      <button
-        type="button"
-        data-testid="lead-headline"
-        onClick={() => onSelect(FLAGSHIP_ID)}
-        className="group w-full text-left px-4 py-2.5 sm:px-6 sm:py-3"
-      >
-        <span className="font-display text-[clamp(1.45rem,3.6vw,2.35rem)] font-bold leading-[1.15] tracking-tight text-ink group-hover:text-score-red">
-          {moveHeading(flagship)}
-          {flagship.sym ? (
-            <span className="ml-1.5 text-score-red">{flagship.sym}</span>
-          ) : null}
-          <span className="mx-2 font-normal text-faded">—</span>
-          <span>{flagship.title}</span>
-        </span>
-      </button>
-      <div className="h-1 border-t-2 border-ink" />
-      <div className="border-b-2 border-ink" />
     </header>
   );
 }

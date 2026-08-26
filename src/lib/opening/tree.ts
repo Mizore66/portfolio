@@ -168,9 +168,11 @@ export type TreeLayout = {
   trunkX: number;
 };
 
-const COL = 156;
+/** Tight enough that three columns fit a newspaper page without a horizontal scroll. */
+export const TREE_NODE_W = 108;
+const COL = 116;
 const ROW = 64;
-const PAD_X = 32;
+const PAD_X = TREE_NODE_W / 2 + 6;
 const PAD_Y = 28;
 
 function mainlineOf(nodes: OpeningNode[]): OpeningNode[] {

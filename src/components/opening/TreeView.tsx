@@ -13,12 +13,13 @@ import {
   layoutTree,
   OPENING_NODES,
   pathIdSet,
+  TREE_NODE_W,
   type Point,
 } from "@/lib/opening/tree";
 import type { OpeningNode } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
 
-const STEM = 30;
+const STEM = 28;
 
 function branchPath(from: Point, to: Point) {
   const midY = from.y + (to.y - from.y) / 2;
@@ -43,6 +44,8 @@ export function TreeView({
   const onPath = useMemo(() => pathIdSet(selectedId), [selectedId]);
   const prevId = useRef(selectedId);
   const skipScroll = useRef(true);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
   const [inkEdge, setInkEdge] = useState<string | null>(null);
 
   useEffect(() => {
@@ -54,6 +57,19 @@ export function TreeView({
       setInkEdge(null);
     }
   }, [selectedId]);
+
+  useLayoutEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const fit = () => {
+      const avail = el.clientWidth;
+      setScale(avail > 0 ? Math.min(1, avail / layout.width) : 1);
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [layout.width]);
 
   useEffect(() => {
     if (skipScroll.current) {
@@ -67,11 +83,22 @@ export function TreeView({
   }, [selectedId]);
 
   return (
-    <div className="relative px-2 py-2 sm:px-3" data-testid="tree-view">
-      <div className="overflow-auto">
+    <div ref={wrapRef} className="relative w-full overflow-x-hidden py-2" data-testid="tree-view">
+      <div
+        className="relative mx-auto"
+        data-testid="tree-canvas"
+        style={{
+          width: layout.width * scale,
+          height: layout.height * scale,
+        }}
+      >
         <div
-          className="relative mx-0"
-          style={{ width: layout.width, height: layout.height }}
+          className="absolute left-0 top-0 origin-top-left"
+          style={{
+            width: layout.width,
+            height: layout.height,
+            transform: `scale(${scale})`,
+          }}
         >
           <svg
             aria-hidden
@@ -209,10 +236,11 @@ function TreeNode({
       style={{
         left: x,
         top: y,
+        width: TREE_NODE_W,
         ...(clipping ? { transform: `translate(-50%, -50%) rotate(${tilt}deg)` } : {}),
       }}
       className={cn(
-        "absolute z-10 flex w-[140px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center px-1 py-1 text-center",
+        "absolute z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center px-0.5 py-1 text-center",
         "font-display tracking-tight transition-colors",
         "hover:text-score-red",
         node.type === "mainline" && "text-book-blue",
@@ -225,7 +253,7 @@ function TreeNode({
     >
       <span className="relative leading-none">
         {node.color === "w" && node.moveNumber > 0 ? (
-          <span className="mr-1 font-mono text-[10px] font-normal not-italic text-faded">
+          <span className="mr-0.5 font-mono text-[9px] font-normal not-italic text-faded">
             {node.moveNumber}.
           </span>
         ) : null}
@@ -233,15 +261,15 @@ function TreeNode({
           <span className="font-mono text-[11px] uppercase tracking-widest">{label}</span>
         ) : (
           <>
-            <span className="mr-0.5 text-[15px] font-semibold not-italic">{node.fig}</span>
-            <span className="text-[15px] font-semibold">{node.san}</span>
+            <span className="mr-0.5 text-[14px] font-semibold not-italic">{node.fig}</span>
+            <span className="text-[14px] font-semibold">{node.san}</span>
             {node.sym ? (
-              <span className="ml-0.5 text-[15px] font-bold not-italic text-score-red">{node.sym}</span>
+              <span className="ml-0.5 text-[14px] font-bold not-italic text-score-red">{node.sym}</span>
             ) : null}
           </>
         )}
       </span>
-      <span className="mt-0.5 line-clamp-1 font-lora text-[11px] font-normal not-italic leading-tight text-ink">
+      <span className="mt-0.5 line-clamp-2 font-lora text-[10px] font-normal not-italic leading-tight text-ink">
         {node.title}
       </span>
     </button>
