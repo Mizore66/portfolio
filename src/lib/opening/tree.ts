@@ -18,6 +18,10 @@ export function getNode(id: string): OpeningNode {
   return node;
 }
 
+export function isOpeningId(id: string): boolean {
+  return id in byId;
+}
+
 export function getRoot(): OpeningNode {
   return getNode(ROOT_ID);
 }

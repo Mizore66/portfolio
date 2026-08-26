@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { AnnotationPanel } from "@/components/opening/AnnotationPanel";
 import { BoardDiagram } from "@/components/opening/BoardDiagram";
 import { Masthead } from "@/components/opening/Masthead";
@@ -9,13 +10,22 @@ import { TreeView } from "@/components/opening/TreeView";
 import {
   collectPlies,
   getNode,
+  isOpeningId,
   ROOT_ID,
   stepMainline,
 } from "@/lib/opening/tree";
 import { cn } from "@/lib/utils";
 
+function moveFromSearch(params: URLSearchParams): string {
+  const move = params.get("move");
+  return move && isOpeningId(move) ? move : ROOT_ID;
+}
+
 export function OpeningApp() {
-  const [selectedId, setSelectedId] = useState(ROOT_ID);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const selectedId = moveFromSearch(searchParams);
   const [view, setView] = useState<"tree" | "notation">("tree");
   const hydrated = useSyncExternalStore(
     () => () => {},
@@ -25,9 +35,13 @@ export function OpeningApp() {
   const node = getNode(selectedId);
   const plies = useMemo(() => collectPlies(selectedId), [selectedId]);
 
-  const onSelect = useCallback((id: string) => {
-    setSelectedId(id);
-  }, []);
+  const onSelect = useCallback(
+    (id: string) => {
+      const href = id === ROOT_ID ? pathname : `${pathname}?move=${encodeURIComponent(id)}`;
+      router.replace(href, { scroll: false });
+    },
+    [pathname, router],
+  );
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -35,11 +49,11 @@ export function OpeningApp() {
       const target = e.target as HTMLElement | null;
       if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return;
       e.preventDefault();
-      setSelectedId((id) => stepMainline(id, e.key === "ArrowRight" ? 1 : -1));
+      onSelect(stepMainline(selectedId, e.key === "ArrowRight" ? 1 : -1));
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [onSelect, selectedId]);
 
   return (
     <div className="min-h-screen text-ink" data-hydrated={hydrated ? "true" : "false"}>

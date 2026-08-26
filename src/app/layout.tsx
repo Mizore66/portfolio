@@ -55,7 +55,8 @@ export default function RootLayout({
       lang="en"
       className={`${display.variable} ${lora.variable} ${mono.variable}`}
     >
-      <body className="min-h-screen font-lora text-ink antialiased">
+      <body className="relative z-[1] min-h-screen bg-transparent font-lora text-ink antialiased">
+        <div className="desk-collage" aria-hidden="true" />
         {children}
       </body>
     </html>

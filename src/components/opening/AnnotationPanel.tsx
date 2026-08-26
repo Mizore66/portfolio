@@ -8,21 +8,22 @@ import type { OpeningNode } from "@/lib/opening/types";
 export function AnnotationPanel({ node }: { node: OpeningNode }) {
   return (
     <section className="flex flex-col gap-4 px-4 py-4" aria-label="Annotation">
-      <div className="flex items-baseline justify-between gap-3 border-b-2 border-ink pb-2">
-        <div className="min-w-0">
-          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
-            {node.kind}
-          </p>
-          <p className="font-display text-xl leading-tight text-ink">
-            <span className="text-book-blue">
-              {node.fig} {node.san}
-            </span>
-            {node.sym ? (
-              <span className="ml-1 text-2xl font-bold text-score-red">{node.sym}</span>
-            ) : null}
-          </p>
+      <div key={node.id} className="sheet-fade flex flex-col gap-4">
+        <div className="flex items-baseline justify-between gap-3 border-b-2 border-ink pb-2">
+          <div className="min-w-0">
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
+              {node.kind}
+            </p>
+            <p className="font-display text-xl leading-tight text-ink">
+              <span className="text-book-blue">
+                {node.fig} {node.san}
+              </span>
+              {node.sym ? (
+                <span className="ml-1 text-2xl font-bold text-score-red">{node.sym}</span>
+              ) : null}
+            </p>
+          </div>
         </div>
-      </div>
 
       <h2 className="font-display text-2xl leading-snug text-ink">{node.title}</h2>
 
@@ -39,6 +40,7 @@ export function AnnotationPanel({ node }: { node: OpeningNode }) {
       )}
 
       <EvalBar value={node.eval} label={node.evalText} />
+      </div>
 
       <p className="font-mono text-[11px] leading-relaxed text-faded">
         <span className="uppercase tracking-[0.18em]">The line so far</span>

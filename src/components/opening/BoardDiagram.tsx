@@ -30,12 +30,24 @@ export function BoardDiagram({
 
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced || prevPlies.current === null) {
+    const from = prevPlies.current;
+
+    if (reduced || from === null) {
+      prevPlies.current = plies;
       setPieces(positionAfter(plies).map((p) => ({ ...p, delay: 0 })));
-    } else {
-      setPieces(animationPlan(prevPlies.current, plies));
+      return;
     }
+
+    const plan = animationPlan(from, plies);
     prevPlies.current = plies;
+
+    // Discrete clicks flush React effects before paint, so a same-tick setState
+    // never gives CSS a "from" frame. A macrotask applies the destination after
+    // the current positions have been painted.
+    const timer = window.setTimeout(() => {
+      setPieces(plan);
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [plies]);
 
   const squares = [];
@@ -43,12 +55,12 @@ export function BoardDiagram({
     for (let file = 0; file < 8; file++) {
       const sq = `${FILES[file]}${rank + 1}`;
       const dark = (file + rank) % 2 === 0;
-      const marked = highlight && (highlight[0] === sq || highlight[1] === sq);
+      const markedSq = highlight && (highlight[0] === sq || highlight[1] === sq);
       squares.push(
         <div
           key={sq}
           className={dark ? "board-sq-dark" : "board-sq-light"}
-          style={marked ? { boxShadow: "inset 0 0 0 100px rgba(162, 50, 42, 0.28)" } : undefined}
+          style={markedSq ? { boxShadow: "inset 0 0 0 100px rgba(162, 50, 42, 0.28)" } : undefined}
         />,
       );
     }
@@ -77,15 +89,17 @@ export function BoardDiagram({
               return (
                 <span
                   key={piece.id}
+                  data-piece-id={piece.id}
                   className="absolute flex items-center justify-center text-[clamp(1.15rem,4.6vw,1.85rem)] leading-none"
                   style={{
-                    left: `${file * 12.5}%`,
-                    top: `${(7 - rank) * 12.5}%`,
+                    left: 0,
+                    top: 0,
                     width: "12.5%",
                     height: "12.5%",
-                    color: piece.color === "w" ? "#25457F" : "#1D1A14",
+                    transform: `translate(${file * 100}%, ${(7 - rank) * 100}%)`,
+                    color: piece.color === "w" ? "#1e3a72" : "#1a120c",
                     opacity: piece.captured ? 0 : 1,
-                    transition: `left ${DURATION_MS}ms ease, top ${DURATION_MS}ms ease, opacity ${DURATION_MS}ms ease`,
+                    transition: `transform ${DURATION_MS}ms ease, opacity ${DURATION_MS}ms ease`,
                     transitionDelay: `${piece.delay}ms`,
                     pointerEvents: "none",
                     zIndex: piece.captured ? 0 : 1,

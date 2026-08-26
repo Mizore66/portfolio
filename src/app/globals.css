@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
 
 @theme inline {
   --color-paper: #f6eedc;
@@ -66,27 +65,9 @@
     scrollbar-width: thin;
     scrollbar-color: #4a3f34 transparent;
     background-color: #2c1c12;
-    background-image: url("/newsprint-collage.jpg");
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
     color: var(--ink);
   }
-  html::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    background: radial-gradient(
-      ellipse at 50% 38%,
-      rgba(44, 28, 18, 0.04) 0%,
-      rgba(44, 28, 18, 0.28) 100%
-    );
-  }
   body {
-    position: relative;
-    z-index: 1;
     background: transparent;
     color: var(--ink);
   }
@@ -102,6 +83,28 @@
   }
 }
 
+.desk-collage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: #2c1c12;
+  background-image: url("/newsprint-collage.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.desk-collage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% 38%,
+    rgba(44, 28, 18, 0.04) 0%,
+    rgba(44, 28, 18, 0.28) 100%
+  );
+}
+
 /* Readable writing surface. Collage stays in the gutters (Apple: content on a surface). */
 .sheet {
   background-color: var(--paper);
@@ -114,8 +117,19 @@
   background-color: var(--paper-deep);
 }
 
-.newsprint-mast {
-  background-color: var(--paper);
+@keyframes sheet-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sheet-fade {
+    animation: sheet-fade 160ms ease;
+  }
 }
 
 .board-sq-light {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { layoutTree } from "./tree";
-import { OPENING_NODES } from "@/content/opening";
+import { isOpeningId, layoutTree } from "./tree";
+import { OPENING_NODES, ROOT_ID } from "@/content/opening";
 
 describe("layoutTree", () => {
   it("grows the mainline down a single trunk", () => {
@@ -28,5 +28,11 @@ describe("layoutTree", () => {
 
     expect(positions.club.x).toBeLessThan(positions.oo.x);
     expect(positions.club.y).toBe(positions.nf6.y);
+  });
+
+  it("accepts only known node ids", () => {
+    expect(isOpeningId(ROOT_ID)).toBe(true);
+    expect(isOpeningId("d4")).toBe(true);
+    expect(isOpeningId("not-a-node")).toBe(false);
   });
 });

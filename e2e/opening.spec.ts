@@ -68,4 +68,46 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("tree-view")).toBeHidden();
     await expect(page.getByRole("button", { name: "Tree" })).toBeHidden();
   });
+
+  test("move query selects a node and survives an exhibit round-trip", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/?move=d4");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
+
+    await page.goto("/?move=not-a-node");
+    await expect(page.getByRole("heading", { level: 2, name: "Opening Preparation" })).toBeVisible();
+
+    await page.goto("/?move=d4");
+    await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
+    await page.getByRole("link", { name: "Veridian" }).first().click();
+    await expect(page.getByRole("heading", { level: 1, name: "Veridian" })).toBeVisible();
+    await page.goBack();
+    await expect(page).toHaveURL(/move=d4/);
+    await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
+  });
+
+  test("the e-pawn glides on 1.e4 instead of teleporting", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+
+    const pawn = page.locator('[data-piece-id="wPe2"]');
+    const yAt = () =>
+      pawn.evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).f);
+
+    const before = await yAt();
+    await page.locator('[data-testid="tree-view"] [data-node-id="e4"]').click();
+    await page.waitForTimeout(90);
+    const mid = await yAt();
+    await page.waitForTimeout(400);
+    const after = await yAt();
+
+    expect(Math.abs(mid - before)).toBeGreaterThan(2);
+    expect(Math.abs(after - mid)).toBeGreaterThan(2);
+    expect(after).not.toBe(before);
+  });
 });
