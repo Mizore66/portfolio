@@ -23,9 +23,20 @@ function Clock() {
   );
 }
 
-export function SpotIllustration({ mark }: { mark: "trail" | "clock" }) {
+export function SpotIllustration({
+  mark,
+  compact,
+}: {
+  mark: "trail" | "clock";
+  compact?: boolean;
+}) {
   return (
-    <span data-testid="spot-illustration" data-spot={mark} className="spot-engraving" aria-hidden>
+    <span
+      data-testid="spot-illustration"
+      data-spot={mark}
+      className={compact ? "spot-engraving-inline" : "spot-engraving"}
+      aria-hidden
+    >
       <svg viewBox="0 0 48 48" className="h-full w-full text-ink">
         {mark === "trail" ? <Trail /> : <Clock />}
       </svg>

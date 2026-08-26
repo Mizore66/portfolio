@@ -64,6 +64,9 @@ function Chapter({
   const { node } = block;
   const selected = node.id === selectedId;
   const flagship = node.id === FLAGSHIP_ID;
+  const lifeSpot = block.variations
+    .map((line) => line[0]?.node)
+    .find((n) => n?.type === "life" && n.spot)?.spot;
 
   return (
     <section
@@ -98,6 +101,7 @@ function Chapter({
 
       <div className="chapter-copy">
         {node.spot ? <SpotIllustration mark={node.spot} /> : null}
+        {lifeSpot ? <SpotIllustration mark={lifeSpot} /> : null}
         {node.plate ? (
           <HalftonePlate
             src={node.plate.src}

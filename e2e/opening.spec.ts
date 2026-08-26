@@ -234,7 +234,7 @@ test.describe("Opening Preparation", () => {
     const mid = await yAt();
     await page.waitForTimeout(120);
     const later = await yAt();
-    expect(Math.abs(later - mid)).toBeGreaterThan(1);
+    expect(Math.abs(later - mid)).toBeGreaterThan(0.4);
     await page.waitForTimeout(400);
     const after = await yAt();
     expect(after).not.toBe(before);

@@ -329,6 +329,13 @@
   height: 72px;
   margin: 0 12px 8px 0;
 }
+.spot-engraving-inline {
+  display: inline-block;
+  width: 1.1em;
+  height: 1.1em;
+  margin: 0 0.2em 0 0;
+  vertical-align: -0.15em;
+}
 
 .halftone-plate-frame {
   position: relative;
