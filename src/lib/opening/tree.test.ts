@@ -89,13 +89,14 @@ describe("repertoire book and issue index", () => {
 });
 
 describe("art taxonomy", () => {
-  it("leaves connective moves without plates, figures, or spots", () => {
-    for (const id of ["e5", "exd4"]) {
+  it("leaves connective moves without plates, figures, diagrams, or spots", () => {
+    for (const id of ["e5", "nc6", "exd4", "re1"]) {
       const n = getNode(id);
       expect(n.plate).toBeUndefined();
       expect(n.figure).toBeUndefined();
       expect(n.spot).toBeUndefined();
       expect(n.inlineDiagram).toBeFalsy();
+      expect(n.emptyFrame).toBeUndefined();
     }
   });
 
@@ -103,6 +104,14 @@ describe("art taxonomy", () => {
     expect(getNode("hike").spot).toBe("trail");
     expect(getNode("club").spot).toBe("clock");
     expect(getNode("nf3").figure?.tech.length).toBeGreaterThan(0);
+    expect(getNode("bc4").figure?.tech.length).toBeGreaterThan(0);
+    expect(getNode("e4").inlineDiagram).toBe(true);
+    expect(getNode("oo").inlineDiagram).toBe(true);
     expect(getNode("d4").plate).toBeTruthy();
+    expect(getNode("d4").inlineDiagram).toBe(true);
+  });
+
+  it("files an empty frame on the declined startup", () => {
+    expect(getNode("philidor").emptyFrame).toBe("No photograph was filed.");
   });
 });

@@ -1,4 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { FLAGSHIP_ID } from "@/content/opening";
+import { occupancy, positionAfter } from "./chess/replay";
+import { collectPlies } from "./opening/tree";
 import { buildPrintEditionPdf } from "./print-edition";
 import { resumeData } from "@/lib/data";
 
@@ -14,5 +17,24 @@ describe("print edition", () => {
     expect(text).toContain("5. d4 - the Italian break");
     expect(text).toMatch(/\(N\)|\(n\)|\(K\)|\(k\)/);
     expect(text).not.toContain("/Count 2");
+  });
+
+  it("diagrams 5. d4 of the Italian, not the starting position", () => {
+    const occ = occupancy(positionAfter(collectPlies(FLAGSHIP_ID)));
+    expect(occ.d4).toBe("wP");
+    expect(occ.g1).toBe("wK");
+    expect(occ.c4).toBe("wB");
+    expect(occ.f3).toBe("wN");
+    expect(occ.d2).toBeUndefined();
+    expect(occ.e1).toBeUndefined();
+    expect(occ.e2).toBeUndefined();
+
+    const text = new TextDecoder().decode(buildPrintEditionPdf());
+    expect(text).toContain("% occ d4 wP");
+    expect(text).toContain("% occ g1 wK");
+    expect(text).toContain("% occ c4 wB");
+    expect(text).not.toContain("% occ d2 wP");
+    expect(text).not.toContain("% occ e1 wK");
+    expect(text).not.toContain("% occ e2 wP");
   });
 });

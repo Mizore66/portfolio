@@ -18,7 +18,6 @@ function job(company: string) {
 }
 
 const petronas = job("Petronas");
-const setel = job("Setel");
 const wd = job("Western Digital");
 const edu = resumeData.education;
 const veridian = project("veridian");
@@ -50,6 +49,7 @@ export const BROADSHEET = {
   printEdition: "Print edition",
   printHref: "/print-edition",
   issueKicker: "In this issue",
+  skipLink: "Skip to the game",
 };
 
 /**
@@ -249,6 +249,7 @@ export const OPENING_NODES: OpeningNode[] = [
     plies: [{ from: "d7", to: "d6" }],
     hl: ["d7", "d6"],
     cap: "Position after 2…d6 (Philidor, declined)",
+    emptyFrame: "No photograph was filed.",
   },
   {
     id: "nc6",
@@ -271,7 +272,6 @@ export const OPENING_NODES: OpeningNode[] = [
     plies: [{ from: "b8", to: "c6" }],
     hl: ["b8", "c6"],
     cap: "Position after 2…Nc6",
-    figure: { name: setel.company ?? setel.title, tech: setel.tech },
   },
   {
     id: "bc4",
@@ -488,6 +488,5 @@ export const OPENING_NODES: OpeningNode[] = [
     plies: [{ from: "f1", to: "e1" }],
     hl: ["f1", "e1"],
     cap: "Position after 6. Re1",
-    inlineDiagram: true,
   },
 ];

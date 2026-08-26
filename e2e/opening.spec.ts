@@ -42,14 +42,19 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("lead-headline")).toHaveCount(0);
     await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
     await expect(page.getByText(/^\d+ alts?$/i)).toHaveCount(0);
-    await expect(page.getByTestId("inline-diagram")).toHaveCount(4);
+    await expect(page.getByTestId("inline-diagram")).toHaveCount(3);
     await expect(page.getByTestId("halftone-plate").first()).toBeVisible();
     await expect(page.getByTestId("spot-illustration")).toHaveCount(2);
     await expect(
       page.locator('[data-testid="notation-view"] [data-testid="architecture-figure"]'),
-    ).toHaveCount(3);
+    ).toHaveCount(2);
     await expect(page.locator("#chapter-e5 [data-testid='halftone-plate']")).toHaveCount(0);
+    await expect(page.locator("#chapter-nc6 [data-testid='architecture-figure']")).toHaveCount(0);
     await expect(page.locator("#chapter-exd4 [data-testid='halftone-plate']")).toHaveCount(0);
+    await expect(page.locator("#chapter-re1 [data-testid='inline-diagram']")).toHaveCount(0);
+    await expect(page.getByTestId("empty-frame")).toHaveCount(1);
+    await expect(page.locator("#chapter-nf3 [data-testid='empty-frame']")).toHaveCount(1);
+    await expect(page.getByTestId("empty-frame")).toContainText("No photograph was filed.");
     await expect(page.getByTestId("glass-engine")).toBeVisible();
     await expect(page.getByTestId("eval-bar")).toBeVisible();
     await expect(page.getByTestId("newspaper-column")).toBeVisible();
@@ -505,6 +510,52 @@ test.describe("Opening Preparation", () => {
     }
     for (const y of samples) {
       expect(Math.abs(y - y0)).toBeLessThan(80);
+    }
+  });
+
+  test("the page is one banner, one main, and a skip link", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.locator("header")).toHaveCount(1);
+    await expect(page.locator("main")).toHaveCount(1);
+    const skip = page.getByRole("link", { name: /Skip to the game/i });
+    await expect(skip).toHaveCount(1);
+    await skip.focus();
+    await expect(skip).toBeVisible();
+    await expect(page.locator("#chapter-e4 h2 button")).toHaveAttribute(
+      "aria-label",
+      /1\. e4.*University Opening/,
+    );
+    await expect(page.locator("#chapter-d4 h2 button")).toHaveAttribute(
+      "aria-label",
+      /5\. d4.*Central Break/,
+    );
+    await expect(page.locator("#chapter-e4 h2 button [aria-hidden='true']").first()).toBeVisible();
+  });
+
+  test("ArrowRight from the flagship updates the URL without snapping to the top", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await page.locator("#chapter-d4").evaluate((el) => el.scrollIntoView({ block: "start" }));
+    const y0 = await page.evaluate(() => window.scrollY);
+    expect(y0).toBeGreaterThan(400);
+
+    await page.keyboard.press("ArrowRight");
+    await expect
+      .poll(async () => page.evaluate(() => window.location.search), { timeout: 2500 })
+      .toMatch(/move=exd4/);
+
+    const samples: number[] = [];
+    for (let i = 0; i < 6; i++) {
+      samples.push(await page.evaluate(() => window.scrollY));
+      await page.waitForTimeout(100);
+    }
+    for (const y of samples) {
+      expect(y).toBeGreaterThan(400);
     }
   });
 });

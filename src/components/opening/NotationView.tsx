@@ -3,6 +3,7 @@
 import { Fragment } from "react";
 import { ArchitectureFigure } from "@/components/opening/ArchitectureFigure";
 import { ArtifactLinks } from "@/components/opening/ArtifactLinks";
+import { EmptyFrame } from "@/components/opening/EmptyFrame";
 import { GlyphStamp } from "@/components/opening/GlyphStamp";
 import { HalftonePlate } from "@/components/opening/HalftonePlate";
 import { MiniBoard } from "@/components/opening/MiniBoard";
@@ -67,6 +68,9 @@ function Chapter({
   const lifeSpot = block.variations
     .map((line) => line[0]?.node)
     .find((n) => n?.type === "life" && n.spot)?.spot;
+  const emptyFrame =
+    node.emptyFrame ??
+    block.variations.map((line) => line[0]?.node).find((n) => n?.emptyFrame)?.emptyFrame;
 
   return (
     <section
@@ -77,7 +81,7 @@ function Chapter({
         flagship && "border-t-[3px]",
       )}
     >
-      <header className="mb-3">
+      <div className="mb-3">
         <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
           {node.kind}
         </p>
@@ -97,7 +101,7 @@ function Chapter({
             stamp={selected && Boolean(node.sym)}
           />
         </h2>
-      </header>
+      </div>
 
       <div className="chapter-copy">
         {node.spot ? <SpotIllustration mark={node.spot} /> : null}
@@ -153,6 +157,8 @@ function Chapter({
           ))}
         </p>
       ) : null}
+
+      {emptyFrame ? <EmptyFrame caption={emptyFrame} /> : null}
 
       <p className="mt-4 font-mono text-[11px] leading-relaxed text-faded">
         <span className="uppercase tracking-[0.18em]">The line so far</span>
@@ -222,10 +228,15 @@ function ChapterButton({
   compact?: boolean;
   stamp?: boolean;
 }) {
+  const spoken = compact
+    ? [moveHeading(node), node.sym].filter(Boolean).join(" ")
+    : [moveHeading(node), node.sym, node.title].filter(Boolean).join(" ");
+
   return (
     <button
       type="button"
       data-node-id={node.id}
+      aria-label={spoken}
       aria-current={selected ? "true" : undefined}
       onClick={() => onSelect(node.id)}
       onMouseEnter={() => onPreview?.(node.id)}
@@ -239,8 +250,10 @@ function ChapterButton({
         selected && "bg-score-red/15 box-decoration-clone",
       )}
     >
-      <span className={cn(compact ? "text-book-blue" : "text-book-blue")}>
-        <span className="mr-1">{node.fig}</span>
+      <span className="text-book-blue">
+        <span className="mr-1" aria-hidden="true">
+          {node.fig}
+        </span>
         {moveHeading(node)}
       </span>
       {node.sym ? (

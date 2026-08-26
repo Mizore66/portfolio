@@ -1,6 +1,6 @@
 import { FLAGSHIP_ID } from "@/content/opening";
 import { resumeData } from "@/lib/data";
-import { positionAfter, squareFile, squareRank } from "@/lib/chess/replay";
+import { occupancy, positionAfter, squareFile, squareRank } from "@/lib/chess/replay";
 import { collectPlies } from "@/lib/opening/tree";
 
 const PAGE_W = 612;
@@ -60,7 +60,7 @@ export function buildPrintEditionPdf(): Uint8Array {
       "BT",
       `/${font} ${size} Tf`,
       `${INK} rg`,
-      `${n(x)} ${n(y)} Td`,
+      `1 0 0 1 ${n(x)} ${n(y)} Tm`,
       `(${pdfEscape(s)}) Tj`,
       "ET",
     );
@@ -95,7 +95,25 @@ export function buildPrintEditionPdf(): Uint8Array {
   }
   ops.push(`${INK} RG`, "1.2 w", `${n(boardX)} ${n(boardY)} ${BOARD} ${BOARD} re`, "S");
 
-  const pieces = positionAfter(collectPlies(FLAGSHIP_ID)).filter((p) => !p.captured);
+  const flagshipPlies = collectPlies(FLAGSHIP_ID);
+  const pieces = positionAfter(flagshipPlies).filter((p) => !p.captured);
+  const occ = occupancy(pieces);
+  const last = flagshipPlies[flagshipPlies.length - 1];
+  ops.push(`% fen-occ ${Object.entries(occ).sort(([a], [b]) => a.localeCompare(b)).map(([sq, p]) => `${sq}=${p}`).join(" ")}`);
+
+  if (last) {
+    for (const sq of [last.from, last.to]) {
+      const file = squareFile(sq);
+      const rank = squareRank(sq);
+      ops.push(
+        "0.82 0.55 0.48 rg",
+        `${n(boardX + file * SQ)} ${n(boardY + rank * SQ)} ${SQ} ${SQ} re`,
+        "f",
+      );
+    }
+    ops.push(`${INK} RG`, "1.2 w", `${n(boardX)} ${n(boardY)} ${BOARD} ${BOARD} re`, "S");
+  }
+
   for (const piece of pieces) {
     const file = squareFile(piece.square);
     const rank = squareRank(piece.square);
@@ -104,6 +122,7 @@ export function buildPrintEditionPdf(): Uint8Array {
     const size = 13;
     const x = boardX + file * SQ + 6.2;
     const y = boardY + rank * SQ + 6.4;
+    ops.push(`% occ ${piece.square} ${piece.color}${piece.type}`);
     txt(font, size, x, y, glyph);
   }
 

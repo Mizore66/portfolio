@@ -333,9 +333,13 @@ export function OpeningApp() {
 
   return (
     <div className="min-h-screen text-ink" data-hydrated={hydrated ? "true" : "false"}>
+      <a href="#the-game" className="skip-link">
+        {BROADSHEET.skipLink}
+      </a>
       <div className="relative z-[1] flex justify-center px-2 py-3 sm:px-3">
         <div data-testid="newspaper-spread" className="sheet w-full max-w-[1180px]">
           <Masthead />
+          <main id="the-game">
           <div className="flex flex-col min-[980px]:flex-row-reverse min-[980px]:items-stretch">
             <aside
               data-testid="board-column"
@@ -421,6 +425,7 @@ export function OpeningApp() {
               <BroadsheetFiller />
             </section>
           </div>
+          </main>
         </div>
       </div>
     </div>

@@ -45,6 +45,8 @@ export type OpeningNode = {
   figure?: { name: string; tech: string[] };
   /** Quarter-column engraving for a life branch. */
   spot?: "trail" | "clock";
+  /** Declined line: a dashed photo frame, no picture. Caption is the joke. */
+  emptyFrame?: string;
   /** Optional one-move diagram quiz. Never a lock. */
   puzzle?: {
     prompt: string;
