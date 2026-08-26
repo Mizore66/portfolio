@@ -120,11 +120,6 @@
   background-color: var(--paper-deep);
 }
 
-.newspaper-folio {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-}
-
 @keyframes sheet-fade {
   from {
     opacity: 0;

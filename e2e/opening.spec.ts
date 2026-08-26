@@ -41,6 +41,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("glass-engine")).toBeVisible();
     await expect(page.getByTestId("eval-bar")).toBeVisible();
     await expect(page.getByTestId("newspaper-column")).toBeVisible();
+    await expect(page.getByTestId("newspaper-column")).not.toContainText(/Italian Game|C50|Vol\./i);
 
     const boardBox = await page.getByTestId("board-column").boundingBox();
     const treeBox = await page.getByTestId("tree-column").boundingBox();
@@ -66,7 +67,8 @@ test.describe("Opening Preparation", () => {
     const rightPad = treeBox!.x + treeBox!.width - (canvasBox!.x + canvasBox!.width);
     expect(Math.abs(leftPad - rightPad)).toBeLessThan(16);
 
-    await expect(page.locator('[data-piece-id="wNb1"]')).toContainText("♘");
+    await expect(page.locator('[data-piece-id="wNb1"] svg[data-piece-type="N"]')).toBeVisible();
+    expect(gutterBox!.width).toBeLessThan(28);
 
     await page.locator('[data-testid="tree-view"] [data-node-id="e4"]').click();
     await expect(page.getByRole("heading", { level: 2, name: "The University Opening" })).toBeVisible();

@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { EvalBar } from "@/components/opening/EvalBar";
+import { NewspaperPiece } from "@/components/opening/NewspaperPiece";
 import {
   animationPlan,
   FILES,
-  figurine,
   positionAfter,
   squareFile,
   squareRank,
@@ -104,14 +104,13 @@ export function BoardDiagram({
                   <span
                     key={piece.id}
                     data-piece-id={piece.id}
-                    className="absolute flex items-center justify-center text-[clamp(1.35rem,5.2vw,2.15rem)] leading-none"
+                    className="absolute flex items-center justify-center"
                     style={{
                       left: 0,
                       top: 0,
                       width: "12.5%",
                       height: "12.5%",
                       transform: `translate(${file * 100}%, ${(7 - rank) * 100}%)`,
-                      color: piece.color === "w" ? "#1e3a72" : "#1a120c",
                       opacity: piece.captured ? 0 : 1,
                       transition: `transform ${GLIDE_MS}ms ease, opacity ${GLIDE_MS}ms ease`,
                       transitionDelay: `${piece.delay}ms`,
@@ -119,7 +118,7 @@ export function BoardDiagram({
                       zIndex: piece.captured ? 0 : 1,
                     }}
                   >
-                    {figurine(piece.type, piece.color)}
+                    <NewspaperPiece type={piece.type} color={piece.color} />
                   </span>
                 );
               })}
