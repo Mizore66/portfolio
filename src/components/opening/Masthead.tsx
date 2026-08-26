@@ -29,8 +29,8 @@ export function Masthead({
       <div className="border-b-2 border-ink px-4 py-5 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="min-w-0">
-            <h1 className="font-display text-[clamp(2.6rem,8vw,5.5rem)] leading-[0.9] tracking-tight text-ink">
-              A. T. Qumhiyeh
+            <h1 className="font-display text-[clamp(2.15rem,6.4vw,4.5rem)] leading-[0.95] tracking-tight text-ink">
+              Anas T. Qumhiyeh
             </h1>
             <p className="mt-2 font-display text-xl italic text-faded sm:text-2xl">
               Opening Preparation
@@ -65,29 +65,18 @@ export function Masthead({
         type="button"
         data-testid="lead-headline"
         onClick={() => onSelect(FLAGSHIP_ID)}
-        className="group relative flex w-full items-stretch text-left"
+        className="group w-full text-left px-4 py-3 sm:px-6 sm:py-4"
       >
-        <span
-          aria-hidden
-          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 font-display text-[clamp(4.5rem,14vw,8rem)] font-bold leading-none text-score-red/15"
-        >
-          {flagship.sym || "!!"}
+        <span className="font-display text-[clamp(1.45rem,3.6vw,2.35rem)] font-bold leading-[1.15] tracking-tight text-ink group-hover:text-score-red">
+          {moveHeading(flagship)}
+          {flagship.sym ? (
+            <span className="ml-1.5 text-score-red">{flagship.sym}</span>
+          ) : null}
+          <span className="mx-2 font-normal text-faded">—</span>
+          <span>{flagship.title}</span>
         </span>
-        <span className="relative flex w-full flex-col gap-1 px-4 py-4 sm:px-6 sm:py-5">
-          <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-score-red">
-            Lead · Flagship · Jump to the node
-          </span>
-          <span className="font-display text-[clamp(1.6rem,4.2vw,3.1rem)] font-bold leading-[1.05] tracking-tight text-ink group-hover:text-score-red">
-            {moveHeading(flagship)}
-            {flagship.sym ? (
-              <span className="ml-2 text-score-red">{flagship.sym}</span>
-            ) : null}
-            <span className="mx-3 text-faded">—</span>
-            <span className="uppercase">{flagship.title}</span>
-          </span>
-          <span className="max-w-3xl font-lora text-[15px] leading-snug text-ink">
-            {flagship.commentary.split(/(?<=\.)\s/)[0]}
-          </span>
+        <span className="mt-1 block max-w-2xl font-lora text-[15px] leading-snug text-faded">
+          {flagship.commentary.split(/(?<=\.)\s/)[0]}
         </span>
       </button>
       <div className="h-1 border-t-2 border-ink" />

@@ -30,8 +30,13 @@ test.describe("Opening Preparation", () => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Anas T. Qumhiyeh" })).toBeVisible();
+    await expect(page.getByText("A. T. Qumhiyeh", { exact: true })).toHaveCount(0);
+    await expect(page.getByTestId("tree-caption")).toHaveCount(0);
+    await expect(page.getByText(/LEAD · FLAGSHIP/i)).toHaveCount(0);
     await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
     await expect(page.getByTestId("lead-headline")).toContainText("The Central Break");
+    await expect(page.getByTestId("lead-headline")).not.toContainText("THE CENTRAL BREAK");
     await expect(page.getByTestId("halftone-plate")).toBeVisible();
     await expect(page.getByTestId("glass-engine")).toBeVisible();
 
@@ -63,11 +68,16 @@ test.describe("Opening Preparation", () => {
     await page.goto("/?move=start");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
-    await expect(page.getByTestId("tree-view")).toBeVisible();
-    await expect(page.getByTestId("tree-caption")).toContainText("Opening Preparation");
+    await expect(page.locator('[data-testid="tree-view"] [data-node-id="start"]')).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
     await page.locator('[data-testid="tree-view"] [data-node-id="oo"]').click();
     await expect(page.getByRole("heading", { level: 2, name: "Castling" })).toBeVisible();
-    await expect(page.getByTestId("tree-caption")).toContainText("Castling");
+    await expect(page.locator('[data-testid="tree-view"] [data-node-id="oo"]')).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
 
     await page.getByRole("button", { name: "Notation" }).click();
     await expect(page.getByTestId("notation-view")).toBeVisible();
@@ -212,7 +222,8 @@ test.describe("Opening Preparation", () => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
-    await expect(page.getByTestId("engine-pv")).not.toHaveText("pv …", { timeout: 4000 });
+    await expect(page.getByTestId("engine-pv")).not.toHaveText("…", { timeout: 4000 });
+    await expect(page.getByTestId("engine-pv")).not.toHaveText(/^[a-h][1-8][a-h][1-8]/);
     await expect(page.getByTestId("engine-eval")).not.toHaveText("…");
   });
 

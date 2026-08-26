@@ -10,10 +10,8 @@ import {
 } from "react";
 import {
   getChildren,
-  getNode,
   isSingleMainlineAdvance,
   layoutTree,
-  moveHeading,
   OPENING_NODES,
   pathIdSet,
   type Point,
@@ -43,9 +41,9 @@ export function TreeView({
   tape?: boolean;
 }) {
   const layout = useMemo(() => layoutTree(), []);
-  const selected = getNode(selectedId);
   const onPath = useMemo(() => pathIdSet(selectedId), [selectedId]);
   const prevId = useRef(selectedId);
+  const skipScroll = useRef(true);
   const [inkEdge, setInkEdge] = useState<string | null>(null);
 
   useEffect(() => {
@@ -58,39 +56,24 @@ export function TreeView({
     }
   }, [selectedId]);
 
-  return (
-    <div className="relative px-4 py-5 sm:px-6" data-testid="tree-view">
-      <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
-        <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-faded">
-          Life left · mainline the trunk · variations right · dashed = not taken
-        </p>
-        <p className="font-mono text-[11px] text-ink">Click a move · ← → steps the trunk</p>
-      </div>
+  useEffect(() => {
+    if (skipScroll.current) {
+      skipScroll.current = false;
+      return;
+    }
+    const el = document.querySelector(
+      `[data-testid="tree-view"] [data-node-id="${CSS.escape(selectedId)}"]`,
+    );
+    el?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }, [selectedId]);
 
+  return (
+    <div className="relative px-3 py-3 sm:px-4" data-testid="tree-view">
       <div className="overflow-auto">
         <div
           className="relative mx-auto"
           style={{ width: layout.width, height: layout.height }}
         >
-          <span
-            className="pointer-events-none absolute font-mono text-[10px] uppercase tracking-[0.22em] text-faded"
-            style={{ left: layout.trunkX - 168, top: 8 }}
-          >
-            Life
-          </span>
-          <span
-            className="pointer-events-none absolute font-mono text-[10px] uppercase tracking-[0.22em] text-faded"
-            style={{ left: layout.trunkX, top: 8, transform: "translateX(-50%)" }}
-          >
-            Mainline
-          </span>
-          <span
-            className="pointer-events-none absolute font-mono text-[10px] uppercase tracking-[0.22em] text-faded"
-            style={{ left: layout.trunkX + 88, top: 8 }}
-          >
-            Variations
-          </span>
-
           <svg
             aria-hidden
             className="pointer-events-none absolute inset-0"
@@ -133,23 +116,6 @@ export function TreeView({
           })}
         </div>
       </div>
-
-      <p
-        data-testid="tree-caption"
-        className="mt-5 border-t border-ink pt-3 font-display text-[18px] leading-snug text-ink"
-      >
-        <span className="text-book-blue">
-          {selected.fig} {moveHeading(selected)}
-        </span>
-        {selected.sym ? (
-          <span className="ml-1 font-bold text-score-red">{selected.sym}</span>
-        ) : null}
-        <span className="mx-2 text-faded">·</span>
-        <span>{selected.title}</span>
-        <span className="ml-2 font-mono text-[11px] uppercase tracking-[0.18em] text-faded">
-          {selected.kind}
-        </span>
-      </p>
     </div>
   );
 }

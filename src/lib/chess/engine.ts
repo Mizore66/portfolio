@@ -431,6 +431,56 @@ function uci(m: Move): string {
   return `${alg(m.from)}${alg(m.to)}${m.promo ? "q" : ""}`;
 }
 
+const SAN_LETTER: Record<number, string> = { 2: "N", 3: "B", 4: "R", 5: "Q", 6: "K" };
+
+function toSan(pos: EnginePos, m: Move, moves: Move[]): string {
+  const p = pos.board[m.from];
+  const t = kind(p);
+  if (t === 6 && Math.abs(m.to - m.from) === 2) {
+    return m.to > m.from ? "O-O" : "O-O-O";
+  }
+  const dest = alg(m.to);
+  const capture = Boolean(m.captured) || m.epCap >= 0;
+  let san: string;
+  if (t === 1) {
+    san = capture ? `${FILES[fileOf(m.from)]}x${dest}` : dest;
+    if (m.promo) san += "=Q";
+  } else {
+    const others = moves.filter(
+      (o) => o.from !== m.from && o.to === m.to && kind(pos.board[o.from]) === t,
+    );
+    let dis = "";
+    if (others.length > 0) {
+      const sameFile = others.some((o) => fileOf(o.from) === fileOf(m.from));
+      const sameRank = others.some((o) => rankOf(o.from) === rankOf(m.from));
+      if (!sameFile) dis = FILES[fileOf(m.from)];
+      else if (!sameRank) dis = String(rankOf(m.from) + 1);
+      else dis = `${FILES[fileOf(m.from)]}${rankOf(m.from) + 1}`;
+    }
+    san = `${SAN_LETTER[t]}${dis}${capture ? "x" : ""}${dest}`;
+  }
+  make(pos, m);
+  const check = inCheck(pos, pos.side);
+  const mate = check && legalMoves(pos).length === 0;
+  unmake(pos, m);
+  if (mate) san += "#";
+  else if (check) san += "+";
+  return san;
+}
+
+function formatPv(pos: EnginePos, uciList: string[]): string[] {
+  const work = clonePos(pos);
+  const out: string[] = [];
+  for (const u of uciList) {
+    const moves = legalMoves(work);
+    const m = moves.find((mv) => uci(mv) === u);
+    if (!m) break;
+    out.push(toSan(work, m, moves));
+    make(work, m);
+  }
+  return out;
+}
+
 function order(moves: Move[]): Move[] {
   return moves.sort((a, b) => VALUE[b.captured] - VALUE[a.captured] || VALUE[b.promo] - VALUE[a.promo]);
 }
@@ -490,7 +540,7 @@ export function search(pos: EnginePos, depth: number): SearchResult {
   const pv: string[] = [];
   const raw = alphabeta(pos, depth, -30000, 30000, stats, pv);
   const evalCp = pos.side === 1 ? raw : -raw;
-  return { score: evalCp, nodes: stats.nodes, pv };
+  return { score: evalCp, nodes: stats.nodes, pv: formatPv(pos, pv) };
 }
 
 export function clonePos(pos: EnginePos): EnginePos {

@@ -19,14 +19,13 @@ describe("engine move generator", () => {
 });
 
 describe("engine search", () => {
-  it("finds a mate in one", () => {
-    // White king h1, queen a5; black king a1, pawn a2. Qa5-a2# wait that's blocked.
-    // Kiddie mate style: simpler — white to move, Qh5 mates? skip constructed board.
-    const pos = startPos();
-    const r = search(pos, 2);
-    expect(r.nodes).toBeGreaterThan(20);
-    expect(r.pv.length).toBeGreaterThan(0);
-    expect(Math.abs(r.score)).toBeLessThan(150);
+  it("prints SAN, not coordinate UCI", () => {
+    const r = search(startPos(), 2);
+    expect(r.pv[0]).toBeTruthy();
+    expect(r.pv[0]).not.toMatch(/^[a-h][1-8][a-h][1-8]q?$/);
+    expect(r.pv[0]).toMatch(
+      /^(O-O-O|O-O|[NBRQK][a-h1-8]?x?[a-h][1-8][+#]?|[a-h]x?[a-h][1-8](?:=Q)?[+#]?)$/,
+    );
   });
 
   it("returns a principal variation for 5. d4", () => {

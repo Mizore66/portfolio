@@ -4,7 +4,7 @@ import { OPENING_NODES, ROOT_ID } from "@/content/opening";
 
 describe("layoutTree", () => {
   it("grows the mainline down a single trunk", () => {
-    const { positions, trunkX } = layoutTree(OPENING_NODES);
+    const { positions, trunkX, height } = layoutTree(OPENING_NODES);
     const main = OPENING_NODES.filter((n) => n.type === "mainline");
     for (const n of main) {
       expect(positions[n.id].x).toBe(trunkX);
@@ -12,6 +12,8 @@ describe("layoutTree", () => {
     const ys = main.map((n) => positions[n.id].y);
     const sorted = [...ys].sort((a, b) => a - b);
     expect(ys).toEqual(sorted);
+    const lastY = ys[ys.length - 1];
+    expect(height - lastY).toBeLessThanOrEqual(48);
   });
 
   it("forks life left and variations right on the next rank", () => {

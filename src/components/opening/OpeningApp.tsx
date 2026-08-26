@@ -149,7 +149,7 @@ export function OpeningApp() {
               caption={node.cap}
             />
             <GlassEngine info={engine} />
-            <div className="mx-4 flex items-center justify-between gap-3 border-t border-ink px-0 py-3">
+            <div className="mx-4 flex items-center py-2">
               <button
                 type="button"
                 data-play-control=""
@@ -158,25 +158,21 @@ export function OpeningApp() {
                 disabled={!playing && atEnd}
                 onClick={() => setPlaying((p) => !p)}
                 className={cn(
-                  "border-2 border-ink px-3 py-1.5 font-mono text-[11px] uppercase tracking-widest",
-                  playing
-                    ? "bg-ink text-paper"
-                    : "bg-paper text-ink hover:bg-paper-deep disabled:opacity-40",
+                  "font-mono text-[11px] uppercase tracking-widest underline decoration-1 underline-offset-4",
+                  playing ? "text-score-red" : "text-book-blue hover:text-score-red",
+                  "disabled:opacity-40 disabled:no-underline",
                 )}
               >
                 {playing ? "Pause" : "Read the game"}
               </button>
-              <p className="font-mono text-[10px] uppercase tracking-widest text-faded">
-                Off by default
-              </p>
             </div>
             <div className="mx-4 border-t border-ink" />
             <AnnotationPanel node={node} engine={engine} />
           </aside>
-          <section className="min-w-0 min-[980px]:flex-none">
+          <section className="min-w-0 min-[980px]:h-fit min-[980px]:flex-none min-[980px]:self-start">
             <div
               className={cn(
-                "sheet relative w-full overflow-x-hidden",
+                "sheet relative h-fit w-full overflow-x-hidden",
                 view === "tree" && "min-[980px]:w-max",
               )}
             >

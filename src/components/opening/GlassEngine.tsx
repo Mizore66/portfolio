@@ -59,34 +59,26 @@ export function GlassEngine({ info }: { info: SearchInfo | null }) {
 
   return (
     <section
-      className="mx-4 mb-1 border-2 border-ink bg-paper-deep px-3 py-2"
+      className="mx-4 mt-3 border border-ink px-3 py-2"
       data-testid="glass-engine"
       aria-live="polite"
       aria-label="Live engine search"
     >
-      <div className="flex items-baseline justify-between gap-2">
-        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
-          Glass engine · alpha-beta
+      <div className="flex items-baseline justify-between gap-3">
+        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-faded">
+          Engine
         </p>
-        <p className="font-mono text-[11px] text-score-red" data-testid="engine-eval">
+        <p className="font-mono text-[12px] text-score-red" data-testid="engine-eval">
           {evalLabel}
         </p>
       </div>
-      <p className="mt-1 font-mono text-[11px] text-ink">
-        {info ? (
-          <>
-            depth {info.depth}
-            <span className="mx-1 text-faded">·</span>
-            {info.nps.toLocaleString()} n/s
-            <span className="mx-1 text-faded">·</span>
-            {info.thinking ? "searching" : "idle"}
-          </>
-        ) : (
-          "warming the clock"
-        )}
+      <p className="mt-1 truncate font-mono text-[13px] text-book-blue" data-testid="engine-pv">
+        {info?.pv.length ? info.pv.join(" ") : "…"}
       </p>
-      <p className="mt-1 truncate font-mono text-[11px] text-book-blue" data-testid="engine-pv">
-        {info?.pv.length ? info.pv.join(" ") : "pv …"}
+      <p className="mt-0.5 font-mono text-[10px] text-faded">
+        {info
+          ? `d${info.depth} · ${info.nps.toLocaleString()} n/s${info.thinking ? " · …" : ""}`
+          : "searching"}
       </p>
     </section>
   );

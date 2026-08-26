@@ -25,7 +25,7 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "A. T. Qumhiyeh — Opening Preparation",
+  title: "Anas T. Qumhiyeh — Opening Preparation",
   description:
     "An annotated Italian Game: the portfolio of Anas Tarek Qumhiyeh, software engineer. Moves are facts. Annotations are voice.",
   keywords: [
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Anas Tarek Qumhiyeh" }],
   openGraph: {
-    title: "A. T. Qumhiyeh — Opening Preparation",
+    title: "Anas T. Qumhiyeh — Opening Preparation",
     description:
       "An annotated Italian Game: jobs as moves, the rest of a life as annotations.",
     type: "website",

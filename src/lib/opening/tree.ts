@@ -170,8 +170,8 @@ export type TreeLayout = {
 
 const COL = 168;
 const ROW = 86;
-const PAD_X = 56;
-const PAD_Y = 52;
+const PAD_X = 48;
+const PAD_Y = 44;
 
 function mainlineOf(nodes: OpeningNode[]): OpeningNode[] {
   const line: OpeningNode[] = [];
