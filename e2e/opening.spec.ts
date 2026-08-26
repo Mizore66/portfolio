@@ -184,19 +184,27 @@ test.describe("Opening Preparation", () => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/?move=start");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name: "Opening Preparation" })).toBeVisible();
 
     const pawn = page.locator('[data-piece-id="wPe2"]');
     const yAt = () => pawn.evaluate((el) => el.getBoundingClientRect().y);
 
     const before = await yAt();
     await page.locator('[data-testid="tree-view"] [data-node-id="e4"]').click();
-    await page.waitForTimeout(90);
+    await expect(page.getByRole("heading", { level: 2, name: "The University Opening" })).toBeVisible();
+
+    // Router replace can take longer than a single timeout. Poll until the pawn
+    // has left e2, then confirm it is still travelling — a teleport would already
+    // be parked on e4.
+    await expect
+      .poll(async () => Math.abs((await yAt()) - before), { timeout: 1500 })
+      .toBeGreaterThan(2);
     const mid = await yAt();
+    await page.waitForTimeout(120);
+    const later = await yAt();
+    expect(Math.abs(later - mid)).toBeGreaterThan(1);
     await page.waitForTimeout(400);
     const after = await yAt();
-
-    expect(Math.abs(mid - before)).toBeGreaterThan(2);
-    expect(Math.abs(after - mid)).toBeGreaterThan(2);
     expect(after).not.toBe(before);
   });
 
