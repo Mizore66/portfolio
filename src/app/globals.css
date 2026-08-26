@@ -136,8 +136,16 @@
 }
 
 .board-sq-light {
-  background-color: var(--board-light);
+  background-color: #f3ead4;
+  box-shadow: inset 0 0 0 1px #1a120c;
   transition: box-shadow 160ms ease;
+}
+
+.newspaper-board {
+  background-color: #f6eedc;
+  background-image: url("/newsprint-grain.png");
+  background-size: 280px;
+  background-blend-mode: overlay;
 }
 
 .tree-edge {
@@ -281,12 +289,13 @@
 }
 
 .board-sq-dark {
-  background-color: var(--board-dark);
+  background-color: #efe4cc;
   background-image: repeating-linear-gradient(
     -45deg,
-    #8f8574 0 4px,
-    #5c5548 4px 6px
+    #1a120c 0 1.15px,
+    transparent 1.15px 5.5px
   );
+  box-shadow: inset 0 0 0 1px #1a120c;
   transition: box-shadow 160ms ease;
 }
 

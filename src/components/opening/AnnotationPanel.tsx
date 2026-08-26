@@ -2,30 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { ArtifactLinks } from "@/components/opening/ArtifactLinks";
-import { EvalBar } from "@/components/opening/EvalBar";
 import { HalftonePlate } from "@/components/opening/HalftonePlate";
-import type { SearchInfo } from "@/lib/chess/engine";
-import { ENGINE_NODE_ID, formatLine } from "@/lib/opening/tree";
+import { formatLine } from "@/lib/opening/tree";
 import type { OpeningNode } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
 
 /** Once per visit, in memory — no storage. */
 const stampedIds = new Set<string>();
 
-export function AnnotationPanel({
-  node,
-  engine,
-}: {
-  node: OpeningNode;
-  engine: SearchInfo | null;
-}) {
-  const live = Boolean(engine) && node.id === ENGINE_NODE_ID;
-  const liveValue = live && engine ? engine.evalCp / 100 : node.eval;
-  const liveLabel =
-    live && engine
-      ? `${engine.evalCp >= 0 ? "+" : ""}${(engine.evalCp / 100).toFixed(2)}`
-      : node.evalText;
-
+export function AnnotationPanel({ node }: { node: OpeningNode }) {
   return (
     <section className="flex flex-col gap-4 px-4 py-4" aria-label="Annotation">
       <div key={node.id} className="sheet-fade flex flex-col gap-4">
@@ -60,8 +45,6 @@ export function AnnotationPanel({
       {node.plate ? (
         <HalftonePlate src={node.plate.src} caption={node.plate.caption} alt={node.title} />
       ) : null}
-
-      <EvalBar value={liveValue} label={liveLabel} live={Boolean(live)} />
       </div>
 
       <p className="font-mono text-[11px] leading-relaxed text-faded">

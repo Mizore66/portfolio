@@ -65,7 +65,7 @@ export function Masthead({
         type="button"
         data-testid="lead-headline"
         onClick={() => onSelect(FLAGSHIP_ID)}
-        className="group w-full text-left px-4 py-3 sm:px-6 sm:py-4"
+        className="group w-full text-left px-4 py-2.5 sm:px-6 sm:py-3"
       >
         <span className="font-display text-[clamp(1.45rem,3.6vw,2.35rem)] font-bold leading-[1.15] tracking-tight text-ink group-hover:text-score-red">
           {moveHeading(flagship)}
@@ -74,9 +74,6 @@ export function Masthead({
           ) : null}
           <span className="mx-2 font-normal text-faded">—</span>
           <span>{flagship.title}</span>
-        </span>
-        <span className="mt-1 block max-w-2xl font-lora text-[15px] leading-snug text-faded">
-          {flagship.commentary.split(/(?<=\.)\s/)[0]}
         </span>
       </button>
       <div className="h-1 border-t-2 border-ink" />

@@ -168,10 +168,10 @@ export type TreeLayout = {
   trunkX: number;
 };
 
-const COL = 168;
-const ROW = 86;
-const PAD_X = 48;
-const PAD_Y = 44;
+const COL = 156;
+const ROW = 64;
+const PAD_X = 32;
+const PAD_Y = 28;
 
 function mainlineOf(nodes: OpeningNode[]): OpeningNode[] {
   const line: OpeningNode[] = [];

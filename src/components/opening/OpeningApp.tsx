@@ -136,20 +136,29 @@ export function OpeningApp() {
 
   return (
     <div className="min-h-screen text-ink" data-hydrated={hydrated ? "true" : "false"}>
-      <div className="relative z-[1] mx-auto px-4 py-5 sm:px-8 sm:py-7 lg:px-12">
-        <div className="mx-auto max-w-[1240px]">
+      <div className="relative z-[1] mx-auto px-3 py-3 sm:px-4 sm:py-4">
+        <div className="mx-auto max-w-[1680px]">
           <Masthead view={view} onView={setView} onSelect={userSelect} />
         </div>
-        <div className="mx-auto mt-5 flex max-w-[1240px] flex-col gap-5 min-[980px]:flex-row min-[980px]:items-start min-[980px]:justify-center">
-          <aside className="sheet w-full shrink-0 min-[980px]:sticky min-[980px]:top-5 min-[980px]:max-h-[calc(100vh-2.5rem)] min-[980px]:w-[460px] min-[980px]:overflow-y-auto">
+        <div className="mx-auto mt-3 flex max-w-[1680px] flex-col gap-3 min-[980px]:flex-row-reverse min-[980px]:items-start">
+          <aside
+            data-testid="board-column"
+            className="sheet w-full shrink-0 min-[980px]:sticky min-[980px]:top-3 min-[980px]:max-h-[calc(100vh-1.5rem)] min-[980px]:w-[min(560px,42vw)] min-[980px]:overflow-y-auto"
+          >
             <BoardDiagram
               plies={plies}
               highlight={node.hl}
               preview={previewHl}
               caption={node.cap}
+              evalCp={engine ? engine.evalCp / 100 : null}
+              evalLabel={
+                engine
+                  ? `${engine.evalCp >= 0 ? "+" : ""}${(engine.evalCp / 100).toFixed(2)}`
+                  : "…"
+              }
             />
-            <GlassEngine info={engine} />
-            <div className="mx-4 flex items-center py-2">
+            <GlassEngine info={engine} plyCount={plies.length} />
+            <div className="mx-3 flex items-center py-1.5">
               <button
                 type="button"
                 data-play-control=""
@@ -166,16 +175,14 @@ export function OpeningApp() {
                 {playing ? "Pause" : "Read the game"}
               </button>
             </div>
-            <div className="mx-4 border-t border-ink" />
-            <AnnotationPanel node={node} engine={engine} />
+            <div className="mx-3 border-t border-ink" />
+            <AnnotationPanel node={node} />
           </aside>
-          <section className="min-w-0 min-[980px]:h-fit min-[980px]:flex-none min-[980px]:self-start">
-            <div
-              className={cn(
-                "sheet relative h-fit w-full overflow-x-hidden",
-                view === "tree" && "min-[980px]:w-max",
-              )}
-            >
+          <section
+            data-testid="tree-column"
+            className="min-w-0 flex-1 min-[980px]:h-fit min-[980px]:self-start"
+          >
+            <div className="sheet relative h-fit w-full overflow-x-auto">
               <div
                 className={cn(
                   "view-turn max-[979px]:hidden",

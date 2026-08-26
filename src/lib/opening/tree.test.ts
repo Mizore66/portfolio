@@ -13,7 +13,7 @@ describe("layoutTree", () => {
     const sorted = [...ys].sort((a, b) => a - b);
     expect(ys).toEqual(sorted);
     const lastY = ys[ys.length - 1];
-    expect(height - lastY).toBeLessThanOrEqual(48);
+    expect(height - lastY).toBeLessThanOrEqual(32);
   });
 
   it("forks life left and variations right on the next rank", () => {

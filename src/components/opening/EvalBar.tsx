@@ -3,41 +3,37 @@
 export function EvalBar({
   value,
   label,
-  live,
 }: {
   value: number;
   label: string;
-  live?: boolean;
 }) {
-  const pct = Math.max(8, Math.min(92, 50 + value * 18));
+  const whitePct = Math.max(4, Math.min(96, 50 + value * 12));
+  const whiteAhead = value >= 0;
 
   return (
-    <div>
-      <div className="mb-1 flex items-baseline justify-between gap-2">
-        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
-          {live ? "Live search" : "Narrative eval"}
-        </p>
-        <p className="font-mono text-[11px] text-score-red">{label}</p>
-      </div>
+    <div
+      data-testid="eval-bar"
+      className="relative w-[22px] shrink-0 self-stretch border-2 border-ink bg-ink"
+      role="meter"
+      aria-label="Engine evaluation"
+      aria-valuemin={-8}
+      aria-valuemax={8}
+      aria-valuenow={Number(value.toFixed(2))}
+    >
       <div
-        className="relative h-3 border-2 border-ink bg-ink"
-        role="meter"
-        aria-label={live ? "Live engine evaluation" : "Narrative evaluation — not an engine"}
-        aria-valuemin={-3}
-        aria-valuemax={3}
-        aria-valuenow={Number(value.toFixed(2))}
+        className="absolute bottom-0 left-0 right-0 bg-paper motion-safe:transition-[height] motion-safe:duration-500"
+        style={{ height: `${whitePct}%` }}
+      />
+      <p
+        data-testid="engine-eval"
+        className="absolute inset-x-0 px-0.5 text-center font-mono text-[9px] leading-tight tracking-tight"
+        style={{
+          top: whiteAhead ? undefined : 6,
+          bottom: whiteAhead ? 6 : undefined,
+          color: whiteAhead ? "#1a120c" : "#f6eedc",
+        }}
       >
-        <div
-          className="absolute inset-y-0 left-0 bg-paper motion-safe:transition-[width] motion-safe:duration-500"
-          style={{ width: `${pct}%` }}
-        />
-        <div
-          className="absolute top-0 h-full w-0.5 bg-score-red"
-          style={{ left: `${pct}%` }}
-        />
-      </div>
-      <p className="mt-1 font-mono text-[9px] uppercase tracking-wider text-faded">
-        {live ? "Alpha-beta on this position · not a wink" : "Playful bar · dips on ?! · not a search"}
+        {label}
       </p>
     </div>
   );

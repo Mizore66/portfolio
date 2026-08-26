@@ -37,6 +37,16 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
     await expect(page.getByTestId("lead-headline")).toContainText("The Central Break");
     await expect(page.getByTestId("lead-headline")).not.toContainText("THE CENTRAL BREAK");
+    await expect(page.getByTestId("lead-headline")).not.toContainText("You castle");
+    await expect(page.getByText(/^\d+ alts?$/i)).toHaveCount(0);
+    await expect(page.getByTestId("halftone-plate")).toBeVisible();
+    await expect(page.getByTestId("glass-engine")).toBeVisible();
+    await expect(page.getByTestId("eval-bar")).toBeVisible();
+
+    const boardBox = await page.getByTestId("board-column").boundingBox();
+    const treeBox = await page.getByTestId("tree-column").boundingBox();
+    expect(boardBox && treeBox).toBeTruthy();
+    expect(boardBox!.x).toBeGreaterThan(treeBox!.x);
     await expect(page.getByTestId("halftone-plate")).toBeVisible();
     await expect(page.getByTestId("glass-engine")).toBeVisible();
 

@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { EvalBar } from "@/components/opening/EvalBar";
+import { NewspaperPiece } from "@/components/opening/NewspaperPiece";
 import {
   animationPlan,
   FILES,
-  figurine,
   positionAfter,
   squareFile,
   squareRank,
@@ -18,11 +19,15 @@ export function BoardDiagram({
   highlight,
   preview,
   caption,
+  evalCp,
+  evalLabel,
 }: {
   plies: Ply[];
   highlight: [string, string] | null;
   preview?: [string, string] | null;
   caption: string;
+  evalCp: number | null;
+  evalLabel: string;
 }) {
   const prevPlies = useRef<Ply[] | null>(null);
   const [pieces, setPieces] = useState<AnimatedPiece[]>(() =>
@@ -42,9 +47,6 @@ export function BoardDiagram({
     const plan = animationPlan(from, plies);
     prevPlies.current = plies;
 
-    // Discrete clicks flush React effects before paint, so a same-tick setState
-    // never gives CSS a "from" frame. A macrotask applies the destination after
-    // the current positions have been painted.
     const timer = window.setTimeout(() => {
       setPieces(plan);
     }, 0);
@@ -66,9 +68,9 @@ export function BoardDiagram({
           className={dark ? "board-sq-dark" : "board-sq-light"}
           style={
             committed
-              ? { boxShadow: "inset 0 0 0 100px rgba(139, 36, 28, 0.42)" }
+              ? { boxShadow: "inset 0 0 0 100px rgba(139, 36, 28, 0.38)" }
               : ghost
-                ? { boxShadow: "inset 0 0 0 100px rgba(30, 58, 114, 0.38)" }
+                ? { boxShadow: "inset 0 0 0 100px rgba(30, 58, 114, 0.32)" }
                 : undefined
           }
         />,
@@ -77,57 +79,59 @@ export function BoardDiagram({
   }
 
   return (
-    <figure className="px-4 pt-4">
-      <div className="mx-auto max-w-[420px]">
-        <div className="flex">
-          <div className="flex w-4 flex-col-reverse justify-around py-0.5 font-mono text-[9px] text-faded">
-            {Array.from({ length: 8 }, (_, i) => (
-              <span key={i} className="leading-none">
-                {i + 1}
-              </span>
+    <figure className="px-3 pt-3" data-testid="board-diagram">
+      <div className="flex items-stretch gap-0">
+        <EvalBar value={evalCp ?? 0} label={evalLabel} />
+        <div className="min-w-0 flex-1">
+          <div className="flex">
+            <div className="flex w-3.5 flex-col-reverse justify-around py-0.5 font-mono text-[9px] text-faded">
+              {Array.from({ length: 8 }, (_, i) => (
+                <span key={i} className="leading-none">
+                  {i + 1}
+                </span>
+              ))}
+            </div>
+            <div
+              role="img"
+              aria-label={caption}
+              className="newspaper-board relative aspect-square w-full border-2 border-ink"
+            >
+              <div className="grid h-full w-full grid-cols-8 grid-rows-8">{squares}</div>
+              {pieces.map((piece) => {
+                const file = squareFile(piece.square);
+                const rank = squareRank(piece.square);
+                return (
+                  <span
+                    key={piece.id}
+                    data-piece-id={piece.id}
+                    className="absolute flex items-center justify-center"
+                    style={{
+                      left: 0,
+                      top: 0,
+                      width: "12.5%",
+                      height: "12.5%",
+                      transform: `translate(${file * 100}%, ${(7 - rank) * 100}%)`,
+                      opacity: piece.captured ? 0 : 1,
+                      transition: `transform ${GLIDE_MS}ms ease, opacity ${GLIDE_MS}ms ease`,
+                      transitionDelay: `${piece.delay}ms`,
+                      pointerEvents: "none",
+                      zIndex: piece.captured ? 0 : 1,
+                    }}
+                  >
+                    <NewspaperPiece type={piece.type} color={piece.color} />
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+          <div className="ml-3.5 flex justify-around font-mono text-[9px] text-faded">
+            {FILES.split("").map((f) => (
+              <span key={f}>{f}</span>
             ))}
           </div>
-          <div
-            role="img"
-            aria-label={caption}
-            className="relative aspect-square w-full border-2 border-ink"
-          >
-            <div className="grid h-full w-full grid-cols-8 grid-rows-8">{squares}</div>
-            {pieces.map((piece) => {
-              const file = squareFile(piece.square);
-              const rank = squareRank(piece.square);
-              return (
-                <span
-                  key={piece.id}
-                  data-piece-id={piece.id}
-                    className="absolute flex items-center justify-center text-[clamp(1.35rem,5.2vw,2.15rem)] leading-none"
-                  style={{
-                    left: 0,
-                    top: 0,
-                    width: "12.5%",
-                    height: "12.5%",
-                    transform: `translate(${file * 100}%, ${(7 - rank) * 100}%)`,
-                    color: piece.color === "w" ? "#1e3a72" : "#1a120c",
-                    opacity: piece.captured ? 0 : 1,
-                    transition: `transform ${GLIDE_MS}ms ease, opacity ${GLIDE_MS}ms ease`,
-                    transitionDelay: `${piece.delay}ms`,
-                    pointerEvents: "none",
-                    zIndex: piece.captured ? 0 : 1,
-                  }}
-                >
-                  {figurine(piece.type, piece.color)}
-                </span>
-              );
-            })}
-          </div>
-        </div>
-        <div className="ml-4 flex justify-around font-mono text-[9px] text-faded">
-          {FILES.split("").map((f) => (
-            <span key={f}>{f}</span>
-          ))}
         </div>
       </div>
-      <figcaption className="mt-2 px-1 text-center font-display text-[13px] italic text-ink">
+      <figcaption className="mt-1.5 px-1 text-center font-display text-[13px] italic text-ink">
         {caption}
       </figcaption>
     </figure>

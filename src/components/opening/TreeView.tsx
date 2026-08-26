@@ -9,7 +9,6 @@ import {
   type CSSProperties,
 } from "react";
 import {
-  getChildren,
   isSingleMainlineAdvance,
   layoutTree,
   OPENING_NODES,
@@ -68,7 +67,7 @@ export function TreeView({
   }, [selectedId]);
 
   return (
-    <div className="relative px-3 py-3 sm:px-4" data-testid="tree-view">
+    <div className="relative px-2 py-2 sm:px-3" data-testid="tree-view">
       <div className="overflow-auto">
         <div
           className="relative mx-auto"
@@ -192,7 +191,6 @@ function TreeNode({
   onPreview?: (id: string | null) => void;
 }) {
   const label = node.moveNumber === 0 ? "start" : node.san;
-  const replies = getChildren(node.id).filter((n) => n.type !== "mainline").length;
   const clipping = tape && node.type === "life";
   const tilt = node.id.charCodeAt(0) % 2 === 0 ? -1.4 : 1.2;
 
@@ -214,7 +212,7 @@ function TreeNode({
         ...(clipping ? { transform: `translate(-50%, -50%) rotate(${tilt}deg)` } : {}),
       }}
       className={cn(
-        "absolute z-10 flex w-[148px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center px-1.5 py-1.5 text-center",
+        "absolute z-10 flex w-[140px] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center px-1 py-1 text-center",
         "font-display tracking-tight transition-colors",
         "hover:text-score-red",
         node.type === "mainline" && "text-book-blue",
@@ -243,14 +241,9 @@ function TreeNode({
           </>
         )}
       </span>
-      <span className="mt-1 line-clamp-2 font-lora text-[11px] font-normal not-italic leading-tight text-ink">
+      <span className="mt-0.5 line-clamp-1 font-lora text-[11px] font-normal not-italic leading-tight text-ink">
         {node.title}
       </span>
-      {replies > 0 ? (
-        <span className="mt-0.5 font-mono text-[9px] uppercase tracking-wider text-faded">
-          {replies} alt{replies === 1 ? "" : "s"}
-        </span>
-      ) : null}
     </button>
   );
 }

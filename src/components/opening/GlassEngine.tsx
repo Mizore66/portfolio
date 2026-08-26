@@ -1,10 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { clonePos, fromPieces, search, type SearchInfo } from "@/lib/chess/engine";
+import {
+  clonePos,
+  fromPieces,
+  numberPv,
+  prepareSearch,
+  search,
+  type SearchInfo,
+} from "@/lib/chess/engine";
 import { positionAfter } from "@/lib/chess/replay";
 import { lastPly, sideToMove } from "@/lib/opening/tree";
 import type { Ply } from "@/lib/opening/types";
+
+const MAX_DEPTH = 10;
+const THINK_MS = 420;
 
 export function useEngineSearch(selectedId: string, plies: Ply[]) {
   const [info, setInfo] = useState<SearchInfo | null>(null);
@@ -18,14 +28,17 @@ export function useEngineSearch(selectedId: string, plies: Ply[]) {
       await Promise.resolve();
       try {
         const pos = fromPieces(positionAfter(plies), sideToMove(selectedId), lastPly(selectedId));
-        for (let depth = 1; depth <= 4 && !cancelled; depth++) {
-          const result = search(clonePos(pos), depth);
+        prepareSearch();
+        for (let depth = 1; depth <= MAX_DEPTH && !cancelled; depth++) {
+          const remain = THINK_MS - (performance.now() - t0);
+          if (depth > 1 && remain < 12) break;
+          const result = search(clonePos(pos), depth, { timeMs: Math.max(remain, 16) });
           if (cancelled) return;
           nodes += result.nodes;
           const ms = Math.max(1, performance.now() - t0);
-          const thinking = depth < 4 && ms < 160;
+          const thinking = depth < MAX_DEPTH && ms < THINK_MS - 12;
           setInfo({
-            depth,
+            depth: result.depth,
             nodes,
             nps: Math.round((nodes / ms) * 1000),
             evalCp: result.score,
@@ -52,28 +65,25 @@ export function useEngineSearch(selectedId: string, plies: Ply[]) {
   return info;
 }
 
-export function GlassEngine({ info }: { info: SearchInfo | null }) {
-  const evalLabel = info
-    ? `${info.evalCp >= 0 ? "+" : ""}${(info.evalCp / 100).toFixed(2)}`
-    : "…";
-
+export function GlassEngine({
+  info,
+  plyCount,
+}: {
+  info: SearchInfo | null;
+  plyCount: number;
+}) {
   return (
     <section
-      className="mx-4 mt-3 border border-ink px-3 py-2"
+      className="mx-3 mt-2 border border-ink px-3 py-1.5"
       data-testid="glass-engine"
       aria-live="polite"
       aria-label="Live engine search"
     >
-      <div className="flex items-baseline justify-between gap-3">
-        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-faded">
-          Engine
-        </p>
-        <p className="font-mono text-[12px] text-score-red" data-testid="engine-eval">
-          {evalLabel}
-        </p>
-      </div>
-      <p className="mt-1 truncate font-mono text-[13px] text-book-blue" data-testid="engine-pv">
-        {info?.pv.length ? info.pv.join(" ") : "…"}
+      <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-faded">
+        Engine · 2200
+      </p>
+      <p className="mt-0.5 truncate font-mono text-[13px] text-book-blue" data-testid="engine-pv">
+        {info?.pv.length ? numberPv(info.pv, plyCount) : "…"}
       </p>
       <p className="mt-0.5 font-mono text-[10px] text-faded">
         {info
