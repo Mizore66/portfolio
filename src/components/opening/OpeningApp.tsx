@@ -14,6 +14,7 @@ import {
   FLAGSHIP_ID,
   getNode,
   isOpeningId,
+  sideToMove,
   stepMainline,
 } from "@/lib/opening/tree";
 import { cn } from "@/lib/utils";
@@ -136,14 +137,12 @@ export function OpeningApp() {
 
   return (
     <div className="min-h-screen text-ink" data-hydrated={hydrated ? "true" : "false"}>
-      <div className="relative z-[1] mx-auto px-3 py-3 sm:px-4 sm:py-4">
-        <div className="mx-auto max-w-[1680px]">
-          <Masthead view={view} onView={setView} onSelect={userSelect} />
-        </div>
-        <div className="mx-auto mt-3 flex max-w-[1680px] flex-col gap-3 min-[980px]:flex-row-reverse min-[980px]:items-start">
+      <div className="relative z-[1] px-2 py-3 sm:px-3">
+        <Masthead view={view} onView={setView} onSelect={userSelect} />
+        <div className="mt-3 flex flex-col gap-3 min-[980px]:flex-row-reverse min-[980px]:items-start min-[980px]:justify-end">
           <aside
             data-testid="board-column"
-            className="sheet w-full shrink-0 min-[980px]:sticky min-[980px]:top-3 min-[980px]:max-h-[calc(100vh-1.5rem)] min-[980px]:w-[min(560px,42vw)] min-[980px]:overflow-y-auto"
+            className="sheet w-full shrink-0 min-[980px]:sticky min-[980px]:top-3 min-[980px]:max-h-[calc(100vh-1.5rem)] min-[980px]:w-[min(640px,48vw)] min-[980px]:overflow-y-auto"
           >
             <BoardDiagram
               plies={plies}
@@ -157,7 +156,17 @@ export function OpeningApp() {
                   : "…"
               }
             />
-            <GlassEngine info={engine} plyCount={plies.length} />
+            <GlassEngine
+              info={engine}
+              side={sideToMove(selectedId)}
+              moveNumber={
+                !node.color || node.moveNumber === 0
+                  ? 1
+                  : node.color === "w"
+                    ? node.moveNumber
+                    : node.moveNumber + 1
+              }
+            />
             <div className="mx-3 flex items-center py-1.5">
               <button
                 type="button"
@@ -180,9 +189,9 @@ export function OpeningApp() {
           </aside>
           <section
             data-testid="tree-column"
-            className="min-w-0 flex-1 min-[980px]:h-fit min-[980px]:self-start"
+            className="min-w-0 min-[980px]:w-max min-[980px]:max-w-[calc(100%-660px)] min-[980px]:self-start"
           >
-            <div className="sheet relative h-fit w-full overflow-x-auto">
+            <div className="sheet relative h-fit w-full min-[980px]:w-max overflow-x-auto">
               <div
                 className={cn(
                   "view-turn max-[979px]:hidden",

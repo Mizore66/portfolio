@@ -136,8 +136,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     const pawn = page.locator('[data-piece-id="wPe2"]');
-    const yAt = () =>
-      pawn.evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).f);
+    const yAt = () => pawn.evaluate((el) => el.getBoundingClientRect().y);
 
     const before = await yAt();
     await page.locator('[data-testid="tree-view"] [data-node-id="e4"]').click();
@@ -196,6 +195,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await page.locator('[data-testid="tree-view"] [data-node-id="d4"]').click();
     await expect(page.getByTestId("glyph-stamp")).toHaveAttribute("data-stamp", "press");
+    await page.waitForTimeout(200);
     await page.locator('[data-testid="tree-view"] [data-node-id="e4"]').click();
     await page.locator('[data-testid="tree-view"] [data-node-id="d4"]').click();
     await expect(page.getByTestId("glyph-stamp")).toHaveAttribute("data-stamp", "seen");

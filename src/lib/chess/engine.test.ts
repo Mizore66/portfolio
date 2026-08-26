@@ -30,7 +30,7 @@ describe("engine search", () => {
   });
 
   it("numbers a black-to-move PV from the ply count", () => {
-    expect(numberPv(["exd4", "Nxd4", "Nf6"], 9)).toBe("5…exd4 6. Nxd4 Nf6");
+    expect(numberPv(["exd4", "Nxd4", "Nf6"], "b", 5)).toBe("5…exd4 6. Nxd4 Nf6");
   });
 
   it("returns a principal variation for 5. d4", () => {

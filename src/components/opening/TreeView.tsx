@@ -70,7 +70,7 @@ export function TreeView({
     <div className="relative px-2 py-2 sm:px-3" data-testid="tree-view">
       <div className="overflow-auto">
         <div
-          className="relative mx-auto"
+          className="relative mx-0"
           style={{ width: layout.width, height: layout.height }}
         >
           <svg

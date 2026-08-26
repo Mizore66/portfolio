@@ -604,15 +604,15 @@ function formatPv(pos: EnginePos, uciList: string[]): string[] {
   return out;
 }
 
-export function numberPv(pv: string[], plyCount: number): string {
+export function numberPv(pv: string[], side: Color, moveNumber: number): string {
   const parts: string[] = [];
-  let side: "w" | "b" = plyCount % 2 === 0 ? "w" : "b";
-  let n = Math.floor(plyCount / 2) + 1;
+  let s = side;
+  let n = moveNumber;
   for (const san of pv) {
-    if (side === "w") parts.push(`${n}. ${san}`);
+    if (s === "w") parts.push(`${n}. ${san}`);
     else parts.push(parts.length === 0 ? `${n}…${san}` : san);
-    if (side === "b") n += 1;
-    side = side === "w" ? "b" : "w";
+    if (s === "b") n += 1;
+    s = s === "w" ? "b" : "w";
   }
   return parts.join(" ");
 }

@@ -13,7 +13,7 @@ export function EvalBar({
   return (
     <div
       data-testid="eval-bar"
-      className="relative w-[22px] shrink-0 self-stretch border-2 border-ink bg-ink"
+      className="relative w-[28px] shrink-0 self-stretch border-2 border-ink bg-ink"
       role="meter"
       aria-label="Engine evaluation"
       aria-valuemin={-8}

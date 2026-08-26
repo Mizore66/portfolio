@@ -70,10 +70,12 @@ export function useEngineSearch(selectedId: string, plies: Ply[]) {
 
 export function GlassEngine({
   info,
-  plyCount,
+  side,
+  moveNumber,
 }: {
   info: SearchInfo | null;
-  plyCount: number;
+  side: "w" | "b";
+  moveNumber: number;
 }) {
   return (
     <section
@@ -86,7 +88,7 @@ export function GlassEngine({
         Engine · 2200
       </p>
       <p className="mt-0.5 truncate font-mono text-[13px] text-book-blue" data-testid="engine-pv">
-        {info?.pv.length ? numberPv(info.pv, plyCount) : "…"}
+        {info?.pv.length ? numberPv(info.pv, side, moveNumber) : "…"}
       </p>
       <p className="mt-0.5 font-mono text-[10px] text-faded">
         {info
