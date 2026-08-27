@@ -106,6 +106,12 @@ describe("art taxonomy", () => {
     expect(getNode("club").spot).toBe("clock");
     expect(getNode("nf3").figure?.tech.length).toBeGreaterThan(0);
     expect(getNode("bc4").figure?.tech.length).toBeGreaterThan(0);
+    expect(getNode("bc4").figure?.stack?.runtime).toBe("Docker");
+    expect(getNode("bc4").figure?.stack?.layers.map((l) => l.name)).toEqual([
+      "Next.js",
+      "ASP.NET",
+      "PostgreSQL",
+    ]);
     expect(getNode("e4").inlineDiagram).toBe(true);
     expect(getNode("oo").inlineDiagram).toBe(true);
     expect(getNode("d4").plate).toBeTruthy();

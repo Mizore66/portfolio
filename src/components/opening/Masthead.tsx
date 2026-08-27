@@ -24,9 +24,6 @@ export function Masthead() {
           <p className="mt-2 font-display text-xl italic text-faded sm:text-2xl">
             Opening Preparation
           </p>
-          <p data-testid="masthead-proof" className="mt-2 font-display text-[15px] text-score-red">
-            {BROADSHEET.leadProof}
-          </p>
           <p className="mt-3 max-w-3xl font-mono text-[11px] text-faded">
             <a
               className="text-book-blue underline decoration-1 underline-offset-4 hover:text-score-red"

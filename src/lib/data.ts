@@ -38,7 +38,7 @@ export const resumeData = {
       type: "Contract Employee",
       company: "Western Digital",
       period: "Feb 2025 – Dec 2025",
-      tech: ["Next.js", "PostgreSQL", "ASP.NET", "Docker"],
+      tech: ["Next.js", "ASP.NET", "PostgreSQL", "Docker"],
       bullets: [
         "Designed and developed an interactive dashboard to control and monitor company's lab systems, reducing manual oversight time by 40%.",
         "Implemented secure role-based access control (admin, user, superuser) of different CRUD operations and analytics for over 50 internal users.",

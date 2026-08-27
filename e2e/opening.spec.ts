@@ -46,6 +46,17 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("halftone-plate").first()).toBeVisible();
     await expect(page.getByTestId("spot-illustration")).toHaveCount(2);
     await expect(
+      page.locator("#chapter-e4 .chapter-copy [data-testid='spot-illustration']"),
+    ).toHaveCount(0);
+    await expect(
+      page.locator("#chapter-oo .chapter-copy [data-testid='spot-illustration']"),
+    ).toHaveCount(0);
+    await expect(page.locator("#chapter-bc4 [data-layout='stack']")).toBeVisible();
+    await expect(page.locator("#chapter-bc4 [data-runtime='Docker']")).toBeVisible();
+    await expect(page.locator("#chapter-bc4 [data-layer='Next.js']")).toBeVisible();
+    await expect(page.locator("#chapter-bc4 [data-layer='ASP.NET']")).toBeVisible();
+    await expect(page.locator("#chapter-bc4 [data-layer='PostgreSQL']")).toBeVisible();
+    await expect(
       page.locator('[data-testid="notation-view"] [data-testid="architecture-figure"]'),
     ).toHaveCount(2);
     await expect(page.locator("#chapter-e5 [data-testid='halftone-plate']")).toHaveCount(0);
@@ -558,21 +569,31 @@ test.describe("Opening Preparation", () => {
     }
   });
 
-  test("the first viewport carries name, role, and one proof", async ({ page }) => {
+  test("the first viewport carries name and role", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
-    const inFold = async (testId: string) => {
-      const box = await page.getByTestId(testId).boundingBox();
-      expect(box).toBeTruthy();
-      expect(box!.y).toBeGreaterThanOrEqual(0);
-      expect(box!.y + box!.height).toBeLessThan(900);
-    };
     await expect(page.getByRole("heading", { level: 1, name: "Anas T. Qumhiyeh" })).toBeVisible();
-    await inFold("masthead-role");
-    await inFold("masthead-proof");
+    const role = await page.getByTestId("masthead-role").boundingBox();
+    expect(role).toBeTruthy();
+    expect(role!.y).toBeGreaterThanOrEqual(0);
+    expect(role!.y + role!.height).toBeLessThan(900);
     await expect(page.getByTestId("masthead-role")).toHaveText(/Software Engineer/i);
-    await expect(page.getByTestId("masthead-proof")).toHaveText(/Veridian/);
+    await expect(page.getByTestId("masthead-proof")).toHaveCount(0);
+  });
+
+  test("chapter titles share one type size", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    const ids = ["e4", "nf3", "bc4", "oo", "d4", "re1"];
+    const sizes = [];
+    for (const id of ids) {
+      sizes.push(
+        await page.locator(`#chapter-${id} h2`).evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
+      );
+    }
+    expect(Math.max(...sizes) - Math.min(...sizes)).toBeLessThan(0.5);
   });
 
   test("the engine depth climbs in view before the PV is honest", async ({ page }) => {

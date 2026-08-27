@@ -42,7 +42,15 @@ export type OpeningNode = {
   /** Small static diagram in the scoresheet (career figures, castle, flagship, finale). */
   inlineDiagram?: boolean;
   /** Inked apparatus sketch for a technical/career chapter. */
-  figure?: { name: string; tech: string[] };
+  figure?: {
+    name: string;
+    tech: string[];
+    /** Request path (client → api → data). Runtime is the box around it, not a step. */
+    stack?: {
+      runtime: string;
+      layers: { name: string; role: string }[];
+    };
+  };
   /** Quarter-column engraving for a life branch. */
   spot?: "trail" | "clock";
   /** Declined line: a dashed photo frame, no picture. Caption is the joke. */

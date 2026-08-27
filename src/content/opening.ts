@@ -51,7 +51,6 @@ export const BROADSHEET = {
   issueKicker: "In this issue",
   skipLink: "Skip to the game",
   dek: "Software Engineer — MLOps & Full-Stack",
-  leadProof: "5. d4!! · Veridian · +45% retrieval vs vector-only RAG",
   availability: "Open to 1–3 year fintech and AI infrastructure roles. Replies within two days.",
   puzzleKicker: "Today's puzzle",
   classifiedSticky: "Situations Wanted — apply within",
@@ -310,7 +309,18 @@ export const OPENING_NODES: OpeningNode[] = [
     plies: [{ from: "f1", to: "c4" }],
     hl: ["f1", "c4"],
     cap: "Position after 3. Bc4",
-    figure: { name: wd.company ?? wd.title, tech: wd.tech },
+    figure: {
+      name: wd.company ?? wd.title,
+      tech: wd.tech,
+      stack: {
+        runtime: "Docker",
+        layers: [
+          { name: "Next.js", role: "dashboard" },
+          { name: "ASP.NET", role: "API · RBAC · WebSocket" },
+          { name: "PostgreSQL", role: "store" },
+        ],
+      },
+    },
   },
   {
     id: "bc5",

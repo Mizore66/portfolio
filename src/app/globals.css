@@ -380,6 +380,11 @@
     var(--paper-deep);
 }
 
+.apparatus-runtime {
+  margin: 8px 10px 10px;
+  border: 1.5px dashed var(--ink);
+}
+
 .halftone-plate-frame {
   position: relative;
   overflow: hidden;

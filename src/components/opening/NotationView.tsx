@@ -65,9 +65,6 @@ function Chapter({
   const { node } = block;
   const selected = node.id === selectedId;
   const flagship = node.id === FLAGSHIP_ID;
-  const lifeSpot = block.variations
-    .map((line) => line[0]?.node)
-    .find((n) => n?.type === "life" && n.spot)?.spot;
   const emptyFrame =
     node.emptyFrame ??
     block.variations.map((line) => line[0]?.node).find((n) => n?.emptyFrame)?.emptyFrame;
@@ -85,14 +82,7 @@ function Chapter({
         <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
           {node.kind}
         </p>
-        <h2
-          className={cn(
-            "font-display leading-tight text-ink",
-            flagship
-              ? "mt-1 text-[clamp(2rem,4vw,2.8rem)]"
-              : "mt-1 text-[clamp(1.35rem,2.4vw,1.75rem)]",
-          )}
-        >
+        <h2 className="mt-1 font-display text-[clamp(1.5rem,2.5vw,1.85rem)] leading-tight text-ink">
           <ChapterButton
             node={node}
             selected={selected}
@@ -104,8 +94,6 @@ function Chapter({
       </div>
 
       <div className="chapter-copy">
-        {node.spot ? <SpotIllustration mark={node.spot} /> : null}
-        {lifeSpot ? <SpotIllustration mark={lifeSpot} /> : null}
         {node.plate ? (
           <HalftonePlate
             src={node.plate.src}
@@ -131,6 +119,7 @@ function Chapter({
           <ArchitectureFigure
             name={node.figure.name}
             tech={node.figure.tech}
+            stack={node.figure.stack}
             kicker="Fig. · The apparatus"
           />
         </div>
@@ -186,6 +175,7 @@ function VariationRun({
       {line.map((child, i) => (
         <Fragment key={child.node.id}>
           {i > 0 ? " " : null}
+          {child.node.spot ? <SpotIllustration mark={child.node.spot} compact /> : null}
           <ChapterButton
             node={child.node}
             selected={child.node.id === selectedId}
@@ -244,7 +234,7 @@ function ChapterButton({
       onFocus={() => onPreview?.(node.id)}
       onBlur={() => onPreview?.(null)}
       className={cn(
-        "inline text-left focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2",
+        "inline text-left font-[inherit] text-[1em] leading-[inherit] focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2",
         compact && "font-display text-[13px] not-italic",
         node.type === "not-taken" && "border border-dashed border-ink px-0.5",
         selected && "bg-score-red/15 box-decoration-clone",
