@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { FIGURES, VERIDIAN_PRESS } from "@/content/figures";
@@ -23,9 +23,17 @@ describe("patent apparatuses are data, not art", () => {
       expect(spec.parts.length, `FIG. ${spec.fig}`).toBeLessThanOrEqual(12);
       expect(spec.move.length).toBeGreaterThan(0);
       expect(spec.detail, `FIG. ${spec.fig}`).toBeTruthy();
-      const marks = spec.numerals ?? spec.parts.map((p) => String(p.n));
-      expect(marks.length, `FIG. ${spec.fig} numerals`).toBeGreaterThanOrEqual(10);
-      expect(marks.length, `FIG. ${spec.fig} numerals`).toBeLessThanOrEqual(16);
+      expect(spec.engraving.src, `FIG. ${spec.fig}`).toMatch(/^\/figures\/fig-/);
+      expect(spec.engraving.width).toBe(1400);
+      const marks = spec.numerals;
+      expect(marks.length, `FIG. ${spec.fig} numerals`).toBeGreaterThanOrEqual(8);
+      expect(marks.length, `FIG. ${spec.fig} numerals`).toBeLessThanOrEqual(14);
+      for (const m of marks) {
+        for (const k of ["x", "y", "fromX", "fromY"] as const) {
+          expect(m[k], `${spec.fig}.${m.mark}.${k}`).toBeGreaterThanOrEqual(0);
+          expect(m[k], `${spec.fig}.${m.mark}.${k}`).toBeLessThanOrEqual(100);
+        }
+      }
       expect(spec.flow.length).toBeGreaterThan(0);
       const nums = spec.parts.map((p) => p.n);
       expect(nums).toEqual([...nums].sort((a, b) => a - b));
@@ -42,10 +50,20 @@ describe("patent apparatuses are data, not art", () => {
     }
   });
 
+  it("files generated engravings, not SVG part catalogs", () => {
+    const specs = [...Object.values(FIGURES), VERIDIAN_PRESS];
+    const sources = readFileSync(join(publicDir, "plates/SOURCES.md"), "utf8");
+    for (const spec of specs) {
+      const file = plateFile(spec.engraving.src);
+      expect(existsSync(file), spec.engraving.src).toBe(true);
+      expect(statSync(file).size, spec.engraving.src).toBeLessThanOrEqual(200 * 1024);
+      expect(sources).toContain(spec.engraving.src.replace("/figures/", ""));
+    }
+  });
+
   it("makes the pneumatic tube the spine of FIG. 3, not a floating part", () => {
-    const tube = FIGURES.nc6.parts.find((p) => p.glyph === "tube")!;
-    expect(tube.w).toBeGreaterThanOrEqual(500);
-    expect(tube.w / FIGURES.nc6.viewBox.w).toBeGreaterThan(0.7);
+    expect(FIGURES.nc6.parts.some((p) => p.glyph === "tube")).toBe(true);
+    expect(FIGURES.nc6.numerals.filter((m) => m.glyph === "tube").length).toBeGreaterThanOrEqual(2);
   });
 
   it("keeps employer figures generic — no internal names, only public metrics", () => {

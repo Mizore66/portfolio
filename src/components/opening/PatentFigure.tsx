@@ -1,142 +1,160 @@
-import { useId } from "react";
-import { Callout, FigLabel, Glyph } from "@/components/opening/patent-glyphs";
-import { SectionHatch, W } from "@/components/opening/patent-ink";
-import type { ApparatusPart, ApparatusSpec, GlyphId, PatentNumeral } from "@/lib/opening/types";
+import Image from "next/image";
+import { pt } from "@/components/opening/patent-ink";
+import type { ApparatusSpec, GlyphId, PatentNumeral } from "@/lib/opening/types";
 
 const DAGGER = "† composed from the archives";
 const INVENTOR = "A. T. QUMHIYEH.";
 const INVENTOR_SIGN = "Anas Tarek Qumhiyeh";
-const MEDIUM: ReadonlySet<GlyphId> = new Set(["tube", "belt"]);
-
-function paintOrder(parts: ApparatusPart[]) {
-  return [...parts].sort((a, b) => {
-    const am = MEDIUM.has(a.glyph) ? 0 : 1;
-    const bm = MEDIUM.has(b.glyph) ? 0 : 1;
-    if (am !== bm) return am - bm;
-    return a.n - b.n;
-  });
-}
-
-function numeralsOf(spec: ApparatusSpec): PatentNumeral[] {
-  if (spec.numerals && spec.numerals.length > 0) return spec.numerals;
-  const fromParts = (parts: ApparatusPart[]) =>
-    parts.map((p) => ({
-      mark: p.mark ?? String(p.n),
-      x: p.callout.x,
-      y: p.callout.y,
-      fromX: p.anchor?.x ?? p.x + p.w / 2,
-      fromY: p.anchor?.y ?? p.y + 4,
-    }));
-  return [...fromParts(spec.parts), ...fromParts(spec.detail?.parts ?? [])];
-}
-
-function Bedplate({ x, y, w }: { x: number; y: number; w: number }) {
-  return (
-    <g fill="none" stroke="var(--ink)" strokeWidth={W.outline} strokeLinejoin="round">
-      <rect x={x} y={y} width={w} height={14} />
-      <line x1={x} y1={y + 4} x2={x + w} y2={y + 4} strokeWidth={W.detail} />
-      {Array.from({ length: Math.max(4, Math.round(w / 70)) }, (_, i) => {
-        const bx = x + 18 + i * 70;
-        return (
-          <g key={i} strokeWidth={W.detail}>
-            <circle cx={bx} cy={y + 7} r={1.4} />
-          </g>
-        );
-      })}
-    </g>
-  );
-}
+const FURNITURE = { w: 720, head: 80, foot: 78 };
 
 function SheetHeader({ spec }: { spec: ApparatusSpec }) {
-  const { w } = spec.viewBox;
+  const w = FURNITURE.w;
   return (
-    <g fill="var(--ink)" fontFamily="var(--font-display), 'Libre Baskerville', serif">
-      <text x={16} y={18} fontSize="9">
-        (No Model.)
-      </text>
-      <text x={w - 16} y={18} fontSize="9" textAnchor="end">
-        2 Sheets—Sheet 1.
-      </text>
+    <svg
+      viewBox={`0 0 ${w} ${FURNITURE.head}`}
+      className="h-auto w-full text-ink"
+      aria-hidden="true"
+    >
+      <g fill="var(--ink)" fontFamily="var(--font-display), 'Libre Baskerville', serif">
+        <text x={16} y={18} fontSize="9">
+          (No Model.)
+        </text>
+        <text x={w - 16} y={18} fontSize="9" textAnchor="end">
+          2 Sheets—Sheet 1.
+        </text>
+        <text x={w / 2} y={36} fontSize="11" textAnchor="middle" letterSpacing="0.28em">
+          {INVENTOR}
+        </text>
+        <text x={w / 2} y={52} fontSize="10" textAnchor="middle" letterSpacing="0.18em">
+          {`APPARATUS FOR ${spec.function}.`}
+        </text>
+        <text x={16} y={68} fontSize="9">
+          {`No. ${spec.move}.`}
+        </text>
+        <text x={w - 16} y={68} fontSize="9" textAnchor="end">
+          {`Filed ${spec.filed}.`}
+        </text>
+        <line x1={16} y1={74} x2={w - 16} y2={74} stroke="var(--ink)" strokeWidth="0.7" />
+      </g>
+    </svg>
+  );
+}
+
+function SignatureBlock() {
+  const w = FURNITURE.w;
+  const y = 12;
+  return (
+    <svg
+      viewBox={`0 0 ${w} ${FURNITURE.foot}`}
+      className="h-auto w-full text-ink"
+      aria-hidden="true"
+    >
+      <g fill="var(--ink)" fontFamily="var(--font-display), 'Libre Baskerville', serif">
+        <text x={24} y={y} fontSize="8" letterSpacing="0.16em">
+          WITNESSES:
+        </text>
+        <text x={24} y={y + 22} fontSize="12" fontStyle="italic">
+          Vitest
+        </text>
+        <line x1={24} y1={y + 26} x2={150} y2={y + 26} stroke="var(--ink)" strokeWidth="0.5" />
+        <text x={24} y={y + 46} fontSize="12" fontStyle="italic">
+          Playwright
+        </text>
+        <line x1={24} y1={y + 50} x2={150} y2={y + 50} stroke="var(--ink)" strokeWidth="0.5" />
+        <text x={w - 24} y={y} fontSize="8" textAnchor="end" letterSpacing="0.16em">
+          INVENTOR
+        </text>
+        <text x={w - 24} y={y + 28} fontSize="13" fontStyle="italic" textAnchor="end">
+          {INVENTOR_SIGN}
+        </text>
+        <path
+          d={`M${w - 200} ${y + 34} C ${w - 140} ${y + 42}, ${w - 80} ${y + 24}, ${w - 24} ${y + 36}`}
+          fill="none"
+          stroke="var(--ink)"
+          strokeWidth="0.55"
+        />
+      </g>
+    </svg>
+  );
+}
+
+function OverlayCallout({
+  mark,
+  x,
+  y,
+  fromX,
+  fromY,
+  glyph,
+}: PatentNumeral & { glyph?: GlyphId }) {
+  const mx = pt((fromX + x) / 2 + (y < fromY ? 2.1 : -2.1));
+  const my = pt((fromY + y) / 2);
+  return (
+    <g data-callout={mark} data-glyph={glyph} fill="none">
+      <path
+        d={`M${pt(fromX)} ${pt(fromY)} Q${mx} ${my} ${pt(x)} ${pt(y)}`}
+        stroke="var(--ink)"
+        strokeWidth="0.22"
+      />
       <text
-        x={w / 2}
-        y={36}
-        fontSize="11"
+        x={x}
+        y={y + 0.75}
         textAnchor="middle"
-        letterSpacing="0.28em"
+        fill="var(--ink)"
+        fontSize="2.35"
+        fontStyle="italic"
+        fontFamily="var(--font-display), 'Libre Baskerville', serif"
       >
-        {INVENTOR}
+        {mark}
       </text>
-      <text
-        x={w / 2}
-        y={52}
-        fontSize="10"
-        textAnchor="middle"
-        letterSpacing="0.18em"
-      >
-        {`APPARATUS FOR ${spec.function}.`}
-      </text>
-      <text x={16} y={68} fontSize="9">
-        {`No. ${spec.move}.`}
-      </text>
-      <text x={w - 16} y={68} fontSize="9" textAnchor="end">
-        {`Filed ${spec.filed}.`}
-      </text>
-      <line x1={16} y1={74} x2={w - 16} y2={74} stroke="var(--ink)" strokeWidth="0.7" />
     </g>
   );
 }
 
-function SignatureBlock({ w, y }: { w: number; y: number }) {
+function OverlayFigLabel({
+  n,
+  x,
+  y,
+  caption,
+}: {
+  n: 1 | 2;
+  x: number;
+  y: number;
+  caption?: string;
+}) {
   return (
-    <g fill="var(--ink)" fontFamily="var(--font-display), 'Libre Baskerville', serif">
-      <text x={24} y={y} fontSize="8" letterSpacing="0.16em">
-        WITNESSES:
-      </text>
-      <text x={24} y={y + 22} fontSize="12" fontStyle="italic">
-        Vitest
-      </text>
-      <line x1={24} y1={y + 26} x2={150} y2={y + 26} stroke="var(--ink)" strokeWidth="0.5" />
-      <text x={24} y={y + 46} fontSize="12" fontStyle="italic">
-        Playwright
-      </text>
-      <line x1={24} y1={y + 50} x2={150} y2={y + 50} stroke="var(--ink)" strokeWidth="0.5" />
-      <text x={w - 24} y={y} fontSize="8" textAnchor="end" letterSpacing="0.16em">
-        INVENTOR
-      </text>
+    <g>
       <text
-        x={w - 24}
-        y={y + 28}
-        fontSize="13"
+        x={x}
+        y={y}
+        fill="var(--ink)"
+        fontSize="2.6"
         fontStyle="italic"
-        textAnchor="end"
+        fontFamily="var(--font-display), 'Libre Baskerville', serif"
+        textDecoration="underline"
       >
-        {INVENTOR_SIGN}
+        {`Fig.${n}.`}
       </text>
-      <path
-        d={`M${w - 200} ${y + 34} C ${w - 140} ${y + 42}, ${w - 80} ${y + 24}, ${w - 24} ${y + 36}`}
-        fill="none"
-        stroke="var(--ink)"
-        strokeWidth="0.55"
-      />
+      {caption ? (
+        <text
+          x={x + 8}
+          y={y}
+          fill="var(--faded)"
+          fontSize="1.9"
+          fontStyle="italic"
+          fontFamily="var(--font-display), 'Libre Baskerville', serif"
+        >
+          {caption}
+        </text>
+      ) : null}
     </g>
   );
 }
 
 export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
-  const hatchId = useId().replace(/:/g, "") + "hatch";
   const presumed = spec.parts.filter((p) => p.confidence === "presumed");
   const chapterDagger = presumed.length * 2 > spec.parts.length;
   const showDagger = presumed.length > 0;
   const caption = `APPARATUS FOR ${spec.function}. Filed ${spec.filed}.`;
-  const { w, h } = spec.viewBox;
-  const marks = numeralsOf(spec);
-  const bedY = Math.max(...spec.parts.map((p) => p.y + p.h)) + 4;
-  const bedX = Math.min(...spec.parts.map((p) => p.x)) - 8;
-  const bedW = Math.max(...spec.parts.map((p) => p.x + p.w)) - bedX + 8;
-  const fig1LabelY = bedY + 20;
-  const fig2LabelY = spec.detail
-    ? Math.max(fig1LabelY + 18, Math.min(...spec.detail.parts.map((p) => p.y)) - 14)
-    : fig1LabelY;
 
   return (
     <figure
@@ -147,54 +165,32 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
       data-move={spec.move}
     >
       <div className="patent-figure-mat">
-        <svg
-          viewBox={`0 0 ${w} ${h}`}
-          role="img"
-          aria-label={caption}
-          className="h-auto w-full text-ink"
-        >
-          <defs>
-            <SectionHatch hatchId={hatchId} />
-          </defs>
-          <rect x="0" y="0" width={w} height={h} fill="var(--paper)" />
-          <rect
-            x="6"
-            y="6"
-            width={w - 12}
-            height={h - 12}
-            fill="none"
-            stroke="var(--ink)"
-            strokeWidth="0.55"
+        <SheetHeader spec={spec} />
+        <div className="patent-engraving" data-testid="patent-engraving">
+          <Image
+            src={spec.engraving.src}
+            alt=""
+            width={spec.engraving.width}
+            height={spec.engraving.height}
+            className="patent-engraving-img"
+            sizes="(max-width: 980px) 92vw, 640px"
           />
-          <SheetHeader spec={spec} />
-          <Bedplate x={bedX} y={bedY} w={bedW} />
-          {paintOrder(spec.parts).map((part) => (
-            <Glyph key={`m-${part.n}`} part={part} hatchId={hatchId} />
-          ))}
-          <FigLabel n={1} x={20} y={fig1LabelY} />
-          {spec.detail ? (
-            <>
-              {spec.detail.parts.map((part) => (
-                <Glyph key={`d-${part.n}-${part.x}`} part={part} hatchId={hatchId} />
-              ))}
-              <FigLabel n={2} x={20} y={fig2LabelY} />
-              <text
-                x={64}
-                y={fig2LabelY}
-                fill="var(--faded)"
-                fontSize="8"
-                fontStyle="italic"
-                fontFamily="var(--font-display), 'Libre Baskerville', serif"
-              >
-                {spec.detail.title}
-              </text>
-            </>
-          ) : null}
-          {marks.map((m) => (
-            <Callout key={m.mark} {...m} />
-          ))}
-          <SignatureBlock w={w} y={h - 70} />
-        </svg>
+          <svg
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+            className="patent-overlay"
+            role="img"
+            aria-label={caption}
+          >
+            {spec.numerals.map((m) => (
+              <OverlayCallout key={m.mark} {...m} />
+            ))}
+            {spec.figLabels.map((lab) => (
+              <OverlayFigLabel key={lab.n} {...lab} />
+            ))}
+          </svg>
+        </div>
+        <SignatureBlock />
       </div>
       <div className="patent-reference" data-testid="patent-legend">
         <p className="patent-reference-kicker">Reference</p>

@@ -65,7 +65,8 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("#chapter-oo")).toContainText("Fig.1.");
     await expect(page.locator("#chapter-oo")).toContainText("Fig.2.");
     await expect(page.locator("#chapter-oo")).toContainText("Anas Tarek Qumhiyeh");
-    await expect(page.locator("#chapter-nc6 [data-part][data-glyph='tube']")).toHaveCount(2);
+    await expect(page.locator("#chapter-nc6 [data-testid='patent-engraving']")).toBeVisible();
+    await expect(page.locator("#chapter-nc6 [data-glyph='tube']")).toHaveCount(2);
     await expect(page.locator("#chapter-nf3 [data-testid='patent-legend']")).toContainText(/MILLWHEEL/);
     await expect(page.locator("#chapter-nf3 [data-testid='patent-legend']")).toContainText(/BOILER/);
     await expect(page.locator("#chapter-nf3 [data-testid='patent-dagger']")).toBeVisible();

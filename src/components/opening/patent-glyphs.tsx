@@ -607,7 +607,7 @@ export function Glyph({
   part: ApparatusPart;
   hatchId: string;
 }) {
-  const box = { x: part.x, y: part.y, w: part.w, h: part.h };
+  const box = { x: part.x ?? 0, y: part.y ?? 0, w: part.w ?? 100, h: part.h ?? 100 };
   return (
     <g data-part={part.n} data-glyph={part.glyph}>
       {DRAW[part.glyph](box, {

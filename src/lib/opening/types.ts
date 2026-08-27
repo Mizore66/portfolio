@@ -55,29 +55,26 @@ export type ApparatusPart = {
   /** Real component, generic for employer figures. */
   mapsTo: string;
   confidence: Confidence;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  /** Leader-line numeral position in the same viewBox. */
-  callout: { x: number; y: number };
-  /** Attachment on the part the leader leaves from. Defaults to the top-center of the box. */
-  anchor?: { x: number; y: number };
-  /** Drawn numeral; defaults to String(n). Sub-parts use 1a/1b. */
-  mark?: string;
+  /** Legacy drawing box — unused on engraved sheets. */
+  x?: number;
+  y?: number;
+  w?: number;
+  h?: number;
   dusty?: boolean;
   idle?: boolean;
   slack?: boolean;
-  /** Fig.2. section cut — 45° hatch only. */
   section?: boolean;
 };
 
 export type PatentNumeral = {
   mark: string;
+  /** Percent of the engraving box (0–100). */
   x: number;
   y: number;
   fromX: number;
   fromY: number;
+  /** Optional glyph id so tests can find a part on the overlay. */
+  glyph?: GlyphId;
 };
 
 export type ApparatusSpec = {
@@ -92,10 +89,13 @@ export type ApparatusSpec = {
   /** Directional flow of the machine, by legend numeral. */
   flow: number[];
   parts: ApparatusPart[];
-  /** Extra reference numerals (1a/1b) plus main marks. 10–16 per sheet. */
-  numerals?: PatentNumeral[];
-  /** Fig.2. — one detail or cross-section. */
-  detail?: { title: string; parts: ApparatusPart[] };
+  /** Overlay numerals. 8–14 per sheet, percent of the engraving. */
+  numerals: PatentNumeral[];
+  figLabels: { n: 1 | 2; x: number; y: number; caption?: string }[];
+  /** Fig.2. caption — the raster already contains the section. */
+  detail: { title: string };
+  /** Generated engraving, duotoned, no text. */
+  engraving: { src: string; width: number; height: number };
   review: {
     status: "validated";
     /** Why the mapping is allowed: resume-public, metaphor-only, etc. */
