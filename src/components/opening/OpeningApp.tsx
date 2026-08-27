@@ -304,10 +304,7 @@ export function OpeningApp() {
   const evalLabel = engine
     ? `${engine.evalCp >= 0 ? "+" : ""}${(engine.evalCp / 100).toFixed(2)}`
     : "…";
-  const lampshade =
-    selectedId === FLAGSHIP_ID && extra.length === 0 && engine && engine.evalCp < 0
-      ? `The engine gives ${evalLabel}. ${BROADSHEET.lampshade}`
-      : null;
+  const lampshade = `The engine gives ${evalLabel}. ${BROADSHEET.lampshade}`;
   const moveNumber =
     !node.color || node.moveNumber === 0
       ? 1
@@ -334,7 +331,7 @@ export function OpeningApp() {
   }
 
   return (
-    <div className="min-h-screen text-ink max-[979px]:pb-24" data-hydrated={hydrated ? "true" : "false"}>
+    <div className="min-h-screen text-ink" data-hydrated={hydrated ? "true" : "false"}>
       <a href="#the-game" className="skip-link">
         {BROADSHEET.skipLink}
       </a>
@@ -348,7 +345,7 @@ export function OpeningApp() {
               className="col-stack w-full shrink-0 min-[980px]:w-[min(520px,46%)] max-[979px]:sticky max-[979px]:top-0 max-[979px]:z-20"
             >
               <div className="flex flex-col gap-3 min-[980px]:gap-4 sticky top-0 min-[980px]:top-3 newsprint-sticky z-10 max-[979px]:border-b-2 max-[979px]:border-ink max-[979px]:py-2">
-                <div className="board-engine-cluster">
+                <div className="board-engine-cluster" data-testid="board-engine-cluster">
                 <BoardDiagram
                   plies={displayPlies}
                   highlight={highlight}
@@ -427,6 +424,9 @@ export function OpeningApp() {
                   tape={tape}
                 />
               </div>
+              <div className="mb-4 min-[980px]:hidden print:hidden">
+                <SituationsWanted />
+              </div>
               <NotationView
                 selectedId={selectedId}
                 onSelect={userSelect}
@@ -437,9 +437,6 @@ export function OpeningApp() {
           </div>
           </main>
         </div>
-      </div>
-      <div className="situations-dock min-[980px]:hidden" data-testid="situations-dock">
-        <SituationsWanted />
       </div>
     </div>
   );

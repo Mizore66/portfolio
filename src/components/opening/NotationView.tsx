@@ -151,14 +151,12 @@ function Chapter({
                   />
                 </p>
                 {head?.plate ? (
-                  <div className="mt-2 flow-root">
-                    <HalftonePlate
-                      src={head.plate.src}
-                      caption={head.plate.caption}
-                      alt={head.title}
-                      inset
-                    />
-                  </div>
+                  <HalftonePlate
+                    src={head.plate.src}
+                    caption={head.plate.caption}
+                    alt={head.title}
+                    block
+                  />
                 ) : null}
               </div>
             );

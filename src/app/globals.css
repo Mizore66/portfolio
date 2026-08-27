@@ -342,6 +342,12 @@
   margin: 0 0 12px 16px;
 }
 
+.plate-block {
+  float: none;
+  width: min(280px, 100%);
+  margin: 8px auto 0;
+}
+
 @media (max-width: 639px) {
   .plate-inset {
     float: none;
@@ -449,6 +455,10 @@
   background: #4a3f34;
 }
 
+.engine-lampshade {
+  min-height: 2.75em;
+}
+
 @media (max-width: 979px) {
   [data-testid="board-column"].col-stack {
     padding-top: 8px;
@@ -457,37 +467,50 @@
   }
   .board-engine-cluster {
     display: flex;
+    flex-direction: column;
     align-items: stretch;
     gap: 8px;
   }
-  .board-engine-cluster [data-testid="glass-engine"] {
-    flex: 1;
-    min-width: 0;
-    padding: 8px;
-  }
   .board-size-wrap {
-    width: 136px;
-    max-width: 136px;
-    flex: 0 0 136px;
+    width: 100%;
+    max-width: none;
+    flex: none;
   }
   [data-testid="find-the-break"] {
     display: none;
   }
-  .situations-dock {
-    position: fixed;
-    right: 8px;
-    bottom: 8px;
-    left: 8px;
-    z-index: 30;
-    background: var(--paper);
-    box-shadow: 0 -8px 24px rgba(28, 14, 8, 0.28);
+}
+
+@media (max-width: 699px) {
+  .board-size-wrap {
+    width: min(100%, 320px);
+    max-width: 320px;
+  }
+}
+
+/* Side-by-side only where the board itself keeps ≥260px. */
+@media (min-width: 700px) and (max-width: 979px) {
+  .board-engine-cluster {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .board-engine-cluster [data-testid="board-diagram"] {
+    flex: 1 1 280px;
+    min-width: 280px;
+  }
+  .board-size-wrap {
+    min-width: 260px;
+  }
+  .board-engine-cluster [data-testid="glass-engine"] {
+    flex: 1 1 160px;
+    min-width: 0;
+    padding: 8px;
   }
 }
 
 @media print {
   .desk-collage,
   .skip-link,
-  .situations-dock,
   [data-testid="tree-view"],
   [data-testid="issue-index"],
   [data-testid="todays-puzzle"],

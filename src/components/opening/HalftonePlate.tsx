@@ -5,19 +5,25 @@ export function HalftonePlate({
   caption,
   alt,
   inset,
+  block,
   priority,
 }: {
   src: string;
   caption: string;
   alt: string;
   inset?: boolean;
+  /** Centered, no wrap — for a parenthetical that has no text left to float into. */
+  block?: boolean;
   priority?: boolean;
 }) {
   return (
     <figure
-      className={inset ? "halftone-plate plate-inset" : "halftone-plate"}
+      className={
+        inset ? "halftone-plate plate-inset" : block ? "halftone-plate plate-block" : "halftone-plate"
+      }
       data-testid="halftone-plate"
       data-plate={src}
+      data-placement={inset ? "wrap" : block ? "block" : "full"}
     >
       <div className="halftone-plate-frame">
         <Image

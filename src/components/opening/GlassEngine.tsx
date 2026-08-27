@@ -103,7 +103,7 @@ export function GlassEngine({
   book?: BookLine | null;
   side: "w" | "b";
   moveNumber: number;
-  lampshade?: string | null;
+  lampshade: string;
 }) {
   const line = visibleEngineLine(book ?? null, info);
   return (
@@ -129,11 +129,12 @@ export function GlassEngine({
           ? `d${info.depth} · ${info.nps.toLocaleString()} n/s${info.thinking ? " · …" : ""}`
           : BROADSHEET.searching}
       </p>
-      {lampshade ? (
-        <p data-testid="engine-lampshade" className="mt-2 font-display text-[13px] italic text-ink">
-          {lampshade}
-        </p>
-      ) : null}
+      <p
+        data-testid="engine-lampshade"
+        className="engine-lampshade mt-2 font-display text-[13px] leading-snug italic text-ink"
+      >
+        {lampshade}
+      </p>
     </section>
   );
 }

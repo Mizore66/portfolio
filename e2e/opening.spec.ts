@@ -81,6 +81,10 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("empty-frame")).toHaveCount(1);
     await expect(page.locator("#chapter-nf3 [data-testid='empty-frame']")).toHaveCount(1);
     await expect(page.getByTestId("empty-frame")).toContainText("No photograph was filed.");
+    await expect(page.getByTestId("engine-lampshade")).toBeVisible();
+    await expect(page.getByTestId("engine-lampshade")).toContainText(/disagreed since 1997/);
+    await expect(page.locator("#chapter-e4 [data-placement='block'][data-plate='/plates/plate-risk.jpg']")).toBeVisible();
+    await expect(page.locator("#chapter-d4 .chapter-copy [data-placement='wrap']")).toHaveCount(1);
     await expect(page.getByTestId("glass-engine")).toBeVisible();
     await expect(page.getByTestId("eval-bar")).toBeVisible();
     await expect(page.getByTestId("newspaper-column")).toBeVisible();
@@ -681,6 +685,64 @@ test.describe("Opening Preparation", () => {
     expect(box).toBeTruthy();
     expect(box!.y).toBeGreaterThanOrEqual(-4);
     expect(box!.y).toBeLessThan(280);
-    await expect(page.getByTestId("situations-dock")).toBeVisible();
+    await expect(page.getByTestId("situations-dock")).toHaveCount(0);
+    const overlay = await page.evaluate(() =>
+      [...document.querySelectorAll('[data-testid="situations-wanted"]')].some(
+        (el) => getComputedStyle(el).position === "fixed",
+      ),
+    );
+    expect(overlay).toBe(false);
+  });
+
+  test("compact widths reflow the board instead of shrinking it", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+
+    const plane390 = (await page.getByTestId("board-plane").boundingBox())!;
+    const board390 = (await page.getByTestId("board-diagram").boundingBox())!;
+    const engine390 = (await page.getByTestId("glass-engine").boundingBox())!;
+    expect(plane390.width).toBeGreaterThanOrEqual(260);
+    expect(engine390.y).toBeGreaterThan(board390.y + 80);
+    expect(Math.abs(engine390.x - board390.x)).toBeLessThan(48);
+
+    const chapter = page.locator("#chapter-e4 .drop-cap");
+    await chapter.scrollIntoViewIfNeeded();
+    const copy = (await chapter.boundingBox())!;
+    const wantedBoxes = await page.getByTestId("situations-wanted").all();
+    for (const el of wantedBoxes) {
+      const b = await el.boundingBox();
+      if (!b) continue;
+      const overlap =
+        b.y < copy.y + copy.height && b.y + b.height > copy.y && b.x < copy.x + copy.width && b.x + b.width > copy.x;
+      expect(overlap).toBe(false);
+    }
+
+    await page.setViewportSize({ width: 768, height: 1024 });
+    const plane768 = (await page.getByTestId("board-plane").boundingBox())!;
+    const board768 = (await page.getByTestId("board-diagram").boundingBox())!;
+    const engine768 = (await page.getByTestId("glass-engine").boundingBox())!;
+    expect(plane768.width).toBeGreaterThanOrEqual(260);
+    expect(engine768.x).toBeGreaterThan(board768.x + 200);
+  });
+
+  test("the engine lampshade keeps controls from jumping", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.getByTestId("engine-lampshade")).toBeVisible();
+    const y0 = (await page.getByTestId("read-the-game").boundingBox())!.y;
+    const h0 = (await page.getByTestId("glass-engine").boundingBox())!.height;
+
+    await page.locator('[data-testid="tree-view"] [data-node-id="e4"]').click();
+    await expect(page.locator('[data-testid="tree-view"] [data-node-id="e4"]')).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
+    await expect(page.getByTestId("engine-lampshade")).toBeVisible();
+    const y1 = (await page.getByTestId("read-the-game").boundingBox())!.y;
+    const h1 = (await page.getByTestId("glass-engine").boundingBox())!.height;
+    expect(Math.abs(y1 - y0)).toBeLessThan(8);
+    expect(Math.abs(h1 - h0)).toBeLessThan(12);
   });
 });
