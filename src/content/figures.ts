@@ -48,7 +48,7 @@ export const FIGURES = {
     detail: {
       title: "vertical section of the mold",
       parts: [
-        { n: 4, glyph: "mold", label: "MOLD", mapsTo: "systems", confidence: "presumed", x: 72, y: 336, w: 210, h: 108, callout: { x: 60, y: 360 }, section: true },
+        { n: 4, glyph: "mold", label: "MOLD", mapsTo: "systems", confidence: "presumed", x: 72, y: 362, w: 210, h: 88, callout: { x: 60, y: 380 }, section: true },
       ],
     },
   },
@@ -90,7 +90,7 @@ export const FIGURES = {
     detail: {
       title: "section of the driving pulley",
       parts: [
-        { n: 3, glyph: "belt", label: "BELT", mapsTo: "test suite", confidence: "confirmed", x: 64, y: 338, w: 260, h: 88, callout: { x: 54, y: 360 } },
+        { n: 3, glyph: "belt", label: "BELT", mapsTo: "test suite", confidence: "confirmed", x: 64, y: 362, w: 260, h: 80, callout: { x: 54, y: 380 } },
       ],
     },
   },
@@ -132,8 +132,8 @@ export const FIGURES = {
     detail: {
       title: "station cut open, capsule in transit",
       parts: [
-        { n: 3, glyph: "tube", label: "TUBE", mapsTo: "the conduit", confidence: "presumed", x: 56, y: 338, w: 420, h: 88, callout: { x: 48, y: 360 }, section: true },
-        { n: 4, glyph: "capsule", label: "CAPSULE", mapsTo: "a payment", confidence: "confirmed", x: 210, y: 360, w: 90, h: 36, callout: { x: 254, y: 344 } },
+        { n: 3, glyph: "tube", label: "TUBE", mapsTo: "the conduit", confidence: "presumed", x: 56, y: 362, w: 420, h: 80, callout: { x: 48, y: 380 }, section: true },
+        { n: 4, glyph: "capsule", label: "CAPSULE", mapsTo: "a payment", confidence: "confirmed", x: 210, y: 382, w: 90, h: 36, callout: { x: 254, y: 364 } },
       ],
     },
   },
@@ -175,7 +175,7 @@ export const FIGURES = {
     detail: {
       title: "the relay, enlarged",
       parts: [
-        { n: 7, glyph: "relay", label: "RELAY", mapsTo: "<100 ms", confidence: "confirmed", x: 64, y: 338, w: 220, h: 96, callout: { x: 54, y: 360 } },
+        { n: 7, glyph: "relay", label: "RELAY", mapsTo: "<100 ms", confidence: "confirmed", x: 64, y: 362, w: 220, h: 88, callout: { x: 54, y: 380 } },
       ],
     },
   },
@@ -219,7 +219,7 @@ export const FIGURES = {
     detail: {
       title: "vertical section of the flyball head",
       parts: [
-        { n: 1, glyph: "governor", label: "GOVERNOR", mapsTo: "king safety", confidence: "presumed", x: 72, y: 334, w: 150, h: 112, callout: { x: 60, y: 360 }, section: true },
+        { n: 1, glyph: "governor", label: "GOVERNOR", mapsTo: "king safety", confidence: "presumed", x: 72, y: 360, w: 140, h: 92, callout: { x: 60, y: 380 }, section: true },
       ],
     },
   },
@@ -263,7 +263,7 @@ export const VERIDIAN_PRESS: ApparatusSpec = {
   detail: {
     title: "the stereotype plate",
     parts: [
-      { n: 4, glyph: "mold", label: "STEREOTYPE", mapsTo: "distilled model", confidence: "confirmed", x: 72, y: 338, w: 200, h: 100, callout: { x: 60, y: 360 }, section: true },
+      { n: 4, glyph: "mold", label: "STEREOTYPE", mapsTo: "distilled model", confidence: "confirmed", x: 72, y: 362, w: 200, h: 88, callout: { x: 60, y: 380 }, section: true },
     ],
   },
 };

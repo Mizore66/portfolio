@@ -133,6 +133,10 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
   const bedY = Math.max(...spec.parts.map((p) => p.y + p.h)) + 4;
   const bedX = Math.min(...spec.parts.map((p) => p.x)) - 8;
   const bedW = Math.max(...spec.parts.map((p) => p.x + p.w)) - bedX + 8;
+  const fig1LabelY = bedY + 20;
+  const fig2LabelY = spec.detail
+    ? Math.max(fig1LabelY + 18, Math.min(...spec.detail.parts.map((p) => p.y)) - 14)
+    : fig1LabelY;
 
   return (
     <figure
@@ -167,16 +171,16 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
           {paintOrder(spec.parts).map((part) => (
             <Glyph key={`m-${part.n}`} part={part} hatchId={hatchId} />
           ))}
-          <FigLabel n={1} x={20} y={Math.min(bedY + 26, (spec.detail?.parts[0]?.y ?? h) - 14)} />
+          <FigLabel n={1} x={20} y={fig1LabelY} />
           {spec.detail ? (
             <>
               {spec.detail.parts.map((part) => (
                 <Glyph key={`d-${part.n}-${part.x}`} part={part} hatchId={hatchId} />
               ))}
-              <FigLabel n={2} x={20} y={Math.min(...spec.detail.parts.map((p) => p.y)) - 12} />
+              <FigLabel n={2} x={20} y={fig2LabelY} />
               <text
                 x={64}
-                y={Math.min(...spec.detail.parts.map((p) => p.y)) - 12}
+                y={fig2LabelY}
                 fill="var(--faded)"
                 fontSize="8"
                 fontStyle="italic"
