@@ -171,9 +171,9 @@ function Overlay({ spec, caption }: { spec: ApparatusSpec; caption: string }) {
   );
 }
 
-function Engraving({ spec }: { spec: ApparatusSpec }) {
+function Engraving({ spec, labeled }: { spec: ApparatusSpec; labeled?: boolean }) {
   return (
-    <div className="patent-engraving" data-testid="patent-engraving">
+    <div className="patent-engraving" data-testid={labeled ? "patent-engraving" : undefined}>
       <Image
         src={spec.engraving.src}
         alt=""
@@ -224,7 +224,7 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
       <div className="patent-figure-mat">
         <SheetHeader spec={spec} />
         <div className="relative">
-          <Engraving spec={spec} />
+          <Engraving spec={spec} labeled />
           <button
             type="button"
             className="patent-expand-hit"

@@ -347,13 +347,17 @@ export function OpeningApp() {
         <div data-testid="newspaper-spread" className="sheet w-full max-w-[1180px]">
           <Masthead />
           <main id="the-game">
-          <div className="flex flex-col min-[980px]:flex-row-reverse min-[980px]:items-stretch">
+          <div
+            data-opening-spread=""
+            className="flex flex-col min-[980px]:flex-row-reverse min-[980px]:items-stretch"
+          >
             <aside
               data-testid="board-column"
-              className="col-stack w-full shrink-0 min-[980px]:w-[min(520px,46%)]"
+              className="col-stack w-full shrink-0 min-[980px]:w-[min(520px,46%)] max-[699px]:contents"
             >
-              <div className="flex flex-col gap-3 min-[980px]:gap-4 min-[980px]:sticky min-[980px]:top-3 newsprint-sticky z-10 max-[979px]:bg-transparent max-[979px]:[background-image:none]">
+              <div className="flex flex-col gap-3 min-[980px]:gap-4 min-[980px]:sticky min-[980px]:top-3 newsprint-sticky z-10 max-[699px]:contents">
                 <div className="board-engine-cluster" data-testid="board-engine-cluster">
+                <div data-sticky-board="">
                 <BoardDiagram
                   plies={displayPlies}
                   highlight={highlight}
@@ -371,6 +375,7 @@ export function OpeningApp() {
                   puzzleNote={puzzleNote}
                   puzzleTarget={node.puzzle && extra.length === 0 ? node.puzzle.target : null}
                 />
+                </div>
                 <GlassEngine
                   info={engine}
                   book={book}

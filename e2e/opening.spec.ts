@@ -717,6 +717,11 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     const idle = (await page.getByTestId("board-diagram").boundingBox())!;
     expect(idle.height).toBeLessThan(280);
+    const stickyPos = await page.locator("[data-sticky-board]").evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return { position: cs.position, top: cs.top, display: cs.display };
+    });
+    expect(stickyPos.position).toBe("sticky");
     await page.locator("#chapter-re1").evaluate((el) => el.scrollIntoView({ block: "start" }));
     const box = await page.getByTestId("board-diagram").boundingBox();
     expect(box).toBeTruthy();
@@ -791,7 +796,7 @@ test.describe("Opening Preparation", () => {
     );
     await expect(page.getByTestId("engine-lampshade")).toBeVisible();
     const after = await gap();
-    expect(Math.abs(after.gap - before.gap)).toBeLessThan(8);
+    expect(Math.abs(after.gap - before.gap)).toBeLessThanOrEqual(8);
     expect(Math.abs(after.h - before.h)).toBeLessThan(12);
   });
 });

@@ -639,11 +639,27 @@
     width: min(100%, 200px);
     max-width: 200px;
   }
-  [data-testid="board-diagram"] {
+  /* Promote the compact board to a flex item of the tall page column.
+     Sticky inside the short aside would scroll away with the rail. */
+  [data-testid="board-column"],
+  [data-testid="board-column"] > div,
+  .board-engine-cluster {
+    display: contents !important;
+    position: static !important;
+    overflow: visible !important;
+  }
+  [data-opening-spread],
+  .sheet,
+  main {
+    overflow: visible;
+  }
+  [data-sticky-board] {
     position: sticky;
     top: 0;
     z-index: 20;
-    margin: 0 -16px;
+    align-self: flex-start;
+    width: 100%;
+    flex: 0 0 auto;
     padding: 8px 16px 6px;
     border-bottom: 2px solid var(--ink);
     background-color: var(--paper);
@@ -651,18 +667,27 @@
     background-size: 340px;
     background-blend-mode: overlay;
   }
-  [data-testid="board-diagram"] figcaption {
+  [data-sticky-board] figcaption {
     margin-top: 6px;
     font-size: 12px;
+  }
+  [data-testid="glass-engine"] {
+    margin: 0 16px;
+  }
+  [data-testid="board-column"] > div > .flex {
+    margin: 0 16px 8px;
   }
 }
 
 /* Side-by-side only where the board itself keeps ≥260px. */
 @media (min-width: 700px) and (max-width: 979px) {
-  .board-engine-cluster {
+  [data-testid="board-column"] {
     position: sticky;
     top: 0;
     z-index: 20;
+  }
+  .board-engine-cluster {
+    position: static;
     flex-direction: row;
     align-items: flex-start;
     padding: 8px 0;
