@@ -407,26 +407,6 @@
 }
 
 
-.artists-impression-frame {
-  border-style: dashed;
-}
-.artists-impression-img {
-  filter: grayscale(1) contrast(1.08) brightness(1.16);
-}
-.artists-impression-screen {
-  background-image: radial-gradient(#2a3a4a 0.4px, transparent 0.58px);
-  background-size: 3.8px 3.8px;
-  opacity: 0.28;
-}
-.artists-impression-cutline {
-  margin-top: 4px;
-  font-family: var(--font-display), "Libre Baskerville", serif;
-  font-size: 10px;
-  font-style: italic;
-  line-height: 1.3;
-  color: var(--faded);
-}
-
 .board-files {
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
@@ -601,6 +581,28 @@
   background-size: 3px 3px;
   mix-blend-mode: multiply;
   opacity: 0.52;
+}
+
+/* After the plate rules so the ghost register actually wins. */
+.artists-impression .artists-impression-frame {
+  border: 2px dashed var(--ink);
+}
+.artists-impression .artists-impression-img {
+  filter: grayscale(1) contrast(1.02) brightness(1.22);
+  opacity: 0.78;
+}
+.artists-impression .artists-impression-screen {
+  background-image: radial-gradient(#1e3a72 0.38px, transparent 0.55px);
+  background-size: 4.2px 4.2px;
+  opacity: 0.22;
+}
+.artists-impression-cutline {
+  margin-top: 4px;
+  font-family: var(--font-display), "Libre Baskerville", serif;
+  font-size: 10px;
+  font-style: italic;
+  line-height: 1.3;
+  color: var(--faded);
 }
 
 @media (prefers-reduced-motion: reduce) {

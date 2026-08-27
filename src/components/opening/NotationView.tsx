@@ -143,6 +143,14 @@ function Chapter({
             const head = line[0]?.node;
             return (
               <div key={head?.id ?? line.map((b) => b.node.id).join("-")} className="mt-3 first:mt-0">
+                <div className="chapter-copy">
+                {head?.impression ? (
+                  <ArtistsImpression
+                    src={head.impression.src}
+                    caption={head.impression.caption}
+                    alt={head.title}
+                  />
+                ) : null}
                 <p className="max-w-prose font-lora text-[13px] leading-relaxed italic text-ink/90">
                   <VariationRun
                     line={line}
@@ -151,14 +159,6 @@ function Chapter({
                     onPreview={onPreview}
                   />
                 </p>
-                <div className="chapter-copy mt-3">
-                {head?.impression ? (
-                  <ArtistsImpression
-                    src={head.impression.src}
-                    caption={head.impression.caption}
-                    alt={head.title}
-                  />
-                ) : null}
                 {head?.plate ? (
                   <HalftonePlate
                     src={head.plate.src}
