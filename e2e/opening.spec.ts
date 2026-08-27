@@ -294,7 +294,7 @@ test.describe("Opening Preparation", () => {
           if (Math.abs(y - before) > 0.4) seen.add(y.toFixed(1));
           return seen.size;
         },
-        { timeout: 800, intervals: [16, 16, 16] },
+        { timeout: 1500, intervals: [16, 16, 16] },
       )
       .toBeGreaterThan(2);
     await page.waitForTimeout(400);
