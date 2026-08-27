@@ -598,6 +598,9 @@ const DRAW: Record<GlyphId, (b: Box, o: Opt) => ReactNode> = {
   key: Key,
   relay: Relay,
   ledger: Ledger,
+  loupe: Gauge,
+  bedplate: Millwheel,
+  pigeonhole: Typecase,
 };
 
 export function Glyph({

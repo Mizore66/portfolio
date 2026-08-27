@@ -1,4 +1,5 @@
 import { FIGURES } from "@/content/figures";
+import { CIRCUITMIND_LINE, MIRRORFI_VAULT, RISK_ENGINE, LEADS_HALL, VERIDIAN_PLANT } from "@/content/project-figures";
 import { resumeData } from "@/lib/data";
 import type { OpeningNode } from "@/lib/opening/types";
 
@@ -109,6 +110,12 @@ export const OPENING_NODES: OpeningNode[] = [
     hl: ["e2", "e4"],
     cap: "Position after 1. e4",
     inlineDiagram: true,
+    clipping: {
+      kicker: "University Intelligence",
+      headline: "HONOURS FOR SUNWAY CANDIDATE",
+      dateline: "Bandar Sunway, May 2026.",
+      src: "/plates/clip-sunway.jpg",
+    },
     figure: FIGURES.e4,
   },
   {
@@ -136,6 +143,7 @@ export const OPENING_NODES: OpeningNode[] = [
       src: "/plates/plate-risk.jpg",
       caption: "Plate · Financial Risk Predictor — the ledger, not the slogan.",
     },
+    figure: RISK_ENGINE,
     plies: [{ from: "g8", to: "f6" }],
     hl: ["g8", "f6"],
     cap: "Position after 1…Nf6 (Alekhine’s Defence)",
@@ -183,6 +191,12 @@ export const OPENING_NODES: OpeningNode[] = [
     plies: [{ from: "g1", to: "f3" }],
     hl: ["g1", "f3"],
     cap: "Position after 2. Nf3",
+    clipping: {
+      kicker: "Engineering Notes",
+      headline: "PETRONAS RETAINS YOUNG ENGINEER ON THE MATLAB QUESTION",
+      dateline: "Kuala Lumpur, Nov. 2024.",
+      src: "/plates/clip-petronas.jpg",
+    },
     figure: FIGURES.nf3,
   },
   {
@@ -210,6 +224,7 @@ export const OPENING_NODES: OpeningNode[] = [
       src: "/plates/plate-leads.jpg",
       caption: "Plate · Distributed Lead Scorer — the sorting hall at full tilt.",
     },
+    figure: LEADS_HALL,
     plies: [{ from: "d7", to: "d5" }],
     hl: ["d7", "d5"],
     cap: "Position after 2…d5 (Elephant Gambit)",
@@ -258,6 +273,12 @@ export const OPENING_NODES: OpeningNode[] = [
     plies: [{ from: "b8", to: "c6" }],
     hl: ["b8", "c6"],
     cap: "Position after 2…Nc6",
+    clipping: {
+      kicker: "Commercial Intelligence",
+      headline: "SETEL ENGAGES NEW HANDS ON THE PAYMENT ENGINE",
+      dateline: "Kuala Lumpur, Jul. 2025.",
+      src: "/plates/clip-setel.jpg",
+    },
     figure: FIGURES.nc6,
   },
   {
@@ -281,6 +302,12 @@ export const OPENING_NODES: OpeningNode[] = [
     plies: [{ from: "f1", to: "c4" }],
     hl: ["f1", "c4"],
     cap: "Position after 3. Bc4",
+    clipping: {
+      kicker: "Laboratory Notes",
+      headline: "WESTERN DIGITAL TAKES ON A YOUNG ENGINEER FOR THE LAB FLOOR",
+      dateline: "Feb. 2025.",
+      src: "/plates/clip-wd.jpg",
+    },
     figure: FIGURES.bc4,
   },
   {
@@ -308,6 +335,7 @@ export const OPENING_NODES: OpeningNode[] = [
       src: "/plates/plate-circuitmind.jpg",
       caption: "Plate · CircuitMindAI — copper under the loupe.",
     },
+    figure: CIRCUITMIND_LINE,
     plies: [{ from: "f8", to: "c5" }],
     hl: ["f8", "c5"],
     cap: "Position after 3…Bc5",
@@ -364,6 +392,7 @@ export const OPENING_NODES: OpeningNode[] = [
       src: "/plates/plate-mirrorfi.jpg",
       caption: "Plate · MirrorFi — the vault wall.",
     },
+    figure: MIRRORFI_VAULT,
     plies: [{ from: "g8", to: "f6" }],
     hl: ["g8", "f6"],
     cap: "Position after 4…Nf6",
@@ -400,6 +429,7 @@ export const OPENING_NODES: OpeningNode[] = [
       src: "/plates/plate-veridian.jpg",
       caption: "Plate · Veridian — the central break, intercepted as infrastructure.",
     },
+    figure: VERIDIAN_PLANT,
     plies: [{ from: "d2", to: "d4" }],
     hl: ["d2", "d4"],
     cap: "Position after 5. d4",

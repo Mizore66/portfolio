@@ -41,6 +41,9 @@ export const GLYPH_IDS = [
   "key",
   "relay",
   "ledger",
+  "loupe",
+  "bedplate",
+  "pigeonhole",
 ] as const;
 
 export type GlyphId = (typeof GLYPH_IDS)[number];
@@ -143,10 +146,17 @@ export type OpeningNode = {
   plate?: { src: string; caption: string };
   /** Small static diagram in the scoresheet (career figures, castle, flagship, finale). */
   inlineDiagram?: boolean;
-  /** Patent-drawing apparatus. A node gets a figure or a plate, never both. */
+  /** Patent-drawing apparatus. Project nodes carry a figure AND a plate; role sheets are frozen. */
   figure?: ApparatusSpec;
   /** Declined line: a dashed photo frame, no picture. Caption is the joke. */
   emptyFrame?: string;
+  /** Role/education news-clipping: kicker + headline + dateline over a file photo. */
+  clipping?: {
+    kicker: string;
+    headline: string;
+    dateline: string;
+    src: string;
+  };
   /** Optional one-move diagram quiz. Never a lock. */
   puzzle?: {
     prompt: string;

@@ -6,6 +6,7 @@ import { EmptyFrame } from "@/components/opening/EmptyFrame";
 import { GlyphStamp } from "@/components/opening/GlyphStamp";
 import { HalftonePlate } from "@/components/opening/HalftonePlate";
 import { MiniBoard } from "@/components/opening/MiniBoard";
+import { NewsClipping } from "@/components/opening/NewsClipping";
 import { PatentFigure } from "@/components/opening/PatentFigure";
 import { BROADSHEET } from "@/content/opening";
 import {
@@ -93,6 +94,16 @@ function Chapter({
       </div>
 
       <div className="chapter-copy">
+        {node.clipping ? (
+          <NewsClipping
+            kicker={node.clipping.kicker}
+            headline={node.clipping.headline}
+            dateline={node.clipping.dateline}
+            src={node.clipping.src}
+            alt={node.title}
+            inset
+          />
+        ) : null}
         {node.plate ? (
           <HalftonePlate
             src={node.plate.src}
@@ -141,14 +152,22 @@ function Chapter({
                     onPreview={onPreview}
                   />
                 </p>
+                <div className="chapter-copy mt-3">
                 {head?.plate ? (
                   <HalftonePlate
                     src={head.plate.src}
                     caption={head.plate.caption}
                     alt={head.title}
-                    block
+                    inset={Boolean(head.figure)}
+                    block={!head.figure}
                   />
                 ) : null}
+                {head?.figure ? (
+                  <div className="mt-4 clear-both">
+                    <PatentFigure spec={head.figure} />
+                  </div>
+                ) : null}
+                </div>
               </div>
             );
           })}

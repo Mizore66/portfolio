@@ -1,5 +1,5 @@
 import type { Apparatus, ApparatusSpec } from "@/lib/opening/types";
-import { VERIDIAN_PRESS } from "@/content/figures";
+import { CIRCUITMIND_LINE, MIRRORFI_VAULT, RISK_ENGINE, LEADS_HALL, VERIDIAN_PLANT } from "@/content/project-figures";
 
 export const resumeData = {
   name: "Anas Tarek Qumhiyeh",
@@ -92,7 +92,7 @@ export const resumeData = {
       plate: "/plates/plate-veridian.jpg",
       plateCaption: "Veridian intercepts the change — file photo.",
       description: "Veridian is a multi-agent MLOps tradeoff engine that autonomously intercepts Terraform and Kubernetes infrastructure-as-code changes, analyzes them for sustainability and cost efficiency, and recommends optimized alternatives — all without human intervention.",
-      patent: VERIDIAN_PRESS satisfies ApparatusSpec,
+      patent: VERIDIAN_PLANT satisfies ApparatusSpec,
       apparatus: {
         name: "Veridian",
         runtime: "Cloud Run",
@@ -123,6 +123,7 @@ export const resumeData = {
       plate: "/plates/plate-circuitmind.jpg",
       plateCaption: "CircuitMindAI under the loupe — file photo.",
       description: "CircuitMindAI is a GenAI-powered PCB inspection platform that uses Amazon Nova Pro for vision-based fault detection and Nova Sonic for real-time voice-guided troubleshooting, all deployed on AWS with a fully automated CI/CD pipeline.",
+      patent: CIRCUITMIND_LINE satisfies ApparatusSpec,
       apparatus: {
         name: "CircuitMindAI",
         runtime: "ECS Fargate",
@@ -154,6 +155,7 @@ export const resumeData = {
       plate: "/plates/plate-mirrorfi.jpg",
       plateCaption: "MirrorFi at the vault wall — file photo.",
       description: "MirrorFi is a Grand Prize-winning DeFi web application from Solana Megahack 2025 that lets users visually design, share, and execute multi-protocol yield strategies on Solana through an intuitive no-code interface.",
+      patent: MIRRORFI_VAULT satisfies ApparatusSpec,
       apparatus: {
         name: "MirrorFi",
         path: [
@@ -209,6 +211,7 @@ export const resumeData = {
       plate: "/plates/plate-risk.jpg",
       plateCaption: "Financial Risk Predictor — the ledger, file photo.",
       description: "A high-performance financial risk prediction system using ensemble methods (LightGBM/XGBoost) with SHAP-based interpretability, deployed as a scalable REST API via BentoML.",
+      patent: RISK_ENGINE satisfies ApparatusSpec,
       apparatus: {
         name: "Financial Risk Predictor",
         path: [
@@ -236,6 +239,7 @@ export const resumeData = {
       plate: "/plates/plate-leads.jpg",
       plateCaption: "Distributed Lead Scorer — the sorting hall, file photo.",
       description: "A distributed data mining pipeline using PySpark and PyTorch DDP that processes 100M+ daily user interaction events and predicts conversion probability in real-time using a Deep Interest Network.",
+      patent: LEADS_HALL satisfies ApparatusSpec,
       apparatus: {
         name: "Distributed Lead Scorer",
         path: [

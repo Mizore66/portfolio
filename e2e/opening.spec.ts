@@ -53,13 +53,17 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("[data-plate='/plates/plate-slm.jpg']")).toBeVisible();
     await expect(
       page.locator('[data-testid="notation-view"] [data-testid="patent-figure"]'),
-    ).toHaveCount(5);
+    ).toHaveCount(10);
     await expect(page.locator("#chapter-e4 [data-testid='patent-figure'][data-fig='1']")).toBeVisible();
     await expect(page.locator("#chapter-nf3 [data-testid='patent-figure'][data-fig='2']")).toBeVisible();
     await expect(page.locator("#chapter-nc6 [data-testid='patent-figure'][data-fig='3']")).toBeVisible();
     await expect(page.locator("#chapter-bc4 [data-testid='patent-figure'][data-fig='4']")).toBeVisible();
     await expect(page.locator("#chapter-oo [data-testid='patent-figure'][data-fig='5']")).toBeVisible();
-    await expect(page.locator("#chapter-d4 [data-testid='patent-figure']")).toHaveCount(0);
+    await expect(page.locator("#chapter-bc5 [data-testid='patent-figure'][data-fig='7']")).toBeVisible();
+    await expect(page.locator("#chapter-nf6 [data-testid='patent-figure'][data-fig='8']")).toBeVisible();
+    await expect(page.locator("#chapter-d4 [data-testid='patent-figure'][data-fig='11']")).toBeVisible();
+    await expect(page.locator("#chapter-e4 [data-testid='patent-figure'][data-fig='9']")).toBeVisible();
+    await expect(page.locator("#chapter-nf3 [data-testid='patent-figure'][data-fig='10']")).toBeVisible();
     await expect(page.locator("#chapter-oo")).toContainText("(No Model.)");
     await expect(page.locator("#chapter-oo")).toContainText("A. T. QUMHIYEH.");
     await expect(page.locator("#chapter-oo")).toContainText("Fig.1.");
@@ -70,7 +74,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("#chapter-nf3 [data-testid='patent-legend']")).toContainText(/MILLWHEEL/);
     await expect(page.locator("#chapter-nf3 [data-testid='patent-legend']")).toContainText(/BOILER/);
     await expect(page.locator("#chapter-nf3 [data-testid='patent-dagger']")).toBeVisible();
-    await expect(page.getByText(/composed from the archives/)).toHaveCount(5);
+    await expect(page.getByText(/composed from the archives/)).toHaveCount(7);
     await expect(page.locator("#chapter-bc4 [data-runtime='Docker']")).toHaveCount(0);
     await expect(page.locator("#chapter-nf3 [data-layer='MATLAB']")).toHaveCount(0);
     await expect(page.getByTestId("spot-illustration")).toHaveCount(0);
@@ -85,9 +89,26 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("empty-frame")).toHaveCount(1);
     await expect(page.locator("#chapter-nf3 [data-testid='empty-frame']")).toHaveCount(1);
     await expect(page.getByTestId("empty-frame")).toContainText("No photograph was filed.");
+    await expect(page.getByTestId("news-clipping")).toHaveCount(4);
+    await expect(page.locator("#chapter-e4 [data-testid='news-clipping']")).toContainText("HONOURS FOR SUNWAY CANDIDATE");
+    await expect(page.locator("#chapter-e4 .news-clipping-kicker")).toHaveText(/University Intelligence/i);
+    await expect(page.locator("#chapter-nf3 [data-testid='news-clipping']")).toContainText(
+      "PETRONAS RETAINS YOUNG ENGINEER ON THE MATLAB QUESTION",
+    );
+    await expect(page.locator("#chapter-nf3 .news-clipping-dateline")).toHaveText(/Kuala Lumpur, Nov\. 2024/);
+    await expect(page.locator("#chapter-nc6 [data-testid='news-clipping']")).toContainText(
+      "SETEL ENGAGES NEW HANDS ON THE PAYMENT ENGINE",
+    );
+    await expect(page.locator("#chapter-bc4 [data-testid='news-clipping']")).toContainText(
+      "WESTERN DIGITAL TAKES ON A YOUNG ENGINEER FOR THE LAB FLOOR",
+    );
+    await expect(page.locator("#chapter-oo [data-testid='news-clipping']")).toHaveCount(0);
+    await expect(page.locator("#chapter-e5 [data-testid='news-clipping']")).toHaveCount(0);
+    await expect(page.locator("#chapter-d4 [data-testid='patent-legend']")).toContainText(/TELEGRAPH/);
+    await expect(page.locator("#chapter-d4 [data-testid='patent-legend']")).toContainText(/CRUCIBLE/);
     await expect(page.getByTestId("engine-lampshade")).toBeVisible();
     await expect(page.getByTestId("engine-lampshade")).toContainText(/disagreed since 1997/);
-    await expect(page.locator("#chapter-e4 [data-placement='block'][data-plate='/plates/plate-risk.jpg']")).toBeVisible();
+    await expect(page.locator("#chapter-e4 [data-placement='wrap'][data-plate='/plates/plate-risk.jpg']")).toBeVisible();
     await expect(page.locator("#chapter-d4 .chapter-copy [data-placement='wrap']")).toHaveCount(1);
     await expect(page.getByTestId("glass-engine")).toBeVisible();
     await expect(page.getByTestId("eval-bar")).toBeVisible();
@@ -390,7 +411,7 @@ test.describe("Opening Preparation", () => {
     await expect(plate).toBeVisible();
     expect(await plate.evaluate((el) => (el as HTMLImageElement).naturalWidth)).toBeGreaterThan(100);
     await expect(page.getByTestId("patent-figure")).toBeVisible();
-    await expect(page.locator("[data-fig='6']")).toBeVisible();
+    await expect(page.locator("[data-fig='11']")).toBeVisible();
     await expect(page.getByTestId("patent-legend")).toContainText(/HOPPER/);
     await expect(page.getByTestId("architecture-figure")).toHaveCount(0);
     await expect(page.locator("[data-layer='GitLab Duo + MCP']")).toHaveCount(0);
@@ -398,9 +419,9 @@ test.describe("Opening Preparation", () => {
     await page.goto("/projects/circuitmindai");
     await expect(page.getByRole("heading", { level: 1, name: "CircuitMindAI" })).toBeVisible();
     await expect(page.locator("[data-plate='/plates/plate-circuitmind.jpg']")).toBeVisible();
-    await expect(page.locator("[data-fork='Bedrock Nova']")).toBeVisible();
-    await expect(page.locator("[data-fork='OpenSearch']")).toBeVisible();
-    await expect(page.locator("[data-beside='GitHub Actions']")).toBeVisible();
+    await expect(page.locator("[data-fig='7']")).toBeVisible();
+    await expect(page.getByTestId("patent-legend")).toContainText(/LOUPE/);
+    await expect(page.getByTestId("architecture-figure")).toHaveCount(0);
   });
 
   test("the column uses one gutter and the page is the only scroller", async ({

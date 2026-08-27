@@ -90,17 +90,18 @@ describe("repertoire book and issue index", () => {
 });
 
 describe("art taxonomy", () => {
-  it("leaves connective moves without plates, figures, or diagrams", () => {
+  it("leaves connective moves without plates, figures, clippings, or diagrams", () => {
     for (const id of ["e5", "exd4", "re1"]) {
       const n = getNode(id);
       expect(n.plate).toBeUndefined();
       expect(n.figure).toBeUndefined();
+      expect(n.clipping).toBeUndefined();
       expect(n.inlineDiagram).toBeFalsy();
       expect(n.emptyFrame).toBeUndefined();
     }
   });
 
-  it("gives career chapters a patent figure or a plate, never both, and drops the life lane", () => {
+  it("gives career chapters frozen role sheets, project patents beside plates, and drops the life lane", () => {
     expect(OPENING_NODES.some((n) => n.id === "hike" || n.id === "club")).toBe(false);
     expect(getNode("nf3").figure?.fig).toBe(2);
     expect(getNode("nc6").figure?.fig).toBe(3);
@@ -110,7 +111,7 @@ describe("art taxonomy", () => {
     expect(getNode("e4").inlineDiagram).toBe(true);
     expect(getNode("oo").inlineDiagram).toBe(true);
     expect(getNode("d4").plate).toBeTruthy();
-    expect(getNode("d4").figure).toBeUndefined();
+    expect(getNode("d4").figure).toBeTruthy();
     expect(getNode("d4").inlineDiagram).toBe(true);
     expect(getNode("start").commentary).toMatch(/game I've played since I was a teenager/);
   });
@@ -127,6 +128,14 @@ describe("art taxonomy", () => {
 
   it("files an empty frame on the declined startup", () => {
     expect(getNode("philidor").emptyFrame).toBe("No photograph was filed.");
+  });
+
+  it("files news-clippings on education and the three employer roles", () => {
+    expect(getNode("e4").clipping?.headline).toMatch(/HONOURS FOR SUNWAY CANDIDATE/);
+    expect(getNode("nf3").clipping?.headline).toMatch(/PETRONAS RETAINS YOUNG ENGINEER/);
+    expect(getNode("nc6").clipping?.headline).toMatch(/SETEL ENGAGES NEW HANDS/);
+    expect(getNode("bc4").clipping?.headline).toMatch(/WESTERN DIGITAL TAKES ON A YOUNG ENGINEER/);
+    expect(getNode("oo").clipping).toBeUndefined();
   });
 
   it("files today's puzzle on a scoresheet node, not a hardcoded id", () => {

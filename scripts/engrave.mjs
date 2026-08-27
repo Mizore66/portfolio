@@ -21,6 +21,11 @@ const JOBS = [
   ["fig-bc4-console-raw.png", "fig-bc4"],
   ["fig-oo-governor-raw.png", "fig-oo"],
   ["fig-d4-press-raw.png", "fig-d4"],
+  ["fig-circuitmind-inspection-raw.png", "fig-circuitmind"],
+  ["fig-mirrorfi-vault-raw.png", "fig-mirrorfi"],
+  ["fig-risk-underwriting-raw.png", "fig-risk"],
+  ["fig-leads-sorting-raw.png", "fig-leads"],
+  ["fig-veridian-plant-raw.png", "fig-veridian"],
 ];
 
 function duotone(gray, width, height) {

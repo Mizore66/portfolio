@@ -2,6 +2,7 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { FIGURES, VERIDIAN_PRESS } from "@/content/figures";
+import { PROJECT_FIGURES } from "@/content/project-figures";
 import { OPENING_NODES } from "@/content/opening";
 import { resumeData } from "@/lib/data";
 import { GLYPH_IDS } from "@/lib/opening/types";
@@ -17,7 +18,7 @@ const SCORESHEET_FIGURES = ["e4", "nf3", "nc6", "bc4", "oo"] as const;
 
 describe("patent apparatuses are data, not art", () => {
   it("caps every figure at 6–12 parts with confirmed|presumed tags and a directional flow", () => {
-    const specs = [...Object.values(FIGURES), VERIDIAN_PRESS];
+    const specs = [...Object.values(FIGURES), VERIDIAN_PRESS, ...Object.values(PROJECT_FIGURES)];
     for (const spec of specs) {
       expect(spec.parts.length, `FIG. ${spec.fig}`).toBeGreaterThanOrEqual(6);
       expect(spec.parts.length, `FIG. ${spec.fig}`).toBeLessThanOrEqual(12);
@@ -51,7 +52,7 @@ describe("patent apparatuses are data, not art", () => {
   });
 
   it("files generated engravings, not SVG part catalogs", () => {
-    const specs = [...Object.values(FIGURES), VERIDIAN_PRESS];
+    const specs = [...Object.values(FIGURES), VERIDIAN_PRESS, ...Object.values(PROJECT_FIGURES)];
     const sources = readFileSync(join(publicDir, "plates/SOURCES.md"), "utf8");
     for (const spec of specs) {
       const file = plateFile(spec.engraving.src);
@@ -79,17 +80,31 @@ describe("patent apparatuses are data, not art", () => {
     expect(FIGURES.bc4.parts.filter((p) => p.glyph === "key")).toHaveLength(3);
   });
 
-  it("files scoresheet figures on the approved nodes and never beside a plate", () => {
+  it("files scoresheet figures on frozen role sheets and on project nodes beside a plate", () => {
     for (const id of SCORESHEET_FIGURES) {
       const n = getNode(id);
       expect(n.figure?.fig, id).toBe(FIGURES[id].fig);
-      expect(n.plate, id).toBeUndefined();
     }
-    expect(getNode("d4").figure).toBeUndefined();
+    expect(getNode("d4").figure?.fig).toBe(PROJECT_FIGURES.veridian.fig);
     expect(getNode("d4").plate).toBeTruthy();
-    for (const n of OPENING_NODES) {
-      expect(Boolean(n.figure) && Boolean(n.plate), n.id).toBe(false);
+    expect(getNode("bc5").figure?.fig).toBe(PROJECT_FIGURES.circuitmindai.fig);
+    expect(getNode("bc5").plate).toBeTruthy();
+    expect(getNode("nf6").figure?.fig).toBe(PROJECT_FIGURES.mirrorfi.fig);
+    expect(getNode("alekhine").figure?.fig).toBe(PROJECT_FIGURES["financial-risk-predictor"].fig);
+    expect(getNode("elephant").figure?.fig).toBe(PROJECT_FIGURES["distributed-lead-scorer"].fig);
+    const projects = OPENING_NODES.filter((n) => n.kind === "Project" || n.kind === "Flagship");
+    for (const n of projects) {
+      expect(n.plate, n.id).toBeTruthy();
     }
+    for (const id of SCORESHEET_FIGURES) {
+      expect(getNode(id).plate, id).toBeUndefined();
+    }
+  });
+
+  it("keeps the frozen press on disk after Veridian retires it", () => {
+    expect(VERIDIAN_PRESS.fig).toBe(6);
+    expect(existsSync(plateFile(VERIDIAN_PRESS.engraving.src))).toBe(true);
+    expect(getNode("d4").figure?.engraving.src).toBe("/figures/fig-veridian.webp");
   });
 });
 
@@ -114,13 +129,14 @@ describe("exhibit machines stay machines", () => {
     ]);
     expect(veridian.apparatus.runtime).toBe("Cloud Run");
     expect(veridian.apparatus.beside?.map((l) => l.name)).toEqual(["BigQuery", "Python"]);
-    expect(veridian.patent?.fig).toBe(6);
+    expect(veridian.patent?.fig).toBe(11);
     expect(veridian.patent?.parts.length).toBeGreaterThanOrEqual(6);
 
     const circuit = resumeData.projects.find((p) => p.slug === "circuitmindai")!;
     expect(circuit.apparatus.path.map((l) => l.name)).toEqual(["Next.js", "Express"]);
     expect(circuit.apparatus.forks?.map((l) => l.name)).toEqual(["Bedrock Nova", "OpenSearch"]);
     expect(circuit.apparatus.beside?.map((l) => l.name)).toEqual(["GitHub Actions"]);
+    expect(circuit.patent?.fig).toBe(7);
 
     const risk = resumeData.projects.find((p) => p.slug === "financial-risk-predictor")!;
     expect(risk.apparatus.path.map((l) => l.name)).toEqual([
@@ -130,6 +146,24 @@ describe("exhibit machines stay machines", () => {
     ]);
     expect(risk.apparatus.beside?.map((l) => l.name)).toEqual(["SHAP"]);
     expect(risk.apparatus.path.map((l) => l.name)).not.toContain("TensorFlow");
+  });
+
+  it("maps each project patent onto the approved domain-literal machine", () => {
+    expect(PROJECT_FIGURES.circuitmindai.function).toMatch(/PRINTED CIRCUITS/);
+    expect(PROJECT_FIGURES.mirrorfi.function).toMatch(/AUTOMATED VAULT/);
+    expect(PROJECT_FIGURES["financial-risk-predictor"].function).toMatch(/UNDERWRITING ENGINE/);
+    expect(PROJECT_FIGURES["distributed-lead-scorer"].function).toMatch(/SORTING HALL/);
+    expect(PROJECT_FIGURES.veridian.function).toMatch(/ECONOMIZED PLANT/);
+    expect(PROJECT_FIGURES.circuitmindai.parts.map((p) => p.label)).toEqual([
+      "HOPPER",
+      "BELT",
+      "LOUPE",
+      "PIGEONHOLES",
+      "STAMP",
+      "BEDPLATE",
+    ]);
+    expect(PROJECT_FIGURES.veridian.parts.find((p) => p.n === 2)?.label).toBe("TELEGRAPH");
+    expect(PROJECT_FIGURES.circuitmindai.parts.some((p) => /Next\.js/.test(p.mapsTo))).toBe(true);
   });
 });
 
@@ -160,5 +194,27 @@ describe("plate photographs", () => {
       expect(existsSync(plateFile(project.plate)), project.slug).toBe(true);
       expect(filed).toContain(project.plate);
     }
+  });
+});
+
+describe("news-clipping plates", () => {
+  it("files kicker copy on education and the three employer roles, with photographs on disk", () => {
+    const files = [
+      "/plates/clip-sunway.jpg",
+      "/plates/clip-petronas.jpg",
+      "/plates/clip-setel.jpg",
+      "/plates/clip-wd.jpg",
+    ];
+    const sources = readFileSync(join(publicDir, "plates/SOURCES.md"), "utf8");
+    for (const src of files) {
+      expect(existsSync(plateFile(src)), src).toBe(true);
+      expect(statSync(plateFile(src)).size, src).toBeLessThanOrEqual(200 * 1024);
+      expect(sources).toContain(src.replace("/plates/", ""));
+    }
+    expect(getNode("e4").clipping?.src).toBe("/plates/clip-sunway.jpg");
+    expect(getNode("nf3").clipping?.src).toBe("/plates/clip-petronas.jpg");
+    expect(getNode("nc6").clipping?.src).toBe("/plates/clip-setel.jpg");
+    expect(getNode("bc4").clipping?.src).toBe("/plates/clip-wd.jpg");
+    expect(getNode("bc4").clipping?.dateline).toBe("Feb. 2025.");
   });
 });
