@@ -397,24 +397,6 @@
   color: var(--ink);
 }
 
-.board-cluster {
-  display: flex;
-  align-items: stretch;
-  gap: 8px;
-}
-.board-ranks {
-  display: flex;
-  width: 1rem;
-  flex-shrink: 0;
-  flex-direction: column-reverse;
-  justify-content: space-around;
-  align-items: flex-end;
-  padding-right: 4px;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 9px;
-  line-height: 1;
-  color: var(--faded);
-}
 .board-files {
   display: flex;
   justify-content: space-around;
