@@ -86,10 +86,11 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("#chapter-e5 [data-testid='halftone-plate']")).toHaveCount(0);
     await expect(page.locator("#chapter-exd4 [data-testid='halftone-plate']")).toHaveCount(0);
     await expect(page.locator("#chapter-re1 [data-testid='inline-diagram']")).toHaveCount(0);
-    await expect(page.getByTestId("retrospect")).toHaveCount(1);
-    await expect(page.locator("#chapter-nf3 [data-testid='retrospect']")).toHaveCount(1);
-    await expect(page.getByTestId("retrospect")).toContainText("Retrospect");
-    await expect(page.getByTestId("retrospect")).toContainText("Anas's possible MATLAB future");
+    await expect(page.getByTestId("artists-impression")).toHaveCount(1);
+    await expect(page.locator("#chapter-nf3 [data-testid='artists-impression']")).toBeVisible();
+    await expect(page.getByTestId("artists-impression")).toContainText(/artist's impression/i);
+    await expect(page.getByTestId("retrospect")).toHaveCount(0);
+    await expect(page.getByText("Anas's possible MATLAB future")).toHaveCount(0);
     await expect(page.getByText("No photograph was filed.")).toHaveCount(0);
     await expect(page.getByTestId("news-clipping")).toHaveCount(4);
     await expect(page.locator("#chapter-e4 [data-testid='news-clipping']")).toContainText(
@@ -418,6 +419,7 @@ test.describe("Opening Preparation", () => {
     expect(await plate.evaluate((el) => (el as HTMLImageElement).naturalWidth)).toBeGreaterThan(100);
     await expect(page.getByTestId("patent-figure")).toBeVisible();
     await expect(page.locator("[data-fig='11']")).toBeVisible();
+    await expect(page.getByText("3 Sheets—Sheet 1.")).toBeVisible();
     await expect(page.getByTestId("patent-legend")).toContainText(/HOPPER/);
     await expect(page.getByTestId("architecture-figure")).toHaveCount(0);
     await expect(page.locator("[data-layer='GitLab Duo + MCP']")).toHaveCount(0);
@@ -427,6 +429,23 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("[data-plate='/plates/plate-circuitmind.jpg']")).toBeVisible();
     await expect(page.locator("[data-fig='7']")).toBeVisible();
     await expect(page.getByTestId("patent-legend")).toContainText(/LOUPE/);
+    await expect(page.getByTestId("architecture-figure")).toHaveCount(0);
+
+    await page.goto("/projects/slm-distillation-engine");
+    await expect(page.getByRole("heading", { level: 1, name: "SLM Distillation Engine" })).toBeVisible();
+    await expect(page.getByTestId("patent-figure")).toBeVisible();
+    await expect(page.locator("[data-fig='13']")).toBeVisible();
+    await expect(page.getByTestId("patent-legend")).toContainText(/KETTLE/);
+    await expect(page.getByTestId("patent-legend")).toContainText(/CASK/);
+    await expect(page.getByText("3 Sheets—Sheet 3.")).toBeVisible();
+    await expect(page.getByText("No. 5. d4.")).toBeVisible();
+    await expect(page.getByTestId("architecture-figure")).toHaveCount(0);
+
+    await page.goto("/projects/multi-agent-graphrag");
+    await expect(page.getByRole("heading", { level: 1, name: "Multi-Agent GraphRAG" })).toBeVisible();
+    await expect(page.locator("[data-fig='12']")).toBeVisible();
+    await expect(page.getByTestId("patent-legend")).toContainText(/WIRE WALL/);
+    await expect(page.getByText("3 Sheets—Sheet 2.")).toBeVisible();
     await expect(page.getByTestId("architecture-figure")).toHaveCount(0);
   });
 
@@ -736,7 +755,9 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("situations-wanted").first()).toContainText(/Replies within two days/i);
     await expect(page.getByTestId("colophon")).toBeVisible();
     await expect(page.getByTestId("colophon")).toContainText("8902");
-    await expect(page.getByTestId("colophon")).toContainText("Photographs composed; the subject is real.");
+    await expect(page.getByTestId("colophon")).toContainText(
+      "Photographs real and composed; impressions imagined; the subject is real throughout.",
+    );
     await expect(page.getByTestId("inventor-plate")).toBeVisible();
     await page.getByTestId("weather-cycle").click();
     await expect(page.getByTestId("weather-cycle")).toContainText(/Fog on the e-file|High pressure/);

@@ -99,6 +99,9 @@ export type ApparatusSpec = {
   detail: { title: string };
   /** Generated engraving, duotoned, no text. */
   engraving: { src: string; width: number; height: number };
+  /** Filing furniture. Defaults to a two-sheet patent, this sheet 1. */
+  sheets?: number;
+  sheet?: number;
   review: {
     status: "validated";
     /** Why the mapping is allowed: resume-public, metaphor-only, etc. */
@@ -148,8 +151,8 @@ export type OpeningNode = {
   inlineDiagram?: boolean;
   /** Patent-drawing apparatus. Project nodes carry a figure AND a plate; role sheets are retired from the scoresheet. */
   figure?: ApparatusSpec;
-  /** Declined line: a retrospect hed instead of a photograph. */
-  retrospect?: { kicker: string; hed: string };
+  /** Declined / counterfactual: an artist's impression, not a file photo. */
+  impression?: { src: string; caption: string };
   /** Role/education news-clipping: kicker + headline + dateline over a file photo. */
   clipping?: {
     kicker: string;

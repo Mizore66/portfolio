@@ -21,12 +21,15 @@ Halftone pitch and warm tone are applied in CSS for photographs. Patent figures 
 | `fig-mirrorfi.webp` | FIG. 8 — automated vault (MirrorFi) | generated | generated |
 | `fig-risk.webp` | FIG. 9 — underwriting engine (Financial Risk Predictor) | generated | generated |
 | `fig-leads.webp` | FIG. 10 — sorting hall (Distributed Lead Scorer) | generated | generated |
-| `fig-veridian.webp` | FIG. 11 — economized plant (Veridian) | generated | generated |
+| `fig-veridian.webp` | FIG. 11 — economized plant (Veridian), 3 Sheets—Sheet 1. | generated | generated |
+| `fig-slm.webp` | FIG. 13 — pot still (Veridian Sheet 3, distillation of reasoning) | generated | generated |
+| `fig-graphrag.webp` | FIG. 12 — card-catalog exchange (Veridian Sheet 2, retrieval of regulations) | generated | generated |
 | `clip-sunway.jpg` | Education clipping — the inventor on the cloister | generated | generated |
 | `clip-petronas.jpg` | Petronas clipping — the inventor before the Twin Towers | generated | generated |
 | `clip-petronas-inset.jpg` | Petronas clipping inset — the inventor at a pipeline elevation | generated | generated |
 | `clip-setel.jpg` | Setel clipping — the inventor at a rolling-dial pump | generated | generated |
 | `clip-wd.jpg` | Western Digital clipping — the inventor on the storage-lab floor | generated | generated |
 | `plate-inventor.jpg` | The inventor, on the stair | photograph — owner supplied | owner |
+| `impression-philidor.jpg` | Philidor declined — the engineer as he might have been found | generated (counterfactual) | generated |
 
 No real product screenshots were filed. Employer figures on the scoresheet are patent drawings, not photographs.

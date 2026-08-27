@@ -181,6 +181,8 @@ export const VERIDIAN_PLANT: ApparatusSpec = {
   move: "5. d4",
   function: "AN ECONOMIZED PLANT",
   filed: "Apr. 2026",
+  sheets: 3,
+  sheet: 1,
   viewBox: SHEET,
   layout: "elevation",
   flow: [1, 2, 3, 4],
@@ -218,10 +220,102 @@ export const VERIDIAN_PLANT: ApparatusSpec = {
   detail: { title: "the throttle, sectioned" },
 };
 
+export const VERIDIAN_STILL: ApparatusSpec = {
+  fig: 13,
+  move: "5. d4",
+  function: "THE DISTILLATION OF REASONING",
+  filed: "Apr. 2026",
+  sheets: 3,
+  sheet: 3,
+  viewBox: SHEET,
+  layout: "elevation",
+  flow: [1, 2, 3, 4, 5],
+  engraving: { src: "/figures/fig-slm.webp", ...ENGRAVING },
+  review: {
+    status: "validated",
+    notes:
+      "Sheet 3 of the Veridian filing. Kettle=teacher traces; furnace=training compute; column=what transfers; condenser=compression into weights; cask=the 3B SLM; hydrometer=eval parity; twin gauges=−50% latency and 12× inference. Kettle-to-cask size is the mapping.",
+  },
+  parts: [
+    { n: 1, glyph: "crucible", label: "KETTLE", mapsTo: "teacher traces — GraphRAG outputs", confidence: "confirmed" },
+    { n: 2, glyph: "boiler", label: "FURNACE", mapsTo: "training compute", confidence: "confirmed" },
+    { n: 3, glyph: "tube", label: "COLUMN", mapsTo: "the distillation objective", confidence: "confirmed" },
+    { n: 4, glyph: "tube", label: "CONDENSER", mapsTo: "compression into the student", confidence: "confirmed" },
+    { n: 5, glyph: "capsule", label: "CASK", mapsTo: "the 3B SLM", confidence: "confirmed" },
+    { n: 6, glyph: "gauge", label: "HYDROMETER", mapsTo: "quality-parity eval", confidence: "confirmed" },
+    { n: 7, glyph: "gaugepanel", label: "GAUGES", mapsTo: "−50% latency · 12× inference", confidence: "confirmed" },
+  ],
+  numerals: [
+    { mark: "1", x: 3.0, y: 18.0, fromX: 22.0, fromY: 38.0, glyph: "crucible" },
+    { mark: "1a", x: 3.0, y: 32.0, fromX: 24.0, fromY: 44.0, glyph: "crucible" },
+    { mark: "2", x: 3.0, y: 70.0, fromX: 20.0, fromY: 72.0, glyph: "boiler" },
+    { mark: "2a", x: 22.0, y: 92.0, fromX: 24.0, fromY: 80.0, glyph: "boiler" },
+    { mark: "3", x: 48.0, y: 6.0, fromX: 50.0, fromY: 16.0, glyph: "tube" },
+    { mark: "3a", x: 61.0, y: 6.0, fromX: 52.0, fromY: 22.0, glyph: "tube" },
+    { mark: "4", x: 88.0, y: 8.0, fromX: 76.0, fromY: 36.0, glyph: "tube" },
+    { mark: "4a", x: 93.0, y: 36.0, fromX: 80.0, fromY: 48.0, glyph: "tube" },
+    { mark: "5", x: 93.0, y: 78.0, fromX: 82.0, fromY: 72.0, glyph: "capsule" },
+    { mark: "6", x: 93.0, y: 62.0, fromX: 88.0, fromY: 64.0, glyph: "gauge" },
+    { mark: "7", x: 36.0, y: 6.0, fromX: 52.0, fromY: 26.0, glyph: "gaugepanel" },
+  ],
+  figLabels: [
+    { n: 1, x: 3, y: 52 },
+    { n: 2, x: 58, y: 96, caption: "the column, sectioned" },
+  ],
+  detail: { title: "the column, sectioned" },
+};
+
+export const VERIDIAN_EXCHANGE: ApparatusSpec = {
+  fig: 12,
+  move: "5. d4",
+  function: "THE RETRIEVAL OF REGULATIONS",
+  filed: "Apr. 2026",
+  sheets: 3,
+  sheet: 2,
+  viewBox: SHEET,
+  layout: "elevation",
+  flow: [1, 2, 3, 4, 5, 6],
+  engraving: { src: "/figures/fig-graphrag.webp", ...ENGRAVING },
+  review: {
+    status: "validated",
+    notes:
+      "Sheet 2 of the Veridian filing. Intake=user query; keyer=Text-to-Cypher; wire wall of drums=the graph; carriages=agents in parallel; wicket=self-correction; delivery=answer assembly; gauge=+45% vs vector-only. The unsorted basket is unlabeled on purpose.",
+  },
+  parts: [
+    { n: 1, glyph: "hopper", label: "INTAKE", mapsTo: "the user query", confidence: "confirmed" },
+    { n: 2, glyph: "seal", label: "KEYER", mapsTo: "Text-to-Cypher generation", confidence: "confirmed" },
+    { n: 3, glyph: "pigeonhole", label: "WIRE WALL", mapsTo: "the regulations graph", confidence: "confirmed" },
+    { n: 4, glyph: "capsule", label: "CARRIAGES", mapsTo: "agents, in parallel", confidence: "confirmed" },
+    { n: 5, glyph: "relay", label: "WICKET", mapsTo: "the self-correcting loop", confidence: "confirmed" },
+    { n: 6, glyph: "ledger", label: "DELIVERY", mapsTo: "answer assembly", confidence: "confirmed" },
+    { n: 7, glyph: "gauge", label: "GAUGE", mapsTo: "+45% retrieval vs vector-only", confidence: "confirmed" },
+  ],
+  numerals: [
+    { mark: "1", x: 3.0, y: 58.0, fromX: 10.0, fromY: 62.0, glyph: "hopper" },
+    { mark: "2", x: 3.0, y: 72.0, fromX: 16.0, fromY: 64.0, glyph: "seal" },
+    { mark: "3", x: 48.0, y: 6.0, fromX: 50.0, fromY: 18.0, glyph: "pigeonhole" },
+    { mark: "3a", x: 22.0, y: 6.0, fromX: 28.0, fromY: 22.0, glyph: "pigeonhole" },
+    { mark: "3b", x: 72.0, y: 6.0, fromX: 70.0, fromY: 20.0, glyph: "pigeonhole" },
+    { mark: "4", x: 3.0, y: 18.0, fromX: 18.0, fromY: 28.0, glyph: "capsule" },
+    { mark: "4a", x: 88.0, y: 18.0, fromX: 78.0, fromY: 30.0, glyph: "capsule" },
+    { mark: "5", x: 48.0, y: 92.0, fromX: 50.0, fromY: 70.0, glyph: "relay" },
+    { mark: "6", x: 93.0, y: 58.0, fromX: 88.0, fromY: 62.0, glyph: "ledger" },
+    { mark: "7", x: 93.0, y: 8.0, fromX: 82.0, fromY: 16.0, glyph: "gauge" },
+    { mark: "3c", x: 93.0, y: 42.0, fromX: 80.0, fromY: 48.0, glyph: "pigeonhole" },
+  ],
+  figLabels: [
+    { n: 1, x: 3, y: 42 },
+    { n: 2, x: 70, y: 96, caption: "a drum and its wires, sectioned" },
+  ],
+  detail: { title: "a drum and its wires, sectioned" },
+};
+
 export const PROJECT_FIGURES = {
   circuitmindai: CIRCUITMIND_LINE,
   mirrorfi: MIRRORFI_VAULT,
   "financial-risk-predictor": RISK_ENGINE,
   "distributed-lead-scorer": LEADS_HALL,
   veridian: VERIDIAN_PLANT,
+  "slm-distillation-engine": VERIDIAN_STILL,
+  "multi-agent-graphrag": VERIDIAN_EXCHANGE,
 } as const;

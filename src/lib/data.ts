@@ -1,5 +1,5 @@
 import type { Apparatus, ApparatusSpec } from "@/lib/opening/types";
-import { CIRCUITMIND_LINE, MIRRORFI_VAULT, RISK_ENGINE, LEADS_HALL, VERIDIAN_PLANT } from "@/content/project-figures";
+import { CIRCUITMIND_LINE, MIRRORFI_VAULT, RISK_ENGINE, LEADS_HALL, VERIDIAN_PLANT, VERIDIAN_STILL, VERIDIAN_EXCHANGE } from "@/content/project-figures";
 
 export const resumeData = {
   name: "Anas Tarek Qumhiyeh",
@@ -185,6 +185,7 @@ export const resumeData = {
       plate: "/plates/plate-graphrag.jpg",
       plateCaption: "GraphRAG at the card catalog — file photo.",
       description: "A multi-agent orchestration framework that combines Neo4j Knowledge Graphs with Vector Databases using LangGraph, enabling intelligent hybrid retrieval that grounds LLM responses in factual enterprise data.",
+      patent: VERIDIAN_EXCHANGE satisfies ApparatusSpec,
       apparatus: {
         name: "Multi-Agent GraphRAG",
         path: [{ name: "LangGraph", role: "orchestrator" }],
@@ -265,6 +266,7 @@ export const resumeData = {
       plate: "/plates/plate-slm.jpg",
       plateCaption: "SLM Distillation — teacher and student machines, file photo.",
       description: "A knowledge distillation pipeline that transfers reasoning capabilities from a 70B parameter teacher model to a compact 3B SLM using QLoRA, DeepSpeed, and FlashAttention for efficient domain-specific fine-tuning.",
+      patent: VERIDIAN_STILL satisfies ApparatusSpec,
       apparatus: {
         name: "SLM Distillation Engine",
         runtime: "DeepSpeed",

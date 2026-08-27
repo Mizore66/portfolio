@@ -49,7 +49,7 @@ export const BROADSHEET = {
   classifiedSticky: "Situations Wanted — apply within",
   colophonKicker: "How this paper was set",
   colophon:
-    "Type: Libre Baskerville, Lora, IBM Plex Mono. Ink #1a120c on cream #f6eedc. The tree is the repertoire; the scoresheet is the CV; the glass case is mailbox-64 alpha-beta with PeSTO tables. The 2200 on the masthead of that case is club strength, not a published Elo. Photographs composed; the subject is real. No template. Chess is content, never a lock.",
+    "Type: Libre Baskerville, Lora, IBM Plex Mono. Ink #1a120c on cream #f6eedc. The tree is the repertoire; the scoresheet is the CV; the glass case is mailbox-64 alpha-beta with PeSTO tables. The 2200 on the masthead of that case is club strength, not a published Elo. Photographs real and composed; impressions imagined; the subject is real throughout. No template. Chess is content, never a lock.",
   perftKicker: "Perft — the generator's receipt",
   correctionKicker: "Correction",
   correctionHed: "The page you requested was a misprint.",
@@ -253,9 +253,10 @@ export const OPENING_NODES: OpeningNode[] = [
     plies: [{ from: "d7", to: "d6" }],
     hl: ["d7", "d6"],
     cap: "Position after 2…d6 (Philidor, declined)",
-    retrospect: {
-      kicker: "Retrospect",
-      hed: "Anas's possible MATLAB future",
+    impression: {
+      src: "/plates/impression-philidor.jpg",
+      caption:
+        "The engineer as he might have been found — MathCAD open, licenses already paid. An artist's impression.",
     },
   },
   {

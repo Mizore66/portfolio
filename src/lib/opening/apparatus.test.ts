@@ -92,6 +92,8 @@ describe("patent apparatuses are data, not art", () => {
     expect(getNode("nf6").figure?.fig).toBe(PROJECT_FIGURES.mirrorfi.fig);
     expect(getNode("alekhine").figure?.fig).toBe(PROJECT_FIGURES["financial-risk-predictor"].fig);
     expect(getNode("elephant").figure?.fig).toBe(PROJECT_FIGURES["distributed-lead-scorer"].fig);
+    expect(getNode("bb6").figure).toBeUndefined();
+    expect(getNode("closed").figure).toBeUndefined();
     const projects = OPENING_NODES.filter((n) => n.kind === "Project" || n.kind === "Flagship");
     for (const n of projects) {
       expect(n.plate, n.id).toBeTruthy();
@@ -138,6 +140,21 @@ describe("exhibit machines stay machines", () => {
     expect(veridian.apparatus.beside?.map((l) => l.name)).toEqual(["BigQuery", "Python"]);
     expect(veridian.patent?.fig).toBe(11);
     expect(veridian.patent?.parts.length).toBeGreaterThanOrEqual(6);
+    expect(veridian.patent?.sheets).toBe(3);
+    expect(veridian.patent?.sheet).toBe(1);
+
+    const slm = resumeData.projects.find((p) => p.slug === "slm-distillation-engine")!;
+    expect(slm.patent?.fig).toBe(13);
+    expect(slm.patent?.sheet).toBe(3);
+    expect(slm.patent?.function).toMatch(/DISTILLATION OF REASONING/);
+    expect(slm.patent?.parts.find((p) => p.n === 1)?.label).toBe("KETTLE");
+    expect(slm.patent?.parts.find((p) => p.n === 5)?.label).toBe("CASK");
+
+    const graphrag = resumeData.projects.find((p) => p.slug === "multi-agent-graphrag")!;
+    expect(graphrag.patent?.fig).toBe(12);
+    expect(graphrag.patent?.sheet).toBe(2);
+    expect(graphrag.patent?.function).toMatch(/RETRIEVAL OF REGULATIONS/);
+    expect(graphrag.patent?.parts.find((p) => p.n === 3)?.label).toBe("WIRE WALL");
 
     const circuit = resumeData.projects.find((p) => p.slug === "circuitmindai")!;
     expect(circuit.apparatus.path.map((l) => l.name)).toEqual(["Next.js", "Express"]);
@@ -161,6 +178,16 @@ describe("exhibit machines stay machines", () => {
     expect(PROJECT_FIGURES["financial-risk-predictor"].function).toMatch(/UNDERWRITING ENGINE/);
     expect(PROJECT_FIGURES["distributed-lead-scorer"].function).toMatch(/SORTING HALL/);
     expect(PROJECT_FIGURES.veridian.function).toMatch(/ECONOMIZED PLANT/);
+    expect(PROJECT_FIGURES["multi-agent-graphrag"].function).toMatch(/RETRIEVAL OF REGULATIONS/);
+    expect(PROJECT_FIGURES["multi-agent-graphrag"].sheet).toBe(2);
+    expect(PROJECT_FIGURES["multi-agent-graphrag"].move).toBe(PROJECT_FIGURES.veridian.move);
+    expect(PROJECT_FIGURES["slm-distillation-engine"].function).toMatch(/DISTILLATION OF REASONING/);
+    expect(PROJECT_FIGURES["slm-distillation-engine"].sheets).toBe(3);
+    expect(PROJECT_FIGURES["slm-distillation-engine"].sheet).toBe(3);
+    expect(PROJECT_FIGURES["slm-distillation-engine"].move).toBe(PROJECT_FIGURES.veridian.move);
+    expect(PROJECT_FIGURES["slm-distillation-engine"].filed).toBe(PROJECT_FIGURES.veridian.filed);
+    expect(PROJECT_FIGURES.veridian.sheets).toBe(3);
+    expect(PROJECT_FIGURES.veridian.sheet).toBe(1);
     expect(PROJECT_FIGURES.circuitmindai.parts.map((p) => p.label)).toEqual([
       "HOPPER",
       "BELT",
@@ -171,6 +198,13 @@ describe("exhibit machines stay machines", () => {
     ]);
     expect(PROJECT_FIGURES.veridian.parts.find((p) => p.n === 2)?.label).toBe("TELEGRAPH");
     expect(PROJECT_FIGURES.circuitmindai.parts.some((p) => /Next\.js/.test(p.mapsTo))).toBe(true);
+  });
+
+  it("files a patent drawing on every exhibit page", () => {
+    for (const project of resumeData.projects) {
+      expect(project.patent, project.slug).toBeTruthy();
+      expect(existsSync(plateFile(project.patent!.engraving.src)), project.slug).toBe(true);
+    }
   });
 });
 
@@ -228,5 +262,9 @@ describe("news-clipping plates", () => {
     expect(getNode("bc4").clipping?.dateline).toBe("Feb. 2025.");
     expect(existsSync(plateFile("/plates/plate-inventor.jpg"))).toBe(true);
     expect(sources).toContain("photograph — owner supplied");
+    expect(existsSync(plateFile("/plates/impression-philidor.jpg"))).toBe(true);
+    expect(statSync(plateFile("/plates/impression-philidor.jpg")).size).toBeLessThanOrEqual(200 * 1024);
+    expect(sources).toContain("generated (counterfactual)");
+    expect(getNode("philidor").impression?.src).toBe("/plates/impression-philidor.jpg");
   });
 });

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArchitectureFigure } from "@/components/opening/ArchitectureFigure";
 import { HalftonePlate } from "@/components/opening/HalftonePlate";
 import { PatentFigure } from "@/components/opening/PatentFigure";
 import { resumeData } from "@/lib/data";
@@ -55,17 +54,7 @@ export default async function ProjectPage({
             </div>
 
             <div className="mt-8">
-              {"patent" in project && project.patent ? (
-                <PatentFigure spec={project.patent} />
-              ) : (
-                <ArchitectureFigure
-                  name={project.apparatus.name}
-                  runtime={project.apparatus.runtime}
-                  path={project.apparatus.path}
-                  forks={project.apparatus.forks}
-                  beside={project.apparatus.beside}
-                />
-              )}
+              <PatentFigure spec={project.patent} />
             </div>
 
             <section className="mt-10">

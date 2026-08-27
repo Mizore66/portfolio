@@ -2,7 +2,7 @@
 
 import { Fragment } from "react";
 import { ArtifactLinks } from "@/components/opening/ArtifactLinks";
-import { EmptyFrame } from "@/components/opening/EmptyFrame";
+import { ArtistsImpression } from "@/components/opening/ArtistsImpression";
 import { GlyphStamp } from "@/components/opening/GlyphStamp";
 import { HalftonePlate } from "@/components/opening/HalftonePlate";
 import { MiniBoard } from "@/components/opening/MiniBoard";
@@ -65,9 +65,6 @@ function Chapter({
   const { node } = block;
   const selected = node.id === selectedId;
   const flagship = node.id === FLAGSHIP_ID;
-  const retrospect =
-    node.retrospect ??
-    block.variations.map((line) => line[0]?.node).find((n) => n?.retrospect)?.retrospect;
 
   return (
     <section
@@ -155,6 +152,13 @@ function Chapter({
                   />
                 </p>
                 <div className="chapter-copy mt-3">
+                {head?.impression ? (
+                  <ArtistsImpression
+                    src={head.impression.src}
+                    caption={head.impression.caption}
+                    alt={head.title}
+                  />
+                ) : null}
                 {head?.plate ? (
                   <HalftonePlate
                     src={head.plate.src}
@@ -175,8 +179,6 @@ function Chapter({
           })}
         </div>
       ) : null}
-
-      {retrospect ? <EmptyFrame kicker={retrospect.kicker} hed={retrospect.hed} /> : null}
 
       <p className="mt-4 font-mono text-[11px] leading-relaxed text-faded">
         <span className="uppercase tracking-[0.18em]">The line so far</span>

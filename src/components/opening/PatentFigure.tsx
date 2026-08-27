@@ -12,6 +12,8 @@ const FURNITURE = { w: 720, head: 80, foot: 78 };
 
 function SheetHeader({ spec }: { spec: ApparatusSpec }) {
   const w = FURNITURE.w;
+  const sheets = spec.sheets ?? 2;
+  const sheet = spec.sheet ?? 1;
   return (
     <svg
       viewBox={`0 0 ${w} ${FURNITURE.head}`}
@@ -23,7 +25,7 @@ function SheetHeader({ spec }: { spec: ApparatusSpec }) {
           (No Model.)
         </text>
         <text x={w - 16} y={18} fontSize="9" textAnchor="end">
-          2 Sheets—Sheet 1.
+          {`${sheets} Sheets—Sheet ${sheet}.`}
         </text>
         <text x={w / 2} y={36} fontSize="11" textAnchor="middle" letterSpacing="0.16em">
           {INVENTOR}
