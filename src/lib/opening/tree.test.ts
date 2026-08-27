@@ -131,10 +131,10 @@ describe("art taxonomy", () => {
   });
 
   it("files news-clippings on education and the three employer roles", () => {
-    expect(getNode("e4").clipping?.headline).toMatch(/HONOURS FOR SUNWAY CANDIDATE/);
-    expect(getNode("nf3").clipping?.headline).toMatch(/PETRONAS RETAINS YOUNG ENGINEER/);
-    expect(getNode("nc6").clipping?.headline).toMatch(/SETEL ENGAGES NEW HANDS/);
-    expect(getNode("bc4").clipping?.headline).toMatch(/WESTERN DIGITAL TAKES ON A YOUNG ENGINEER/);
+    expect(getNode("e4").clipping?.headline).toMatch(/HONOURS FOR ASPIRING MONASH ENGINEERING CANDIDATE/);
+    expect(getNode("nf3").clipping?.headline).toMatch(/PETRONAS RETAINS YOUNG TALENT ON THE PIPELINE DESIGN TEAM/);
+    expect(getNode("nc6").clipping?.headline).toMatch(/SETEL RECRUITS NEW HANDS ON THE PAYMENT ENGINE/);
+    expect(getNode("bc4").clipping?.headline).toMatch(/WESTERN DIGITAL NEWEST ADDITION FOR THE LAB FLOOR/);
     expect(getNode("oo").clipping).toBeUndefined();
   });
 

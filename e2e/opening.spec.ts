@@ -90,17 +90,19 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("#chapter-nf3 [data-testid='empty-frame']")).toHaveCount(1);
     await expect(page.getByTestId("empty-frame")).toContainText("No photograph was filed.");
     await expect(page.getByTestId("news-clipping")).toHaveCount(4);
-    await expect(page.locator("#chapter-e4 [data-testid='news-clipping']")).toContainText("HONOURS FOR SUNWAY CANDIDATE");
+    await expect(page.locator("#chapter-e4 [data-testid='news-clipping']")).toContainText(
+      "HONOURS FOR ASPIRING MONASH ENGINEERING CANDIDATE",
+    );
     await expect(page.locator("#chapter-e4 .news-clipping-kicker")).toHaveText(/University Intelligence/i);
     await expect(page.locator("#chapter-nf3 [data-testid='news-clipping']")).toContainText(
-      "PETRONAS RETAINS YOUNG ENGINEER ON THE MATLAB QUESTION",
+      "PETRONAS RETAINS YOUNG TALENT ON THE PIPELINE DESIGN TEAM",
     );
     await expect(page.locator("#chapter-nf3 .news-clipping-dateline")).toHaveText(/Kuala Lumpur, Nov\. 2024/);
     await expect(page.locator("#chapter-nc6 [data-testid='news-clipping']")).toContainText(
-      "SETEL ENGAGES NEW HANDS ON THE PAYMENT ENGINE",
+      "SETEL RECRUITS NEW HANDS ON THE PAYMENT ENGINE",
     );
     await expect(page.locator("#chapter-bc4 [data-testid='news-clipping']")).toContainText(
-      "WESTERN DIGITAL TAKES ON A YOUNG ENGINEER FOR THE LAB FLOOR",
+      "WESTERN DIGITAL NEWEST ADDITION FOR THE LAB FLOOR",
     );
     await expect(page.locator("#chapter-oo [data-testid='news-clipping']")).toHaveCount(0);
     await expect(page.locator("#chapter-e5 [data-testid='news-clipping']")).toHaveCount(0);

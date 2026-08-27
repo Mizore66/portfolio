@@ -112,7 +112,7 @@ export const OPENING_NODES: OpeningNode[] = [
     inlineDiagram: true,
     clipping: {
       kicker: "University Intelligence",
-      headline: "HONOURS FOR SUNWAY CANDIDATE",
+      headline: "HONOURS FOR ASPIRING MONASH ENGINEERING CANDIDATE",
       dateline: "Bandar Sunway, May 2026.",
       src: "/plates/clip-sunway.jpg",
     },
@@ -193,7 +193,7 @@ export const OPENING_NODES: OpeningNode[] = [
     cap: "Position after 2. Nf3",
     clipping: {
       kicker: "Engineering Notes",
-      headline: "PETRONAS RETAINS YOUNG ENGINEER ON THE MATLAB QUESTION",
+      headline: "PETRONAS RETAINS YOUNG TALENT ON THE PIPELINE DESIGN TEAM",
       dateline: "Kuala Lumpur, Nov. 2024.",
       src: "/plates/clip-petronas.jpg",
     },
@@ -275,7 +275,7 @@ export const OPENING_NODES: OpeningNode[] = [
     cap: "Position after 2…Nc6",
     clipping: {
       kicker: "Commercial Intelligence",
-      headline: "SETEL ENGAGES NEW HANDS ON THE PAYMENT ENGINE",
+      headline: "SETEL RECRUITS NEW HANDS ON THE PAYMENT ENGINE",
       dateline: "Kuala Lumpur, Jul. 2025.",
       src: "/plates/clip-setel.jpg",
     },
@@ -304,7 +304,7 @@ export const OPENING_NODES: OpeningNode[] = [
     cap: "Position after 3. Bc4",
     clipping: {
       kicker: "Laboratory Notes",
-      headline: "WESTERN DIGITAL TAKES ON A YOUNG ENGINEER FOR THE LAB FLOOR",
+      headline: "WESTERN DIGITAL NEWEST ADDITION FOR THE LAB FLOOR",
       dateline: "Feb. 2025.",
       src: "/plates/clip-wd.jpg",
     },
