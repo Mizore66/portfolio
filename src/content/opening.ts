@@ -1,4 +1,3 @@
-import { FIGURES } from "@/content/figures";
 import { CIRCUITMIND_LINE, MIRRORFI_VAULT, RISK_ENGINE, LEADS_HALL, VERIDIAN_PLANT } from "@/content/project-figures";
 import { resumeData } from "@/lib/data";
 import type { OpeningNode } from "@/lib/opening/types";
@@ -116,7 +115,6 @@ export const OPENING_NODES: OpeningNode[] = [
       dateline: "Bandar Sunway, May 2026.",
       src: "/plates/clip-sunway.jpg",
     },
-    figure: FIGURES.e4,
   },
   {
     id: "alekhine",
@@ -197,7 +195,6 @@ export const OPENING_NODES: OpeningNode[] = [
       dateline: "Kuala Lumpur, Nov. 2024.",
       src: "/plates/clip-petronas.jpg",
     },
-    figure: FIGURES.nf3,
   },
   {
     id: "elephant",
@@ -279,7 +276,6 @@ export const OPENING_NODES: OpeningNode[] = [
       dateline: "Kuala Lumpur, Jul. 2025.",
       src: "/plates/clip-setel.jpg",
     },
-    figure: FIGURES.nc6,
   },
   {
     id: "bc4",
@@ -308,7 +304,6 @@ export const OPENING_NODES: OpeningNode[] = [
       dateline: "Feb. 2025.",
       src: "/plates/clip-wd.jpg",
     },
-    figure: FIGURES.bc4,
   },
   {
     id: "bc5",
@@ -365,7 +360,6 @@ export const OPENING_NODES: OpeningNode[] = [
     hl: ["e1", "g1"],
     cap: "Position after 4. O-O",
     inlineDiagram: true,
-    figure: FIGURES.oo,
   },
   {
     id: "nf6",

@@ -80,10 +80,10 @@ describe("patent apparatuses are data, not art", () => {
     expect(FIGURES.bc4.parts.filter((p) => p.glyph === "key")).toHaveLength(3);
   });
 
-  it("files scoresheet figures on frozen role sheets and on project nodes beside a plate", () => {
+  it("files project patents beside plates and retires role sheets from the scoresheet", () => {
     for (const id of SCORESHEET_FIGURES) {
-      const n = getNode(id);
-      expect(n.figure?.fig, id).toBe(FIGURES[id].fig);
+      expect(getNode(id).figure, id).toBeUndefined();
+      expect(existsSync(plateFile(FIGURES[id].engraving.src)), id).toBe(true);
     }
     expect(getNode("d4").figure?.fig).toBe(PROJECT_FIGURES.veridian.fig);
     expect(getNode("d4").plate).toBeTruthy();
@@ -99,6 +99,13 @@ describe("patent apparatuses are data, not art", () => {
     for (const id of SCORESHEET_FIGURES) {
       expect(getNode(id).plate, id).toBeUndefined();
     }
+  });
+
+  it("keeps mill Fig.1. off numeral 2a", () => {
+    const fig1 = FIGURES.nf3.figLabels.find((l) => l.n === 1)!;
+    const twoA = FIGURES.nf3.numerals.find((m) => m.mark === "2a")!;
+    const dist = Math.hypot(fig1.x - twoA.x, fig1.y - twoA.y);
+    expect(dist).toBeGreaterThan(8);
   });
 
   it("keeps the frozen press on disk after Veridian retires it", () => {

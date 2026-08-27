@@ -1,3 +1,6 @@
+"use client";
+
+import { useCallback, useEffect, useId, useRef } from "react";
 import Image from "next/image";
 import { pt } from "@/components/opening/patent-ink";
 import type { ApparatusSpec, GlyphId, PatentNumeral } from "@/lib/opening/types";
@@ -88,21 +91,20 @@ function OverlayCallout({
 }: PatentNumeral & { glyph?: GlyphId }) {
   const mx = pt((fromX + x) / 2 + (y < fromY ? 2.1 : -2.1));
   const my = pt((fromY + y) / 2);
+  const d = `M${pt(fromX)} ${pt(fromY)} Q${mx} ${my} ${pt(x)} ${pt(y)}`;
   return (
-    <g data-callout={mark} data-glyph={glyph} fill="none">
-      <path
-        d={`M${pt(fromX)} ${pt(fromY)} Q${mx} ${my} ${pt(x)} ${pt(y)}`}
-        stroke="var(--ink)"
-        strokeWidth="0.22"
-      />
+    <g data-callout={mark} data-glyph={glyph} data-halo="paper">
+      <path d={d} className="patent-leader-halo" />
+      <path d={d} className="patent-leader-ink" />
+      <circle cx={fromX} cy={fromY} r="0.55" className="patent-anchor" />
       <text
         x={x}
         y={y + 0.75}
         textAnchor="middle"
-        fill="var(--ink)"
         fontSize="2.35"
         fontStyle="italic"
         fontFamily="var(--font-display), 'Libre Baskerville', serif"
+        className="patent-numeral"
       >
         {mark}
       </text>
@@ -122,15 +124,15 @@ function OverlayFigLabel({
   caption?: string;
 }) {
   return (
-    <g>
+    <g data-halo="paper">
       <text
         x={x}
         y={y}
-        fill="var(--ink)"
         fontSize="2.6"
         fontStyle="italic"
         fontFamily="var(--font-display), 'Libre Baskerville', serif"
         textDecoration="underline"
+        className="patent-fig-label"
       >
         {`Fig.${n}.`}
       </text>
@@ -138,10 +140,10 @@ function OverlayFigLabel({
         <text
           x={x + 8}
           y={y}
-          fill="var(--faded)"
           fontSize="1.9"
           fontStyle="italic"
           fontFamily="var(--font-display), 'Libre Baskerville', serif"
+          className="patent-fig-caption"
         >
           {caption}
         </text>
@@ -150,11 +152,66 @@ function OverlayFigLabel({
   );
 }
 
+function Overlay({ spec, caption }: { spec: ApparatusSpec; caption: string }) {
+  return (
+    <svg
+      viewBox="0 0 100 100"
+      preserveAspectRatio="none"
+      className="patent-overlay"
+      role="img"
+      aria-label={caption}
+    >
+      {spec.numerals.map((m) => (
+        <OverlayCallout key={m.mark} {...m} />
+      ))}
+      {spec.figLabels.map((lab) => (
+        <OverlayFigLabel key={lab.n} {...lab} />
+      ))}
+    </svg>
+  );
+}
+
+function Engraving({ spec }: { spec: ApparatusSpec }) {
+  return (
+    <div className="patent-engraving" data-testid="patent-engraving">
+      <Image
+        src={spec.engraving.src}
+        alt=""
+        width={spec.engraving.width}
+        height={spec.engraving.height}
+        className="patent-engraving-img"
+        sizes="(max-width: 980px) 92vw, 640px"
+      />
+      <Overlay spec={spec} caption={`APPARATUS FOR ${spec.function}. Filed ${spec.filed}.`} />
+    </div>
+  );
+}
+
 export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
   const presumed = spec.parts.filter((p) => p.confidence === "presumed");
   const chapterDagger = presumed.length * 2 > spec.parts.length;
   const showDagger = presumed.length > 0;
   const caption = `APPARATUS FOR ${spec.function}. Filed ${spec.filed}.`;
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
+
+  const close = useCallback(() => {
+    dialogRef.current?.close();
+  }, []);
+
+  const open = useCallback(() => {
+    dialogRef.current?.showModal();
+  }, []);
+
+  useEffect(() => {
+    const dlg = dialogRef.current;
+    if (!dlg) return;
+    function onClick(e: MouseEvent) {
+      if (e.target === dlg) close();
+    }
+    dlg.addEventListener("click", onClick);
+    return () => dlg.removeEventListener("click", onClick);
+  }, [close]);
 
   return (
     <figure
@@ -166,29 +223,16 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
     >
       <div className="patent-figure-mat">
         <SheetHeader spec={spec} />
-        <div className="patent-engraving" data-testid="patent-engraving">
-          <Image
-            src={spec.engraving.src}
-            alt=""
-            width={spec.engraving.width}
-            height={spec.engraving.height}
-            className="patent-engraving-img"
-            sizes="(max-width: 980px) 92vw, 640px"
+        <div className="relative">
+          <Engraving spec={spec} />
+          <button
+            type="button"
+            className="patent-expand-hit"
+            data-testid="patent-expand"
+            aria-haspopup="dialog"
+            aria-label="Expand patent sheet"
+            onClick={open}
           />
-          <svg
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-            className="patent-overlay"
-            role="img"
-            aria-label={caption}
-          >
-            {spec.numerals.map((m) => (
-              <OverlayCallout key={m.mark} {...m} />
-            ))}
-            {spec.figLabels.map((lab) => (
-              <OverlayFigLabel key={lab.n} {...lab} />
-            ))}
-          </svg>
         </div>
         <SignatureBlock />
       </div>
@@ -209,6 +253,30 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
           </p>
         ) : null}
       </div>
+      <dialog
+        ref={dialogRef}
+        className="patent-lightbox"
+        data-testid="patent-lightbox"
+        aria-labelledby={titleId}
+      >
+        <div className="patent-lightbox-sheet">
+          <div className="flex items-start justify-between gap-3 border-b border-ink pb-2">
+            <p id={titleId} className="font-display text-[14px] italic text-ink">
+              {caption}
+            </p>
+            <button
+              type="button"
+              className="shrink-0 border-2 border-ink px-2 py-1 font-mono text-[10px] uppercase tracking-widest"
+              onClick={close}
+            >
+              Close
+            </button>
+          </div>
+          <div className="patent-lightbox-well">
+            <Engraving spec={spec} />
+          </div>
+        </div>
+      </dialog>
     </figure>
   );
 }

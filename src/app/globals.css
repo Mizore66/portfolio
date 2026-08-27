@@ -419,6 +419,75 @@
   height: 100%;
   pointer-events: none;
 }
+.patent-leader-halo {
+  fill: none;
+  stroke: var(--paper);
+  stroke-width: 2.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.patent-leader-ink {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 0.7px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.patent-anchor {
+  fill: var(--ink);
+  stroke: var(--paper);
+  stroke-width: 1.5px;
+}
+.patent-numeral,
+.patent-fig-label {
+  fill: var(--ink);
+  stroke: var(--paper);
+  stroke-width: 3.5px;
+  paint-order: stroke fill;
+  stroke-linejoin: round;
+}
+.patent-fig-caption {
+  fill: var(--faded);
+  stroke: var(--paper);
+  stroke-width: 3px;
+  paint-order: stroke fill;
+  stroke-linejoin: round;
+  font-size: 1.9px;
+  font-style: italic;
+  font-family: var(--font-display), "Libre Baskerville", serif;
+}
+.patent-expand-hit {
+  display: none;
+}
+.patent-lightbox {
+  width: min(96vw, 920px);
+  max-height: 96vh;
+  padding: 12px;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+}
+.patent-lightbox::backdrop {
+  background: rgb(26 18 12 / 0.55);
+}
+.patent-lightbox-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.patent-lightbox-well .patent-engraving {
+  min-height: min(72vh, 680px);
+}
+@media (max-width: 979px) {
+  .patent-expand-hit {
+    display: block;
+    position: absolute;
+    inset: 0;
+    border: 0;
+    background: transparent;
+    cursor: zoom-in;
+  }
+}
 .patent-reference {
   margin-top: 8px;
   padding-top: 6px;
@@ -549,20 +618,59 @@
   [data-testid="find-the-break"] {
     display: none;
   }
+  [data-testid="glass-engine"] .engine-lampshade,
+  [data-testid="glass-engine"] [data-testid="engine-depth"] {
+    display: none;
+  }
+  [data-testid="glass-engine"] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 12px;
+    padding: 6px 8px;
+  }
+  [data-testid="glass-engine"] .mt-1 {
+    margin-top: 0;
+  }
 }
 
 @media (max-width: 699px) {
   .board-size-wrap {
-    width: min(100%, 320px);
-    max-width: 320px;
+    width: min(100%, 200px);
+    max-width: 200px;
+  }
+  [data-testid="board-diagram"] {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    margin: 0 -16px;
+    padding: 8px 16px 6px;
+    border-bottom: 2px solid var(--ink);
+    background-color: var(--paper);
+    background-image: url("/newsprint-grain.png");
+    background-size: 340px;
+    background-blend-mode: overlay;
+  }
+  [data-testid="board-diagram"] figcaption {
+    margin-top: 6px;
+    font-size: 12px;
   }
 }
 
 /* Side-by-side only where the board itself keeps ≥260px. */
 @media (min-width: 700px) and (max-width: 979px) {
   .board-engine-cluster {
+    position: sticky;
+    top: 0;
+    z-index: 20;
     flex-direction: row;
     align-items: flex-start;
+    padding: 8px 0;
+    border-bottom: 2px solid var(--ink);
+    background-color: var(--paper);
+    background-image: url("/newsprint-grain.png");
+    background-size: 340px;
+    background-blend-mode: overlay;
   }
   .board-engine-cluster [data-testid="board-diagram"] {
     flex: 1 1 280px;

@@ -350,9 +350,9 @@ export function OpeningApp() {
           <div className="flex flex-col min-[980px]:flex-row-reverse min-[980px]:items-stretch">
             <aside
               data-testid="board-column"
-              className="col-stack w-full shrink-0 min-[980px]:w-[min(520px,46%)] max-[979px]:sticky max-[979px]:top-0 max-[979px]:z-20"
+              className="col-stack w-full shrink-0 min-[980px]:w-[min(520px,46%)]"
             >
-              <div className="flex flex-col gap-3 min-[980px]:gap-4 sticky top-0 min-[980px]:top-3 newsprint-sticky z-10 max-[979px]:border-b-2 max-[979px]:border-ink max-[979px]:py-2">
+              <div className="flex flex-col gap-3 min-[980px]:gap-4 min-[980px]:sticky min-[980px]:top-3 newsprint-sticky z-10 max-[979px]:bg-transparent max-[979px]:[background-image:none]">
                 <div className="board-engine-cluster" data-testid="board-engine-cluster">
                 <BoardDiagram
                   plies={displayPlies}

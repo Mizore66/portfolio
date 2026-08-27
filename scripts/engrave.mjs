@@ -2,6 +2,13 @@
 /**
  * Desaturate a patent engraving, duotone to ink, flatten onto sheet cream,
  * emit WebP/AVIF ≤200KB at ~1400px.
+
+Prompt (generation-side, for future rasters):
+"19th-century US patent drawing, dense technical engraving, fine ink
+linework and crosshatched shading, [STAGED MACHINE], side elevation plus
+one cross-section, generous clear margins around the machinery,
+components separated by open space, plain white background, NO text,
+NO numbers, NO labels, no paper texture, no wax seal, no borders."
  */
 import fs from "node:fs";
 import path from "node:path";

@@ -101,13 +101,13 @@ describe("art taxonomy", () => {
     }
   });
 
-  it("gives career chapters frozen role sheets, project patents beside plates, and drops the life lane", () => {
+  it("gives career chapters clippings or project patents, not role sheets, and drops the life lane", () => {
     expect(OPENING_NODES.some((n) => n.id === "hike" || n.id === "club")).toBe(false);
-    expect(getNode("nf3").figure?.fig).toBe(2);
-    expect(getNode("nc6").figure?.fig).toBe(3);
-    expect(getNode("bc4").figure?.fig).toBe(4);
-    expect(getNode("e4").figure?.fig).toBe(1);
-    expect(getNode("oo").figure?.fig).toBe(5);
+    expect(getNode("nf3").figure).toBeUndefined();
+    expect(getNode("nc6").figure).toBeUndefined();
+    expect(getNode("bc4").figure).toBeUndefined();
+    expect(getNode("e4").figure).toBeUndefined();
+    expect(getNode("oo").figure).toBeUndefined();
     expect(getNode("e4").inlineDiagram).toBe(true);
     expect(getNode("oo").inlineDiagram).toBe(true);
     expect(getNode("d4").plate).toBeTruthy();

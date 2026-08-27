@@ -53,28 +53,27 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("[data-plate='/plates/plate-slm.jpg']")).toBeVisible();
     await expect(
       page.locator('[data-testid="notation-view"] [data-testid="patent-figure"]'),
-    ).toHaveCount(10);
-    await expect(page.locator("#chapter-e4 [data-testid='patent-figure'][data-fig='1']")).toBeVisible();
-    await expect(page.locator("#chapter-nf3 [data-testid='patent-figure'][data-fig='2']")).toBeVisible();
-    await expect(page.locator("#chapter-nc6 [data-testid='patent-figure'][data-fig='3']")).toBeVisible();
-    await expect(page.locator("#chapter-bc4 [data-testid='patent-figure'][data-fig='4']")).toBeVisible();
-    await expect(page.locator("#chapter-oo [data-testid='patent-figure'][data-fig='5']")).toBeVisible();
+    ).toHaveCount(5);
+    await expect(page.locator("#chapter-e4 [data-testid='patent-figure'][data-fig='1']")).toHaveCount(0);
+    await expect(page.locator("#chapter-nf3 [data-testid='patent-figure'][data-fig='2']")).toHaveCount(0);
+    await expect(page.locator("#chapter-nc6 [data-testid='patent-figure'][data-fig='3']")).toHaveCount(0);
+    await expect(page.locator("#chapter-bc4 [data-testid='patent-figure'][data-fig='4']")).toHaveCount(0);
+    await expect(page.locator("#chapter-oo [data-testid='patent-figure'][data-fig='5']")).toHaveCount(0);
     await expect(page.locator("#chapter-bc5 [data-testid='patent-figure'][data-fig='7']")).toBeVisible();
     await expect(page.locator("#chapter-nf6 [data-testid='patent-figure'][data-fig='8']")).toBeVisible();
     await expect(page.locator("#chapter-d4 [data-testid='patent-figure'][data-fig='11']")).toBeVisible();
     await expect(page.locator("#chapter-e4 [data-testid='patent-figure'][data-fig='9']")).toBeVisible();
     await expect(page.locator("#chapter-nf3 [data-testid='patent-figure'][data-fig='10']")).toBeVisible();
-    await expect(page.locator("#chapter-oo")).toContainText("(No Model.)");
-    await expect(page.locator("#chapter-oo")).toContainText("A. T. QUMHIYEH.");
-    await expect(page.locator("#chapter-oo")).toContainText("Fig.1.");
-    await expect(page.locator("#chapter-oo")).toContainText("Fig.2.");
-    await expect(page.locator("#chapter-oo")).toContainText("Anas Tarek Qumhiyeh");
-    await expect(page.locator("#chapter-nc6 [data-testid='patent-engraving']")).toBeVisible();
-    await expect(page.locator("#chapter-nc6 [data-glyph='tube']")).toHaveCount(2);
-    await expect(page.locator("#chapter-nf3 [data-testid='patent-figure'][data-fig='2'] [data-testid='patent-legend']")).toContainText(/MILLWHEEL/);
-    await expect(page.locator("#chapter-nf3 [data-testid='patent-figure'][data-fig='2'] [data-testid='patent-legend']")).toContainText(/BOILER/);
-    await expect(page.locator("#chapter-nf3 [data-testid='patent-figure'][data-fig='2'] [data-testid='patent-dagger']")).toBeVisible();
-    await expect(page.getByText(/composed from the archives/)).toHaveCount(7);
+    await expect(page.locator("#chapter-d4")).toContainText("(No Model.)");
+    await expect(page.locator("#chapter-d4")).toContainText("A. T. QUMHIYEH.");
+    await expect(page.locator("#chapter-d4")).toContainText("Fig.1.");
+    await expect(page.locator("#chapter-d4")).toContainText("Fig.2.");
+    await expect(page.locator("#chapter-d4")).toContainText("Anas Tarek Qumhiyeh");
+    await expect(page.locator("#chapter-d4 [data-testid='patent-engraving']")).toBeVisible();
+    await expect(page.locator("#chapter-d4 [data-halo='paper']").first()).toBeVisible();
+    await expect(page.locator("#chapter-nf3 [data-testid='patent-figure'][data-fig='10'] [data-testid='patent-legend']")).toContainText(/MILLWHEEL/);
+    await expect(page.locator("#chapter-d4 [data-testid='patent-legend']")).toContainText(/BEDPLATE/);
+    await expect(page.getByText(/composed from the archives/)).toHaveCount(2);
     await expect(page.locator("#chapter-bc4 [data-runtime='Docker']")).toHaveCount(0);
     await expect(page.locator("#chapter-nf3 [data-layer='MATLAB']")).toHaveCount(0);
     await expect(page.getByTestId("spot-illustration")).toHaveCount(0);
@@ -716,11 +715,15 @@ test.describe("Opening Preparation", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    const idle = (await page.getByTestId("board-diagram").boundingBox())!;
+    expect(idle.height).toBeLessThan(280);
     await page.locator("#chapter-re1").evaluate((el) => el.scrollIntoView({ block: "start" }));
     const box = await page.getByTestId("board-diagram").boundingBox();
     expect(box).toBeTruthy();
     expect(box!.y).toBeGreaterThanOrEqual(-4);
-    expect(box!.y).toBeLessThan(280);
+    expect(box!.y).toBeLessThan(80);
+    const engine = (await page.getByTestId("glass-engine").boundingBox())!;
+    expect(engine.y + engine.height).toBeLessThan(24);
     await expect(page.getByTestId("situations-dock")).toHaveCount(0);
     const overlay = await page.evaluate(() =>
       [...document.querySelectorAll('[data-testid="situations-wanted"]')].some(
@@ -728,6 +731,12 @@ test.describe("Opening Preparation", () => {
       ),
     );
     expect(overlay).toBe(false);
+
+    await page.locator("#chapter-d4 [data-testid='patent-expand']").click();
+    await expect(page.getByTestId("patent-lightbox")).toBeVisible();
+    await expect(page.getByTestId("patent-lightbox")).toContainText(/ECONOMIZED PLANT/);
+    await page.getByRole("button", { name: "Close" }).click();
+    await expect(page.getByTestId("patent-lightbox")).toBeHidden();
   });
 
   test("compact widths reflow the board instead of shrinking it", async ({ page }) => {
@@ -738,7 +747,8 @@ test.describe("Opening Preparation", () => {
     const plane390 = (await page.getByTestId("board-plane").boundingBox())!;
     const board390 = (await page.getByTestId("board-diagram").boundingBox())!;
     const engine390 = (await page.getByTestId("glass-engine").boundingBox())!;
-    expect(plane390.width).toBeGreaterThanOrEqual(260);
+    expect(plane390.width).toBeGreaterThanOrEqual(184);
+    expect(plane390.width).toBeLessThanOrEqual(216);
     expect(engine390.y).toBeGreaterThan(board390.y + 80);
     expect(Math.abs(engine390.x - board390.x)).toBeLessThan(48);
 

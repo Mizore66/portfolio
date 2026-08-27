@@ -146,7 +146,7 @@ export type OpeningNode = {
   plate?: { src: string; caption: string };
   /** Small static diagram in the scoresheet (career figures, castle, flagship, finale). */
   inlineDiagram?: boolean;
-  /** Patent-drawing apparatus. Project nodes carry a figure AND a plate; role sheets are frozen. */
+  /** Patent-drawing apparatus. Project nodes carry a figure AND a plate; role sheets are retired from the scoresheet. */
   figure?: ApparatusSpec;
   /** Declined line: a dashed photo frame, no picture. Caption is the joke. */
   emptyFrame?: string;
