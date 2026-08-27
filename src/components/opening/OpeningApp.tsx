@@ -70,7 +70,6 @@ export function OpeningApp() {
   const puzzleNote = play.id === selectedId ? play.note : null;
   const playingRef = useRef(false);
   const extraLenRef = useRef(0);
-  extraLenRef.current = extra.length;
   const hoverTimer = useRef<number>(0);
   const skipSpy = useRef(false);
   const skipSpyTimer = useRef<number>(0);
@@ -217,6 +216,10 @@ export function OpeningApp() {
   useEffect(() => {
     selectedRef.current = selectedId;
   }, [selectedId]);
+
+  useEffect(() => {
+    extraLenRef.current = extra.length;
+  }, [extra.length]);
 
   useEffect(() => {
     playingRef.current = playing;
