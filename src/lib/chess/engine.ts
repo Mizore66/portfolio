@@ -822,6 +822,29 @@ type SearchResult = {
   timedOut: boolean;
 };
 
+const REPLY_MAX_DEPTH = 6;
+const REPLY_BUDGET_MS = 400;
+
+/**
+ * A move the annotator can play. Iterative deepening so a tight clock still
+ * leaves a legal ply — a single deep search can time out with an empty PV.
+ */
+export function replyMove(pos: EnginePos): Ply | null {
+  const fallback = legalPlies(pos)[0] ?? null;
+  if (!fallback) return null;
+  prepareSearch();
+  const t0 = performance.now();
+  let best = fallback;
+  for (let depth = 1; depth <= REPLY_MAX_DEPTH; depth++) {
+    const remain = REPLY_BUDGET_MS - (performance.now() - t0);
+    if (depth > 1 && remain < 16) break;
+    const result = search(clonePos(pos), depth, { timeMs: Math.max(remain, 24) });
+    if (result.best && isLegalPly(pos, result.best)) best = result.best;
+    if (result.timedOut && depth > 1) break;
+  }
+  return best;
+}
+
 /** Score is always from White's point of view, in centipawns. */
 export function search(
   pos: EnginePos,

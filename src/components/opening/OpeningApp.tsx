@@ -13,14 +13,12 @@ import { TodaysPuzzle } from "@/components/opening/TodaysPuzzle";
 import { TreeView } from "@/components/opening/TreeView";
 import { BROADSHEET } from "@/content/opening";
 import {
-  clonePos,
   fromPieces,
   isLegalPly,
   legalPlies,
-  prepareSearch,
-  search,
+  replyMove,
 } from "@/lib/chess/engine";
-import { expandPlayLine, opposite, sideAfter } from "@/lib/chess/play";
+import { expandPlayLine, sideAfter } from "@/lib/chess/play";
 import { positionAfter } from "@/lib/chess/replay";
 import { HOVER_PREVIEW_MS, playDelayMs } from "@/lib/opening/motion";
 import {
@@ -144,6 +142,7 @@ export function OpeningApp() {
   );
 
   function onPlay(ply: Ply) {
+    if (side !== startSide) return;
     if (!isLegalPly(pos, ply)) return;
     setPlaying(false);
     setPlayHint(false);
@@ -155,23 +154,25 @@ export function OpeningApp() {
   }
 
   useEffect(() => {
-    if (extra.length === 0 || extra.length % 2 === 0) return;
+    if (extra.length === 0) return;
+    const replySide = sideAfter(startSide, extra.length);
+    if (replySide === startSide) return;
     let cancelled = false;
+    const plyCount = extra.length;
     const timer = window.setTimeout(() => {
       if (cancelled) return;
-      const replySide = opposite(startSide);
       const line = expandPlayLine(bookPlies, extra);
       const last = line[line.length - 1] ?? null;
       const board = positionAfter(line);
       const replyPos = fromPieces(board, replySide, last);
-      prepareSearch();
-      const result = search(clonePos(replyPos), 6, { timeMs: 280 });
-      if (cancelled || !result.best) return;
+      const best = replyMove(replyPos);
+      if (cancelled || !best) return;
       setPlay((cur) => {
         if (cur.id !== selectedId) return cur;
-        return { id: selectedId, extra: [...cur.extra, result.best!], note: null };
+        if (cur.extra.length !== plyCount) return cur;
+        return { id: selectedId, extra: [...cur.extra, best], note: null };
       });
-    }, 400);
+    }, playDelayMs(1));
     return () => {
       cancelled = true;
       window.clearTimeout(timer);

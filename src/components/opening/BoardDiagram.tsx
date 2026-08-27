@@ -238,6 +238,7 @@ export function BoardDiagram({
                 role="img"
                 aria-label={caption}
                 data-testid="board-plane"
+                data-play-side={playSide}
                 className={cn("newspaper-board relative h-full w-full", playable && "cursor-pointer")}
                 tabIndex={playable ? 0 : undefined}
                 id="play-board"

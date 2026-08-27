@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { collectPlies } from "@/lib/opening/tree";
 import { positionAfter } from "@/lib/chess/replay";
-import { fromPieces, legalPlies, numberPv, perft, prepareSearch, search, startPos, START_PERFT } from "./engine";
+import { fromPieces, isLegalPly, legalPlies, numberPv, perft, prepareSearch, replyMove, search, startPos, START_PERFT } from "./engine";
 
 describe("engine move generator", () => {
   it("matches start-position perft receipts", () => {
@@ -55,5 +55,21 @@ describe("engine search", () => {
     const r = search(pos, 5, { timeMs: 2500 });
     expect(r.score).toBeGreaterThan(-80);
     expect(r.score).toBeLessThan(220);
+  });
+});
+
+describe("annotator reply", () => {
+  it("always answers 1. e4 with a legal black ply, even on a tight clock", () => {
+    const pos = fromPieces(positionAfter(collectPlies("e4")), "b", { from: "e2", to: "e4" });
+    const legal = legalPlies(pos);
+    const move = replyMove(pos);
+    expect(move).toBeTruthy();
+    expect(legal.some((p) => p.from === move!.from && p.to === move!.to)).toBe(true);
+  });
+
+  it("does not return an empty PV timeout at the starting position", () => {
+    const move = replyMove(startPos());
+    expect(move).toBeTruthy();
+    expect(isLegalPly(startPos(), move!)).toBe(true);
   });
 });

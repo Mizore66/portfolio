@@ -444,7 +444,10 @@ test.describe("Opening Preparation", () => {
     const before = await pawn.boundingBox();
     await page.locator('[data-sq="e2"]').click();
     await page.locator('[data-sq="e4"]').click();
-    await page.waitForTimeout(450);
+    await expect(page.getByTestId("board-plane")).toHaveAttribute("data-play-side", "b");
+    await expect(page.getByTestId("board-plane")).toHaveAttribute("data-play-side", "w", {
+      timeout: 4000,
+    });
     const after = await pawn.boundingBox();
     expect(before && after).toBeTruthy();
     expect(after!.y).toBeLessThan(before!.y - 8);
