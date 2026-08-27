@@ -49,6 +49,7 @@ export default async function ProjectPage({
                 src={project.plate}
                 caption={project.plateCaption}
                 alt={project.name}
+                priority
               />
             </div>
 

@@ -5,11 +5,13 @@ export function HalftonePlate({
   caption,
   alt,
   inset,
+  priority,
 }: {
   src: string;
   caption: string;
   alt: string;
   inset?: boolean;
+  priority?: boolean;
 }) {
   return (
     <figure
@@ -25,6 +27,7 @@ export function HalftonePlate({
           height={933}
           sizes={inset ? "(max-width: 639px) 280px, 200px" : "(max-width: 980px) 92vw, 480px"}
           className="halftone-plate-img"
+          priority={priority}
         />
         <span className="halftone-plate-screen" aria-hidden="true" />
       </div>
