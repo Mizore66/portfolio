@@ -146,6 +146,7 @@ export function OpeningApp() {
   function onPlay(ply: Ply) {
     if (side !== startSide) return;
     if (!isLegalPly(pos, ply)) return;
+    extraLenRef.current = extra.length + 1;
     setPlaying(false);
     setPlayHint(false);
     setPlay((cur) => ({

@@ -440,6 +440,9 @@ test.describe("Opening Preparation", () => {
 
     await page.goto("/?move=start");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(
+      page.locator('[data-testid="tree-view"] [data-node-id="start"]'),
+    ).toHaveAttribute("aria-current", "true");
     await expect(page.getByTestId("board-plane")).toHaveAttribute("aria-label", "Starting position");
     const pawn = page.locator('[data-piece-id="wPe2"]');
     const before = await pawn.boundingBox();
