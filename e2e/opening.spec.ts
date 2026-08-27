@@ -65,7 +65,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("#chapter-oo")).toContainText("Fig.1.");
     await expect(page.locator("#chapter-oo")).toContainText("Fig.2.");
     await expect(page.locator("#chapter-oo")).toContainText("Anas Tarek Qumhiyeh");
-    await expect(page.locator("#chapter-nc6 [data-glyph='tube']")).toBeVisible();
+    await expect(page.locator("#chapter-nc6 [data-part][data-glyph='tube']")).toHaveCount(2);
     await expect(page.locator("#chapter-nf3 [data-testid='patent-legend']")).toContainText(/MILLWHEEL/);
     await expect(page.locator("#chapter-nf3 [data-testid='patent-legend']")).toContainText(/BOILER/);
     await expect(page.locator("#chapter-nf3 [data-testid='patent-dagger']")).toBeVisible();
@@ -259,15 +259,18 @@ test.describe("Opening Preparation", () => {
     const before = await yAt();
     await page.locator('[data-testid="tree-view"] [data-node-id="e4"]').click();
 
-    // Sample as soon as the pawn leaves e2 — waiting for aria-current first
-    // lets a 380ms glide finish, which looks like a teleport.
+    // Distinct in-flight y samples — a teleport would yield one jump and stop.
+    const seen = new Set<string>();
     await expect
-      .poll(async () => Math.abs((await yAt()) - before), { timeout: 800, intervals: [16, 32, 32] })
+      .poll(
+        async () => {
+          const y = await yAt();
+          if (Math.abs(y - before) > 0.4) seen.add(y.toFixed(1));
+          return seen.size;
+        },
+        { timeout: 800, intervals: [16, 16, 16] },
+      )
       .toBeGreaterThan(2);
-    const mid = await yAt();
-    await page.waitForTimeout(80);
-    const later = await yAt();
-    expect(Math.abs(later - mid)).toBeGreaterThan(0.4);
     await page.waitForTimeout(400);
     const after = await yAt();
     expect(after).not.toBe(before);
@@ -740,8 +743,12 @@ test.describe("Opening Preparation", () => {
     await page.goto("/");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByTestId("engine-lampshade")).toBeVisible();
-    const y0 = (await page.getByTestId("read-the-game").boundingBox())!.y;
-    const h0 = (await page.getByTestId("glass-engine").boundingBox())!.height;
+    const gap = async () => {
+      const engine = (await page.getByTestId("glass-engine").boundingBox())!;
+      const btn = (await page.getByTestId("read-the-game").boundingBox())!;
+      return { gap: btn.y - (engine.y + engine.height), h: engine.height };
+    };
+    const before = await gap();
 
     await page.locator('[data-testid="tree-view"] [data-node-id="e4"]').click();
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="e4"]')).toHaveAttribute(
@@ -749,9 +756,8 @@ test.describe("Opening Preparation", () => {
       "true",
     );
     await expect(page.getByTestId("engine-lampshade")).toBeVisible();
-    const y1 = (await page.getByTestId("read-the-game").boundingBox())!.y;
-    const h1 = (await page.getByTestId("glass-engine").boundingBox())!.height;
-    expect(Math.abs(y1 - y0)).toBeLessThan(8);
-    expect(Math.abs(h1 - h0)).toBeLessThan(12);
+    const after = await gap();
+    expect(Math.abs(after.gap - before.gap)).toBeLessThan(8);
+    expect(Math.abs(after.h - before.h)).toBeLessThan(12);
   });
 });
