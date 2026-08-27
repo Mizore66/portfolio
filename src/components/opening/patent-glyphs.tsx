@@ -3,6 +3,10 @@ import type { ApparatusPart, GlyphId } from "@/lib/opening/types";
 
 const STROKE = 1.6;
 
+function pt(n: number) {
+  return Number(n.toFixed(2));
+}
+
 function inkFill(hatchId: string) {
   return {
     fill: `url(#${hatchId})`,
@@ -53,10 +57,10 @@ function Millwheel({ hatchId, dusty, idle }: { hatchId: string; dusty?: boolean;
     return (
       <line
         key={i}
-        x1={50 + Math.cos(a) * 11}
-        y1={50 + Math.sin(a) * 11}
-        x2={50 + Math.cos(a) * 40}
-        y2={50 + Math.sin(a) * 40}
+        x1={pt(50 + Math.cos(a) * 11)}
+        y1={pt(50 + Math.sin(a) * 11)}
+        x2={pt(50 + Math.cos(a) * 40)}
+        y2={pt(50 + Math.sin(a) * 40)}
         {...inkLine()}
       />
     );
@@ -168,10 +172,10 @@ function Gauge({ hatchId }: { hatchId: string }) {
         return (
           <line
             key={i}
-            x1={50 + Math.cos(a) * 24}
-            y1={50 + Math.sin(a) * 24}
-            x2={50 + Math.cos(a) * 30}
-            y2={50 + Math.sin(a) * 30}
+            x1={pt(50 + Math.cos(a) * 24)}
+            y1={pt(50 + Math.sin(a) * 24)}
+            x2={pt(50 + Math.cos(a) * 30)}
+            y2={pt(50 + Math.sin(a) * 30)}
             {...inkLine()}
           />
         );
