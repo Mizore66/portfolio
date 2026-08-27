@@ -738,10 +738,11 @@ test.describe("Opening Preparation", () => {
     expect(overlay).toBe(false);
 
     await page.locator("#chapter-d4 [data-testid='patent-expand']").click();
-    await expect(page.getByTestId("patent-lightbox")).toBeVisible();
-    await expect(page.getByTestId("patent-lightbox")).toContainText(/ECONOMIZED PLANT/);
-    await page.getByRole("button", { name: "Close" }).click();
-    await expect(page.getByTestId("patent-lightbox")).toBeHidden();
+    const lightbox = page.locator("#chapter-d4 [data-testid='patent-lightbox']");
+    await expect(lightbox).toBeVisible();
+    await expect(lightbox).toContainText(/ECONOMIZED PLANT/);
+    await lightbox.getByRole("button", { name: "Close" }).click();
+    await expect(lightbox).toBeHidden();
   });
 
   test("compact widths reflow the board instead of shrinking it", async ({ page }) => {
