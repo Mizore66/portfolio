@@ -231,64 +231,68 @@ export function BoardDiagram({
           </div>
           <div ref={wrapRef} className="board-size-wrap min-w-0 flex-1">
             <div
-              className="border-2 border-ink"
-              style={edge ? { width: edge + 4, height: edge + 4 } : { width: "100%", aspectRatio: "1" }}
+              className="flex flex-col"
+              style={edge ? { width: edge + 4 } : { width: "100%" }}
             >
               <div
-                ref={boardRef}
-                role="img"
-                aria-label={caption}
-                data-testid="board-plane"
-                data-play-side={playSide}
-                className={cn("newspaper-board relative h-full w-full", playable && "cursor-pointer")}
-                tabIndex={playable ? 0 : undefined}
-                id="play-board"
-                onPointerDown={onBoardPointerDown}
-                onPointerUp={onBoardPointerUp}
+                className="border-2 border-ink"
+                style={edge ? { width: "100%", height: edge + 4 } : { width: "100%", aspectRatio: "1" }}
               >
-                <div className="grid h-full w-full grid-cols-8 grid-rows-8">{squares}</div>
-                {arrow ? <PvArrow ply={arrow} /> : null}
-                {pieces.map((piece) => {
-                  const file = squareFile(piece.square);
-                  const rank = squareRank(piece.square);
-                  const box = squareBox(file, rank);
-                  return (
-                    <span
-                      key={piece.id}
-                      data-piece-id={piece.id}
-                      className="absolute flex items-center justify-center"
-                      style={{
-                        ...box,
-                        opacity: piece.captured ? 0 : 1,
-                        transitionProperty: "left, top, opacity",
-                        transitionDuration: `${GLIDE_MS}ms`,
-                        transitionTimingFunction: "ease",
-                        transitionDelay: `${piece.delay}ms`,
-                        pointerEvents: "none",
-                        zIndex: piece.captured ? 0 : liftIds.has(piece.id) ? 3 : 2,
-                      }}
-                    >
+                <div
+                  ref={boardRef}
+                  role="img"
+                  aria-label={caption}
+                  data-testid="board-plane"
+                  data-play-side={playSide}
+                  className={cn("newspaper-board relative h-full w-full", playable && "cursor-pointer")}
+                  tabIndex={playable ? 0 : undefined}
+                  id="play-board"
+                  onPointerDown={onBoardPointerDown}
+                  onPointerUp={onBoardPointerUp}
+                >
+                  <div className="grid h-full w-full grid-cols-8 grid-rows-8">{squares}</div>
+                  {arrow ? <PvArrow ply={arrow} /> : null}
+                  {pieces.map((piece) => {
+                    const file = squareFile(piece.square);
+                    const rank = squareRank(piece.square);
+                    const box = squareBox(file, rank);
+                    return (
                       <span
-                        className={cn(
-                          "flex size-[84%] items-center justify-center",
-                          liftIds.has(piece.id) && "piece-lift",
-                        )}
-                        style={{ animationDelay: `${piece.delay}ms` }}
+                        key={piece.id}
+                        data-piece-id={piece.id}
+                        className="absolute flex items-center justify-center"
+                        style={{
+                          ...box,
+                          opacity: piece.captured ? 0 : 1,
+                          transitionProperty: "left, top, opacity",
+                          transitionDuration: `${GLIDE_MS}ms`,
+                          transitionTimingFunction: "ease",
+                          transitionDelay: `${piece.delay}ms`,
+                          pointerEvents: "none",
+                          zIndex: piece.captured ? 0 : liftIds.has(piece.id) ? 3 : 2,
+                        }}
                       >
-                        <NewspaperPiece type={piece.type} color={piece.color} />
+                        <span
+                          className={cn(
+                            "flex size-[84%] items-center justify-center",
+                            liftIds.has(piece.id) && "piece-lift",
+                          )}
+                          style={{ animationDelay: `${piece.delay}ms` }}
+                        >
+                          <NewspaperPiece type={piece.type} color={piece.color} />
+                        </span>
                       </span>
-                    </span>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-            <div
-              className="board-files"
-              style={edge ? { width: edge + 4 } : undefined}
-            >
-              {FILES.split("").map((f) => (
-                <span key={f}>{f}</span>
-              ))}
+              <div className="board-files" data-testid="board-files">
+                {FILES.split("").map((f) => (
+                  <span key={f} className="block w-full text-center">
+                    {f}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </div>

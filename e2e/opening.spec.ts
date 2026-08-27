@@ -572,6 +572,32 @@ test.describe("Opening Preparation", () => {
       expect(piece.y).toBeGreaterThanOrEqual(box.y - 1);
       expect(piece.y + piece.height).toBeLessThanOrEqual(box.y + box.height + 1);
     }
+
+    const files = page.getByTestId("board-files").locator("span");
+    await expect(files).toHaveCount(8);
+    const aFile = (await page.locator("[data-sq='a1']").boundingBox())!;
+    const hFile = (await page.locator("[data-sq='h1']").boundingBox())!;
+    const aLetter = (await files.nth(0).boundingBox())!;
+    const hLetter = (await files.nth(7).boundingBox())!;
+    const aCenter = aLetter.x + aLetter.width / 2;
+    const hCenter = hLetter.x + hLetter.width / 2;
+    expect(aLetter.width).toBeGreaterThan(12);
+    expect(hLetter.x).toBeGreaterThan(aLetter.x + aLetter.width + 40);
+    expect(aCenter).toBeGreaterThan(aFile.x);
+    expect(aCenter).toBeLessThan(aFile.x + aFile.width);
+    expect(hCenter).toBeGreaterThan(hFile.x);
+    expect(hCenter).toBeLessThan(hFile.x + hFile.width);
+
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await expect
+      .poll(async () => {
+        const letter = await files.nth(7).boundingBox();
+        const square = await page.locator("[data-sq='h1']").boundingBox();
+        if (!letter || !square) return false;
+        const center = letter.x + letter.width / 2;
+        return center > square.x && center < square.x + square.width && letter.x > 400;
+      })
+      .toBe(true);
   });
 
   test("scroll-spy updates the URL without snapping the page to the top", async ({ page }) => {

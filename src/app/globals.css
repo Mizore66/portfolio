@@ -433,14 +433,16 @@
 }
 
 .board-files {
-  display: flex;
-  justify-content: space-around;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  width: 100%;
   box-sizing: border-box;
   padding: 4px 2px 0;
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 9px;
   line-height: 1;
   color: var(--faded);
+  text-align: center;
 }
 
 .apparatus-runtime {
