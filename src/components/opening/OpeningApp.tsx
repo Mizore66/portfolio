@@ -69,6 +69,8 @@ export function OpeningApp() {
   const extra = play.id === selectedId ? play.extra : NO_EXTRA;
   const puzzleNote = play.id === selectedId ? play.note : null;
   const playingRef = useRef(false);
+  const extraLenRef = useRef(0);
+  extraLenRef.current = extra.length;
   const hoverTimer = useRef<number>(0);
   const skipSpy = useRef(false);
   const skipSpyTimer = useRef<number>(0);
@@ -261,6 +263,7 @@ export function OpeningApp() {
     const pick = () => {
       frame = 0;
       if (skipSpy.current) return;
+      if (extraLenRef.current > 0) return;
       const lead = chapters[0];
       if (lead.getBoundingClientRect().top > window.innerHeight * 0.42) return;
       const line = window.innerHeight * 0.28;

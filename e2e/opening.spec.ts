@@ -440,6 +440,7 @@ test.describe("Opening Preparation", () => {
 
     await page.goto("/?move=start");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.getByTestId("board-plane")).toHaveAttribute("aria-label", "Starting position");
     const pawn = page.locator('[data-piece-id="wPe2"]');
     const before = await pawn.boundingBox();
     await page.locator('[data-sq="e2"]').click();
@@ -448,6 +449,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("board-plane")).toHaveAttribute("data-play-side", "w", {
       timeout: 4000,
     });
+    await expect(page.getByTestId("board-plane")).toHaveAttribute("aria-label", "Starting position");
     const after = await pawn.boundingBox();
     expect(before && after).toBeTruthy();
     expect(after!.y).toBeLessThan(before!.y - 8);
