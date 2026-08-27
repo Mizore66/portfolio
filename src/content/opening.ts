@@ -247,7 +247,10 @@ export const OPENING_NODES: OpeningNode[] = [
     plies: [{ from: "d7", to: "d6" }],
     hl: ["d7", "d6"],
     cap: "Position after 2…d6 (Philidor, declined)",
-    emptyFrame: "No photograph was filed.",
+    retrospect: {
+      kicker: "Retrospect",
+      hed: "Anas's possible MATLAB future",
+    },
   },
   {
     id: "nc6",

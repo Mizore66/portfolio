@@ -97,7 +97,7 @@ describe("art taxonomy", () => {
       expect(n.figure).toBeUndefined();
       expect(n.clipping).toBeUndefined();
       expect(n.inlineDiagram).toBeFalsy();
-      expect(n.emptyFrame).toBeUndefined();
+      expect(n.retrospect).toBeUndefined();
     }
   });
 
@@ -126,8 +126,11 @@ describe("art taxonomy", () => {
     expect(getNode("bb6").plate?.src).toBe("/plates/plate-slm.jpg");
   });
 
-  it("files an empty frame on the declined startup", () => {
-    expect(getNode("philidor").emptyFrame).toBe("No photograph was filed.");
+  it("files a retrospect hed on the declined startup, not an empty photograph", () => {
+    expect(getNode("philidor").retrospect).toEqual({
+      kicker: "Retrospect",
+      hed: "Anas's possible MATLAB future",
+    });
   });
 
   it("files news-clippings on education and the three employer roles", () => {

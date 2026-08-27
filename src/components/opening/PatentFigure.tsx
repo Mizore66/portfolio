@@ -6,7 +6,7 @@ import { pt } from "@/components/opening/patent-ink";
 import type { ApparatusSpec, GlyphId, PatentNumeral } from "@/lib/opening/types";
 
 const DAGGER = "† composed from the archives";
-const INVENTOR = "A. T. QUMHIYEH.";
+const INVENTOR = "ANAS T. QUMHIYEH.";
 const INVENTOR_SIGN = "Anas Tarek Qumhiyeh";
 const FURNITURE = { w: 720, head: 80, foot: 78 };
 
@@ -25,7 +25,7 @@ function SheetHeader({ spec }: { spec: ApparatusSpec }) {
         <text x={w - 16} y={18} fontSize="9" textAnchor="end">
           2 Sheets—Sheet 1.
         </text>
-        <text x={w / 2} y={36} fontSize="11" textAnchor="middle" letterSpacing="0.28em">
+        <text x={w / 2} y={36} fontSize="11" textAnchor="middle" letterSpacing="0.16em">
           {INVENTOR}
         </text>
         <text x={w / 2} y={52} fontSize="10" textAnchor="middle" letterSpacing="0.18em">

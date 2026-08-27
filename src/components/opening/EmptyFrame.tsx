@@ -1,10 +1,14 @@
-export function EmptyFrame({ caption }: { caption: string }) {
+export function EmptyFrame({
+  kicker,
+  hed,
+}: {
+  kicker: string;
+  hed: string;
+}) {
   return (
-    <figure className="empty-frame" data-testid="empty-frame">
-      <div className="empty-frame-mat" aria-hidden="true" />
-      <figcaption className="mt-2 border-t border-ink pt-1 font-display text-[13px] italic text-ink">
-        {caption}
-      </figcaption>
-    </figure>
+    <aside className="retrospect" data-testid="retrospect">
+      <p className="retrospect-kicker">{kicker}</p>
+      <p className="retrospect-hed">{hed}</p>
+    </aside>
   );
 }

@@ -148,8 +148,8 @@ export type OpeningNode = {
   inlineDiagram?: boolean;
   /** Patent-drawing apparatus. Project nodes carry a figure AND a plate; role sheets are retired from the scoresheet. */
   figure?: ApparatusSpec;
-  /** Declined line: a dashed photo frame, no picture. Caption is the joke. */
-  emptyFrame?: string;
+  /** Declined line: a retrospect hed instead of a photograph. */
+  retrospect?: { kicker: string; hed: string };
   /** Role/education news-clipping: kicker + headline + dateline over a file photo. */
   clipping?: {
     kicker: string;

@@ -215,11 +215,12 @@ export function BoardDiagram({
           ) : null}
         </p>
       ) : null}
-      <div className="flex items-start gap-0">
+      <div className="board-cluster">
         <EvalBar value={evalCp ?? 0} label={evalLabel} />
         <div className="flex min-w-0 flex-1 items-start">
           <div
-            className="flex w-3.5 flex-col-reverse justify-around py-0.5 font-mono text-[9px] text-faded"
+            className="board-ranks"
+            data-testid="board-ranks"
             style={edge ? { height: edge + 4 } : undefined}
           >
             {Array.from({ length: 8 }, (_, i) => (
@@ -256,19 +257,22 @@ export function BoardDiagram({
                       key={piece.id}
                       data-piece-id={piece.id}
                       className="absolute flex items-center justify-center"
-                    style={{
-                      ...box,
-                      opacity: piece.captured ? 0 : 1,
-                      transitionProperty: "left, top, opacity",
-                      transitionDuration: `${GLIDE_MS}ms`,
-                      transitionTimingFunction: "ease",
-                      transitionDelay: `${piece.delay}ms`,
-                      pointerEvents: "none",
-                      zIndex: piece.captured ? 0 : liftIds.has(piece.id) ? 3 : 2,
-                    }}
+                      style={{
+                        ...box,
+                        opacity: piece.captured ? 0 : 1,
+                        transitionProperty: "left, top, opacity",
+                        transitionDuration: `${GLIDE_MS}ms`,
+                        transitionTimingFunction: "ease",
+                        transitionDelay: `${piece.delay}ms`,
+                        pointerEvents: "none",
+                        zIndex: piece.captured ? 0 : liftIds.has(piece.id) ? 3 : 2,
+                      }}
                     >
                       <span
-                        className={liftIds.has(piece.id) ? "piece-lift" : undefined}
+                        className={cn(
+                          "flex h-full w-full items-center justify-center",
+                          liftIds.has(piece.id) && "piece-lift",
+                        )}
                         style={{ animationDelay: `${piece.delay}ms` }}
                       >
                         <NewspaperPiece type={piece.type} color={piece.color} />
@@ -279,7 +283,7 @@ export function BoardDiagram({
               </div>
             </div>
             <div
-              className="flex justify-around font-mono text-[9px] text-faded"
+              className="board-files"
               style={edge ? { width: edge + 4 } : undefined}
             >
               {FILES.split("").map((f) => (

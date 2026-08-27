@@ -65,9 +65,9 @@ function Chapter({
   const { node } = block;
   const selected = node.id === selectedId;
   const flagship = node.id === FLAGSHIP_ID;
-  const emptyFrame =
-    node.emptyFrame ??
-    block.variations.map((line) => line[0]?.node).find((n) => n?.emptyFrame)?.emptyFrame;
+  const retrospect =
+    node.retrospect ??
+    block.variations.map((line) => line[0]?.node).find((n) => n?.retrospect)?.retrospect;
 
   return (
     <section
@@ -174,7 +174,7 @@ function Chapter({
         </div>
       ) : null}
 
-      {emptyFrame ? <EmptyFrame caption={emptyFrame} /> : null}
+      {retrospect ? <EmptyFrame kicker={retrospect.kicker} hed={retrospect.hed} /> : null}
 
       <p className="mt-4 font-mono text-[11px] leading-relaxed text-faded">
         <span className="uppercase tracking-[0.18em]">The line so far</span>

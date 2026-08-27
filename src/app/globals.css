@@ -372,20 +372,58 @@
 }
 
 
-.empty-frame {
-  width: min(220px, 46%);
-  margin: 12px 0 4px;
+.retrospect {
+  width: min(280px, 72%);
+  margin: 14px 0 6px;
+  padding: 8px 0 6px;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
 }
-.empty-frame-mat {
-  aspect-ratio: 3 / 2;
-  border: 1.5px dashed var(--ink);
-  background:
-    repeating-linear-gradient(
-      -45deg,
-      transparent 0 7px,
-      color-mix(in srgb, var(--ink) 8%, transparent) 7px 8px
-    ),
-    var(--paper-deep);
+.retrospect-kicker {
+  margin: 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--faded);
+}
+.retrospect-hed {
+  margin: 4px 0 0;
+  font-family: var(--font-display), "Libre Baskerville", serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.board-cluster {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+.board-ranks {
+  display: flex;
+  width: 1rem;
+  flex-shrink: 0;
+  flex-direction: column-reverse;
+  justify-content: space-around;
+  align-items: flex-end;
+  padding-right: 4px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 9px;
+  line-height: 1;
+  color: var(--faded);
+}
+.board-files {
+  display: flex;
+  justify-content: space-around;
+  box-sizing: border-box;
+  padding: 4px 2px 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 9px;
+  line-height: 1;
+  color: var(--faded);
 }
 
 .apparatus-runtime {

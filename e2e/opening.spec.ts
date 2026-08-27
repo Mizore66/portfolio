@@ -65,7 +65,8 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("#chapter-e4 [data-testid='patent-figure'][data-fig='9']")).toBeVisible();
     await expect(page.locator("#chapter-nf3 [data-testid='patent-figure'][data-fig='10']")).toBeVisible();
     await expect(page.locator("#chapter-d4")).toContainText("(No Model.)");
-    await expect(page.locator("#chapter-d4")).toContainText("A. T. QUMHIYEH.");
+    await expect(page.locator("#chapter-d4")).toContainText("ANAS T. QUMHIYEH.");
+    await expect(page.locator("#chapter-d4")).not.toContainText("A. T. QUMHIYEH.");
     await expect(page.locator("#chapter-d4")).toContainText("Fig.1.");
     await expect(page.locator("#chapter-d4")).toContainText("Fig.2.");
     await expect(page.locator("#chapter-d4")).toContainText("Anas Tarek Qumhiyeh");
@@ -85,9 +86,11 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("#chapter-e5 [data-testid='halftone-plate']")).toHaveCount(0);
     await expect(page.locator("#chapter-exd4 [data-testid='halftone-plate']")).toHaveCount(0);
     await expect(page.locator("#chapter-re1 [data-testid='inline-diagram']")).toHaveCount(0);
-    await expect(page.getByTestId("empty-frame")).toHaveCount(1);
-    await expect(page.locator("#chapter-nf3 [data-testid='empty-frame']")).toHaveCount(1);
-    await expect(page.getByTestId("empty-frame")).toContainText("No photograph was filed.");
+    await expect(page.getByTestId("retrospect")).toHaveCount(1);
+    await expect(page.locator("#chapter-nf3 [data-testid='retrospect']")).toHaveCount(1);
+    await expect(page.getByTestId("retrospect")).toContainText("Retrospect");
+    await expect(page.getByTestId("retrospect")).toContainText("Anas's possible MATLAB future");
+    await expect(page.getByText("No photograph was filed.")).toHaveCount(0);
     await expect(page.getByTestId("news-clipping")).toHaveCount(4);
     await expect(page.locator("#chapter-e4 [data-testid='news-clipping']")).toContainText(
       "HONOURS FOR ASPIRING MONASH ENGINEERING CANDIDATE",
@@ -757,6 +760,13 @@ test.describe("Opening Preparation", () => {
     expect(plane390.width).toBeLessThanOrEqual(216);
     expect(engine390.y).toBeGreaterThan(board390.y + 80);
     expect(Math.abs(engine390.x - board390.x)).toBeLessThan(48);
+
+    const eval390 = (await page.getByTestId("eval-bar").boundingBox())!;
+    const ranks390 = (await page.getByTestId("board-ranks").boundingBox())!;
+    const evalToRanks = ranks390.x - (eval390.x + eval390.width);
+    const ranksToBoard = plane390.x - (ranks390.x + ranks390.width);
+    expect(evalToRanks).toBeGreaterThanOrEqual(6);
+    expect(evalToRanks).toBeGreaterThan(ranksToBoard);
 
     const chapter = page.locator("#chapter-e4 .drop-cap");
     await chapter.scrollIntoViewIfNeeded();

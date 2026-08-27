@@ -130,7 +130,7 @@ export function NewspaperPiece({
       aria-hidden
       data-piece-type={type}
       data-piece-color={color}
-      className="h-[88%] w-[88%] overflow-visible"
+      className="block h-full w-full overflow-visible"
     >
       <Body fill={white ? PAPER : CHARCOAL} stroke={INK} />
     </svg>
