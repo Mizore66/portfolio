@@ -1,6 +1,24 @@
 export type NodeType = "mainline" | "life" | "variation" | "not-taken";
 export type Side = "w" | "b";
 
+export type ApparatusLayer = {
+  name: string;
+  role: string;
+};
+
+/** A machine, not a shopping list joined with arrows. */
+export type Apparatus = {
+  name: string;
+  /** Drawn around the path — containers, orchestrators. Not a hop. */
+  runtime?: string;
+  /** Top-down request or rewrite path. Arrows only live here. */
+  path: ApparatusLayer[];
+  /** Fan-out from the last path node. No order among them. */
+  forks?: ApparatusLayer[];
+  /** Present, but not on this path. */
+  beside?: ApparatusLayer[];
+};
+
 export type Artifact = {
   label: string;
   href: string;
@@ -42,15 +60,7 @@ export type OpeningNode = {
   /** Small static diagram in the scoresheet (career figures, castle, flagship, finale). */
   inlineDiagram?: boolean;
   /** Inked apparatus sketch for a technical/career chapter. */
-  figure?: {
-    name: string;
-    tech: string[];
-    /** Request path (client → api → data). Runtime is the box around it, not a step. */
-    stack?: {
-      runtime: string;
-      layers: { name: string; role: string }[];
-    };
-  };
+  figure?: Apparatus & { tech: string[] };
   /** Quarter-column engraving for a life branch. */
   spot?: "trail" | "clock";
   /** Declined line: a dashed photo frame, no picture. Caption is the joke. */

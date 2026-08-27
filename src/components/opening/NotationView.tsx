@@ -119,7 +119,10 @@ function Chapter({
           <ArchitectureFigure
             name={node.figure.name}
             tech={node.figure.tech}
-            stack={node.figure.stack}
+            runtime={node.figure.runtime}
+            path={node.figure.path}
+            forks={node.figure.forks}
+            beside={node.figure.beside}
             kicker="Fig. · The apparatus"
           />
         </div>
@@ -134,17 +137,33 @@ function Chapter({
       </div>
 
       {block.variations.length > 0 ? (
-        <p className="mt-3 max-w-prose font-lora text-[13px] leading-relaxed italic text-ink/90">
-          {block.variations.map((line) => (
-            <VariationRun
-              key={line[0]?.node.id}
-              line={line}
-              selectedId={selectedId}
-              onSelect={onSelect}
-              onPreview={onPreview}
-            />
-          ))}
-        </p>
+        <div className="mt-3">
+          {block.variations.map((line) => {
+            const head = line[0]?.node;
+            return (
+              <div key={head?.id ?? line.map((b) => b.node.id).join("-")} className="mt-3 first:mt-0">
+                <p className="max-w-prose font-lora text-[13px] leading-relaxed italic text-ink/90">
+                  <VariationRun
+                    line={line}
+                    selectedId={selectedId}
+                    onSelect={onSelect}
+                    onPreview={onPreview}
+                  />
+                </p>
+                {head?.plate ? (
+                  <div className="mt-2 flow-root">
+                    <HalftonePlate
+                      src={head.plate.src}
+                      caption={head.plate.caption}
+                      alt={head.title}
+                      inset
+                    />
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
       ) : null}
 
       {emptyFrame ? <EmptyFrame caption={emptyFrame} /> : null}

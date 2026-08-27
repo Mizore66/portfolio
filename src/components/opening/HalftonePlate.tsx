@@ -15,6 +15,7 @@ export function HalftonePlate({
     <figure
       className={inset ? "halftone-plate plate-inset" : "halftone-plate"}
       data-testid="halftone-plate"
+      data-plate={src}
     >
       <div className="halftone-plate-frame">
         <Image

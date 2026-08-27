@@ -43,7 +43,26 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
     await expect(page.getByText(/^\d+ alts?$/i)).toHaveCount(0);
     await expect(page.getByTestId("inline-diagram")).toHaveCount(3);
-    await expect(page.getByTestId("halftone-plate").first()).toBeVisible();
+    await expect(page.getByTestId("halftone-plate")).toHaveCount(7);
+    await expect(page.locator("[data-plate='/plates/plate-veridian.jpg']")).toBeVisible();
+    await expect(page.locator("[data-plate='/plates/plate-circuitmind.jpg']")).toBeVisible();
+    await expect(page.locator("[data-plate='/plates/plate-mirrorfi.jpg']")).toBeVisible();
+    await expect(page.locator("[data-plate='/plates/plate-graphrag.jpg']")).toBeVisible();
+    await expect(page.locator("[data-plate='/plates/plate-risk.jpg']")).toBeVisible();
+    await expect(page.locator("[data-plate='/plates/plate-leads.jpg']")).toBeVisible();
+    await expect(page.locator("[data-plate='/plates/plate-slm.jpg']")).toBeVisible();
+    await expect(page.locator("#chapter-bc4 [data-layout='path']")).toBeVisible();
+    await expect(page.locator("#chapter-bc4 [data-runtime='Docker']")).toBeVisible();
+    await expect(page.locator("#chapter-bc4 [data-layer='Next.js']")).toBeVisible();
+    await expect(page.locator("#chapter-bc4 [data-layer='ASP.NET']")).toBeVisible();
+    await expect(page.locator("#chapter-bc4 [data-layer='PostgreSQL']")).toBeVisible();
+    await expect(page.locator("#chapter-bc4 [data-arrow]")).toHaveCount(2);
+    await expect(page.locator("#chapter-nf3 [data-layout='path']")).toBeVisible();
+    await expect(page.locator("#chapter-nf3 [data-arrow]")).toHaveCount(1);
+    await expect(page.locator("#chapter-nf3 [data-layer='MATLAB']")).toBeVisible();
+    await expect(page.locator("#chapter-nf3 [data-layer='Python']")).toBeVisible();
+    await expect(page.locator("#chapter-nf3 [data-beside='MathCAD']")).toBeVisible();
+    await expect(page.locator("#chapter-nf3 [data-layer='MathCAD']")).toHaveCount(0);
     await expect(page.getByTestId("spot-illustration")).toHaveCount(2);
     await expect(
       page.locator("#chapter-e4 .chapter-copy [data-testid='spot-illustration']"),
@@ -51,11 +70,7 @@ test.describe("Opening Preparation", () => {
     await expect(
       page.locator("#chapter-oo .chapter-copy [data-testid='spot-illustration']"),
     ).toHaveCount(0);
-    await expect(page.locator("#chapter-bc4 [data-layout='stack']")).toBeVisible();
-    await expect(page.locator("#chapter-bc4 [data-runtime='Docker']")).toBeVisible();
-    await expect(page.locator("#chapter-bc4 [data-layer='Next.js']")).toBeVisible();
-    await expect(page.locator("#chapter-bc4 [data-layer='ASP.NET']")).toBeVisible();
-    await expect(page.locator("#chapter-bc4 [data-layer='PostgreSQL']")).toBeVisible();
+    await expect(page.locator("#chapter-bc4 [data-layout='stack']")).toHaveCount(0);
     await expect(
       page.locator('[data-testid="notation-view"] [data-testid="architecture-figure"]'),
     ).toHaveCount(2);
@@ -358,7 +373,25 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByText("Pasted from the desk")).toBeVisible();
     await expect(page.getByText("Clipping · Exhibit")).toBeVisible();
     await expect(page.getByTestId("halftone-plate")).toBeVisible();
+    await expect(page.locator("[data-plate='/plates/plate-veridian.jpg']")).toBeVisible();
+    const plate = page.locator("[data-testid='halftone-plate'] img");
+    await expect(plate).toBeVisible();
+    expect(await plate.evaluate((el) => (el as HTMLImageElement).naturalWidth)).toBeGreaterThan(100);
     await expect(page.getByTestId("architecture-figure")).toBeVisible();
+    await expect(page.locator("[data-layout='path']")).toBeVisible();
+    await expect(page.locator("[data-runtime='Cloud Run']")).toBeVisible();
+    await expect(page.locator("[data-layer='GitLab Duo + MCP']")).toBeVisible();
+    await expect(page.locator("[data-layer='Vertex AI']")).toBeVisible();
+    await expect(page.locator("[data-beside='BigQuery']")).toBeVisible();
+    await expect(page.locator("[data-layer='Terraform']")).toHaveCount(0);
+    await expect(page.locator("[data-arrow]")).toHaveCount(1);
+
+    await page.goto("/projects/circuitmindai");
+    await expect(page.getByRole("heading", { level: 1, name: "CircuitMindAI" })).toBeVisible();
+    await expect(page.locator("[data-plate='/plates/plate-circuitmind.jpg']")).toBeVisible();
+    await expect(page.locator("[data-fork='Bedrock Nova']")).toBeVisible();
+    await expect(page.locator("[data-fork='OpenSearch']")).toBeVisible();
+    await expect(page.locator("[data-beside='GitHub Actions']")).toBeVisible();
   });
 
   test("the column uses one gutter and the page is the only scroller", async ({

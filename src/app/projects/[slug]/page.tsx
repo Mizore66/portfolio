@@ -53,7 +53,13 @@ export default async function ProjectPage({
             </div>
 
             <div className="mt-8">
-              <ArchitectureFigure name={project.name} tech={project.tech} />
+              <ArchitectureFigure
+                name={project.apparatus.name}
+                runtime={project.apparatus.runtime}
+                path={project.apparatus.path}
+                forks={project.apparatus.forks}
+                beside={project.apparatus.beside}
+              />
             </div>
 
             <section className="mt-10">

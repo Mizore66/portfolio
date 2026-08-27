@@ -40,6 +40,11 @@ describe("layoutTree", () => {
 
     expect(positions.club.x).toBeLessThan(positions.oo.x);
     expect(positions.club.y).toBe(positions.nf6.y);
+
+    expect(positions.closed.x).toBeGreaterThan(positions.d4.x);
+    expect(positions.bb6.x).toBeGreaterThan(positions.closed.x);
+    expect(positions.closed.y).toBe(positions.exd4.y);
+    expect(positions.bb6.y).toBe(positions.exd4.y);
   });
 
   it("keeps every node inside a newspaper-column canvas", () => {
@@ -105,9 +110,11 @@ describe("art taxonomy", () => {
     expect(getNode("hike").spot).toBe("trail");
     expect(getNode("club").spot).toBe("clock");
     expect(getNode("nf3").figure?.tech.length).toBeGreaterThan(0);
+    expect(getNode("nf3").figure?.path.map((l) => l.name)).toEqual(["MATLAB", "Python"]);
+    expect(getNode("nf3").figure?.beside?.map((l) => l.name)).toEqual(["MathCAD"]);
     expect(getNode("bc4").figure?.tech.length).toBeGreaterThan(0);
-    expect(getNode("bc4").figure?.stack?.runtime).toBe("Docker");
-    expect(getNode("bc4").figure?.stack?.layers.map((l) => l.name)).toEqual([
+    expect(getNode("bc4").figure?.runtime).toBe("Docker");
+    expect(getNode("bc4").figure?.path.map((l) => l.name)).toEqual([
       "Next.js",
       "ASP.NET",
       "PostgreSQL",
@@ -116,6 +123,16 @@ describe("art taxonomy", () => {
     expect(getNode("oo").inlineDiagram).toBe(true);
     expect(getNode("d4").plate).toBeTruthy();
     expect(getNode("d4").inlineDiagram).toBe(true);
+  });
+
+  it("files every project plate on the scoresheet, including variation parentheticals", () => {
+    expect(getNode("alekhine").plate?.src).toBe("/plates/plate-risk.jpg");
+    expect(getNode("elephant").plate?.src).toBe("/plates/plate-leads.jpg");
+    expect(getNode("bc5").plate?.src).toBe("/plates/plate-circuitmind.jpg");
+    expect(getNode("nf6").plate?.src).toBe("/plates/plate-mirrorfi.jpg");
+    expect(getNode("d4").plate?.src).toBe("/plates/plate-veridian.jpg");
+    expect(getNode("closed").plate?.src).toBe("/plates/plate-graphrag.jpg");
+    expect(getNode("bb6").plate?.src).toBe("/plates/plate-slm.jpg");
   });
 
   it("files an empty frame on the declined startup", () => {

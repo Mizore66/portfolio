@@ -1,3 +1,5 @@
+import type { Apparatus } from "@/lib/opening/types";
+
 export const resumeData = {
   name: "Anas Tarek Qumhiyeh",
   headline: "Software Engineer (MLOps & Full-Stack) | Data Pipelines & Infrastructure",
@@ -89,6 +91,18 @@ export const resumeData = {
       plate: "/plates/plate-veridian.jpg",
       plateCaption: "Veridian intercepts the change — file photo.",
       description: "Veridian is a multi-agent MLOps tradeoff engine that autonomously intercepts Terraform and Kubernetes infrastructure-as-code changes, analyzes them for sustainability and cost efficiency, and recommends optimized alternatives — all without human intervention.",
+      apparatus: {
+        name: "Veridian",
+        runtime: "Cloud Run",
+        path: [
+          { name: "GitLab Duo + MCP", role: "intercepts Terraform / K8s" },
+          { name: "Vertex AI", role: "profile the model" },
+        ],
+        beside: [
+          { name: "BigQuery", role: "ESG ledger — not this request" },
+          { name: "Python", role: "glue, not a hop" },
+        ],
+      } satisfies Apparatus,
     },
     {
       name: "CircuitMindAI",
@@ -107,6 +121,19 @@ export const resumeData = {
       plate: "/plates/plate-circuitmind.jpg",
       plateCaption: "CircuitMindAI under the loupe — file photo.",
       description: "CircuitMindAI is a GenAI-powered PCB inspection platform that uses Amazon Nova Pro for vision-based fault detection and Nova Sonic for real-time voice-guided troubleshooting, all deployed on AWS with a fully automated CI/CD pipeline.",
+      apparatus: {
+        name: "CircuitMindAI",
+        runtime: "ECS Fargate",
+        path: [
+          { name: "Next.js", role: "UI" },
+          { name: "Express", role: "API" },
+        ],
+        forks: [
+          { name: "Bedrock Nova", role: "vision + voice" },
+          { name: "OpenSearch", role: "index" },
+        ],
+        beside: [{ name: "GitHub Actions", role: "CI/CD to ECR" }],
+      } satisfies Apparatus,
     },
     {
       name: "MirrorFi",
@@ -125,6 +152,17 @@ export const resumeData = {
       plate: "/plates/plate-mirrorfi.jpg",
       plateCaption: "MirrorFi at the vault door — file photo.",
       description: "MirrorFi is a Grand Prize-winning DeFi web application from Solana Megahack 2025 that lets users visually design, share, and execute multi-protocol yield strategies on Solana through an intuitive no-code interface.",
+      apparatus: {
+        name: "MirrorFi",
+        path: [
+          { name: "Next.js", role: "no-code UI" },
+          { name: "Node.js", role: "API" },
+        ],
+        forks: [
+          { name: "MongoDB", role: "shareable strategies" },
+          { name: "Solana", role: "Drift · Jupiter · Meteora" },
+        ],
+      } satisfies Apparatus,
     },
     {
       name: "Multi-Agent GraphRAG",
@@ -143,6 +181,14 @@ export const resumeData = {
       plate: "/plates/plate-graphrag.jpg",
       plateCaption: "GraphRAG at the card catalog — file photo.",
       description: "A multi-agent orchestration framework that combines Neo4j Knowledge Graphs with Vector Databases using LangGraph, enabling intelligent hybrid retrieval that grounds LLM responses in factual enterprise data.",
+      apparatus: {
+        name: "Multi-Agent GraphRAG",
+        path: [{ name: "LangGraph", role: "orchestrator" }],
+        forks: [
+          { name: "Neo4j", role: "structured" },
+          { name: "Vector DB", role: "unstructured" },
+        ],
+      } satisfies Apparatus,
     },
     {
       name: "Financial Risk Predictor",
@@ -161,6 +207,15 @@ export const resumeData = {
       plate: "/plates/plate-risk.jpg",
       plateCaption: "Financial Risk Predictor — the ledger, file photo.",
       description: "A high-performance financial risk prediction system using ensemble methods (LightGBM/XGBoost) with SHAP-based interpretability, deployed as a scalable REST API via BentoML.",
+      apparatus: {
+        name: "Financial Risk Predictor",
+        path: [
+          { name: "Kafka", role: "daily retrain" },
+          { name: "LightGBM / XGBoost", role: "0.87 AUC" },
+          { name: "BentoML", role: "serving API" },
+        ],
+        beside: [{ name: "SHAP", role: "why the score" }],
+      } satisfies Apparatus,
     },
     {
       name: "Distributed Lead Scorer",
@@ -179,6 +234,13 @@ export const resumeData = {
       plate: "/plates/plate-leads.jpg",
       plateCaption: "Distributed Lead Scorer — punch cards on the belt, file photo.",
       description: "A distributed data mining pipeline using PySpark and PyTorch DDP that processes 100M+ daily user interaction events and predicts conversion probability in real-time using a Deep Interest Network.",
+      apparatus: {
+        name: "Distributed Lead Scorer",
+        path: [
+          { name: "PySpark", role: "100M+ events / day" },
+          { name: "PyTorch DDP", role: "Deep Interest Network" },
+        ],
+      } satisfies Apparatus,
     },
     {
       name: "SLM Distillation Engine",
@@ -197,6 +259,16 @@ export const resumeData = {
       plate: "/plates/plate-slm.jpg",
       plateCaption: "SLM Distillation — teacher and student machines, file photo.",
       description: "A knowledge distillation pipeline that transfers reasoning capabilities from a 70B parameter teacher model to a compact 3B SLM using QLoRA, DeepSpeed, and FlashAttention for efficient domain-specific fine-tuning.",
+      apparatus: {
+        name: "SLM Distillation Engine",
+        runtime: "DeepSpeed",
+        path: [
+          { name: "70B teacher", role: "source" },
+          { name: "QLoRA", role: "distill" },
+          { name: "3B SLM", role: "12× inference" },
+        ],
+        beside: [{ name: "FlashAttention", role: "memory" }],
+      } satisfies Apparatus,
     },
   ],
 };

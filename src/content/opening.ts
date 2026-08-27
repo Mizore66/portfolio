@@ -212,7 +212,15 @@ export const OPENING_NODES: OpeningNode[] = [
     plies: [{ from: "g1", to: "f3" }],
     hl: ["g1", "f3"],
     cap: "Position after 2. Nf3",
-    figure: { name: petronas.company ?? petronas.title, tech: petronas.tech },
+    figure: {
+      name: petronas.company ?? petronas.title,
+      tech: petronas.tech,
+      path: [
+        { name: "MATLAB", role: "licensed source" },
+        { name: "Python", role: "the rewrite" },
+      ],
+      beside: [{ name: "MathCAD", role: "still on the floor — not this path" }],
+    },
   },
   {
     id: "elephant",
@@ -312,14 +320,12 @@ export const OPENING_NODES: OpeningNode[] = [
     figure: {
       name: wd.company ?? wd.title,
       tech: wd.tech,
-      stack: {
-        runtime: "Docker",
-        layers: [
-          { name: "Next.js", role: "dashboard" },
-          { name: "ASP.NET", role: "API · RBAC · WebSocket" },
-          { name: "PostgreSQL", role: "store" },
-        ],
-      },
+      runtime: "Docker",
+      path: [
+        { name: "Next.js", role: "dashboard" },
+        { name: "ASP.NET", role: "API · RBAC · WebSocket" },
+        { name: "PostgreSQL", role: "store" },
+      ],
     },
   },
   {
@@ -465,6 +471,64 @@ export const OPENING_NODES: OpeningNode[] = [
     hl: ["d2", "d4"],
     cap: "Position after 5. d4",
     inlineDiagram: true,
+  },
+  {
+    id: "closed",
+    type: "variation",
+    parent: "d4",
+    fig: "♟",
+    san: "d6",
+    moveNumber: 5,
+    color: "b",
+    sym: "",
+    label: "The Closed Centre",
+    kind: "Project",
+    title: "The Closed Centre",
+    fact: `${graphrag.name} — ${graphrag.subtitle}. LangGraph over Neo4j and a vector store, self-correcting Text-to-Cypher, +45% retrieval versus vector-only RAG.`,
+    commentary:
+      "Black can refuse the capture and keep the centre closed. The graph is that kind of patience: prerequisites and credit-transfer as edges, not another embedding dump.",
+    eval: 0.55,
+    evalText: "+0.55",
+    artifacts: [
+      { label: graphrag.name, href: `/projects/${graphrag.slug}` },
+      { label: "Repository", href: graphrag.github },
+    ],
+    plate: {
+      src: "/plates/plate-graphrag.jpg",
+      caption: "Plate · Multi-Agent GraphRAG — the card catalog, not the slogan.",
+    },
+    plies: [{ from: "d7", to: "d6" }],
+    hl: ["d7", "d6"],
+    cap: "Position after 5…d6 (Closed Centre)",
+  },
+  {
+    id: "bb6",
+    type: "variation",
+    parent: "d4",
+    fig: "♝",
+    san: "Bb6",
+    moveNumber: 5,
+    color: "b",
+    sym: "",
+    label: "Tucking the Bishop",
+    kind: "Project",
+    title: "Tucking the Bishop",
+    fact: `${slm.name} — ${slm.subtitle}. 70B teacher into a 3B student via QLoRA; DeepSpeed and FlashAttention so the distillation fit; −50% latency, 12× inference.`,
+    commentary:
+      "The Italian bishop steps back to b6 and still looks at the same diagonal. Distillation is that retreat: a smaller piece, the same job, cheaper to keep on the board.",
+    eval: 0.5,
+    evalText: "+0.50",
+    artifacts: [
+      { label: slm.name, href: `/projects/${slm.slug}` },
+      { label: "Repository", href: slm.github },
+    ],
+    plate: {
+      src: "/plates/plate-slm.jpg",
+      caption: "Plate · SLM Distillation — teacher and student on the same file.",
+    },
+    plies: [{ from: "c5", to: "b6" }],
+    hl: ["c5", "b6"],
+    cap: "Position after 5…Bb6 (tucking the bishop)",
   },
   {
     id: "exd4",
