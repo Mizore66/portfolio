@@ -61,13 +61,29 @@ export type ApparatusPart = {
   h: number;
   /** Leader-line numeral position in the same viewBox. */
   callout: { x: number; y: number };
+  /** Attachment on the part the leader leaves from. Defaults to the top-center of the box. */
+  anchor?: { x: number; y: number };
+  /** Drawn numeral; defaults to String(n). Sub-parts use 1a/1b. */
+  mark?: string;
   dusty?: boolean;
   idle?: boolean;
   slack?: boolean;
+  /** Fig.2. section cut — 45° hatch only. */
+  section?: boolean;
+};
+
+export type PatentNumeral = {
+  mark: string;
+  x: number;
+  y: number;
+  fromX: number;
+  fromY: number;
 };
 
 export type ApparatusSpec = {
   fig: number;
+  /** Number line, e.g. "4. O-O". */
+  move: string;
   /** "APPARATUS FOR …" — the function, not the employer. */
   function: string;
   filed: string;
@@ -76,6 +92,10 @@ export type ApparatusSpec = {
   /** Directional flow of the machine, by legend numeral. */
   flow: number[];
   parts: ApparatusPart[];
+  /** Extra reference numerals (1a/1b) plus main marks. 10–16 per sheet. */
+  numerals?: PatentNumeral[];
+  /** Fig.2. — one detail or cross-section. */
+  detail?: { title: string; parts: ApparatusPart[] };
   review: {
     status: "validated";
     /** Why the mapping is allowed: resume-public, metaphor-only, etc. */

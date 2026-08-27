@@ -365,27 +365,40 @@
 }
 .patent-figure-mat {
   border: 1px solid var(--ink);
-  background: var(--paper-deep);
+  background: var(--paper);
 }
-.patent-caption {
+.patent-reference {
   margin-top: 8px;
   padding-top: 6px;
   border-top: 1px solid var(--ink);
+}
+.patent-reference-kicker {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--faded);
+}
+.patent-reference-grid {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 16px;
   font-family: var(--font-display), "Libre Baskerville", serif;
-  font-size: 11px;
-  letter-spacing: 0.08em;
+  font-size: 10px;
+  letter-spacing: 0.06em;
   font-variant: small-caps;
-  text-transform: lowercase;
   color: var(--ink);
 }
-.patent-legend {
-  margin-top: 6px;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 10px;
-  line-height: 1.45;
-  letter-spacing: 0.04em;
-  font-variant: small-caps;
-  color: var(--ink);
+.patent-reference-grid li {
+  line-height: 1.35;
+}
+.patent-reference-n {
+  font-style: italic;
+  font-variant: normal;
+  margin-right: 0.35em;
 }
 .patent-dagger {
   margin-top: 4px;
