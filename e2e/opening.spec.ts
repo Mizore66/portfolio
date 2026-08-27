@@ -71,9 +71,9 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("#chapter-oo")).toContainText("Anas Tarek Qumhiyeh");
     await expect(page.locator("#chapter-nc6 [data-testid='patent-engraving']")).toBeVisible();
     await expect(page.locator("#chapter-nc6 [data-glyph='tube']")).toHaveCount(2);
-    await expect(page.locator("#chapter-nf3 [data-testid='patent-legend']")).toContainText(/MILLWHEEL/);
-    await expect(page.locator("#chapter-nf3 [data-testid='patent-legend']")).toContainText(/BOILER/);
-    await expect(page.locator("#chapter-nf3 [data-testid='patent-dagger']")).toBeVisible();
+    await expect(page.locator("#chapter-nf3 [data-testid='patent-figure'][data-fig='2'] [data-testid='patent-legend']")).toContainText(/MILLWHEEL/);
+    await expect(page.locator("#chapter-nf3 [data-testid='patent-figure'][data-fig='2'] [data-testid='patent-legend']")).toContainText(/BOILER/);
+    await expect(page.locator("#chapter-nf3 [data-testid='patent-figure'][data-fig='2'] [data-testid='patent-dagger']")).toBeVisible();
     await expect(page.getByText(/composed from the archives/)).toHaveCount(7);
     await expect(page.locator("#chapter-bc4 [data-runtime='Docker']")).toHaveCount(0);
     await expect(page.locator("#chapter-nf3 [data-layer='MATLAB']")).toHaveCount(0);
