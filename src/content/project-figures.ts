@@ -254,8 +254,8 @@ export const VERIDIAN_STILL: ApparatusSpec = {
     { mark: "3a", x: 61.0, y: 6.0, fromX: 52.0, fromY: 22.0, glyph: "tube" },
     { mark: "4", x: 88.0, y: 8.0, fromX: 76.0, fromY: 36.0, glyph: "tube" },
     { mark: "4a", x: 93.0, y: 36.0, fromX: 80.0, fromY: 48.0, glyph: "tube" },
-    { mark: "5", x: 93.0, y: 78.0, fromX: 82.0, fromY: 72.0, glyph: "capsule" },
-    { mark: "6", x: 93.0, y: 62.0, fromX: 88.0, fromY: 64.0, glyph: "gauge" },
+    { mark: "5", x: 96.0, y: 70.0, fromX: 84.0, fromY: 66.0, glyph: "capsule" },
+    { mark: "6", x: 96.0, y: 58.0, fromX: 88.0, fromY: 62.0, glyph: "gauge" },
     { mark: "7", x: 36.0, y: 6.0, fromX: 52.0, fromY: 26.0, glyph: "gaugepanel" },
   ],
   figLabels: [
@@ -305,7 +305,7 @@ export const VERIDIAN_EXCHANGE: ApparatusSpec = {
   ],
   figLabels: [
     { n: 1, x: 3, y: 42 },
-    { n: 2, x: 70, y: 96, caption: "a drum and its wires, sectioned" },
+    { n: 2, x: 48, y: 96, caption: "a drum, sectioned" },
   ],
   detail: { title: "a drum and its wires, sectioned" },
 };
