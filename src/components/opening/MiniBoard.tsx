@@ -62,7 +62,7 @@ export function MiniBoard({
                 pointerEvents: "none",
               }}
             >
-              <span className="flex h-full w-full items-center justify-center">
+              <span className="flex size-[84%] items-center justify-center">
                 <NewspaperPiece type={piece.type} color={piece.color} />
               </span>
             </span>

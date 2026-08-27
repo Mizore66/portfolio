@@ -270,7 +270,7 @@ export function BoardDiagram({
                     >
                       <span
                         className={cn(
-                          "flex h-full w-full items-center justify-center",
+                          "flex size-[84%] items-center justify-center",
                           liftIds.has(piece.id) && "piece-lift",
                         )}
                         style={{ animationDelay: `${piece.delay}ms` }}
