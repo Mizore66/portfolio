@@ -33,12 +33,10 @@ export function TreeView({
   selectedId,
   onSelect,
   onPreview,
-  tape = false,
 }: {
   selectedId: string;
   onSelect: (id: string) => void;
   onPreview?: (id: string | null) => void;
-  tape?: boolean;
 }) {
   const layout = useMemo(() => layoutTree(), []);
   const onPath = useMemo(() => pathIdSet(selectedId), [selectedId]);
@@ -122,7 +120,6 @@ export function TreeView({
                 x={pos.x}
                 y={pos.y}
                 selected={node.id === selectedId}
-                tape={tape}
                 onSelect={onSelect}
                 onPreview={onPreview}
               />
@@ -157,7 +154,7 @@ function TreeEdge({
 
   const dashed = child.type === "not-taken";
   const stroke =
-    child.type === "life" ? "#1e3a72" : child.type === "mainline" ? "#1a120c" : "#4a3f34";
+    child.type === "mainline" ? "#1a120c" : "#4a3f34";
   const width = onPath
     ? child.type === "mainline"
       ? 2.2
@@ -193,7 +190,6 @@ function TreeNode({
   x,
   y,
   selected,
-  tape,
   onSelect,
   onPreview,
 }: {
@@ -201,19 +197,15 @@ function TreeNode({
   x: number;
   y: number;
   selected: boolean;
-  tape: boolean;
   onSelect: (id: string) => void;
   onPreview?: (id: string | null) => void;
 }) {
   const label = node.moveNumber === 0 ? "start" : node.san;
-  const clipping = tape && node.type === "life";
-  const tilt = node.id.charCodeAt(0) % 2 === 0 ? -1.4 : 1.2;
 
   return (
     <button
       type="button"
       data-node-id={node.id}
-      data-life-clip={clipping ? "true" : undefined}
       aria-current={selected ? "true" : undefined}
       aria-label={`${label} ${node.sym} ${node.title}`.trim()}
       onClick={() => onSelect(node.id)}
@@ -225,17 +217,14 @@ function TreeNode({
         left: x,
         top: y,
         width: TREE_NODE_W,
-        ...(clipping ? { transform: `translate(-50%, -50%) rotate(${tilt}deg)` } : {}),
       }}
       className={cn(
         "absolute z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center px-0.5 py-1 text-center",
         "font-display tracking-tight transition-colors",
         "hover:text-score-red",
         node.type === "mainline" && "text-book-blue",
-        node.type === "life" && "text-book-blue",
         node.type === "variation" && "italic text-ink",
         node.type === "not-taken" && "border border-dashed border-ink italic text-ink",
-        clipping && "tree-life-clip",
         selected && "z-20 bg-paper text-score-red not-italic outline outline-2 outline-score-red",
       )}
     >

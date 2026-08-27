@@ -1,4 +1,5 @@
-import type { Apparatus } from "@/lib/opening/types";
+import type { Apparatus, ApparatusSpec } from "@/lib/opening/types";
+import { VERIDIAN_PRESS } from "@/content/figures";
 
 export const resumeData = {
   name: "Anas Tarek Qumhiyeh",
@@ -91,6 +92,7 @@ export const resumeData = {
       plate: "/plates/plate-veridian.jpg",
       plateCaption: "Veridian intercepts the change — file photo.",
       description: "Veridian is a multi-agent MLOps tradeoff engine that autonomously intercepts Terraform and Kubernetes infrastructure-as-code changes, analyzes them for sustainability and cost efficiency, and recommends optimized alternatives — all without human intervention.",
+      patent: VERIDIAN_PRESS satisfies ApparatusSpec,
       apparatus: {
         name: "Veridian",
         runtime: "Cloud Run",
@@ -150,7 +152,7 @@ export const resumeData = {
       impact: "Grand Prize Winner",
       github: "https://github.com/Mizore66",
       plate: "/plates/plate-mirrorfi.jpg",
-      plateCaption: "MirrorFi at the vault door — file photo.",
+      plateCaption: "MirrorFi at the vault wall — file photo.",
       description: "MirrorFi is a Grand Prize-winning DeFi web application from Solana Megahack 2025 that lets users visually design, share, and execute multi-protocol yield strategies on Solana through an intuitive no-code interface.",
       apparatus: {
         name: "MirrorFi",
@@ -232,7 +234,7 @@ export const resumeData = {
       impact: "100M+ events/day processed",
       github: "https://github.com/Mizore66",
       plate: "/plates/plate-leads.jpg",
-      plateCaption: "Distributed Lead Scorer — punch cards on the belt, file photo.",
+      plateCaption: "Distributed Lead Scorer — the sorting hall, file photo.",
       description: "A distributed data mining pipeline using PySpark and PyTorch DDP that processes 100M+ daily user interaction events and predicts conversion probability in real-time using a Deep Interest Network.",
       apparatus: {
         name: "Distributed Lead Scorer",

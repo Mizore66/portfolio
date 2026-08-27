@@ -217,25 +217,6 @@
   }
 }
 
-.tree-life-clip {
-  background-color: var(--paper);
-  box-shadow:
-    2px 3px 0 rgba(26, 18, 12, 0.12),
-    0 0 0 1px var(--ink);
-}
-.tree-life-clip::before {
-  content: "";
-  position: absolute;
-  top: -6px;
-  right: 16px;
-  width: 28px;
-  height: 12px;
-  background: rgba(214, 196, 150, 0.88);
-  box-shadow: 0 0 0 1px rgba(26, 18, 12, 0.22);
-  transform: rotate(8deg);
-  pointer-events: none;
-}
-
 .exhibit-clip {
   position: relative;
   transform: rotate(-0.35deg);
@@ -356,20 +337,6 @@
   }
 }
 
-.spot-engraving {
-  float: left;
-  width: 72px;
-  height: 72px;
-  margin: 0 12px 8px 0;
-}
-.spot-engraving-inline {
-  display: inline-block;
-  width: 1.1em;
-  height: 1.1em;
-  margin: 0 0.2em 0 0;
-  vertical-align: -0.15em;
-}
-
 .empty-frame {
   width: min(220px, 46%);
   margin: 12px 0 4px;
@@ -391,11 +358,49 @@
   border: 1.5px dashed var(--ink);
 }
 
+.patent-figure {
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  padding: 8px;
+}
+.patent-figure-mat {
+  border: 1px solid var(--ink);
+  background: var(--paper-deep);
+}
+.patent-caption {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid var(--ink);
+  font-family: var(--font-display), "Libre Baskerville", serif;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  font-variant: small-caps;
+  text-transform: lowercase;
+  color: var(--ink);
+}
+.patent-legend {
+  margin-top: 6px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  line-height: 1.45;
+  letter-spacing: 0.04em;
+  font-variant: small-caps;
+  color: var(--ink);
+}
+.patent-dagger {
+  margin-top: 4px;
+  font-family: var(--font-display), "Libre Baskerville", serif;
+  font-size: 10px;
+  font-style: italic;
+  color: var(--faded);
+}
+
 .halftone-plate-frame {
   position: relative;
   overflow: hidden;
-  border: 1px solid var(--ink);
-  background: var(--paper-deep);
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  padding: 6px;
 }
 .halftone-plate-img {
   width: 100%;

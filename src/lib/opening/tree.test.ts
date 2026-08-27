@@ -26,20 +26,15 @@ describe("layoutTree", () => {
     expect(height - lastY).toBeLessThanOrEqual(32);
   });
 
-  it("forks life left and variations right on the next rank", () => {
+  it("forks variations right on the next rank", () => {
     const { positions } = layoutTree(OPENING_NODES);
-    expect(positions.hike.x).toBeLessThan(positions.e4.x);
     expect(positions.alekhine.x).toBeGreaterThan(positions.e4.x);
-    expect(positions.hike.y).toBe(positions.e5.y);
     expect(positions.alekhine.y).toBe(positions.e5.y);
 
     expect(positions.elephant.x).toBeGreaterThan(positions.nf3.x);
     expect(positions.philidor.x).toBeGreaterThan(positions.elephant.x);
     expect(positions.elephant.y).toBe(positions.nc6.y);
     expect(positions.philidor.y).toBe(positions.nc6.y);
-
-    expect(positions.club.x).toBeLessThan(positions.oo.x);
-    expect(positions.club.y).toBe(positions.nf6.y);
 
     expect(positions.closed.x).toBeGreaterThan(positions.d4.x);
     expect(positions.bb6.x).toBeGreaterThan(positions.closed.x);
@@ -68,17 +63,17 @@ describe("single mainline advance", () => {
     expect(isSingleMainlineAdvance("start", "e4")).toBe(true);
     expect(isSingleMainlineAdvance("e4", "e5")).toBe(true);
     expect(isSingleMainlineAdvance("start", "d4")).toBe(false);
-    expect(isSingleMainlineAdvance("e4", "hike")).toBe(false);
+    expect(isSingleMainlineAdvance("e4", "alekhine")).toBe(false);
     expect(isSingleMainlineAdvance("e4", "e4")).toBe(false);
   });
 
   it("path-to-root includes the sideline, not the unused fork", () => {
-    const path = pathIdSet("hike");
+    const path = pathIdSet("alekhine");
     expect(path.has("start")).toBe(true);
     expect(path.has("e4")).toBe(true);
-    expect(path.has("hike")).toBe(true);
+    expect(path.has("alekhine")).toBe(true);
     expect(path.has("e5")).toBe(false);
-    expect(path.has("alekhine")).toBe(false);
+    expect(path.has("nf3")).toBe(false);
   });
 });
 
@@ -95,34 +90,29 @@ describe("repertoire book and issue index", () => {
 });
 
 describe("art taxonomy", () => {
-  it("leaves connective moves without plates, figures, diagrams, or spots", () => {
-    for (const id of ["e5", "nc6", "exd4", "re1"]) {
+  it("leaves connective moves without plates, figures, or diagrams", () => {
+    for (const id of ["e5", "exd4", "re1"]) {
       const n = getNode(id);
       expect(n.plate).toBeUndefined();
       expect(n.figure).toBeUndefined();
-      expect(n.spot).toBeUndefined();
       expect(n.inlineDiagram).toBeFalsy();
       expect(n.emptyFrame).toBeUndefined();
     }
   });
 
-  it("gives life branches a spot and career chapters a figure, not another plate", () => {
-    expect(getNode("hike").spot).toBe("trail");
-    expect(getNode("club").spot).toBe("clock");
-    expect(getNode("nf3").figure?.tech.length).toBeGreaterThan(0);
-    expect(getNode("nf3").figure?.path.map((l) => l.name)).toEqual(["MATLAB", "Python"]);
-    expect(getNode("nf3").figure?.beside?.map((l) => l.name)).toEqual(["MathCAD"]);
-    expect(getNode("bc4").figure?.tech.length).toBeGreaterThan(0);
-    expect(getNode("bc4").figure?.runtime).toBe("Docker");
-    expect(getNode("bc4").figure?.path.map((l) => l.name)).toEqual([
-      "Next.js",
-      "ASP.NET",
-      "PostgreSQL",
-    ]);
+  it("gives career chapters a patent figure or a plate, never both, and drops the life lane", () => {
+    expect(OPENING_NODES.some((n) => n.id === "hike" || n.id === "club")).toBe(false);
+    expect(getNode("nf3").figure?.fig).toBe(2);
+    expect(getNode("nc6").figure?.fig).toBe(3);
+    expect(getNode("bc4").figure?.fig).toBe(4);
+    expect(getNode("e4").figure?.fig).toBe(1);
+    expect(getNode("oo").figure?.fig).toBe(5);
     expect(getNode("e4").inlineDiagram).toBe(true);
     expect(getNode("oo").inlineDiagram).toBe(true);
     expect(getNode("d4").plate).toBeTruthy();
+    expect(getNode("d4").figure).toBeUndefined();
     expect(getNode("d4").inlineDiagram).toBe(true);
+    expect(getNode("start").commentary).toMatch(/game I've played since I was a teenager/);
   });
 
   it("files every project plate on the scoresheet, including variation parentheticals", () => {

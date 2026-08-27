@@ -15,6 +15,7 @@ describe("print edition", () => {
     expect(text).toContain("Print edition");
     expect(text).toContain("/Count 1");
     expect(text).toContain("5. d4 - the Italian break");
+    expect(text).toContain("a game played since I was a teenager");
     expect(text).toMatch(/\(N\)|\(n\)|\(K\)|\(k\)/);
     expect(text).not.toContain("/Count 2");
   });

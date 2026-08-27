@@ -429,7 +429,6 @@ export function OpeningApp() {
                   selectedId={selectedId}
                   onSelect={userSelect}
                   onPreview={onPreview}
-                  tape={tape}
                 />
               </div>
               <div className="mb-4 min-[980px]:hidden print:hidden">

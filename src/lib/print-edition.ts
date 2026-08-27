@@ -180,7 +180,7 @@ export function buildPrintEditionPdf(): Uint8Array {
     }
   }
 
-  txt("F3", 8, M, 36, "C50  |  Italian Game  |  Moves are facts. Annotations are voice.");
+  txt("F3", 8, M, 36, "C50  |  Italian Game  |  a game played since I was a teenager.");
   rule(48, 0.5);
 
   const content = ops.join("\n");

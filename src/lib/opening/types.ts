@@ -1,4 +1,4 @@
-export type NodeType = "mainline" | "life" | "variation" | "not-taken";
+export type NodeType = "mainline" | "variation" | "not-taken";
 export type Side = "w" | "b";
 
 export type ApparatusLayer = {
@@ -6,7 +6,7 @@ export type ApparatusLayer = {
   role: string;
 };
 
-/** A machine, not a shopping list joined with arrows. */
+/** A machine, not a shopping list joined with arrows. Exhibit pages that are not patent figures still use this. */
 export type Apparatus = {
   name: string;
   /** Drawn around the path — containers, orchestrators. Not a hop. */
@@ -17,6 +17,70 @@ export type Apparatus = {
   forks?: ApparatusLayer[];
   /** Present, but not on this path. */
   beside?: ApparatusLayer[];
+};
+
+export const GLYPH_IDS = [
+  "tube",
+  "valve",
+  "hopper",
+  "gauge",
+  "gaugepanel",
+  "roller",
+  "belt",
+  "boiler",
+  "funnel",
+  "telegraph",
+  "capsule",
+  "governor",
+  "millwheel",
+  "mold",
+  "crucible",
+  "typecase",
+  "vault",
+  "seal",
+  "key",
+  "relay",
+  "ledger",
+] as const;
+
+export type GlyphId = (typeof GLYPH_IDS)[number];
+
+export type Confidence = "confirmed" | "presumed";
+
+export type ApparatusPart = {
+  n: number;
+  glyph: GlyphId;
+  /** Small-caps name in the legend (MILLWHEEL, VALVE, …). */
+  label: string;
+  /** Real component, generic for employer figures. */
+  mapsTo: string;
+  confidence: Confidence;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  /** Leader-line numeral position in the same viewBox. */
+  callout: { x: number; y: number };
+  dusty?: boolean;
+  idle?: boolean;
+  slack?: boolean;
+};
+
+export type ApparatusSpec = {
+  fig: number;
+  /** "APPARATUS FOR …" — the function, not the employer. */
+  function: string;
+  filed: string;
+  viewBox: { w: number; h: number };
+  layout: "elevation" | "isometric";
+  /** Directional flow of the machine, by legend numeral. */
+  flow: number[];
+  parts: ApparatusPart[];
+  review: {
+    status: "validated";
+    /** Why the mapping is allowed: resume-public, metaphor-only, etc. */
+    notes: string;
+  };
 };
 
 export type Artifact = {
@@ -59,10 +123,8 @@ export type OpeningNode = {
   plate?: { src: string; caption: string };
   /** Small static diagram in the scoresheet (career figures, castle, flagship, finale). */
   inlineDiagram?: boolean;
-  /** Inked apparatus sketch for a technical/career chapter. */
-  figure?: Apparatus & { tech: string[] };
-  /** Quarter-column engraving for a life branch. */
-  spot?: "trail" | "clock";
+  /** Patent-drawing apparatus. A node gets a figure or a plate, never both. */
+  figure?: ApparatusSpec;
   /** Declined line: a dashed photo frame, no picture. Caption is the joke. */
   emptyFrame?: string;
   /** Optional one-move diagram quiz. Never a lock. */

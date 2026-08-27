@@ -204,16 +204,15 @@ function kidsOf(nodes: OpeningNode[], parentId: string): OpeningNode[] {
 
 /**
  * Top-down repertoire tree.
- * Trunk is the mainline. Life forks left, variations fork right,
+ * Trunk is the mainline. Variations and declined lines fork right,
  * sitting on the same rank as the next mainline ply.
  */
 export function layoutTree(nodes: OpeningNode[] = OPENING_NODES): TreeLayout {
   const mainline = mainlineOf(nodes);
-  let maxLeft = 1;
+  const maxLeft = 0;
   let maxRight = 1;
   for (const n of mainline) {
     const kids = kidsOf(nodes, n.id);
-    maxLeft = Math.max(maxLeft, kids.filter((c) => c.type === "life").length);
     maxRight = Math.max(
       maxRight,
       kids.filter((c) => c.type === "variation" || c.type === "not-taken").length,
@@ -231,11 +230,6 @@ export function layoutTree(nodes: OpeningNode[] = OPENING_NODES): TreeLayout {
     const origin = positions[parent.id];
     const childY = origin.y + ROW;
     const kids = kidsOf(nodes, parent.id);
-    kids
-      .filter((n) => n.type === "life")
-      .forEach((n, j) => {
-        positions[n.id] = { x: trunkX - COL * (j + 1), y: childY };
-      });
     kids
       .filter((n) => n.type === "variation" || n.type === "not-taken")
       .forEach((n, j) => {

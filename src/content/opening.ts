@@ -1,9 +1,10 @@
+import { FIGURES } from "@/content/figures";
 import { resumeData } from "@/lib/data";
 import type { OpeningNode } from "@/lib/opening/types";
 
 export const ROOT_ID = "start";
 export const FLAGSHIP_ID = "d4";
-export const ENGINE_NODE_ID = "club";
+export const ENGINE_NODE_ID = "start";
 
 function project(slug: string) {
   const p = resumeData.projects.find((x) => x.slug === slug);
@@ -11,14 +12,6 @@ function project(slug: string) {
   return p;
 }
 
-function job(company: string) {
-  const j = resumeData.experience.find((x) => x.company === company);
-  if (!j) throw new Error(`Missing job: ${company}`);
-  return j;
-}
-
-const petronas = job("Petronas");
-const wd = job("Western Digital");
 const edu = resumeData.education;
 const veridian = project("veridian");
 const circuit = project("circuitmindai");
@@ -86,7 +79,7 @@ export const OPENING_NODES: OpeningNode[] = [
     title: "Opening Preparation",
     fact: `${resumeData.name}. ${resumeData.headline}. ${edu.school}, graduating ${edu.graduation}. Seeking ${resumeData.targetRoles}`,
     commentary:
-      "The board is set before the first pawn moves. What follows is not a puzzle. It is the line I actually played — jobs as moves, the rest of a life as annotations. Step with the arrow keys, or skip the diagram and read the scoresheet. Chess is the content, never the lock.",
+      "The board is set before the first pawn moves. What follows is not a puzzle. It is the line I actually played, in a game I've played since I was a teenager — jobs as moves, annotations as voice. Step with the arrow keys, or skip the diagram and read the scoresheet. Chess is the content, never the lock.",
     eval: 0.2,
     evalText: "+0.2",
     artifacts: [],
@@ -116,29 +109,7 @@ export const OPENING_NODES: OpeningNode[] = [
     hl: ["e2", "e4"],
     cap: "Position after 1. e4",
     inlineDiagram: true,
-  },
-  {
-    id: "hike",
-    type: "life",
-    parent: "e4",
-    fig: "♟",
-    san: "g6",
-    moveNumber: 1,
-    color: "b",
-    sym: "!?",
-    label: "High Ground",
-    kind: "Life",
-    title: "High Ground",
-    fact: "Hiking is the other training. Trails on weekends; no tickets, no commits.",
-    commentary:
-      "A Modern Defence of the rest of the week. Contour lines never asked for a pull request. I still go. An earlier portfolio tried to make a map of this and failed — the terrain became the star, and the work became the chore. This node is the hike without the lock.",
-    eval: 0.1,
-    evalText: "!?",
-    artifacts: [],
-    plies: [{ from: "g7", to: "g6" }],
-    hl: ["g7", "g6"],
-    cap: "Position after 1…g6 (High Ground)",
-    spot: "trail",
+    figure: FIGURES.e4,
   },
   {
     id: "alekhine",
@@ -212,15 +183,7 @@ export const OPENING_NODES: OpeningNode[] = [
     plies: [{ from: "g1", to: "f3" }],
     hl: ["g1", "f3"],
     cap: "Position after 2. Nf3",
-    figure: {
-      name: petronas.company ?? petronas.title,
-      tech: petronas.tech,
-      path: [
-        { name: "MATLAB", role: "licensed source" },
-        { name: "Python", role: "the rewrite" },
-      ],
-      beside: [{ name: "MathCAD", role: "still on the floor — not this path" }],
-    },
+    figure: FIGURES.nf3,
   },
   {
     id: "elephant",
@@ -245,7 +208,7 @@ export const OPENING_NODES: OpeningNode[] = [
     ],
     plate: {
       src: "/plates/plate-leads.jpg",
-      caption: "Plate · Distributed Lead Scorer — 100 million events a day on the belt.",
+      caption: "Plate · Distributed Lead Scorer — the sorting hall at full tilt.",
     },
     plies: [{ from: "d7", to: "d5" }],
     hl: ["d7", "d5"],
@@ -295,6 +258,7 @@ export const OPENING_NODES: OpeningNode[] = [
     plies: [{ from: "b8", to: "c6" }],
     hl: ["b8", "c6"],
     cap: "Position after 2…Nc6",
+    figure: FIGURES.nc6,
   },
   {
     id: "bc4",
@@ -317,16 +281,7 @@ export const OPENING_NODES: OpeningNode[] = [
     plies: [{ from: "f1", to: "c4" }],
     hl: ["f1", "c4"],
     cap: "Position after 3. Bc4",
-    figure: {
-      name: wd.company ?? wd.title,
-      tech: wd.tech,
-      runtime: "Docker",
-      path: [
-        { name: "Next.js", role: "dashboard" },
-        { name: "ASP.NET", role: "API · RBAC · WebSocket" },
-        { name: "PostgreSQL", role: "store" },
-      ],
-    },
+    figure: FIGURES.bc4,
   },
   {
     id: "bc5",
@@ -382,29 +337,7 @@ export const OPENING_NODES: OpeningNode[] = [
     hl: ["e1", "g1"],
     cap: "Position after 4. O-O",
     inlineDiagram: true,
-  },
-  {
-    id: "club",
-    type: "life",
-    parent: "oo",
-    fig: "♟",
-    san: "d6",
-    moveNumber: 4,
-    color: "b",
-    sym: "!",
-    label: "Club Years",
-    kind: "Life",
-    title: "Club Years",
-    fact: "Competitive chess as a teenager — club and tournament years. Casual now. Still interested in how engines think, which is why one searches this position live: alpha-beta, nodes on the clock, a PV you can disagree with.",
-    commentary:
-      "Before any of these jobs I sat at boards with clocks. The opening tree is not a costume. It is the notation I already knew how to read. The glass on the right is the search: nodes a second, a principal variation, an eval that is no longer a wink. Methodology lives here so the claims stay measured.",
-    eval: 0.5,
-    evalText: "!",
-    artifacts: [],
-    plies: [{ from: "d7", to: "d6" }],
-    hl: ["d7", "d6"],
-    cap: "Position after 4…d6 (Club Years)",
-    spot: "clock",
+    figure: FIGURES.oo,
   },
   {
     id: "nf6",
@@ -429,7 +362,7 @@ export const OPENING_NODES: OpeningNode[] = [
     ],
     plate: {
       src: "/plates/plate-mirrorfi.jpg",
-      caption: "Plate · MirrorFi — vault strategies, grand prize 2025.",
+      caption: "Plate · MirrorFi — the vault wall.",
     },
     plies: [{ from: "g8", to: "f6" }],
     hl: ["g8", "f6"],

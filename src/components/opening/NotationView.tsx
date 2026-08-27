@@ -1,13 +1,12 @@
 "use client";
 
 import { Fragment } from "react";
-import { ArchitectureFigure } from "@/components/opening/ArchitectureFigure";
 import { ArtifactLinks } from "@/components/opening/ArtifactLinks";
 import { EmptyFrame } from "@/components/opening/EmptyFrame";
 import { GlyphStamp } from "@/components/opening/GlyphStamp";
 import { HalftonePlate } from "@/components/opening/HalftonePlate";
 import { MiniBoard } from "@/components/opening/MiniBoard";
-import { SpotIllustration } from "@/components/opening/SpotIllustration";
+import { PatentFigure } from "@/components/opening/PatentFigure";
 import { BROADSHEET } from "@/content/opening";
 import {
   buildNotation,
@@ -116,15 +115,7 @@ function Chapter({
 
       {node.figure ? (
         <div className="mt-4">
-          <ArchitectureFigure
-            name={node.figure.name}
-            tech={node.figure.tech}
-            runtime={node.figure.runtime}
-            path={node.figure.path}
-            forks={node.figure.forks}
-            beside={node.figure.beside}
-            kicker="Fig. · The apparatus"
-          />
+          <PatentFigure spec={node.figure} />
         </div>
       ) : null}
 
@@ -192,7 +183,6 @@ function VariationRun({
       {line.map((child, i) => (
         <Fragment key={child.node.id}>
           {i > 0 ? " " : null}
-          {child.node.spot ? <SpotIllustration mark={child.node.spot} compact /> : null}
           <ChapterButton
             node={child.node}
             selected={child.node.id === selectedId}

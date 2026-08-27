@@ -51,31 +51,28 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("[data-plate='/plates/plate-risk.jpg']")).toBeVisible();
     await expect(page.locator("[data-plate='/plates/plate-leads.jpg']")).toBeVisible();
     await expect(page.locator("[data-plate='/plates/plate-slm.jpg']")).toBeVisible();
-    await expect(page.locator("#chapter-bc4 [data-layout='path']")).toBeVisible();
-    await expect(page.locator("#chapter-bc4 [data-runtime='Docker']")).toBeVisible();
-    await expect(page.locator("#chapter-bc4 [data-layer='Next.js']")).toBeVisible();
-    await expect(page.locator("#chapter-bc4 [data-layer='ASP.NET']")).toBeVisible();
-    await expect(page.locator("#chapter-bc4 [data-layer='PostgreSQL']")).toBeVisible();
-    await expect(page.locator("#chapter-bc4 [data-arrow]")).toHaveCount(2);
-    await expect(page.locator("#chapter-nf3 [data-layout='path']")).toBeVisible();
-    await expect(page.locator("#chapter-nf3 [data-arrow]")).toHaveCount(1);
-    await expect(page.locator("#chapter-nf3 [data-layer='MATLAB']")).toBeVisible();
-    await expect(page.locator("#chapter-nf3 [data-layer='Python']")).toBeVisible();
-    await expect(page.locator("#chapter-nf3 [data-beside='MathCAD']")).toBeVisible();
-    await expect(page.locator("#chapter-nf3 [data-layer='MathCAD']")).toHaveCount(0);
-    await expect(page.getByTestId("spot-illustration")).toHaveCount(2);
     await expect(
-      page.locator("#chapter-e4 .chapter-copy [data-testid='spot-illustration']"),
-    ).toHaveCount(0);
-    await expect(
-      page.locator("#chapter-oo .chapter-copy [data-testid='spot-illustration']"),
-    ).toHaveCount(0);
-    await expect(page.locator("#chapter-bc4 [data-layout='stack']")).toHaveCount(0);
-    await expect(
-      page.locator('[data-testid="notation-view"] [data-testid="architecture-figure"]'),
-    ).toHaveCount(2);
+      page.locator('[data-testid="notation-view"] [data-testid="patent-figure"]'),
+    ).toHaveCount(5);
+    await expect(page.locator("#chapter-e4 [data-testid='patent-figure'][data-fig='1']")).toBeVisible();
+    await expect(page.locator("#chapter-nf3 [data-testid='patent-figure'][data-fig='2']")).toBeVisible();
+    await expect(page.locator("#chapter-nc6 [data-testid='patent-figure'][data-fig='3']")).toBeVisible();
+    await expect(page.locator("#chapter-bc4 [data-testid='patent-figure'][data-fig='4']")).toBeVisible();
+    await expect(page.locator("#chapter-oo [data-testid='patent-figure'][data-fig='5']")).toBeVisible();
+    await expect(page.locator("#chapter-d4 [data-testid='patent-figure']")).toHaveCount(0);
+    await expect(page.locator("#chapter-nf3 [data-testid='patent-legend']")).toContainText(/MILLWHEEL/);
+    await expect(page.locator("#chapter-nf3 [data-testid='patent-legend']")).toContainText(/BOILER/);
+    await expect(page.locator("#chapter-nf3 [data-testid='patent-dagger']")).toBeVisible();
+    await expect(page.getByText(/composed from the archives/)).toHaveCount(5);
+    await expect(page.locator("#chapter-bc4 [data-runtime='Docker']")).toHaveCount(0);
+    await expect(page.locator("#chapter-nf3 [data-layer='MATLAB']")).toHaveCount(0);
+    await expect(page.getByTestId("spot-illustration")).toHaveCount(0);
+    await expect(page.locator('[data-testid="tree-view"] [data-node-id="hike"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="tree-view"] [data-node-id="club"]')).toHaveCount(0);
+    await expect(page.getByText("High Ground")).toHaveCount(0);
+    await expect(page.getByText("Club Years")).toHaveCount(0);
+    await expect(page.getByText(/game I've played since I was a teenager/)).toBeVisible();
     await expect(page.locator("#chapter-e5 [data-testid='halftone-plate']")).toHaveCount(0);
-    await expect(page.locator("#chapter-nc6 [data-testid='architecture-figure']")).toHaveCount(0);
     await expect(page.locator("#chapter-exd4 [data-testid='halftone-plate']")).toHaveCount(0);
     await expect(page.locator("#chapter-re1 [data-testid='inline-diagram']")).toHaveCount(0);
     await expect(page.getByTestId("empty-frame")).toHaveCount(1);
@@ -341,7 +338,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("read-the-game")).toContainText("Read the game");
   });
 
-  test("hover tints a sideline square; tape clippings stay behind the flag", async ({
+  test("hover tints a sideline square; the life lane is gone", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
@@ -349,14 +346,15 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await expect(page.locator('[data-life-clip="true"]')).toHaveCount(0);
-    await page.locator('[data-testid="tree-view"] [data-node-id="hike"]').hover();
-    await expect(page.locator('[data-sq="g6"][data-hl="preview"]')).toBeVisible({
+    await page.locator('[data-testid="tree-view"] [data-node-id="alekhine"]').hover();
+    await expect(page.locator('[data-sq="f6"][data-hl="preview"]')).toBeVisible({
       timeout: 1000,
     });
 
     await page.goto("/?tape=1");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
-    await expect(page.locator('[data-life-clip="true"]').first()).toBeVisible();
+    await expect(page.locator('[data-life-clip="true"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="tree-view"] [data-node-id="hike"]')).toHaveCount(0);
   });
 
   test("the engine prints a live PV", async ({ page }) => {
@@ -381,14 +379,11 @@ test.describe("Opening Preparation", () => {
     const plate = page.locator("[data-testid='halftone-plate'] img");
     await expect(plate).toBeVisible();
     expect(await plate.evaluate((el) => (el as HTMLImageElement).naturalWidth)).toBeGreaterThan(100);
-    await expect(page.getByTestId("architecture-figure")).toBeVisible();
-    await expect(page.locator("[data-layout='path']")).toBeVisible();
-    await expect(page.locator("[data-runtime='Cloud Run']")).toBeVisible();
-    await expect(page.locator("[data-layer='GitLab Duo + MCP']")).toBeVisible();
-    await expect(page.locator("[data-layer='Vertex AI']")).toBeVisible();
-    await expect(page.locator("[data-beside='BigQuery']")).toBeVisible();
-    await expect(page.locator("[data-layer='Terraform']")).toHaveCount(0);
-    await expect(page.locator("[data-arrow]")).toHaveCount(1);
+    await expect(page.getByTestId("patent-figure")).toBeVisible();
+    await expect(page.locator("[data-fig='6']")).toBeVisible();
+    await expect(page.getByTestId("patent-legend")).toContainText(/HOPPER/);
+    await expect(page.getByTestId("architecture-figure")).toHaveCount(0);
+    await expect(page.locator("[data-layer='GitLab Duo + MCP']")).toHaveCount(0);
 
     await page.goto("/projects/circuitmindai");
     await expect(page.getByRole("heading", { level: 1, name: "CircuitMindAI" })).toBeVisible();

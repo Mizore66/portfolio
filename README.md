@@ -1,12 +1,12 @@
 # Opening Preparation
 
-A recruiter-first portfolio: an annotated Italian Game mapped onto a life, not a chess puzzle. Moves are facts. Annotations are voice. Chess is the content, never a lock.
+A recruiter-first portfolio: an annotated Italian Game mapped onto a career, not a chess puzzle. Moves are facts. Annotations are voice. Chess is the content, never a lock.
 
 This is the public scoresheet of [Anas Tarek Qumhiyeh](https://github.com/Mizore66) — software engineer, MLOps and full-stack.
 
 ## What you are looking at
 
-One newspaper. The masthead is the name. The repertoire tree and the sticky board sit on the front. Every node in the opening is a chapter in the scoresheet: a job, a project, or a life branch, written as Informant notes. The glass case on the right is a live search — mailbox-64 alpha-beta, PeSTO evaluation, labelled **2200** because that is club strength, not a published Elo.
+One newspaper. The masthead is the name. The repertoire tree and the sticky board sit on the front. Every node in the opening is a chapter in the scoresheet: a job or a project, written as Informant notes. The glass case on the right is a live search — mailbox-64 alpha-beta, PeSTO evaluation, labelled **2200** because that is club strength, not a published Elo.
 
 Two doors, always: the article is first-class (and the only door under 980px). The tree is desktop. Click any move. `←` `→` steps the mainline.
 
