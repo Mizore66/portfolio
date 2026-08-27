@@ -100,6 +100,8 @@ test.describe("Opening Preparation", () => {
       "PETRONAS RETAINS YOUNG TALENT ON THE PIPELINE DESIGN TEAM",
     );
     await expect(page.locator("#chapter-nf3 .news-clipping-dateline")).toHaveText(/Kuala Lumpur, Nov\. 2024/);
+    await expect(page.locator("#chapter-nf3 [data-testid='news-clipping-inset']")).toBeVisible();
+    await expect(page.locator("#chapter-nf3 .news-clipping-cutline")).toContainText(/file photo/);
     await expect(page.locator("#chapter-nc6 [data-testid='news-clipping']")).toContainText(
       "SETEL RECRUITS NEW HANDS ON THE PAYMENT ENGINE",
     );
@@ -708,6 +710,8 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("situations-wanted").first()).toContainText(/Replies within two days/i);
     await expect(page.getByTestId("colophon")).toBeVisible();
     await expect(page.getByTestId("colophon")).toContainText("8902");
+    await expect(page.getByTestId("colophon")).toContainText("Photographs composed; the subject is real.");
+    await expect(page.getByTestId("inventor-plate")).toBeVisible();
     await page.getByTestId("weather-cycle").click();
     await expect(page.getByTestId("weather-cycle")).toContainText(/Fog on the e-file|High pressure/);
     await page.getByTestId("press-stamp").click();

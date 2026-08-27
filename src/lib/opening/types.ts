@@ -156,6 +156,8 @@ export type OpeningNode = {
     headline: string;
     dateline: string;
     src: string;
+    caption: string;
+    inset?: { src: string; caption: string };
   };
   /** Optional one-move diagram quiz. Never a lock. */
   puzzle?: {

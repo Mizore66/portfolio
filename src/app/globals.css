@@ -370,6 +370,41 @@
   text-align: left;
   hyphens: manual;
 }
+.news-clipping-photos {
+  position: relative;
+  overflow: hidden;
+}
+.news-clipping-inset {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  width: 34%;
+  border: 2px solid var(--ink);
+  box-shadow: 0 0 0 3px var(--paper);
+  background: var(--paper);
+}
+.news-clipping-cutline {
+  margin: 6px 0 0;
+  padding-top: 4px;
+  border-top: 1px solid var(--ink);
+  font-family: var(--font-display), "Libre Baskerville", serif;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--ink);
+}
+.inventor-plate {
+  float: left;
+  width: min(148px, 42%);
+  margin: 0 12px 8px 0;
+}
+.inventor-plate figcaption {
+  margin-top: 4px;
+  font-family: var(--font-display), "Libre Baskerville", serif;
+  font-size: 10px;
+  font-style: italic;
+  line-height: 1.25;
+  color: var(--ink);
+}
 
 
 .retrospect {

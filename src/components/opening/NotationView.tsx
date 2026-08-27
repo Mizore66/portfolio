@@ -100,8 +100,10 @@ function Chapter({
             headline={node.clipping.headline}
             dateline={node.clipping.dateline}
             src={node.clipping.src}
+            caption={node.clipping.caption}
+            photoInset={node.clipping.inset}
             alt={node.title}
-            inset
+            inset={!node.clipping.inset}
           />
         ) : null}
         {node.plate ? (

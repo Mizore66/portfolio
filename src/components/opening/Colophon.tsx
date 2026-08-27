@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { BROADSHEET } from "@/content/opening";
 import { START_PERFT } from "@/lib/chess/engine";
 
@@ -7,8 +8,22 @@ export function Colophon() {
       <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
         {BROADSHEET.colophonKicker}
       </p>
+      <figure className="inventor-plate" data-testid="inventor-plate">
+        <div className="halftone-plate-frame">
+          <Image
+            src="/plates/plate-inventor.jpg"
+            alt="The inventor"
+            width={1400}
+            height={933}
+            sizes="148px"
+            className="halftone-plate-img"
+          />
+          <span className="halftone-plate-screen" aria-hidden="true" />
+        </div>
+        <figcaption>The inventor, on the stair — file photo.</figcaption>
+      </figure>
       <p className="mt-2 font-lora text-[13px] leading-relaxed text-ink">{BROADSHEET.colophon}</p>
-      <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-faded">
+      <p className="mt-3 clear-both font-mono text-[10px] uppercase tracking-[0.18em] text-faded">
         {BROADSHEET.perftKicker}
       </p>
       <table className="mt-1 w-full font-mono text-[11px] text-ink">

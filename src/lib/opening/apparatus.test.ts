@@ -209,6 +209,7 @@ describe("news-clipping plates", () => {
     const files = [
       "/plates/clip-sunway.jpg",
       "/plates/clip-petronas.jpg",
+      "/plates/clip-petronas-inset.jpg",
       "/plates/clip-setel.jpg",
       "/plates/clip-wd.jpg",
     ];
@@ -219,9 +220,13 @@ describe("news-clipping plates", () => {
       expect(sources).toContain(src.replace("/plates/", ""));
     }
     expect(getNode("e4").clipping?.src).toBe("/plates/clip-sunway.jpg");
+    expect(getNode("e4").clipping?.caption).toMatch(/file photo/);
     expect(getNode("nf3").clipping?.src).toBe("/plates/clip-petronas.jpg");
+    expect(getNode("nf3").clipping?.inset?.src).toBe("/plates/clip-petronas-inset.jpg");
     expect(getNode("nc6").clipping?.src).toBe("/plates/clip-setel.jpg");
     expect(getNode("bc4").clipping?.src).toBe("/plates/clip-wd.jpg");
     expect(getNode("bc4").clipping?.dateline).toBe("Feb. 2025.");
+    expect(existsSync(plateFile("/plates/plate-inventor.jpg"))).toBe(true);
+    expect(sources).toContain("photograph — owner supplied");
   });
 });

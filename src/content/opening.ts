@@ -49,7 +49,7 @@ export const BROADSHEET = {
   classifiedSticky: "Situations Wanted — apply within",
   colophonKicker: "How this paper was set",
   colophon:
-    "Type: Libre Baskerville, Lora, IBM Plex Mono. Ink #1a120c on cream #f6eedc. The tree is the repertoire; the scoresheet is the CV; the glass case is mailbox-64 alpha-beta with PeSTO tables. The 2200 on the masthead of that case is club strength, not a published Elo. No template. Chess is content, never a lock.",
+    "Type: Libre Baskerville, Lora, IBM Plex Mono. Ink #1a120c on cream #f6eedc. The tree is the repertoire; the scoresheet is the CV; the glass case is mailbox-64 alpha-beta with PeSTO tables. The 2200 on the masthead of that case is club strength, not a published Elo. Photographs composed; the subject is real. No template. Chess is content, never a lock.",
   perftKicker: "Perft — the generator's receipt",
   correctionKicker: "Correction",
   correctionHed: "The page you requested was a misprint.",
@@ -114,6 +114,7 @@ export const OPENING_NODES: OpeningNode[] = [
       headline: "HONOURS FOR ASPIRING MONASH ENGINEERING CANDIDATE",
       dateline: "Bandar Sunway, May 2026.",
       src: "/plates/clip-sunway.jpg",
+      caption: "On the cloister — file photo.",
     },
   },
   {
@@ -194,6 +195,11 @@ export const OPENING_NODES: OpeningNode[] = [
       headline: "PETRONAS RETAINS YOUNG TALENT ON THE PIPELINE DESIGN TEAM",
       dateline: "Kuala Lumpur, Nov. 2024.",
       src: "/plates/clip-petronas.jpg",
+      caption: "Before the towers — file photo.",
+      inset: {
+        src: "/plates/clip-petronas-inset.jpg",
+        caption: "The pipeline elevation — file photo.",
+      },
     },
   },
   {
@@ -278,6 +284,7 @@ export const OPENING_NODES: OpeningNode[] = [
       headline: "SETEL RECRUITS NEW HANDS ON THE PAYMENT ENGINE",
       dateline: "Kuala Lumpur, Jul. 2025.",
       src: "/plates/clip-setel.jpg",
+      caption: "At the pump — file photo.",
     },
   },
   {
@@ -306,6 +313,7 @@ export const OPENING_NODES: OpeningNode[] = [
       headline: "WESTERN DIGITAL NEWEST ADDITION FOR THE LAB FLOOR",
       dateline: "Feb. 2025.",
       src: "/plates/clip-wd.jpg",
+      caption: "On the lab floor — file photo.",
     },
   },
   {

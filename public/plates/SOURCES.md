@@ -22,9 +22,11 @@ Halftone pitch and warm tone are applied in CSS for photographs. Patent figures 
 | `fig-risk.webp` | FIG. 9 — underwriting engine (Financial Risk Predictor) | generated | generated |
 | `fig-leads.webp` | FIG. 10 — sorting hall (Distributed Lead Scorer) | generated | generated |
 | `fig-veridian.webp` | FIG. 11 — economized plant (Veridian) | generated | generated |
-| `clip-sunway.jpg` | Education clipping — Sunway cloister | generated | generated |
-| `clip-petronas.jpg` | Petronas clipping — engineering works | generated | generated |
-| `clip-setel.jpg` | Setel clipping — cashier's hall | generated | generated |
-| `clip-wd.jpg` | Western Digital clipping — laboratory floor | generated | generated |
+| `clip-sunway.jpg` | Education clipping — the inventor on the cloister | generated | generated |
+| `clip-petronas.jpg` | Petronas clipping — the inventor before the Twin Towers | generated | generated |
+| `clip-petronas-inset.jpg` | Petronas clipping inset — the inventor at a pipeline elevation | generated | generated |
+| `clip-setel.jpg` | Setel clipping — the inventor at a rolling-dial pump | generated | generated |
+| `clip-wd.jpg` | Western Digital clipping — the inventor on the storage-lab floor | generated | generated |
+| `plate-inventor.jpg` | The inventor, on the stair | photograph — owner supplied | owner |
 
 No real product screenshots were filed. Employer figures on the scoresheet are patent drawings, not photographs.
