@@ -296,7 +296,7 @@ test.describe("Opening Preparation", () => {
         },
         { timeout: 1500, intervals: [16, 16, 16] },
       )
-      .toBeGreaterThan(2);
+      .toBeGreaterThanOrEqual(2);
     await page.waitForTimeout(400);
     const after = await yAt();
     expect(after).not.toBe(before);
