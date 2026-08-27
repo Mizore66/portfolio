@@ -88,7 +88,19 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("#chapter-re1 [data-testid='inline-diagram']")).toHaveCount(0);
     await expect(page.getByTestId("artists-impression")).toHaveCount(1);
     await expect(page.locator("#chapter-nf3 [data-testid='artists-impression']")).toBeVisible();
-    await expect(page.getByTestId("artists-impression")).toContainText(/artist's impression/i);
+    await expect(page.getByTestId("artists-impression")).toContainText(
+      "The engineer as he might have been found — MathCAD open, licenses already paid. An artist's impression.",
+    );
+    await expect
+      .poll(async () =>
+        page.locator("#chapter-nf3 .artists-impression-frame").evaluate((el) => getComputedStyle(el).borderStyle),
+      )
+      .toBe("dashed");
+    await expect
+      .poll(async () =>
+        page.locator("#chapter-nf3 .artists-impression-img").evaluate((el) => getComputedStyle(el).filter),
+      )
+      .not.toMatch(/sepia/);
     await expect(page.getByTestId("retrospect")).toHaveCount(0);
     await expect(page.getByText("Anas's possible MATLAB future")).toHaveCount(0);
     await expect(page.getByText("No photograph was filed.")).toHaveCount(0);

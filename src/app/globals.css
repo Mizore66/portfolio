@@ -583,17 +583,27 @@
   opacity: 0.52;
 }
 
-/* After the plate rules so the ghost register actually wins. */
-.artists-impression .artists-impression-frame {
+/* Ghost register: own classes, not overrides of the warm plate. */
+.artists-impression-frame {
+  position: relative;
+  overflow: hidden;
   border: 2px dashed var(--ink);
+  background: var(--paper);
+  padding: 6px;
 }
-.artists-impression .artists-impression-img {
+.artists-impression-img {
+  width: 100%;
+  height: auto;
   filter: grayscale(1) contrast(1.02) brightness(1.22);
   opacity: 0.78;
 }
-.artists-impression .artists-impression-screen {
+.artists-impression-screen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
   background-image: radial-gradient(#1e3a72 0.38px, transparent 0.55px);
   background-size: 4.2px 4.2px;
+  mix-blend-mode: multiply;
   opacity: 0.22;
 }
 .artists-impression-cutline {
