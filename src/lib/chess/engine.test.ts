@@ -56,6 +56,23 @@ describe("engine search", () => {
     expect(r.score).toBeGreaterThan(-80);
     expect(r.score).toBeLessThan(220);
   });
+
+  it("stops near a node budget", () => {
+    prepareSearch();
+    const r = search(startPos(), 8, { nodes: 200 });
+    expect(r.nodes).toBeLessThanOrEqual(220);
+    expect(r.nodes).toBeGreaterThan(16);
+  });
+
+  it("keeps PeSTO when learned mode has no weights", () => {
+    prepareSearch();
+    const a = search(startPos(), 2, { evalMode: "handcrafted", net: null });
+    prepareSearch();
+    const b = search(startPos(), 2, { evalMode: "learned", net: null });
+    expect(a.score).toBe(b.score);
+    expect(a.pv.length).toBeGreaterThan(0);
+    expect(a.pv[0]).toBe(b.pv[0]);
+  });
 });
 
 describe("annotator reply", () => {

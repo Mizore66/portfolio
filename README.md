@@ -20,7 +20,7 @@ The move generator is tested against start-position perft, which the colophon al
 | 2 | 400 |
 | 3 | 8902 |
 
-There is no NNUE, no SPRT, no Elo-over-commits chart yet. Those claims will wait until they have a measured delta. The 2200 on the glass is an estimate of playing strength, not a leaderboard.
+There is no learned-eval exhibit yet. Phase 2 (NNUE inference, SPRT match harness) ships behind flags: PeSTO is never deleted, Gate A is the handcrafted-vs-handcrafted sanity match, and the site toggle/chart wait on a measured delta. The 2200 on the glass is an estimate of playing strength, not a leaderboard. Run `npx tsx src/lib/chess/match/cli.ts --suite mini --nodes 48` for a tiny self-play.
 
 ## How to run it
 

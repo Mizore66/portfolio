@@ -3,7 +3,19 @@
  * pawn structure, transposition table, null-move, iterative callers.
  */
 import { FILES, initialPieces, squareFile, squareRank, type Color, type Piece, type PieceType } from "@/lib/chess/replay";
+import { addPiece, cloneAcc, refreshAcc, removePiece } from "@/lib/chess/nnue/accumulator";
+import { evaluateNnue } from "@/lib/chess/nnue/infer";
+import type { NnueAcc, NnueNet } from "@/lib/chess/nnue/types";
 import type { Ply } from "@/lib/opening/types";
+
+export type EvalMode = "handcrafted" | "learned";
+
+export type SearchOptions = {
+  timeMs?: number;
+  nodes?: number;
+  evalMode?: EvalMode;
+  net?: NnueNet | null;
+};
 
 const WP = 1,
   WN = 2,
@@ -126,6 +138,7 @@ export type SearchInfo = {
   pv: string[];
   best: Ply | null;
   thinking: boolean;
+  evalMode?: EvalMode;
 };
 
 export type EnginePos = {
@@ -133,7 +146,30 @@ export type EnginePos = {
   side: 1 | -1;
   castle: number;
   ep: number;
+  acc?: NnueAcc;
+  net?: NnueNet;
 };
+
+let evalMode: EvalMode = "handcrafted";
+let loadedNet: NnueNet | null = null;
+
+export function configureEngine(opts: { evalMode?: EvalMode; net?: NnueNet | null }) {
+  if (opts.evalMode !== undefined) evalMode = opts.evalMode;
+  if (opts.net !== undefined) loadedNet = opts.net;
+}
+
+export function engineEvalConfig() {
+  const learnedReady = loadedNet !== null;
+  const using: EvalMode = evalMode === "learned" && learnedReady ? "learned" : "handcrafted";
+  return { evalMode, netId: loadedNet?.id ?? null, learnedReady, using };
+}
+
+export function attachNnue(pos: EnginePos) {
+  const net = loadedNet;
+  if (!net) return;
+  pos.net = net;
+  pos.acc = refreshAcc(pos.board, net);
+}
 
 type Move = {
   from: number;
@@ -377,8 +413,64 @@ function genPseudo(pos: EnginePos): Move[] {
   return moves;
 }
 
+function accMake(pos: EnginePos, m: Move, p: number) {
+  const net = pos.net;
+  if (!net || !pos.acc) return;
+  removePiece(pos.acc, net, p, m.from);
+  if (m.epCap >= 0) {
+    const cap = pos.board[m.epCap];
+    if (cap) removePiece(pos.acc, net, cap, m.epCap);
+  } else if (m.captured) {
+    removePiece(pos.acc, net, m.captured, m.to);
+  }
+  if (kind(p) === 6 && Math.abs(m.to - m.from) === 2) {
+    if (m.to === 6) {
+      removePiece(pos.acc, net, WR, 7);
+      addPiece(pos.acc, net, WR, 5);
+    } else if (m.to === 2) {
+      removePiece(pos.acc, net, WR, 0);
+      addPiece(pos.acc, net, WR, 3);
+    } else if (m.to === 62) {
+      removePiece(pos.acc, net, BR, 63);
+      addPiece(pos.acc, net, BR, 61);
+    } else if (m.to === 58) {
+      removePiece(pos.acc, net, BR, 56);
+      addPiece(pos.acc, net, BR, 59);
+    }
+  }
+  addPiece(pos.acc, net, m.promo || p, m.to);
+}
+
+function accUnmake(pos: EnginePos, m: Move, mover: number) {
+  const net = pos.net;
+  if (!net || !pos.acc) return;
+  removePiece(pos.acc, net, m.promo || mover, m.to);
+  if (kind(mover) === 6 && Math.abs(m.to - m.from) === 2) {
+    if (m.to === 6) {
+      removePiece(pos.acc, net, WR, 5);
+      addPiece(pos.acc, net, WR, 7);
+    } else if (m.to === 2) {
+      removePiece(pos.acc, net, WR, 3);
+      addPiece(pos.acc, net, WR, 0);
+    } else if (m.to === 62) {
+      removePiece(pos.acc, net, BR, 61);
+      addPiece(pos.acc, net, BR, 63);
+    } else if (m.to === 58) {
+      removePiece(pos.acc, net, BR, 59);
+      addPiece(pos.acc, net, BR, 56);
+    }
+  }
+  addPiece(pos.acc, net, mover, m.from);
+  if (m.epCap >= 0) {
+    addPiece(pos.acc, net, m.captured || (pos.side === 1 ? BP : WP), m.epCap);
+  } else if (m.captured) {
+    addPiece(pos.acc, net, m.captured, m.to);
+  }
+}
+
 function make(pos: EnginePos, m: Move) {
   const p = pos.board[m.from];
+  accMake(pos, m, p);
   pos.board[m.from] = 0;
   pos.board[m.to] = m.promo || p;
   if (m.epCap >= 0) pos.board[m.epCap] = 0;
@@ -410,6 +502,7 @@ function make(pos: EnginePos, m: Move) {
 function unmake(pos: EnginePos, m: Move) {
   pos.side = (pos.side === 1 ? -1 : 1) as 1 | -1;
   const mover = m.promo ? (pos.side === 1 ? WP : BP) : pos.board[m.to];
+  accUnmake(pos, m, mover);
   pos.board[m.to] = 0;
   pos.board[m.from] = mover;
   if (kind(mover) === 6 && Math.abs(m.to - m.from) === 2) {
@@ -478,7 +571,7 @@ export function perft(pos: EnginePos, depth: number): number {
   return n;
 }
 
-function evaluate(pos: EnginePos): number {
+export function evaluateHandcrafted(pos: EnginePos): number {
   let mg = 0;
   let eg = 0;
   let phase = 0;
@@ -564,6 +657,13 @@ function evaluate(pos: EnginePos): number {
 
   if (phase > 24) phase = 24;
   return ((mg * phase + eg * (24 - phase)) / 24) | 0;
+}
+
+function evaluate(pos: EnginePos, mode: EvalMode): number {
+  if (mode === "learned" && pos.net && pos.acc) {
+    return evaluateNnue(pos.net, pos.acc, pos.side);
+  }
+  return evaluateHandcrafted(pos);
 }
 
 function uci(m: Move): string {
@@ -681,15 +781,21 @@ function order(moves: Move[], ply: number, hashMove: string): Move[] {
   });
 }
 
-type Stats = { nodes: number; deadline: number; timedOut: boolean };
+type Stats = { nodes: number; deadline: number; nodeLimit: number; timedOut: boolean; evalMode: EvalMode };
+
+function hitLimit(stats: Stats): boolean {
+  if ((stats.nodes & 15) !== 0) return false;
+  if (performance.now() >= stats.deadline || stats.nodes >= stats.nodeLimit) {
+    stats.timedOut = true;
+    return true;
+  }
+  return false;
+}
 
 function quiesce(pos: EnginePos, alpha: number, beta: number, stats: Stats): number {
   stats.nodes += 1;
-  if ((stats.nodes & 127) === 0 && performance.now() >= stats.deadline) {
-    stats.timedOut = true;
-    return alpha;
-  }
-  const stand = pos.side === 1 ? evaluate(pos) : -evaluate(pos);
+  if (hitLimit(stats)) return alpha;
+  const stand = pos.side === 1 ? evaluate(pos, stats.evalMode) : -evaluate(pos, stats.evalMode);
   if (stand >= beta) return beta;
   if (stand > alpha) alpha = stand;
   const captures = order(
@@ -720,8 +826,7 @@ function alphabeta(
   allowNull: boolean,
 ): number {
   stats.nodes += 1;
-  if ((stats.nodes & 127) === 0 && performance.now() >= stats.deadline) {
-    stats.timedOut = true;
+  if (hitLimit(stats)) {
     return alpha;
   }
 
@@ -845,20 +950,101 @@ export function replyMove(pos: EnginePos): Ply | null {
   return best;
 }
 
+export function playUci(pos: EnginePos, u: string): boolean {
+  const m = legalMoves(pos).find((mv) => uci(mv) === u);
+  if (!m) return false;
+  make(pos, m);
+  return true;
+}
+
+export function playPly(pos: EnginePos, ply: Ply): boolean {
+  const m = legalMoves(pos).find((mv) => alg(mv.from) === ply.from && alg(mv.to) === ply.to);
+  if (!m) return false;
+  make(pos, m);
+  return true;
+}
+
+export function positionKey(pos: EnginePos): number {
+  return key32(pos);
+}
+
+export function gameOutcome(pos: EnginePos): "1-0" | "0-1" | "1/2-1/2" | null {
+  if (legalMoves(pos).length > 0) return null;
+  if (inCheck(pos, pos.side)) return pos.side === 1 ? "0-1" : "1-0";
+  return "1/2-1/2";
+}
+
+/** Quiet iff not in check and qsearch stays within `margin` of the static eval. */
+export function isQuietPosition(pos: EnginePos, margin = 40): boolean {
+  if (inCheck(pos, pos.side)) return false;
+  const stand = pos.side === 1 ? evaluateHandcrafted(pos) : -evaluateHandcrafted(pos);
+  const stats: Stats = {
+    nodes: 0,
+    deadline: performance.now() + 1e9,
+    nodeLimit: 1_000_000,
+    timedOut: false,
+    evalMode: "handcrafted",
+  };
+  const qs = quiesce(clonePos(pos), -30000, 30000, stats);
+  return Math.abs(qs - stand) <= margin;
+}
+
+export function searchMove(pos: EnginePos, opts: SearchOptions & { nodes: number }): SearchResult {
+  prepareSearch();
+  const fallback = legalPlies(pos)[0] ?? null;
+  const mode = opts.evalMode ?? evalMode;
+  let used = 0;
+  let last: SearchResult | null = null;
+  for (let depth = 1; depth <= 32; depth++) {
+    const remain = opts.nodes - used;
+    if (remain <= 8) break;
+    const result = search(clonePos(pos), depth, {
+      timeMs: opts.timeMs ?? 1e9,
+      nodes: remain,
+      evalMode: mode,
+    });
+    used += result.nodes;
+    if (result.best) last = { ...result, nodes: used };
+    if (result.timedOut && depth > 1) break;
+    if (used >= opts.nodes) break;
+  }
+  return (
+    last ?? {
+      score: 0,
+      nodes: used,
+      pv: [],
+      best: fallback,
+      depth: 0,
+      timedOut: true,
+    }
+  );
+}
+
 /** Score is always from White's point of view, in centipawns. */
 export function search(
   pos: EnginePos,
   depth: number,
-  opts?: { timeMs?: number },
+  opts?: SearchOptions,
 ): SearchResult {
   if (killers.length === 0) {
     killers = Array.from({ length: 64 }, () => ["", ""]);
     history = new Int16Array(64 * 64);
   }
+  const mode = opts?.evalMode ?? evalMode;
+  const net = mode === "learned" ? (opts && "net" in opts ? opts.net : loadedNet) : null;
+  if (net) {
+    pos.net = net;
+    pos.acc = refreshAcc(pos.board, net);
+  } else {
+    pos.net = undefined;
+    pos.acc = undefined;
+  }
   const stats: Stats = {
     nodes: 0,
     deadline: performance.now() + (opts?.timeMs ?? 1e9),
+    nodeLimit: opts?.nodes ?? 2_000_000_000,
     timedOut: false,
+    evalMode: mode,
   };
   const pv: string[] = [];
   const raw = alphabeta(pos, depth, 0, -30000, 30000, stats, pv, true);
@@ -881,7 +1067,14 @@ export function search(
 }
 
 export function clonePos(pos: EnginePos): EnginePos {
-  return { board: Int8Array.from(pos.board), side: pos.side, castle: pos.castle, ep: pos.ep };
+  return {
+    board: Int8Array.from(pos.board),
+    side: pos.side,
+    castle: pos.castle,
+    ep: pos.ep,
+    acc: pos.acc ? cloneAcc(pos.acc) : undefined,
+    net: pos.net,
+  };
 }
 
 export function startPos(): EnginePos {

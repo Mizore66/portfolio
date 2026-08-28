@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "match": "npx tsx src/lib/chess/match/cli.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",
