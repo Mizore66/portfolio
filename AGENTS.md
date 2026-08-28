@@ -6,7 +6,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## Cursor Cloud specific instructions
 
-- Install: `npm ci`, then Playwright Chromium (`npx playwright install --with-deps chromium`).
+- Install: `npm ci`, Playwright Chromium (`npx playwright install --with-deps chromium`), then Pillow (`pip3 install pillow`) for patent-callout raster tests.
 - App: `npm run dev` on http://localhost:3000 (started with the environment).
 - Tests: `npx vitest run` and `npx playwright test`.
 - Origin defaults to `https://anasqumhiyeh.dev` (`NEXT_PUBLIC_SITE_URL`).
