@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { EvaluationsColumn } from "@/components/opening/EvaluationsColumn";
 import { EloCommitsChart } from "@/components/opening/EloCommitsChart";
-import { Closer } from "@/components/opening/Closer";
-import { Colophon } from "@/components/opening/Colophon";
 import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
 import { PHASE2_EXHIBITS } from "@/lib/chess/phase2";
@@ -35,7 +33,7 @@ export function BroadsheetFiller() {
           </p>
           <a
             href={`mailto:${resumeData.email}`}
-            className="mt-2 block font-display text-[16px] leading-snug italic text-ink hover:text-score-red"
+            className="move-tint mt-2 block font-display text-[16px] leading-snug italic text-ink"
           >
             {BROADSHEET.classified}
           </a>
@@ -53,7 +51,7 @@ export function BroadsheetFiller() {
           type="button"
           data-testid="weather-cycle"
           onClick={() => setWeather((n) => (n + 1) % BROADSHEET.weatherCycle.length)}
-          className="hit-target text-left font-mono text-[12px] uppercase tracking-[0.22em] text-faded hover:text-ink"
+          className="hit-target move-tint text-left font-mono text-[12px] uppercase tracking-[0.22em] text-faded"
         >
           {BROADSHEET.weatherKicker}
           <span className="mx-2 text-ink">·</span>
@@ -69,8 +67,6 @@ export function BroadsheetFiller() {
           {pressed ? BROADSHEET.pressMark : BROADSHEET.stamp}
         </button>
       </div>
-      <Closer />
-      <Colophon />
     </aside>
   );
 }

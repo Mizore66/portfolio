@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { BoardDiagram } from "@/components/opening/BoardDiagram";
 import { BroadsheetFiller } from "@/components/opening/BroadsheetFiller";
+import { Closer } from "@/components/opening/Closer";
+import { Colophon } from "@/components/opening/Colophon";
 import { GlassEngine, useEngineSearch, useNnueWeights } from "@/components/opening/GlassEngine";
 import { IssueIndex } from "@/components/opening/IssueIndex";
 import { Masthead } from "@/components/opening/Masthead";
@@ -11,6 +13,7 @@ import { NotationView } from "@/components/opening/NotationView";
 import { SituationsWanted } from "@/components/opening/SituationsWanted";
 import { TodaysPuzzle } from "@/components/opening/TodaysPuzzle";
 import { TreeView } from "@/components/opening/TreeView";
+import { WayfindIndex } from "@/components/opening/WayfindIndex";
 import { BROADSHEET } from "@/content/opening";
 import {
   fromPieces,
@@ -411,7 +414,7 @@ export function OpeningApp() {
                     onClick={onReadTheGame}
                     className={cn(
                       "paper-control",
-                      playing ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-paper-deep",
+                      playing ? "bg-ink text-paper" : "bg-paper text-ink",
                     )}
                   >
                     <span aria-hidden>{playing ? "❚❚" : "▶"}</span>
@@ -423,7 +426,7 @@ export function OpeningApp() {
                     onClick={onPlayThePosition}
                     className={cn(
                       "paper-control",
-                      playHint ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-paper-deep",
+                      playHint ? "bg-ink text-paper" : "bg-paper text-ink",
                     )}
                   >
                     <span aria-hidden>♟</span>
@@ -466,7 +469,12 @@ export function OpeningApp() {
             </section>
           </div>
           </main>
+          <footer data-testid="paper-footer" className="paper-footer">
+            <Closer />
+            <Colophon />
+          </footer>
         </div>
+        <WayfindIndex selectedId={selectedId} onSelect={userSelect} />
       </div>
     </div>
   );

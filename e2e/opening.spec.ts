@@ -596,6 +596,7 @@ test.describe("Opening Preparation", () => {
     await expect(index).toBeVisible();
     await expect(index.getByRole("button")).toHaveCount(6);
     await expect(index.locator('[data-node-id="d4"]')).toHaveAttribute("aria-current", "true");
+    await expect(index.locator('[data-node-id="re1"]')).toContainText(/Outlook/);
     await index.locator('[data-node-id="re1"]').click();
     await expect
       .poll(async () => page.evaluate(() => window.scrollY), { timeout: 2000 })
@@ -680,12 +681,13 @@ test.describe("Opening Preparation", () => {
     }
   });
 
-  test("the page is one banner, one main, and a skip link", async ({ page }) => {
+  test("the page is one banner, one main, one footer, and a skip link", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.locator("header")).toHaveCount(1);
     await expect(page.locator("main")).toHaveCount(1);
+    await expect(page.locator("footer")).toHaveCount(1);
     const skip = page.getByRole("link", { name: /Skip to the game/i });
     await expect(skip).toHaveCount(1);
     await skip.focus();
@@ -788,7 +790,9 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("todays-puzzle")).toContainText(/find the break/i);
     await expect(page.getByTestId("situations-wanted").first()).toBeVisible();
     await expect(page.getByTestId("situations-wanted").first()).toContainText(/Replies within two days/i);
-    await expect(page.getByTestId("colophon")).toBeVisible();
+    await expect(page.getByTestId("paper-footer")).toBeVisible();
+    await expect(page.getByTestId("paper-footer").getByTestId("closer")).toBeVisible();
+    await expect(page.getByTestId("paper-footer").getByTestId("colophon")).toBeVisible();
     await expect(page.getByTestId("colophon")).toContainText("8902");
     await expect(page.getByTestId("colophon")).toContainText("How this paper was set");
     await expect(page.getByTestId("colophon")).toContainText("Three registers");
@@ -915,8 +919,10 @@ test.describe("Opening Preparation", () => {
     await page.goto("/");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByTestId("engine-badge")).toContainText(/2200-anchored/i);
-    await expect(page.getByTestId("engine-badge")).toContainText(/1k nodes/i);
-    await expect(page.getByTestId("engine-badge")).toContainText(/fixed-N/i);
+    await expect(page.getByTestId("engine-badge")).toContainText(/1k-node/i);
+    await expect(page.getByTestId("engine-badge")).not.toHaveCSS("text-overflow", "ellipsis");
+    const badgeFits = await page.getByTestId("engine-badge").evaluate((el) => el.scrollWidth <= el.clientWidth + 1);
+    expect(badgeFits).toBe(true);
     await expect(page.getByTestId("eval-toggle")).toBeVisible();
     await expect(page.getByTestId("engine-readout")).toBeVisible();
     await expect(page.getByTestId("evaluations-column")).toBeVisible();
@@ -925,6 +931,8 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("evaluations-column")).not.toContainText(/sprt:/i);
     await expect(page.getByTestId("elo-commits")).toBeVisible();
     await expect(page.getByText(/^Assessment$/i)).toHaveCount(0);
+    await expect(page.getByTestId("eval-bar")).toHaveAttribute("aria-label", "Engine evaluation");
+    await expect(page.getByTestId("eval-bar")).toHaveAttribute("title", "Engine evaluation");
 
     const leftEdge = async () => {
       const badgeBox = (await page.getByTestId("engine-badge").boundingBox())!;
@@ -961,6 +969,10 @@ test.describe("Opening Preparation", () => {
     await page.setViewportSize({ width: 900, height: 800 });
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await leftEdge();
+    const compactBadgeFits = await page.getByTestId("engine-badge").evaluate(
+      (el) => el.scrollWidth <= el.clientWidth + 1,
+    );
+    expect(compactBadgeFits).toBe(true);
     await expect.poll(async () => {
       const board = (await page.getByTestId("board-diagram").boundingBox())!;
       const engine = (await page.getByTestId("glass-engine").boundingBox())!;
@@ -1034,6 +1046,75 @@ test.describe("Opening Preparation", () => {
       "data-flagship-mark",
       "true",
     );
+
+    await page.goto("/?move=e4");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.locator("#chapter-d4 h2 [data-node-id='d4']")).toHaveAttribute(
+      "data-flagship-mark",
+      "true",
+    );
+    await expect(page.locator("#chapter-e4 h2 [data-node-id='e4']")).not.toHaveAttribute(
+      "data-flagship-mark",
+    );
+
+    const faded = await page.locator(".text-faded").first().evaluate((el) => getComputedStyle(el).color);
+    expect(faded).toBe("rgb(107, 99, 83)");
+
+    const h1 = (await page.locator("h1").boundingBox())!;
+    const drop = (await page.locator(".drop-cap").first().boundingBox())!;
+    expect(Math.abs(h1.x - drop.x)).toBeLessThanOrEqual(2);
+
+    const measure = await page.locator(".chapter-copy").first().evaluate((el) => {
+      const map = "computedStyleMap" in el ? el.computedStyleMap() : null;
+      return map?.get("max-width")?.toString() ?? getComputedStyle(el).maxWidth;
+    });
+    expect(measure).toMatch(/68ch/);
+
+    await page.getByTestId("board-plane").focus();
+    await page.keyboard.press("Tab");
+    await expect(page.getByTestId("board-step-prev")).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(page.getByTestId("board-step-next")).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(page.getByTestId("eval-handcrafted")).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(page.getByTestId("eval-learned")).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(page.getByTestId("read-the-game")).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(page.getByTestId("play-the-position")).toBeFocused();
+  });
+
+  test("touch targets, wayfind, and Outlook kicker hold on a 390 viewport", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+
+    const chip = (await page.locator(".masthead-chip").first().boundingBox())!;
+    expect(chip.height).toBeGreaterThanOrEqual(44);
+
+    const step = (await page.getByTestId("board-step-next").boundingBox())!;
+    expect(step.height).toBeGreaterThanOrEqual(44);
+    expect(step.width).toBeGreaterThanOrEqual(44);
+
+    const variation = page.locator("#chapter-e4 .notation-hit").first();
+    await variation.scrollIntoViewIfNeeded();
+    const hit = (await variation.boundingBox())!;
+    expect(hit.height).toBeGreaterThanOrEqual(44);
+
+    await page.locator("#chapter-re1").scrollIntoViewIfNeeded();
+    await expect(page.locator("#chapter-re1").getByText(/Outlook/i).first()).toBeVisible();
+    await expect(page.locator("#chapter-re1").getByText(/^NEXT$/)).toHaveCount(0);
+
+    await expect(page.getByTestId("wayfind-index")).toHaveAttribute("data-shown", "false");
+    await page.evaluate(() => window.scrollTo(0, window.innerHeight * 2.2));
+    await expect.poll(async () => page.getByTestId("wayfind-index").getAttribute("data-shown")).toBe(
+      "true",
+    );
+    const way = (await page.getByTestId("wayfind-toggle").boundingBox())!;
+    expect(way.height).toBeGreaterThanOrEqual(44);
   });
 
   test("the patent lightbox close target is 44px and a backdrop tap dismisses", async ({

@@ -170,7 +170,7 @@ export function GlassEngine({
     >
       <div className="engine-readout" data-testid="engine-readout">
         <p
-          className="truncate font-mono text-[12px] uppercase tracking-[0.18em] text-faded"
+          className="font-mono text-[12px] uppercase leading-snug tracking-[0.12em] text-faded"
           data-testid="engine-badge"
           title={PHASE2_EXHIBITS ? BROADSHEET.engineBadge : "Engine · 2200"}
         >

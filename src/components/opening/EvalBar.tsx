@@ -16,12 +16,13 @@ export function EvalBar({
       className="relative h-full w-full overflow-hidden border-2 border-ink bg-ink"
       role="meter"
       aria-label="Engine evaluation"
+      title="Engine evaluation"
       aria-valuemin={-8}
       aria-valuemax={8}
       aria-valuenow={Number(value.toFixed(2))}
     >
       <div
-        className="absolute bottom-0 left-0 right-0 bg-paper motion-safe:transition-[height] motion-safe:duration-500"
+        className="eval-fill absolute bottom-0 left-0 right-0 bg-paper"
         style={{ height: `${whitePct}%` }}
       />
       <p

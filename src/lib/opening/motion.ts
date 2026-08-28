@@ -1,13 +1,13 @@
 /** Piece glide. BoardDiagram and Read-the-game share this so play never outruns CSS. */
-export const GLIDE_MS = 380;
+export const GLIDE_MS = 450;
 /** Per extra ply in a multi-ply step (castling). */
 export const STAGGER_MS = 80;
 /** Pause after the last staggered piece so play does not start the next ply mid-glide. */
-export const PLAY_TAIL_MS = 160;
+export const PLAY_TAIL_MS = 150;
 
-export const INK_MS = 200;
-export const STROKE_DIM_MS = 180;
-export const VIEW_TURN_MS = 160;
+export const INK_MS = 150;
+export const STROKE_DIM_MS = 150;
+export const VIEW_TURN_MS = 150;
 export const STAMP_MS = 150;
 export const HOVER_PREVIEW_MS = 50;
 /** Time on each depth so d1→d8 is visible, not a single paint at d8. */

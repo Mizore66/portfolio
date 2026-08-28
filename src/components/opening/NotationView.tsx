@@ -266,17 +266,16 @@ function ChapterButton({
       data-node-id={node.id}
       aria-label={spoken}
       aria-current={selected ? "true" : undefined}
-      data-flagship-mark={flagship && selected ? "true" : undefined}
+      data-flagship-mark={flagship ? "true" : undefined}
       onClick={() => onSelect(node.id)}
       onMouseEnter={() => onPreview?.(node.id)}
       onMouseLeave={() => onPreview?.(null)}
       onFocus={() => onPreview?.(node.id)}
       onBlur={() => onPreview?.(null)}
       className={cn(
-        "inline text-left font-[inherit] text-[1em] leading-[inherit] focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2",
-        compact && "font-display text-[12px] not-italic",
+        "move-tint inline text-left font-[inherit] text-[1em] leading-[inherit] focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2",
+        compact && "notation-hit font-display text-[12px] not-italic",
         node.type === "not-taken" && "border border-dashed border-ink px-1",
-        selected && flagship && "bg-score-red/15 box-decoration-clone",
         selected && !flagship && "underline decoration-score-red/50 decoration-2 underline-offset-4",
       )}
     >

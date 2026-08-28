@@ -69,7 +69,7 @@ export function EloCommitsChart() {
           0
         </text>
       </svg>
-      <figcaption className="mt-2 font-display text-[12px] italic text-ink">{BROADSHEET.eloChartCaption}</figcaption>
+      <figcaption className="mt-4 font-display text-[12px] italic text-faded">{BROADSHEET.eloChartCaption}</figcaption>
     </figure>
   );
 }

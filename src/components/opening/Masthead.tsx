@@ -24,40 +24,32 @@ export function Masthead() {
           <p className="mt-2 font-display text-xl italic text-faded sm:text-2xl">
             Opening Preparation
           </p>
-          <p className="mt-4 max-w-3xl font-mono text-[12px] text-faded">
-            <a
-              className="text-book-blue underline decoration-1 underline-offset-4 hover:text-score-red"
-              href={`mailto:${resumeData.email}`}
-            >
+          <div className="masthead-contacts mt-4" data-testid="masthead-contacts">
+            <a className="masthead-chip" href={`mailto:${resumeData.email}`}>
               {resumeData.email}
             </a>
-            <span className="mx-2 text-ink">·</span>
             <a
-              className="text-book-blue underline decoration-1 underline-offset-4 hover:text-score-red"
+              className="masthead-chip"
               href={`https://${resumeData.github}`}
               target="_blank"
               rel="noopener noreferrer"
             >
               GitHub
             </a>
-            <span className="mx-2 text-ink">·</span>
             <a
-              className="text-book-blue underline decoration-1 underline-offset-4 hover:text-score-red"
+              className="masthead-chip"
               href={`https://${resumeData.linkedin}`}
               target="_blank"
               rel="noopener noreferrer"
             >
               LinkedIn
             </a>
-            <span className="mx-2 text-ink">·</span>
-            <a
-              className="text-book-blue underline decoration-1 underline-offset-4 hover:text-score-red"
-              href={BROADSHEET.printHref}
-            >
+            <a className="masthead-chip" href={BROADSHEET.printHref}>
               {BROADSHEET.printEdition}
             </a>
-            <span className="mx-2 hidden text-ink sm:inline">·</span>
-            <span className="hidden sm:inline">Click any move · ← → steps the mainline</span>
+          </div>
+          <p className="mt-2 hidden font-mono text-[12px] text-faded sm:block">
+            Click any move · ← → steps the mainline
           </p>
         </div>
       </div>

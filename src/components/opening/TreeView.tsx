@@ -219,9 +219,8 @@ function TreeNode({
         width: TREE_NODE_W,
       }}
       className={cn(
-        "absolute z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center px-0.5 py-1 text-center",
-        "font-display tracking-tight transition-colors",
-        "hover:text-score-red",
+        "move-tint absolute z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center px-0.5 py-1 text-center",
+        "font-display tracking-tight",
         node.type === "mainline" && "text-book-blue",
         node.type === "variation" && "italic text-ink",
         node.type === "not-taken" && "border border-dashed border-ink italic text-ink",

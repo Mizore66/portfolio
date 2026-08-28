@@ -8,7 +8,7 @@ export function SituationsWanted() {
     <a
       data-testid="situations-wanted"
       href={`mailto:${resumeData.email}`}
-      className="block border-2 border-dashed border-ink px-2 py-2 hover:bg-paper-deep"
+      className="hover-tint block border-2 border-dashed border-ink px-2 py-2"
     >
       <p className="font-mono text-[12px] uppercase tracking-[0.18em] text-faded">
         {BROADSHEET.classifiedSticky}

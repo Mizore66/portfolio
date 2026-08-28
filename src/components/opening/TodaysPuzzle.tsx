@@ -29,7 +29,7 @@ export function TodaysPuzzle({
           onSelect(node.id);
           document.getElementById("play-board")?.focus();
         }}
-        className="paper-control mt-2 bg-paper text-ink hover:bg-paper-deep"
+        className="paper-control mt-2 bg-paper text-ink"
       >
         Stamp the square
       </button>

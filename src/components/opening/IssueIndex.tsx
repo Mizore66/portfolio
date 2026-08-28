@@ -35,7 +35,7 @@ export function IssueIndex({
                 aria-current={current ? "true" : undefined}
                 onClick={() => onSelect(node.id)}
                 className={cn(
-                  "issue-row flex w-full items-center justify-between gap-2 border-l-2 pl-2 text-left font-mono text-[12px] leading-none",
+                  "issue-row move-tint flex w-full items-center justify-between gap-2 border-l-2 pl-2 text-left font-mono text-[12px] leading-none",
                   current
                     ? "border-score-red font-semibold text-score-red"
                     : "border-transparent text-ink hover:border-ink",
