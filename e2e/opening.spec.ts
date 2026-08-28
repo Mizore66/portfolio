@@ -920,11 +920,14 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("elo-commits")).toBeVisible();
     await expect(page.getByText(/^Assessment$/i)).toHaveCount(0);
 
-    const badgeBox = (await page.getByTestId("engine-badge").boundingBox())!;
-    const toggleBox = (await page.getByTestId("eval-toggle").boundingBox())!;
-    const pvBox = (await page.getByTestId("engine-pv").boundingBox())!;
-    expect(Math.abs(badgeBox.x - toggleBox.x)).toBeLessThanOrEqual(2);
-    expect(Math.abs(toggleBox.x - pvBox.x)).toBeLessThanOrEqual(2);
+    const leftEdge = async () => {
+      const badgeBox = (await page.getByTestId("engine-badge").boundingBox())!;
+      const toggleBox = (await page.getByTestId("eval-toggle").boundingBox())!;
+      const pvBox = (await page.getByTestId("engine-pv").boundingBox())!;
+      expect(Math.abs(badgeBox.x - toggleBox.x)).toBeLessThanOrEqual(2);
+      expect(Math.abs(toggleBox.x - pvBox.x)).toBeLessThanOrEqual(2);
+    };
+    await leftEdge();
 
     const bar = (await page.getByTestId("eval-bar").boundingBox())!;
     const caption = (await page.locator("[data-testid='board-diagram'] figcaption").boundingBox())!;
@@ -942,6 +945,15 @@ test.describe("Opening Preparation", () => {
       expect(t.x + t.width).toBeLessThanOrEqual(svgBox.x + svgBox.width + 1);
     }
     await expect(page.getByTestId("engine-lampshade")).toContainText(/disagreed since 1997/);
+
+    await page.setViewportSize({ width: 900, height: 800 });
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await leftEdge();
+    const board900 = (await page.getByTestId("board-plane").boundingBox())!;
+    const engine900 = (await page.getByTestId("glass-engine").boundingBox())!;
+    expect(engine900.x).toBeGreaterThanOrEqual(board900.x + board900.width - 2);
+
+    await page.setViewportSize({ width: 1280, height: 900 });
     await page.getByTestId("eval-learned").click();
     await expect(page.getByTestId("eval-learned")).toHaveAttribute("aria-pressed", "true");
     await expect.poll(async () => page.getByTestId("engine-depth").getAttribute("data-nps"), {
