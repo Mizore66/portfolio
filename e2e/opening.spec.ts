@@ -95,12 +95,10 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("artists-impression")).toContainText(
       "The engineer as he might have been found — MathCAD open, licenses already paid. An artist's impression.",
     );
-    await expect(page.locator("#chapter-nf3 .chapter-copy")).toContainText(
-      /MathCAD glowing on a CRT/,
-    );
     const impressionWrap = page.locator("#chapter-nf3 .chapter-copy").filter({
       has: page.getByTestId("artists-impression"),
     });
+    await expect(impressionWrap).toContainText(/MathCAD glowing on a CRT/);
     const impressionBox = (await impressionWrap.getByTestId("artists-impression").boundingBox())!;
     const wrapCopyBox = (await impressionWrap.locator("p").last().boundingBox())!;
     expect(wrapCopyBox.y + wrapCopyBox.height).toBeGreaterThanOrEqual(impressionBox.y + impressionBox.height - 28);
