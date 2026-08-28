@@ -1064,11 +1064,18 @@ test.describe("Opening Preparation", () => {
     const drop = (await page.locator(".drop-cap").first().boundingBox())!;
     expect(Math.abs(h1.x - drop.x)).toBeLessThanOrEqual(2);
 
-    const measure = await page.locator(".chapter-copy").first().evaluate((el) => {
-      const map = "computedStyleMap" in el ? el.computedStyleMap() : null;
-      return map?.get("max-width")?.toString() ?? getComputedStyle(el).maxWidth;
+    const chCount = await page.locator(".chapter-copy").first().evaluate((el) => {
+      const maxPx = parseFloat(getComputedStyle(el).maxWidth);
+      const probe = document.createElement("span");
+      probe.style.cssText =
+        "position:absolute;font:inherit;visibility:hidden;white-space:nowrap;";
+      probe.textContent = "0000000000";
+      el.appendChild(probe);
+      const ch = probe.getBoundingClientRect().width / 10;
+      probe.remove();
+      return maxPx / ch;
     });
-    expect(measure).toMatch(/68ch/);
+    expect(chCount).toBeCloseTo(68, 0);
 
     await page.getByTestId("board-plane").focus();
     await page.keyboard.press("Tab");

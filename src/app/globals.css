@@ -1019,6 +1019,7 @@
 .masthead-chip {
   display: inline-flex;
   align-items: center;
+  box-sizing: border-box;
   min-height: 24px;
   padding: 4px 8px;
   border: 1px solid color-mix(in srgb, var(--ink) 35%, var(--paper));
@@ -1121,6 +1122,13 @@
 .wayfind-row-current {
   color: var(--score-red);
   font-weight: 600;
+}
+
+@media (max-width: 979px) {
+  .masthead-chip {
+    min-height: 44px;
+    padding-inline: 10px;
+  }
 }
 
 @media print {
