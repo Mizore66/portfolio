@@ -311,7 +311,11 @@ export function BoardDiagram({
           </div>
         </div>
       </div>
-      <figcaption className="mt-4 flex items-center justify-center gap-2 px-1">
+      <figcaption
+        data-testid="board-caption"
+        className="flex items-center justify-center gap-2 px-1"
+        style={edge ? { width: edge + 4 } : undefined}
+      >
         {onStepPrev ? (
           <button
             type="button"

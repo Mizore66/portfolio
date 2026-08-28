@@ -429,6 +429,30 @@
   text-align: center;
 }
 
+/* Eval 2.5rem + row gap 0.5rem + ranks 1rem — keep the caption and glass case on the files. */
+.board-engine-cluster,
+[data-testid="board-diagram"] {
+  --board-indent: calc(2.5rem + 0.5rem + 1rem);
+}
+[data-testid="board-diagram"] > figcaption {
+  box-sizing: border-box;
+  margin-top: 8px;
+  margin-left: var(--board-indent);
+  width: calc(100% - var(--board-indent));
+}
+@media (min-width: 980px) {
+  .board-engine-cluster {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .board-engine-cluster [data-testid="glass-engine"] {
+    box-sizing: border-box;
+    margin-left: var(--board-indent);
+    width: calc(100% - var(--board-indent));
+  }
+}
+
 .apparatus-runtime {
   margin: 8px 10px 10px;
   border: 1.5px dashed var(--ink);
