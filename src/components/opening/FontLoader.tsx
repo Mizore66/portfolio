@@ -2,25 +2,24 @@
 
 import { useEffect } from "react";
 
-/** Pull webfonts after first paint so they cannot win the LCP race. */
+/** Pull webfonts after LCP so 190KB of woff2 cannot win the first-paint race. */
 export function FontLoader() {
   useEffect(() => {
     let cancelled = false;
-    let idle = 0;
+    let timer = 0;
     const run = () => {
-      void import("./loadFonts").then(({ loadFonts }) => {
-        if (!cancelled) loadFonts();
-      });
+      timer = window.setTimeout(() => {
+        void import("./loadFonts").then(({ loadFonts }) => {
+          if (!cancelled) loadFonts();
+        });
+      }, 4000);
     };
-    if (typeof requestIdleCallback === "function") {
-      idle = requestIdleCallback(run, { timeout: 4000 });
-    } else {
-      idle = window.setTimeout(run, 0);
-    }
+    if (document.readyState === "complete") run();
+    else window.addEventListener("load", run, { once: true });
     return () => {
       cancelled = true;
-      if (typeof cancelIdleCallback === "function") cancelIdleCallback(idle);
-      else window.clearTimeout(idle);
+      window.clearTimeout(timer);
+      window.removeEventListener("load", run);
     };
   }, []);
   return null;
