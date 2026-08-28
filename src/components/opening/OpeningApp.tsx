@@ -55,10 +55,8 @@ function reducedMotion(): boolean {
 
 export function OpeningApp({
   staticBoard,
-  masthead,
 }: {
   staticBoard?: ReactNode;
-  masthead?: ReactNode;
 } = {}) {
   const selection = useSyncExternalStore(
     subscribeSelection,
@@ -109,11 +107,10 @@ export function OpeningApp({
     };
   }, []);
   const selectedRef = useRef(selectedId);
-  const hydrated = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false,
-  );
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    setReady(true);
+  }, []);
   const node = getNode(selectedId);
   const bookPlies = useMemo(() => collectPlies(selectedId), [selectedId]);
   const displayPlies = useMemo(() => expandPlayLine(bookPlies, extra), [bookPlies, extra]);
@@ -363,19 +360,17 @@ export function OpeningApp({
       io.disconnect();
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [onSelect, hydrated]);
+  }, [onSelect]);
 
   useEffect(() => {
-    if (!hydrated) return;
     if (selectedId === FLAGSHIP_ID) return;
     const timer = window.setTimeout(() => scrollToChapter(selectedId), 40);
     return () => window.clearTimeout(timer);
-    // Deep-link once after hydration — not on every selectedId change.
+    // Deep-link once after mount — not on every selectedId change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hydrated]);
+  }, []);
 
   useEffect(() => {
-    if (!hydrated) return;
     const params = new URLSearchParams(window.location.search);
     const move = params.get("move");
     if (!move) return;
@@ -386,10 +381,9 @@ export function OpeningApp({
       delete el.dataset.arrive;
     }, 1600);
     return () => window.clearTimeout(timer);
-  }, [hydrated]);
+  }, []);
 
   useEffect(() => {
-    if (!hydrated) return;
     const el = document.querySelector<HTMLElement>("[data-sticky-board]");
     if (!el) return;
     const apply = () => {
@@ -423,7 +417,7 @@ export function OpeningApp({
       cleanupRo();
       document.documentElement.style.removeProperty("--sticky-stack");
     };
-  }, [hydrated]);
+  }, []);
 
   const lastExtra = extra[extra.length - 1];
   const highlight = useMemo<[string, string] | null>(
@@ -479,14 +473,8 @@ export function OpeningApp({
   }
 
   return (
-    <div className="opening-shell min-h-screen text-ink" data-hydrated={hydrated ? "true" : "false"}>
-      <a href="#the-game" className="skip-link">
-        {BROADSHEET.skipLink}
-      </a>
-      <div className="relative z-[1] flex justify-center px-2 py-3 sm:px-3">
-        <div data-testid="newspaper-spread" className="sheet w-full max-w-[1180px]">
-          {masthead}
-          <main id="the-game">
+    <>
+      <main id="the-game">
           <div
             data-opening-spread=""
             className="flex flex-col min-[700px]:flex-row min-[980px]:flex-row-reverse min-[980px]:items-stretch"
@@ -553,6 +541,7 @@ export function OpeningApp({
                     type="button"
                     data-play-control=""
                     data-testid="read-the-game"
+                    data-hydrated={ready ? "true" : "false"}
                     aria-pressed={playing}
                     onClick={onReadTheGame}
                     className={cn(
@@ -612,13 +601,11 @@ export function OpeningApp({
             </section>
           </div>
           </main>
-          <footer data-testid="paper-footer" className="paper-footer">
-            <Closer />
-            <Colophon />
-          </footer>
-        </div>
-        <WayfindIndex selectedId={selectedId} onSelect={userSelect} />
-      </div>
-    </div>
+      <footer data-testid="paper-footer" className="paper-footer">
+        <Closer />
+        <Colophon />
+      </footer>
+      <WayfindIndex selectedId={selectedId} onSelect={userSelect} />
+    </>
   );
 }

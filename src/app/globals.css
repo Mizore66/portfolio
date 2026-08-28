@@ -167,12 +167,16 @@
 /* Readable writing surface. Collage stays in the gutters (Apple: content on a surface). */
 .sheet {
   background-color: var(--paper);
-  background-image: var(--newsprint-grain);
-  background-size: 340px;
-  background-blend-mode: overlay;
   color: var(--ink);
   border: 1px solid var(--ink);
   box-shadow: 0 16px 40px rgba(28, 14, 8, 0.48);
+}
+@media (min-width: 980px) {
+  .sheet {
+    background-image: var(--newsprint-grain);
+    background-size: 340px;
+    background-blend-mode: overlay;
+  }
 }
 
 .col-stack {
@@ -194,9 +198,13 @@
 
 .newsprint-sticky {
   background-color: var(--paper);
-  background-image: var(--newsprint-grain);
-  background-size: 340px;
-  background-blend-mode: overlay;
+}
+@media (min-width: 980px) {
+  .newsprint-sticky {
+    background-image: var(--newsprint-grain);
+    background-size: 340px;
+    background-blend-mode: overlay;
+  }
 }
 
 .newsprint-deep {
@@ -1064,6 +1072,23 @@
   }
 }
 
+.masthead-kicker {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--faded);
+}
+
+.piece-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
 .masthead-contacts {
   display: flex;
   flex-wrap: wrap;
@@ -1155,9 +1180,13 @@
   display: grid;
   gap: 24px;
   background-color: var(--paper);
-  background-image: var(--newsprint-grain);
-  background-size: 340px;
-  background-blend-mode: overlay;
+}
+@media (min-width: 980px) {
+  .paper-footer {
+    background-image: var(--newsprint-grain);
+    background-size: 340px;
+    background-blend-mode: overlay;
+  }
 }
 @media (min-width: 640px) {
   .paper-footer {

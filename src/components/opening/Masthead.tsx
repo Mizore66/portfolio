@@ -8,7 +8,7 @@ export function Masthead() {
   return (
     <header>
       <div className="border-b-2 border-ink px-4 py-2 sm:px-6">
-        <p className="font-mono text-[12px] uppercase tracking-[0.28em] text-faded">
+        <p className="masthead-kicker">
           C50 · Italian Game · Vol. {year} · {SITE_HOST} · Moves are facts · Annotations are voice
         </p>
       </div>

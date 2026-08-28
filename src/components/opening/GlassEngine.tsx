@@ -24,6 +24,16 @@ function afterPaint(ms: number): Promise<void> {
   });
 }
 
+function whenIdle(timeoutMs: number): Promise<void> {
+  return new Promise((resolve) => {
+    if (typeof requestIdleCallback === "function") {
+      requestIdleCallback(() => resolve(), { timeout: timeoutMs });
+      return;
+    }
+    window.setTimeout(resolve, 0);
+  });
+}
+
 export function useNnueWeights(wanted: boolean) {
   const [net, setNet] = useState<NnueNet | null>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
@@ -125,6 +135,7 @@ export function useEngineSearch(
 
     async function runInWorker() {
       await afterPaint(glideFirst ? GLIDE_MS : 0);
+      if (!glideFirst) await whenIdle(1800);
       if (cancelled) return;
       started.current = true;
       setDown(false);

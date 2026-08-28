@@ -17,13 +17,14 @@ const display = Libre_Baskerville({
 const lora = Lora({
   subsets: ["latin"],
   style: ["normal", "italic"],
+  weight: "400",
   variable: "--font-lora",
-  display: "swap",
+  display: "optional",
   preload: false,
 });
 
 const mono = IBM_Plex_Mono({
-  weight: ["400", "500"],
+  weight: "400",
   subsets: ["latin"],
   variable: "--font-mono",
   display: "optional",
