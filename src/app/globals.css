@@ -64,7 +64,7 @@
     border-color: var(--ink);
   }
   html {
-    font-family: var(--font-lora), "Lora", serif;
+    font-family: Georgia, "Times New Roman", Times, serif;
     scrollbar-width: thin;
     scrollbar-color: #1a120c transparent;
     background-color: #2c1c12;
@@ -1079,6 +1079,15 @@
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--faded);
+}
+
+.masthead-title {
+  margin: 0;
+  font-family: Palatino, "Palatino Linotype", "Times New Roman", Times, serif;
+  font-size: clamp(2.15rem, 6.4vw, 4.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--ink);
 }
 
 .piece-sprite {

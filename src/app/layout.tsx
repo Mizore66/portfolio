@@ -1,35 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Mono, Libre_Baskerville, Lora } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { DeskCollage } from "@/components/opening/DeskCollage";
+import { FontLoader } from "@/components/opening/FontLoader";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
-
-const display = Libre_Baskerville({
-  weight: ["400", "700"],
-  style: ["normal", "italic"],
-  subsets: ["latin"],
-  variable: "--font-display",
-  display: "optional",
-  preload: false,
-});
-
-const lora = Lora({
-  subsets: ["latin"],
-  style: ["normal", "italic"],
-  weight: "400",
-  variable: "--font-lora",
-  display: "optional",
-  preload: false,
-});
-
-const mono = IBM_Plex_Mono({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-mono",
-  display: "optional",
-  preload: false,
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -67,11 +41,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${display.variable} ${lora.variable} ${mono.variable}`}
-    >
+    <html lang="en">
       <body className="relative z-[1] min-h-screen bg-transparent font-lora text-ink antialiased">
+        <FontLoader />
         <DeskCollage />
         {children}
         {process.env.VERCEL ? <Analytics /> : null}

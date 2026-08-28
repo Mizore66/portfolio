@@ -14,7 +14,7 @@ export function Masthead() {
       </div>
       <div className="border-b-2 border-ink px-4 py-5 sm:px-6">
         <div className="min-w-0">
-          <h1 className="font-display text-[clamp(2.15rem,6.4vw,4.5rem)] leading-[0.95] tracking-tight text-ink">
+          <h1 className="masthead-title">
             Anas T. Qumhiyeh
           </h1>
           <p data-testid="masthead-role" className="mt-2 font-display text-[16px] italic leading-snug text-book-blue">
