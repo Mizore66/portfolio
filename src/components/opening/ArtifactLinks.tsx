@@ -7,7 +7,7 @@ export function ArtifactLinks({ artifacts }: { artifacts: Artifact[] }) {
   if (artifacts.length === 0) return null;
 
   return (
-    <ul className="flex flex-wrap gap-x-4 gap-y-3 font-mono text-[12px] uppercase tracking-wider">
+    <ul className="flex flex-wrap gap-x-4 gap-y-4 font-mono text-[12px] uppercase tracking-wider">
       {artifacts.map((a) => {
         const external = a.href.startsWith("http") || a.href.startsWith("mailto:");
         const className =
