@@ -205,7 +205,11 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
   const open = useCallback(() => {
     const active = document.activeElement;
     invokerRef.current = active instanceof HTMLElement ? active : null;
-    dialogRef.current?.showModal();
+    const dlg = dialogRef.current;
+    if (!dlg) return;
+    dlg.showModal();
+    const closeBtn = dlg.querySelector<HTMLElement>("button");
+    closeBtn?.focus();
   }, []);
 
   const swipeStart = useRef<number | null>(null);
@@ -219,11 +223,42 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
     function onClose() {
       invokerRef.current?.focus();
     }
+    function focusables() {
+      return [...dlg.querySelectorAll<HTMLElement>("button, [href], [tabindex]:not([tabindex='-1'])")].filter(
+        (el) => !el.hasAttribute("disabled"),
+      );
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key !== "Tab" || !dlg.open) return;
+      const nodes = focusables();
+      if (nodes.length === 0) {
+        e.preventDefault();
+        dlg.focus();
+        return;
+      }
+      const first = nodes[0];
+      const last = nodes[nodes.length - 1];
+      const active = document.activeElement;
+      if (!dlg.contains(active)) {
+        e.preventDefault();
+        first.focus();
+        return;
+      }
+      if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      } else if (e.shiftKey && (active === first || active === dlg)) {
+        e.preventDefault();
+        last.focus();
+      }
+    }
     dlg.addEventListener("click", onClick);
     dlg.addEventListener("close", onClose);
+    document.addEventListener("keydown", onKey, true);
     return () => {
       dlg.removeEventListener("click", onClick);
       dlg.removeEventListener("close", onClose);
+      document.removeEventListener("keydown", onKey, true);
     };
   }, [close]);
 
@@ -272,6 +307,7 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
         className="patent-lightbox"
         data-testid="patent-lightbox"
         aria-labelledby={titleId}
+        tabIndex={-1}
         onTouchStart={(e) => {
           swipeStart.current = e.touches[0]?.clientY ?? null;
         }}

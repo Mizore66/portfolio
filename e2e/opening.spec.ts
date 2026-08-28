@@ -1161,14 +1161,16 @@ test.describe("Opening Preparation", () => {
     await expand.click();
     const lightbox = page.locator("#chapter-d4 [data-testid='patent-lightbox']");
     await expect(lightbox).toBeVisible();
-    await lightbox.getByRole("button", { name: "Close" }).focus();
-    await page.keyboard.press("Tab");
-    const trapped = await page.evaluate(() => {
-      const dlg = document.querySelector("#chapter-d4 [data-testid='patent-lightbox']");
-      return Boolean(dlg && document.activeElement && dlg.contains(document.activeElement));
-    });
-    expect(trapped).toBe(true);
-    await lightbox.getByRole("button", { name: "Close" }).click();
+    await expect(lightbox.getByRole("button", { name: "Close" })).toBeFocused();
+    for (let i = 0; i < 3; i++) {
+      await page.keyboard.press("Tab");
+      const trapped = await page.evaluate(() => {
+        const dlg = document.querySelector("#chapter-d4 [data-testid='patent-lightbox']");
+        return Boolean(dlg && document.activeElement && dlg.contains(document.activeElement));
+      });
+      expect(trapped).toBe(true);
+    }
+    await page.keyboard.press("Escape");
     await expect(lightbox).toBeHidden();
     await expect(expand).toBeFocused();
   });
