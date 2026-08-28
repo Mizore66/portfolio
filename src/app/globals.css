@@ -321,8 +321,10 @@
 .artifact-link {
   display: inline-flex;
   min-height: 24px;
+  min-width: 24px;
   align-items: center;
   padding-block: 4px;
+  padding-inline: 2px;
   transition:
     background var(--motion-fast) ease,
     color var(--motion-fast) ease;
@@ -927,7 +929,8 @@
 
   .hit-target,
   .paper-control,
-  .issue-row {
+  .issue-row,
+  .artifact-link {
     min-height: 44px;
   }
 
@@ -950,11 +953,6 @@
   .masthead-chip {
     min-height: 44px;
     padding-inline: 10px;
-  }
-
-  [data-chapter]:not(:first-of-type) {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 960px;
   }
 
   .wayfind-index[data-shown="true"] {
@@ -1133,8 +1131,6 @@
 
 [data-chapter] {
   scroll-margin-top: calc(var(--sticky-stack, 0px) + 12px);
-  content-visibility: auto;
-  contain-intrinsic-size: auto 720px;
 }
 
 [data-chapter][data-arrive] {
