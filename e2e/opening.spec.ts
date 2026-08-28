@@ -88,9 +88,22 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("#chapter-re1 [data-testid='inline-diagram']")).toHaveCount(0);
     await expect(page.getByTestId("artists-impression")).toHaveCount(1);
     await expect(page.locator("#chapter-nf3 [data-testid='artists-impression']")).toBeVisible();
+    await expect(page.locator("#chapter-nf3 [data-testid='artists-impression']")).toHaveAttribute(
+      "data-placement",
+      "wrap",
+    );
     await expect(page.getByTestId("artists-impression")).toContainText(
       "The engineer as he might have been found — MathCAD open, licenses already paid. An artist's impression.",
     );
+    await expect(page.locator("#chapter-nf3 .chapter-copy")).toContainText(
+      /MathCAD glowing on a CRT/,
+    );
+    const impressionWrap = page.locator("#chapter-nf3 .chapter-copy").filter({
+      has: page.getByTestId("artists-impression"),
+    });
+    const impressionBox = (await impressionWrap.getByTestId("artists-impression").boundingBox())!;
+    const wrapCopyBox = (await impressionWrap.locator("p").last().boundingBox())!;
+    expect(wrapCopyBox.y + wrapCopyBox.height).toBeGreaterThanOrEqual(impressionBox.y + impressionBox.height - 28);
     await expect
       .poll(async () =>
         page.locator("#chapter-nf3 .artists-impression-frame").evaluate((el) => getComputedStyle(el).borderStyle),
@@ -118,6 +131,11 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("#chapter-nc6 [data-testid='news-clipping']")).toContainText(
       "SETEL RECRUITS NEW HANDS ON THE PAYMENT ENGINE",
     );
+    const setelPhoto = page.locator("#chapter-nc6 [data-testid='news-clipping'] img").first();
+    await expect(setelPhoto).toBeVisible();
+    const setelBox = (await setelPhoto.boundingBox())!;
+    expect(setelBox.width).toBeGreaterThan(160);
+    expect(setelBox.height).toBeGreaterThan(100);
     await expect(page.locator("#chapter-bc4 [data-testid='news-clipping']")).toContainText(
       "WESTERN DIGITAL NEWEST ADDITION FOR THE LAB FLOOR",
     );
@@ -767,9 +785,13 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("situations-wanted").first()).toContainText(/Replies within two days/i);
     await expect(page.getByTestId("colophon")).toBeVisible();
     await expect(page.getByTestId("colophon")).toContainText("8902");
+    await expect(page.getByTestId("colophon")).toContainText("How this paper was set");
+    await expect(page.getByTestId("colophon")).toContainText("Three registers");
     await expect(page.getByTestId("colophon")).toContainText(
       "Photographs real and composed; impressions imagined; the subject is real throughout.",
     );
+    await expect(page.getByTestId("colophon")).toContainText("The witnesses");
+    await expect(page.getByTestId("colophon")).toContainText("Vitest signs the parts list");
     await expect(page.getByTestId("inventor-plate")).toBeVisible();
     await page.getByTestId("weather-cycle").click();
     await expect(page.getByTestId("weather-cycle")).toContainText(/Fog on the e-file|High pressure/);

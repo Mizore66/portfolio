@@ -10,7 +10,7 @@ export function ArtistsImpression({
   alt: string;
 }) {
   return (
-    <figure className="artists-impression plate-inset" data-testid="artists-impression" data-plate={src}>
+    <figure className="artists-impression plate-inset" data-testid="artists-impression" data-plate={src} data-placement="wrap">
       <div className="artists-impression-frame">
         <Image
           src={src}

@@ -157,7 +157,11 @@ export function buildPrintEditionPdf(): Uint8Array {
   y -= 2;
   y = heading(y, "Selected work");
   for (const p of d.projects) {
-    for (const line of wrap(`${p.name} - ${p.subtitle}. ${p.impact}.`, 58)) {
+    const extra =
+      p.slug === "veridian"
+        ? " 3-sheet filing: economized plant, retrieval of regulations, distillation of reasoning."
+        : "";
+    for (const line of wrap(`${p.name} - ${p.subtitle}. ${p.impact}.${extra}`, 58)) {
       txt("F1", 8, M, y, line);
       y -= 11;
     }
@@ -180,7 +184,14 @@ export function buildPrintEditionPdf(): Uint8Array {
     }
   }
 
-  txt("F3", 8, M, 36, "C50  |  Italian Game  |  a game played since I was a teenager.");
+  txt("F3", 7, M, 36, "C50  |  Italian Game  |  a game played since I was a teenager.");
+  txt(
+    "F3",
+    7,
+    M,
+    24,
+    "Photographs real and composed; impressions imagined; the subject is real throughout.",
+  );
   rule(48, 0.5);
 
   const content = ops.join("\n");

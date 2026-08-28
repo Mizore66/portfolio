@@ -23,6 +23,16 @@ export function Colophon() {
         <figcaption>The inventor, on the stair — file photo.</figcaption>
       </figure>
       <p className="mt-2 font-lora text-[13px] leading-relaxed text-ink">{BROADSHEET.colophon}</p>
+      <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-faded">
+        {BROADSHEET.colophonHonestyKicker}
+      </p>
+      <p className="mt-1 font-display text-[13px] italic leading-snug text-ink">
+        {BROADSHEET.colophonHonesty}
+      </p>
+      <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-faded">
+        {BROADSHEET.colophonWitnessKicker}
+      </p>
+      <p className="mt-1 font-lora text-[13px] leading-relaxed text-ink">{BROADSHEET.colophonWitnesses}</p>
       <p className="mt-3 clear-both font-mono text-[10px] uppercase tracking-[0.18em] text-faded">
         {BROADSHEET.perftKicker}
       </p>

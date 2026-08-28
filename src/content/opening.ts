@@ -49,7 +49,13 @@ export const BROADSHEET = {
   classifiedSticky: "Situations Wanted — apply within",
   colophonKicker: "How this paper was set",
   colophon:
-    "Type: Libre Baskerville, Lora, IBM Plex Mono. Ink #1a120c on cream #f6eedc. The tree is the repertoire; the scoresheet is the CV; the glass case is mailbox-64 alpha-beta with PeSTO tables. The 2200 on the masthead of that case is club strength, not a published Elo. Photographs real and composed; impressions imagined; the subject is real throughout. No template. Chess is content, never a lock.",
+    "Type: Libre Baskerville, Lora, IBM Plex Mono. Ink #1a120c on cream #f6eedc. Radius none. The tree is the repertoire; the scoresheet is the CV; the glass case is mailbox-64 alpha-beta with PeSTO tables. The 2200 on the masthead of that case is club strength, not a published Elo. No template. Chess is content, never a lock.",
+  colophonHonestyKicker: "Three registers",
+  colophonHonesty:
+    "Photographs real and composed; impressions imagined; the subject is real throughout.",
+  colophonWitnessKicker: "The witnesses",
+  colophonWitnesses:
+    "Vitest signs the parts list and the node counts. Playwright walks the paper the way a reader would — deep links, the board, the lightbox. The table below is perft: the move generator's receipt against the published start-position series. If those numbers slip, the engine is lying.",
   perftKicker: "Perft — the generator's receipt",
   correctionKicker: "Correction",
   correctionHed: "The page you requested was a misprint.",
@@ -246,7 +252,7 @@ export const OPENING_NODES: OpeningNode[] = [
     title: "The Philidor, Declined",
     fact: "After Petronas the MATLAB world was still there — MathCAD, department code, a quieter engineering path with licenses already paid.",
     commentary:
-      "2…d6 keeps the position closed. I developed the knight instead. The dashed line is honest: I could have stayed. I did not.",
+      "2…d6 keeps the position closed. I developed the knight instead. The dashed line is honest: I could have stayed in the MATLAB world, licenses already paid, MathCAD glowing on a CRT. I did not.",
     eval: -0.55,
     evalText: "?!",
     artifacts: [],

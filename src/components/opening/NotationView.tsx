@@ -159,6 +159,11 @@ function Chapter({
                     onPreview={onPreview}
                   />
                 </p>
+                {head?.impression && head.commentary ? (
+                  <p className="mt-3 max-w-prose font-lora text-[13px] leading-relaxed italic text-ink">
+                    {head.commentary}
+                  </p>
+                ) : null}
                 {head?.plate ? (
                   <HalftonePlate
                     src={head.plate.src}

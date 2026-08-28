@@ -129,6 +129,7 @@ describe("art taxonomy", () => {
   it("files an artist's impression on the declined startup, not a retrospect hed", () => {
     expect(getNode("philidor").impression?.src).toBe("/plates/impression-philidor.jpg");
     expect(getNode("philidor").impression?.caption).toMatch(/artist's impression/i);
+    expect(getNode("philidor").commentary).toMatch(/MathCAD glowing on a CRT/);
   });
 
   it("files news-clippings on education and the three employer roles", () => {
