@@ -1,0 +1,5 @@
+{
+  "name": "Opening Preparation",
+  "install": "npm ci\nnpx playwright install --with-deps chromium",
+  "start": "npm run dev"
+}
