@@ -1,10 +1,11 @@
 "use client";
 
+import { memo } from "react";
 import { BROADSHEET } from "@/content/opening";
 import { issueChapters, moveHeading, pathIdSet } from "@/lib/opening/tree";
 import { cn } from "@/lib/utils";
 
-export function IssueIndex({
+export const IssueIndex = memo(function IssueIndex({
   selectedId,
   onSelect,
 }: {
@@ -52,4 +53,4 @@ export function IssueIndex({
       </ol>
     </nav>
   );
-}
+});

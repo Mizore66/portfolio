@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import type { EvalMode, SearchInfo } from "@/lib/chess/engine";
 import { numberPv } from "@/lib/chess/notation";
 import type { NnueNet } from "@/lib/chess/nnue/types";
@@ -15,8 +15,8 @@ import { cn } from "@/lib/utils";
 
 const MAX_DEPTH = 11;
 const SEARCH_BUDGET_MS = 900;
-/** Keep each depth under the 50ms long-task floor so Lighthouse TBT stays clean. */
-const SEARCH_SLICE_MS = 48;
+/** ~10ms unthrottled stays under the 50ms long-task floor after Lighthouse's 4× mobile CPU. */
+const SEARCH_SLICE_MS = 10;
 
 function afterPaint(ms: number): Promise<void> {
   return new Promise((resolve) => {
@@ -156,7 +156,7 @@ export function useEngineSearch(
   return { info, down };
 }
 
-export function GlassEngine({
+export const GlassEngine = memo(function GlassEngine({
   info,
   book,
   side,
@@ -276,4 +276,4 @@ export function GlassEngine({
       </p>
     </section>
   );
-}
+});

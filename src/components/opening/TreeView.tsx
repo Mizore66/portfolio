@@ -6,6 +6,7 @@ import {
   useMemo,
   useRef,
   useState,
+  memo,
   type CSSProperties,
 } from "react";
 import {
@@ -30,7 +31,7 @@ function branchPath(from: Point, to: Point) {
   return `M ${from.x} ${from.y + STEM} V ${midY} H ${to.x} V ${to.y - STEM}`;
 }
 
-export function TreeView({
+export const TreeView = memo(function TreeView({
   selectedId,
   onSelect,
   onPreview,
@@ -130,7 +131,7 @@ export function TreeView({
       </div>
     </div>
   );
-}
+});
 
 function TreeEdge({
   child,

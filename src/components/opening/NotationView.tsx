@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, memo } from "react";
 import { ArtifactLinks } from "@/components/opening/ArtifactLinks";
 import { ArtistsImpression } from "@/components/opening/ArtistsImpression";
 import { GlyphStamp } from "@/components/opening/GlyphStamp";
@@ -21,7 +21,7 @@ import {
 import type { OpeningNode } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
 
-export function NotationView({
+export const NotationView = memo(function NotationView({
   selectedId,
   onSelect,
   onPreview,
@@ -50,7 +50,7 @@ export function NotationView({
       </div>
     </article>
   );
-}
+});
 
 function Chapter({
   block,

@@ -744,8 +744,9 @@ function formatPv(pos: EnginePos, uciList: string[]): string[] {
 
 const TT_SIZE = 1 << 18;
 const TT_MASK = TT_SIZE - 1;
-type TTEntry = { key: number; depth: number; score: number; flag: 0 | 1 | 2; move: string };
+type TTEntry = { key: number; depth: number; score: number; flag: 0 | 1 | 2; move: string; gen: number };
 const tt: (TTEntry | undefined)[] = new Array(TT_SIZE);
+let ttGen = 1;
 let killers: string[][] = [];
 let history: Int16Array = new Int16Array(64 * 64);
 
@@ -763,9 +764,11 @@ function key32(pos: EnginePos): number {
 }
 
 export function prepareSearch() {
-  tt.fill(undefined);
+  // Age the table instead of tt.fill(2^18) — that fill is a long task on mobile.
+  ttGen = (ttGen + 1) | 0;
+  if (ttGen === 0) ttGen = 1;
   killers = Array.from({ length: 64 }, () => ["", ""]);
-  history = new Int16Array(64 * 64);
+  history.fill(0);
 }
 
 function order(moves: Move[], ply: number, hashMove: string): Move[] {
@@ -848,7 +851,7 @@ function alphabeta(
   const slot = key & TT_MASK;
   const hit = tt[slot];
   let hashMove = "";
-  if (hit && hit.key === key) {
+  if (hit && hit.key === key && hit.gen === ttGen) {
     hashMove = hit.move;
     if (hit.depth >= depth) {
       if (hit.flag === 0) return hit.score;
@@ -908,7 +911,7 @@ function alphabeta(
         }
       }
       history[m.from * 64 + m.to] = Math.min(30000, history[m.from * 64 + m.to] + depth * depth);
-      tt[slot] = { key, depth, score: sc, flag: 2, move: u };
+      tt[slot] = { key, depth, score: sc, flag: 2, move: u, gen: ttGen };
       return beta;
     }
     if (sc > alpha) {
@@ -925,6 +928,7 @@ function alphabeta(
     score: alpha,
     flag: alpha > alpha0 ? 0 : 1,
     move: bestUci || (moves[0] ? uci(moves[0]) : ""),
+    gen: ttGen,
   };
   return alpha;
 }

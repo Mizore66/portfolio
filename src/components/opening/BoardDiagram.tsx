@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { memo, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { BROADSHEET } from "@/content/opening";
 import { EvalBar } from "@/components/opening/EvalBar";
 import { NewspaperPiece } from "@/components/opening/NewspaperPiece";
@@ -18,7 +18,7 @@ import { GLIDE_MS } from "@/lib/opening/motion";
 import type { Ply } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
 
-export function BoardDiagram({
+export const BoardDiagram = memo(function BoardDiagram({
   plies,
   highlight,
   preview,
@@ -80,7 +80,13 @@ export function BoardDiagram({
     const from = prevPlies.current;
     const fromSig = from?.map((p) => `${p.from}${p.to}`).join(",") ?? null;
 
-    if (reduced || from === null) {
+    if (from === null) {
+      // SSR already painted this position. A setState here restarts LCP on the sticky board.
+      prevPlies.current = plies;
+      return;
+    }
+
+    if (reduced) {
       prevPlies.current = plies;
       setPieces(positionAfter(plies).map((p) => ({ ...p, delay: 0 })));
       setLiftIds(new Set());
@@ -118,8 +124,14 @@ export function BoardDiagram({
       if (el.clientWidth < 16) return;
       setEdge(snapInnerEdge(el.clientWidth));
     };
-    fit();
-    const ro = new ResizeObserver(fit);
+    let primed = false;
+    const ro = new ResizeObserver(() => {
+      if (!primed) {
+        primed = true;
+        return;
+      }
+      fit();
+    });
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
@@ -344,7 +356,7 @@ export function BoardDiagram({
       </figcaption>
     </figure>
   );
-}
+});
 
 function squareShifted(fromPlies: Ply[], toPlies: Ply[], id: string): boolean {
   const a = positionAfter(fromPlies).find((p) => p.id === id);

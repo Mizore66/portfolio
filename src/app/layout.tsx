@@ -27,7 +27,7 @@ const mono = IBM_Plex_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
   display: "swap",
-  preload: false,
+  preload: true,
 });
 
 export const metadata: Metadata = {
@@ -82,7 +82,7 @@ export default function RootLayout({
       <body className="relative z-[1] min-h-screen bg-transparent font-lora text-ink antialiased">
         <DeskCollage />
         {children}
-        <Analytics />
+        {process.env.VERCEL ? <Analytics /> : null}
       </body>
     </html>
   );

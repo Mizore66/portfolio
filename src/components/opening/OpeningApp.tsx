@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { BoardDiagram } from "@/components/opening/BoardDiagram";
 import { BroadsheetFiller } from "@/components/opening/BroadsheetFiller";
@@ -9,10 +10,8 @@ import { GlassEngine, useEngineSearch, useNnueWeights } from "@/components/openi
 import { IssueIndex } from "@/components/opening/IssueIndex";
 import { Masthead } from "@/components/opening/Masthead";
 import { NewspaperColumn } from "@/components/opening/NewspaperColumn";
-import { NotationView } from "@/components/opening/NotationView";
 import { SituationsWanted } from "@/components/opening/SituationsWanted";
 import { TodaysPuzzle } from "@/components/opening/TodaysPuzzle";
-import { TreeView } from "@/components/opening/TreeView";
 import { WayfindIndex } from "@/components/opening/WayfindIndex";
 import { BROADSHEET } from "@/content/opening";
 import type { EvalMode } from "@/lib/chess/engine";
@@ -39,6 +38,13 @@ import {
 } from "@/lib/opening/selection";
 import type { Ply } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
+
+const NotationView = dynamic(() =>
+  import("@/components/opening/NotationView").then((m) => m.NotationView),
+);
+const TreeView = dynamic(() =>
+  import("@/components/opening/TreeView").then((m) => m.TreeView),
+);
 
 const NO_EXTRA: Ply[] = [];
 type EngineApi = typeof import("@/lib/chess/engine");
@@ -181,19 +187,22 @@ export function OpeningApp() {
     [selectedId, setPreviewHl],
   );
 
-  function onPlay(ply: Ply) {
-    if (!engineApi || !pos) return;
-    if (side !== startSide) return;
-    if (!engineApi.isLegalPly(pos, ply)) return;
-    extraLenRef.current = extra.length + 1;
-    setPlaying(false);
-    setPlayHint(false);
-    setPlay((cur) => ({
-      id: selectedId,
-      extra: [...(cur.id === selectedId ? cur.extra : []), ply],
-      note: null,
-    }));
-  }
+  const onPlay = useCallback(
+    (ply: Ply) => {
+      if (!engineApi || !pos) return;
+      if (side !== startSide) return;
+      if (!engineApi.isLegalPly(pos, ply)) return;
+      extraLenRef.current = extra.length + 1;
+      setPlaying(false);
+      setPlayHint(false);
+      setPlay((cur) => ({
+        id: selectedId,
+        extra: [...(cur.id === selectedId ? cur.extra : []), ply],
+        note: null,
+      }));
+    },
+    [engineApi, pos, side, startSide, selectedId, extra.length],
+  );
 
   useEffect(() => {
     if (!engineApi) return;
@@ -222,15 +231,22 @@ export function OpeningApp() {
     };
   }, [engineApi, extra, startSide, bookPlies, selectedId]);
 
-  function onPuzzleSquare(sq: string) {
-    const puzzle = node.puzzle;
-    if (!puzzle || extra.length > 0) return;
-    if (sq === puzzle.target) {
-      userSelect(FLAGSHIP_ID);
-      return;
-    }
-    setPlay((cur) => ({ id: selectedId, extra: cur.id === selectedId ? cur.extra : [], note: puzzle.miss }));
-  }
+  const onPuzzleSquare = useCallback(
+    (sq: string) => {
+      const puzzle = node.puzzle;
+      if (!puzzle || extraLenRef.current > 0) return;
+      if (sq === puzzle.target) {
+        userSelect(FLAGSHIP_ID);
+        return;
+      }
+      setPlay((cur) => ({
+        id: selectedId,
+        extra: cur.id === selectedId ? cur.extra : [],
+        note: puzzle.miss,
+      }));
+    },
+    [node.puzzle, selectedId, userSelect],
+  );
 
   useEffect(() => {
     return () => {
@@ -371,25 +387,43 @@ export function OpeningApp() {
       const h = sticky && full ? Math.round(rect.height) : 0;
       document.documentElement.style.setProperty("--sticky-stack", `${h}px`);
     };
-    apply();
-    const ro = new ResizeObserver(apply);
-    ro.observe(el);
-    window.addEventListener("resize", apply);
+    // Setting a property on <html> invalidates inherited styles, including the LCP board.
+    let idle = 0;
+    let cleanupRo = () => {};
+    const arm = () => {
+      apply();
+      const ro = new ResizeObserver(apply);
+      ro.observe(el);
+      window.addEventListener("resize", apply);
+      cleanupRo = () => {
+        ro.disconnect();
+        window.removeEventListener("resize", apply);
+      };
+    };
+    if (typeof requestIdleCallback === "function") {
+      idle = requestIdleCallback(arm, { timeout: 1800 });
+    } else {
+      idle = window.setTimeout(arm, 1800);
+    }
     return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", apply);
+      if (typeof cancelIdleCallback === "function") cancelIdleCallback(idle);
+      else window.clearTimeout(idle);
+      cleanupRo();
       document.documentElement.style.removeProperty("--sticky-stack");
     };
   }, [hydrated]);
 
   const lastExtra = extra[extra.length - 1];
-  const highlight: [string, string] | null = lastExtra
-    ? [lastExtra.from, lastExtra.to]
-    : node.hl;
+  const highlight = useMemo<[string, string] | null>(
+    () => (lastExtra ? [lastExtra.from, lastExtra.to] : node.hl),
+    [lastExtra, node.hl],
+  );
   const evalLabel = engine
     ? `${engine.evalCp >= 0 ? "+" : ""}${(engine.evalCp / 100).toFixed(2)}`
     : "…";
   const annotatorCp = Math.round(node.eval * 100);
+  const annotatorLabel = `${node.eval >= 0 ? "+" : ""}${node.eval.toFixed(2)}`;
+  const boardArrow = extra.length === 0 ? (book?.plies[0] ?? null) : (engineLine.best ?? null);
   const learnedDisagrees =
     using === "learned" && engine && Math.abs(engine.evalCp - annotatorCp) >= 80;
   const lampshade = learnedDisagrees
@@ -402,6 +436,15 @@ export function OpeningApp() {
         ? node.moveNumber
         : node.moveNumber + 1;
   const playMoveNumber = extra.length === 0 ? moveNumber : moveNumber + Math.floor((extra.length + (startSide === "b" ? 1 : 0)) / 2);
+
+  const onStepPrev = useCallback(
+    () => userSelect(stepMainline(selectedId, -1)),
+    [userSelect, selectedId],
+  );
+  const onStepNext = useCallback(
+    () => userSelect(stepMainline(selectedId, 1)),
+    [userSelect, selectedId],
+  );
 
   function onReadTheGame() {
     if (playing) {
@@ -445,9 +488,9 @@ export function OpeningApp() {
                   highlight={highlight}
                   preview={previewHl}
                   caption={node.cap}
-                  evalCp={engine ? engine.evalCp / 100 : null}
-                  evalLabel={evalLabel}
-                  arrow={engineLine.best}
+                  evalCp={node.eval}
+                  evalLabel={annotatorLabel}
+                  arrow={boardArrow}
                   legal={legal}
                   playable
                   playSide={side}
@@ -456,8 +499,8 @@ export function OpeningApp() {
                   puzzlePrompt={node.puzzle && extra.length === 0 ? node.puzzle.prompt : null}
                   puzzleNote={puzzleNote}
                   puzzleTarget={node.puzzle && extra.length === 0 ? node.puzzle.target : null}
-                  onStepPrev={() => userSelect(stepMainline(selectedId, -1))}
-                  onStepNext={() => userSelect(stepMainline(selectedId, 1))}
+                  onStepPrev={onStepPrev}
+                  onStepNext={onStepNext}
                   canStepPrev={stepMainline(selectedId, -1) !== selectedId}
                   canStepNext={!atEnd}
                 />
