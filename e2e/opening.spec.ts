@@ -949,9 +949,11 @@ test.describe("Opening Preparation", () => {
     await page.setViewportSize({ width: 900, height: 800 });
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await leftEdge();
-    const board900 = (await page.getByTestId("board-plane").boundingBox())!;
-    const engine900 = (await page.getByTestId("glass-engine").boundingBox())!;
-    expect(engine900.x).toBeGreaterThanOrEqual(board900.x + board900.width - 2);
+    await expect.poll(async () => {
+      const board = (await page.getByTestId("board-diagram").boundingBox())!;
+      const engine = (await page.getByTestId("glass-engine").boundingBox())!;
+      return engine.x - (board.x + board.width);
+    }).toBeGreaterThanOrEqual(-1);
 
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.getByTestId("eval-learned").click();

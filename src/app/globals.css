@@ -841,9 +841,13 @@
     background-size: 340px;
     background-blend-mode: overlay;
   }
+  .board-engine-cluster {
+    gap: 8px;
+  }
   .board-engine-cluster [data-sticky-board] {
     flex: 1 1 280px;
     min-width: 0;
+    overflow: hidden;
   }
   .board-engine-cluster [data-testid="board-diagram"] {
     min-width: 0;
