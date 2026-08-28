@@ -252,7 +252,7 @@ export const OPENING_NODES: OpeningNode[] = [
     title: "The Philidor, Declined",
     fact: "After Petronas the MATLAB world was still there — MathCAD, department code, a quieter engineering path with licenses already paid.",
     commentary:
-      "2…d6 keeps the position closed. I developed the knight instead. The dashed line is honest: I could have stayed in the MATLAB world, licenses already paid, MathCAD glowing on a CRT. I did not.",
+      "2…d6 keeps the position closed. I developed the knight instead. The dashed line is honest: I could have stayed in the MATLAB world, licenses already paid, MathCAD glowing on a CRT. The other life stays on the page as a ghost — visible, declined, and not a regret. I did not stay.",
     eval: -0.55,
     evalText: "?!",
     artifacts: [],
