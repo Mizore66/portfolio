@@ -17,23 +17,10 @@ const MAX_DEPTH = 11;
 const SEARCH_BUDGET_MS = 900;
 /** Wall time for one iterative depth. d5 at the flagship is ~260ms on this VM. */
 const SEARCH_SLICE_MS = 400;
-/** Keep the first search out of the Lighthouse TBT window; later ply changes wait GLIDE_MS. */
-const FIRST_SEARCH_IDLE_MS = 6000;
 
 function afterPaint(ms: number): Promise<void> {
   return new Promise((resolve) => {
     window.setTimeout(resolve, Math.max(0, ms));
-  });
-}
-
-function whenQuiet(): Promise<void> {
-  return new Promise((resolve) => {
-    const ric = window.requestIdleCallback;
-    if (typeof ric === "function") {
-      ric(() => resolve(), { timeout: FIRST_SEARCH_IDLE_MS });
-      return;
-    }
-    window.setTimeout(resolve, FIRST_SEARCH_IDLE_MS);
   });
 }
 
@@ -80,18 +67,13 @@ export function useEngineSearch(
     const last = plies[plies.length - 1] ?? null;
     const mode: EvalMode = evalMode === "learned" && net ? "learned" : "handcrafted";
     const glideFirst = started.current;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const dwell = depthPaintMs(reduced);
+    const box: { worker: Worker | null } = { worker: null };
 
-    async function run() {
-      await afterPaint(0);
-      if (glideFirst) {
-        await new Promise((r) => window.setTimeout(r, GLIDE_MS));
-      } else {
-        started.current = true;
-        await whenQuiet();
-      }
+    async function runOnMain() {
+      await afterPaint(glideFirst ? GLIDE_MS : 0);
       if (cancelled) return;
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const dwell = depthPaintMs(reduced);
       setDown(false);
       try {
         const { fromPieces, prepareSearch, search, clonePos } = await import("@/lib/chess/engine");
@@ -141,9 +123,73 @@ export function useEngineSearch(
       }
     }
 
-    void run();
+    async function runInWorker() {
+      await afterPaint(glideFirst ? GLIDE_MS : 0);
+      if (cancelled) return;
+      started.current = true;
+      setDown(false);
+      try {
+        box.worker = new Worker(new URL("../../lib/chess/search.worker.ts", import.meta.url), {
+          type: "module",
+        });
+      } catch {
+        await runOnMain();
+        return;
+      }
+      box.worker.onmessage = (event: MessageEvent) => {
+        if (cancelled) return;
+        const data = event.data as { type: string } & SearchInfo;
+        if (data.type === "info") {
+          setInfo({
+            depth: data.depth,
+            nodes: data.nodes,
+            nps: data.nps,
+            evalCp: data.evalCp,
+            pv: data.pv,
+            best: data.best,
+            thinking: data.thinking,
+            evalMode: data.evalMode,
+          });
+          return;
+        }
+        if (data.type === "done") {
+          setInfo((prev) => (prev ? { ...prev, thinking: false } : prev));
+          return;
+        }
+        if (data.type === "error") {
+          setInfo(null);
+          setDown(true);
+        }
+      };
+      box.worker.onerror = () => {
+        if (!cancelled) {
+          setInfo(null);
+          setDown(true);
+        }
+      };
+      box.worker.postMessage({
+        plies,
+        side,
+        last,
+        evalMode: mode,
+        maxDepth: MAX_DEPTH,
+        sliceMs: SEARCH_SLICE_MS,
+        showDepths: SHOW_DEPTHS,
+        budgetMs: SEARCH_BUDGET_MS,
+        dwellMs: dwell,
+      });
+    }
+
+    if (mode === "handcrafted") {
+      void runInWorker();
+    } else {
+      started.current = true;
+      void runOnMain();
+    }
+
     return () => {
       cancelled = true;
+      box.worker?.terminate();
     };
   }, [plies, side, evalMode, net]);
 
