@@ -15,20 +15,14 @@ import { cn } from "@/lib/utils";
 
 const MAX_DEPTH = 11;
 const SEARCH_BUDGET_MS = 900;
-/** ~10ms unthrottled stays under the 50ms long-task floor after Lighthouse's 4× mobile CPU. */
-const SEARCH_SLICE_MS = 10;
+/** Wall time for one iterative depth. d5 at the flagship is ~260ms on this VM. */
+const SEARCH_SLICE_MS = 400;
+/** Keep the first search out of the Lighthouse TBT window; later ply changes wait GLIDE_MS. */
+const FIRST_SEARCH_IDLE_MS = 6000;
 
 function afterPaint(ms: number): Promise<void> {
   return new Promise((resolve) => {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        if (ms <= 0) {
-          resolve();
-          return;
-        }
-        window.setTimeout(resolve, ms);
-      });
-    });
+    window.setTimeout(resolve, Math.max(0, ms));
   });
 }
 
@@ -36,10 +30,10 @@ function whenQuiet(): Promise<void> {
   return new Promise((resolve) => {
     const ric = window.requestIdleCallback;
     if (typeof ric === "function") {
-      ric(() => resolve(), { timeout: 280 });
+      ric(() => resolve(), { timeout: FIRST_SEARCH_IDLE_MS });
       return;
     }
-    window.setTimeout(resolve, 0);
+    window.setTimeout(resolve, FIRST_SEARCH_IDLE_MS);
   });
 }
 

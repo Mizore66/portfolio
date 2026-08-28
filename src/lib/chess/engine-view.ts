@@ -18,6 +18,9 @@ export function visibleEngineLine(
   info: SearchInfo | null,
 ): VisibleLine {
   if (!info) {
+    if (book && book.plies.length > 0) {
+      return { pv: [book.san], best: book.plies[0], settling: true };
+    }
     return { pv: [], best: null, settling: false };
   }
   const settling = info.depth < PV_MIN_DEPTH;
