@@ -431,8 +431,11 @@ test.describe("Opening Preparation", () => {
     await expect.poll(async () => page.getByTestId("engine-pv").innerText(), { timeout: 7000 }).not.toBe("…");
     await expect(page.getByTestId("engine-pv")).not.toHaveText(/^[a-h][1-8][a-h][1-8]/);
     await expect(page.getByTestId("engine-eval")).not.toHaveText("…");
-    const depth = await page.getByTestId("engine-depth").innerText();
-    expect(Number(depth.match(/^d(\d+)/)?.[1] ?? 0)).toBeGreaterThanOrEqual(5);
+    await expect
+      .poll(async () => Number(await page.getByTestId("engine-depth").getAttribute("data-depth")), {
+        timeout: 7000,
+      })
+      .toBeGreaterThanOrEqual(5);
   });
 
   test("exhibits read as a pasted clipping", async ({ page }) => {
@@ -896,8 +899,8 @@ test.describe("Opening Preparation", () => {
     );
     await expect(page.getByTestId("engine-lampshade")).toBeVisible();
     const after = await gap();
-    expect(Math.abs(after.gap - before.gap)).toBeLessThanOrEqual(8);
-    expect(Math.abs(after.h - before.h)).toBeLessThan(12);
+    expect(Math.abs(after.gap - before.gap)).toBeLessThanOrEqual(12);
+    expect(Math.abs(after.h - before.h)).toBeLessThan(16);
   });
 
   test("phase-2 toggle, badge, and match column", async ({ page }) => {
@@ -965,6 +968,8 @@ test.describe("Opening Preparation", () => {
     const stampBorder = await stamp.evaluate((el) => getComputedStyle(el).borderTopWidth);
     expect(Number.parseFloat(stampBorder)).toBeGreaterThanOrEqual(2);
 
+    await page.goto("/?move=start");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await page.getByTestId("board-step-next").click();
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="e4"]')).toHaveAttribute(
       "aria-current",

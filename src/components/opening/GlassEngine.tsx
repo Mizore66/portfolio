@@ -168,7 +168,11 @@ export function GlassEngine({
       aria-live="polite"
       aria-label="Live engine search"
     >
-      <p className="font-mono text-[12px] uppercase tracking-[0.18em] text-faded" data-testid="engine-badge">
+      <p
+        className="truncate font-mono text-[12px] uppercase tracking-[0.18em] text-faded"
+        data-testid="engine-badge"
+        title={PHASE2_EXHIBITS ? BROADSHEET.engineBadge : "Engine · 2200"}
+      >
         {PHASE2_EXHIBITS ? BROADSHEET.engineBadge : "Engine · 2200"}
       </p>
       <div className="engine-readout" data-testid="engine-readout">
@@ -205,16 +209,21 @@ export function GlassEngine({
           {pvText}
         </p>
         <p
+          className="mt-2 min-h-4 font-mono text-[12px] text-faded"
+          data-testid="engine-settling"
+        >
+          {line.settling || !info ? BROADSHEET.settling : "\u00a0"}
+        </p>
+        <p
           className="mt-2 font-mono text-[12px] text-faded"
           data-testid="engine-depth"
           data-depth={info?.depth ?? 0}
           data-nps={info?.nps ?? 0}
           data-thinking={info?.thinking ? "true" : "false"}
+          data-settling={line.settling ? "true" : "false"}
         >
           {info
-            ? `d${info.depth} · ${info.nps.toLocaleString()} n/s${info.thinking ? " · …" : ""}${
-                line.settling ? ` · ${BROADSHEET.settling}` : ""
-              }`
+            ? `d${info.depth} · ${info.nps.toLocaleString()} n/s${info.thinking ? " · …" : ""}`
             : settling
               ? BROADSHEET.settling
               : BROADSHEET.searching}
