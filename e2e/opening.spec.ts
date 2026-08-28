@@ -94,7 +94,7 @@ test.describe("Opening Preparation", () => {
       "wrap",
     );
     await expect(page.getByTestId("artists-impression")).toContainText(
-      "The engineer as he might have been found — MathCAD open, licenses already paid. An artist's impression.",
+      "The engineer as he might have been found — MathCAD open, licences already paid. An artist's impression.",
     );
     const impressionWrap = page.locator("#chapter-nf3 .chapter-copy").filter({
       has: page.getByTestId("artists-impression"),
@@ -118,7 +118,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByText("No photograph was filed.")).toHaveCount(0);
     await expect(page.getByTestId("news-clipping")).toHaveCount(4);
     await expect(page.locator("#chapter-e4 [data-testid='news-clipping']")).toContainText(
-      "HONOURS FOR ASPIRING MONASH ENGINEERING CANDIDATE",
+      "HONOURS FOR MONASH ENGINEERING GRADUATE",
     );
     await expect(page.locator("#chapter-e4 .news-clipping-kicker")).toHaveText(/University Intelligence/i);
     await expect(page.locator("#chapter-nf3 [data-testid='news-clipping']")).toContainText(
@@ -136,7 +136,7 @@ test.describe("Opening Preparation", () => {
     expect(setelBox.width).toBeGreaterThan(160);
     expect(setelBox.height).toBeGreaterThan(100);
     await expect(page.locator("#chapter-bc4 [data-testid='news-clipping']")).toContainText(
-      "WESTERN DIGITAL NEWEST ADDITION FOR THE LAB FLOOR",
+      "WESTERN DIGITAL ADDS NEW HANDS ON THE LAB FLOOR",
     );
     await expect(page.locator("#chapter-oo [data-testid='news-clipping']")).toHaveCount(0);
     await expect(page.locator("#chapter-e5 [data-testid='news-clipping']")).toHaveCount(0);
@@ -737,7 +737,10 @@ test.describe("Opening Preparation", () => {
     expect(role).toBeTruthy();
     expect(role!.y).toBeGreaterThanOrEqual(0);
     expect(role!.y + role!.height).toBeLessThan(900);
-    await expect(page.getByTestId("masthead-role")).toHaveText(/Software Engineer/i);
+    await expect(page.getByTestId("masthead-role")).toHaveText(/Software engineer/i);
+    await expect(page.locator("header")).toContainText(/anasqumhiyeh\.com/i);
+    await expect(page.locator("#chapter-e4")).toContainText(/Graduated May 2026/);
+    await expect(page.locator("#chapter-e4")).toContainText(/First Class Honours/);
     await expect(page.getByTestId("masthead-proof")).toHaveCount(0);
   });
 
@@ -883,8 +886,16 @@ test.describe("Opening Preparation", () => {
     const plane768 = (await page.getByTestId("board-plane").boundingBox())!;
     const board768 = (await page.getByTestId("board-diagram").boundingBox())!;
     const engine768 = (await page.getByTestId("glass-engine").boundingBox())!;
-    expect(plane768.width).toBeGreaterThanOrEqual(260);
-    expect(engine768.x).toBeGreaterThan(board768.x + 200);
+    const notation768 = (await page.getByTestId("notation-view").boundingBox())!;
+    expect(plane768.width).toBeGreaterThanOrEqual(180);
+    expect(notation768.x).toBeGreaterThan(board768.x + board768.width - 16);
+    expect(engine768.y).toBeGreaterThan(board768.y + 40);
+
+    await page.setViewportSize({ width: 844, height: 390 });
+    const boardLand = (await page.getByTestId("board-diagram").boundingBox())!;
+    const notationLand = (await page.getByTestId("notation-view").boundingBox())!;
+    expect(notationLand.x).toBeGreaterThan(boardLand.x + boardLand.width - 16);
+    expect(notationLand.y).toBeLessThan(boardLand.y + boardLand.height);
   });
 
   test("the engine lampshade keeps controls from jumping", async ({ page }) => {
@@ -976,8 +987,9 @@ test.describe("Opening Preparation", () => {
     await expect.poll(async () => {
       const board = (await page.getByTestId("board-diagram").boundingBox())!;
       const engine = (await page.getByTestId("glass-engine").boundingBox())!;
-      return engine.x - (board.x + board.width);
-    }).toBeGreaterThanOrEqual(-1);
+      const notation = (await page.getByTestId("notation-view").boundingBox())!;
+      return engine.y > board.y + 40 && notation.x > board.x + board.width - 16;
+    }).toBe(true);
 
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.getByTestId("eval-learned").click();
@@ -1139,5 +1151,40 @@ test.describe("Opening Preparation", () => {
     expect(box.width).toBeGreaterThanOrEqual(44);
     await lightbox.click({ position: { x: 4, y: 4 } });
     await expect(lightbox).toBeHidden();
+  });
+
+  test("the lightbox traps tab and restores the expand control", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/?move=d4");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    const expand = page.locator("#chapter-d4 [data-testid='patent-expand']");
+    await expand.click();
+    const lightbox = page.locator("#chapter-d4 [data-testid='patent-lightbox']");
+    await expect(lightbox).toBeVisible();
+    await lightbox.getByRole("button", { name: "Close" }).focus();
+    await page.keyboard.press("Tab");
+    const trapped = await page.evaluate(() => {
+      const dlg = document.querySelector("#chapter-d4 [data-testid='patent-lightbox']");
+      return Boolean(dlg && document.activeElement && dlg.contains(document.activeElement));
+    });
+    expect(trapped).toBe(true);
+    await lightbox.getByRole("button", { name: "Close" }).click();
+    await expect(lightbox).toBeHidden();
+    await expect(expand).toBeFocused();
+  });
+
+  test("a shared deep link names the chapter and the informant glyphs", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/?move=bc4");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.locator("#chapter-bc4")).toHaveAttribute("data-arrive", "true");
+    const margin = await page.locator("#chapter-bc4").evaluate((el) =>
+      parseFloat(getComputedStyle(el).scrollMarginTop),
+    );
+    expect(margin).toBeGreaterThan(40);
+    await expect(page.locator("#chapter-d4 [data-informant='!!']")).toHaveAttribute(
+      "title",
+      /brilliant/i,
+    );
   });
 });

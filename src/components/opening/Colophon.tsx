@@ -12,7 +12,7 @@ export function Colophon() {
         <div className="halftone-plate-frame">
           <Image
             src="/plates/plate-inventor.jpg"
-            alt="The inventor"
+            alt="Halftone photograph: the engineer on a public escalator, looking toward the camera."
             width={1400}
             height={933}
             sizes="148px"

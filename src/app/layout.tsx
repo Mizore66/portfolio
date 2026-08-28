@@ -1,5 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, Libre_Baskerville, Lora } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { DeskCollage } from "@/components/opening/DeskCollage";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const display = Libre_Baskerville({
@@ -25,6 +28,7 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Anas T. Qumhiyeh — Opening Preparation",
   description:
     "An annotated Italian Game: the portfolio of Anas Tarek Qumhiyeh, software engineer. Moves are facts. Annotations are voice.",
@@ -37,12 +41,20 @@ export const metadata: Metadata = {
     "chess",
   ],
   authors: [{ name: "Anas Tarek Qumhiyeh" }],
+  alternates: { canonical: "/" },
   openGraph: {
     title: "Anas T. Qumhiyeh — Opening Preparation",
     description:
       "An annotated Italian Game: jobs as moves, the rest of a life as annotations.",
     type: "website",
+    url: SITE_URL,
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#f6eedc",
+  colorScheme: "light",
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -56,8 +68,9 @@ export default function RootLayout({
       className={`${display.variable} ${lora.variable} ${mono.variable}`}
     >
       <body className="relative z-[1] min-h-screen bg-transparent font-lora text-ink antialiased">
-        <div className="desk-collage" aria-hidden="true" />
+        <DeskCollage />
         {children}
+        <Analytics />
       </body>
     </html>
   );

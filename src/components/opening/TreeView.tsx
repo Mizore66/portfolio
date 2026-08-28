@@ -16,6 +16,7 @@ import {
   TREE_NODE_W,
   type Point,
 } from "@/lib/opening/tree";
+import { InformantMark } from "@/components/opening/InformantMark";
 import type { OpeningNode } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
 
@@ -240,7 +241,10 @@ function TreeNode({
             <span className="mr-0.5 text-[14px] font-semibold not-italic">{node.fig}</span>
             <span className="text-[14px] font-semibold">{node.san}</span>
             {node.sym ? (
-              <span className="ml-0.5 text-[14px] font-bold not-italic text-score-red">{node.sym}</span>
+              <InformantMark
+                sym={node.sym}
+                className="ml-0.5 text-[14px] font-bold not-italic text-score-red"
+              />
             ) : null}
           </>
         )}

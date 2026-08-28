@@ -195,6 +195,7 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
   const showDagger = presumed.length > 0;
   const caption = `APPARATUS FOR ${spec.function}. Filed ${spec.filed}.`;
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const invokerRef = useRef<HTMLElement | null>(null);
   const titleId = useId();
 
   const close = useCallback(() => {
@@ -202,6 +203,8 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
   }, []);
 
   const open = useCallback(() => {
+    const active = document.activeElement;
+    invokerRef.current = active instanceof HTMLElement ? active : null;
     dialogRef.current?.showModal();
   }, []);
 
@@ -213,8 +216,15 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
     function onClick(e: MouseEvent) {
       if (e.target === dlg) close();
     }
+    function onClose() {
+      invokerRef.current?.focus();
+    }
     dlg.addEventListener("click", onClick);
-    return () => dlg.removeEventListener("click", onClick);
+    dlg.addEventListener("close", onClose);
+    return () => {
+      dlg.removeEventListener("click", onClick);
+      dlg.removeEventListener("close", onClose);
+    };
   }, [close]);
 
   return (

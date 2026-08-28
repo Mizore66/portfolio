@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { InformantMark } from "@/components/opening/InformantMark";
 import { cn } from "@/lib/utils";
 
 /** Once per visit, in memory — no storage. */
@@ -26,7 +27,7 @@ export function GlyphStamp({ nodeId, sym }: { nodeId: string; sym: string }) {
         press && "glyph-stamp",
       )}
     >
-      {sym}
+      <InformantMark sym={sym} />
     </span>
   );
 }

@@ -31,7 +31,7 @@ export const BROADSHEET = {
   errata: "None reported. Corrections to the address above.",
   classifiedKicker: "Situations Wanted",
   classified:
-    "Engineer, MLOps & full-stack, seeks fintech/AI infrastructure post. Apply within →",
+    "Engineer, MLOps and full-stack, seeks a graduate or junior post in fintech or AI infrastructure. Apply within →",
   weatherKicker: "Weather",
   weather: "Outlook: shipping",
   stamp: "C50",
@@ -45,6 +45,9 @@ export const BROADSHEET = {
   stepNext: "Next move",
   weightsPending: "Learned weights still in the post — PeSTO on the masthead.",
   weightsError: "The learned packet did not arrive. PeSTO holds the line.",
+  engineDown: "The engine is thinking about something else. — Ed.",
+  readHintDesktop: "Click any move. ← → steps the mainline, or skip the diagram and read the scoresheet.",
+  readHintTouch: "Tap the chevrons under the board, or skip the diagram and read the scoresheet.",
   evaluationsKicker: "The evaluations meet",
   evaluationsHed: "LEARNED FALLS −100 ELO AT 1 000 NODES",
   evaluationsDek:
@@ -59,7 +62,7 @@ export const BROADSHEET = {
   closerKicker: "Adjourned",
   closerHed: "The scoresheet stands.",
   closer:
-    "The line is the work. The measurement is on the glass. What the next post writes is still to be played.",
+    "The line is the work. The measurement is on the glass. What the next move writes is still to be played. The next line I want to play: measured systems in fintech infrastructure.",
   closerSign: "Anas Tarek Qumhiyeh",
   eloCommits: [
     { commit: "gate-a", label: "A · PeSTO", elo: 0, games: 100 },
@@ -71,8 +74,8 @@ export const BROADSHEET = {
   issueKicker: "In this issue",
   wayfindLabel: "index",
   skipLink: "Skip to the game",
-  dek: "Software Engineer — MLOps & Full-Stack",
-  availability: "Open to 1–3 year fintech and AI infrastructure roles. Replies within two days.",
+  dek: "Software engineer — MLOps and full-stack. Data pipelines and infrastructure.",
+  availability: "Seeking graduate/junior engineering roles in fintech or AI infrastructure. Replies within two days.",
   puzzleKicker: "Today's puzzle",
   classifiedSticky: "Situations Wanted — apply within",
   colophonKicker: "How this paper was set",
@@ -111,9 +114,9 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "Starting position",
     kind: "Start",
     title: "Opening Preparation",
-    fact: `${resumeData.name}. ${resumeData.headline}. ${edu.school}, graduating ${edu.graduation}. Seeking ${resumeData.targetRoles}`,
+    fact: `${resumeData.name}. ${resumeData.headline} ${edu.school}, graduated ${edu.graduation}. Seeking ${resumeData.targetRoles}`,
     commentary:
-      "The board is set before the first pawn moves. What follows is not a puzzle. It is the line I actually played, in a game I've played since I was a teenager — jobs as moves, annotations as voice. Step with the arrow keys, or skip the diagram and read the scoresheet. Chess is the content, never the lock.",
+      "The board is set before the first pawn moves. What follows is not a puzzle. It is the line I actually played, in a game I've played since I was a teenager — jobs as moves, annotations as voice. Chess is the content, never the lock.",
     eval: 0.2,
     evalText: "+0.2",
     artifacts: [],
@@ -133,7 +136,7 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "The University Opening",
     kind: "Education",
     title: "The University Opening",
-    fact: `${edu.degree}. ${edu.school}, ${edu.location}. ${edu.graduation}. WAM ${edu.wam}, CGPA ${edu.cgpa}.`,
+    fact: `${edu.degree}, ${edu.honours}. ${edu.school}, ${edu.location}. Graduated ${edu.graduation}. WAM ${edu.wam}, CGPA ${edu.cgpa}.`,
     commentary:
       "Every open game starts by occupying the centre. I opened with software engineering — not because it was the only file, but because it was the one that let both bishops out.",
     eval: 0.35,
@@ -145,10 +148,11 @@ export const OPENING_NODES: OpeningNode[] = [
     inlineDiagram: true,
     clipping: {
       kicker: "University Intelligence",
-      headline: "HONOURS FOR ASPIRING MONASH ENGINEERING CANDIDATE",
+      headline: "HONOURS FOR MONASH ENGINEERING GRADUATE",
       dateline: "Bandar Sunway, May 2026.",
       src: "/plates/clip-sunway.jpg",
       caption: "On the cloister — file photo.",
+      alt: "Halftone photograph: the cloister at Monash Malaysia, stone arches and a walk in shade.",
     },
   },
   {
@@ -165,7 +169,7 @@ export const OPENING_NODES: OpeningNode[] = [
     title: "The ML Defence",
     fact: `${risk.name} — ${risk.subtitle}. LightGBM / XGBoost, 0.87 AUC-ROC (15% over baseline). SHAP for the why. BentoML to a REST API. Daily retrain on Kafka.`,
     commentary:
-      "Not the symmetrical pawn. A knight that invites the centre forward — the ML line rather than the systems line. I played it: models that had to be interpreted, deployed, and retrained every morning, not just fitted once for a screenshot.",
+      "I built models that had to be interpreted, deployed, and retrained every morning — not fitted once for a screenshot. The knight invites the centre forward: the ML line rather than the systems line.",
     eval: 0.25,
     evalText: "!?",
     artifacts: [
@@ -175,6 +179,7 @@ export const OPENING_NODES: OpeningNode[] = [
     plate: {
       src: "/plates/plate-risk.jpg",
       caption: "Plate · Financial Risk Predictor — the ledger, not the slogan.",
+      alt: "Halftone photograph: an open ledger with ruled columns, a pen resting on the page.",
     },
     figure: RISK_ENGINE,
     plies: [{ from: "g8", to: "f6" }],
@@ -193,7 +198,7 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "Meeting e4 with e5",
     kind: "Identity",
     title: "Meeting e4 with e5",
-    fact: `${resumeData.headline}. Target: ${resumeData.targetRoles}`,
+    fact: `${resumeData.name}. ${resumeData.headline} Seeking ${resumeData.targetRoles}`,
     commentary:
       "The classical answer. I did not decline into a closed system. Full-stack plus MLOps is symmetrical development: product on one wing, the data path on the other.",
     eval: 0.3,
@@ -215,9 +220,9 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "First Developed Piece",
     kind: "Internship",
     title: "First Developed Piece",
-    fact: "Project Engineer Intern, Petronas, Nov 2024 – Feb 2025. MATLAB → Python overhaul. −20% department cost, +30% application efficiency. Test cases into production; UX notes to leadership.",
+    fact: "Petronas — Project Engineer Intern, Nov 2024 – Feb 2025. Converted paid MATLAB licences into free Python packages, then wrote the tests that proved it. Presented usability findings to department leadership.",
     commentary:
-      "Knights before bishops, they say. Petronas was the first industry square — converting paid MATLAB licenses into free Python packages, then writing the tests that proved it.",
+      "Knights before bishops, they say. Petronas was the first industry square — converting paid MATLAB licences into free Python packages, then writing the tests that proved it.",
     eval: 0.4,
     evalText: "+0.40",
     artifacts: [],
@@ -230,9 +235,11 @@ export const OPENING_NODES: OpeningNode[] = [
       dateline: "Kuala Lumpur, Nov. 2024.",
       src: "/plates/clip-petronas.jpg",
       caption: "Before the towers — file photo.",
+      alt: "Halftone photograph: the Petronas Towers seen from the street, two figures in the foreground.",
       inset: {
         src: "/plates/clip-petronas-inset.jpg",
         caption: "The pipeline elevation — file photo.",
+        alt: "Halftone photograph: a pipeline elevation drawing, labelled stations along the run.",
       },
     },
   },
@@ -248,9 +255,9 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "The Elephant Gambit",
     kind: "Project",
     title: "The Elephant Gambit",
-    fact: `${lead.name} — ${lead.subtitle}. PySpark over 100M+ daily events, Deep Interest Network on PyTorch DDP, checkpointed so a multi-hour run could not lose the tape.`,
+    fact: `${lead.name} — ${lead.subtitle}. PySpark over 100M events/day, Deep Interest Network on PyTorch DDP, checkpointed so a multi-hour run could not lose the tape.`,
     commentary:
-      "2…d5 is the impatient move: strike the centre before the pieces are all out. A hundred million events a day is that kind of impatience, with fault-tolerance so the sacrifice is not a bluff.",
+      "A hundred million events a day had to keep moving even when a job died mid-run. 2…d5 is that impatience, with the checkpoint so the sacrifice is not a bluff.",
     eval: 0.45,
     evalText: "+0.45",
     artifacts: [
@@ -260,6 +267,7 @@ export const OPENING_NODES: OpeningNode[] = [
     plate: {
       src: "/plates/plate-leads.jpg",
       caption: "Plate · Distributed Lead Scorer — the sorting hall at full tilt.",
+      alt: "Halftone photograph: a mail-sorting hall, pigeonholes stretching into the distance.",
     },
     figure: LEADS_HALL,
     plies: [{ from: "d7", to: "d5" }],
@@ -278,9 +286,9 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "The Philidor, Declined",
     kind: "Road not taken",
     title: "The Philidor, Declined",
-    fact: "After Petronas the MATLAB world was still there — MathCAD, department code, a quieter engineering path with licenses already paid.",
+    fact: "After Petronas the MATLAB world was still there — MathCAD, department code, a quieter engineering path with licences already paid.",
     commentary:
-      "2…d6 keeps the position closed. I developed the knight instead. The dashed line is honest: I could have stayed in the MATLAB world, licenses already paid, MathCAD glowing on a CRT. The other life stays on the page as a ghost — visible, declined, and not a regret. I did not stay.",
+      "2…d6 keeps the position closed. I developed the knight instead. The dashed line is honest: I could have stayed in the MATLAB world, licences already paid, MathCAD glowing on a CRT. The other life stays on the page as a ghost — visible, declined, and not a regret. I did not stay.",
     eval: -0.55,
     evalText: "?!",
     artifacts: [],
@@ -290,7 +298,8 @@ export const OPENING_NODES: OpeningNode[] = [
     impression: {
       src: "/plates/impression-philidor.jpg",
       caption:
-        "The engineer as he might have been found — MathCAD open, licenses already paid. An artist's impression.",
+        "The engineer as he might have been found — MathCAD open, licences already paid. An artist's impression.",
+      alt: "Artist's impression: an engineer at a CRT, MathCAD open, a quieter lab than the one he chose.",
     },
   },
   {
@@ -305,9 +314,9 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "Defending the Pawn",
     kind: "Internship",
     title: "Defending the Pawn",
-    fact: "Software Engineer Intern, Setel, Jul 2025 – Dec 2025. Payment engine: authorization and capture. 92.5% unit-test coverage, −40% production defects, −30% onboarding time via documentation.",
+    fact: "Setel — Software Engineer Intern, Jul 2025 – Dec 2025. Payment engine: authorization and capture. 92.5% unit-test coverage, −40% production defects.",
     commentary:
-      "e5 is the payment engine. If it falls, the opening collapses. I sat on that square and made sure the pawn could not be taken for free.",
+      "Payment-engine defects used to ship as far as the pump. I sat on that square and made sure the pawn could not be taken for free.",
     eval: 0.35,
     evalText: "+0.35",
     artifacts: [],
@@ -320,6 +329,7 @@ export const OPENING_NODES: OpeningNode[] = [
       dateline: "Kuala Lumpur, Jul. 2025.",
       src: "/plates/clip-setel.jpg",
       caption: "At the pump — file photo.",
+      alt: "Halftone photograph: a fuel pump at night, the brand lit, a car at the island.",
     },
   },
   {
@@ -334,7 +344,7 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "Pointing at f7",
     kind: "Contract",
     title: "Pointing at f7",
-    fact: "Full Stack Engineer, Western Digital, Feb 2025 – Dec 2025. Lab-systems dashboard; RBAC (admin, user, superuser) for 50+ people; −40% manual oversight. WebSocket to the DL model; pathing in under 100 ms.",
+    fact: "Western Digital — Full Stack Engineer, Feb 2025 – Dec 2025. Lab-systems dashboard; role-based access for 50+ staff, −40% manual oversight. WebSocket to the lab's deep-learning model; shortest path between stations in under 100 ms.",
     commentary:
       "The Italian bishop looks at the weakest point in the castled position. At WD the weakness was watching lab systems by hand. I put a bishop there.",
     eval: 0.5,
@@ -345,10 +355,11 @@ export const OPENING_NODES: OpeningNode[] = [
     cap: "Position after 3. Bc4",
     clipping: {
       kicker: "Laboratory Notes",
-      headline: "WESTERN DIGITAL NEWEST ADDITION FOR THE LAB FLOOR",
+      headline: "WESTERN DIGITAL ADDS NEW HANDS ON THE LAB FLOOR",
       dateline: "Feb. 2025.",
       src: "/plates/clip-wd.jpg",
       caption: "On the lab floor — file photo.",
+      alt: "Halftone photograph: a lab bench with racks and monitors, a figure at the near station.",
     },
   },
   {
@@ -365,7 +376,7 @@ export const OPENING_NODES: OpeningNode[] = [
     title: "Quiet Italian",
     fact: `${circuit.name} — ${circuit.subtitle}. Amazon Nova Pro for vision, Nova Sonic for voice. Next.js and Express, CI/CD to ECS Fargate, edge cache for when the network drops.`,
     commentary:
-      "Black develops the same way. Vision on the board, voice on the file. Both sides looking at faults in the copper.",
+      "CircuitMind sees faults in the copper and talks back over a live voice channel. Black develops the same way — vision on the board, voice on the file.",
     eval: 0.45,
     evalText: "+0.45",
     artifacts: [
@@ -375,6 +386,7 @@ export const OPENING_NODES: OpeningNode[] = [
     plate: {
       src: "/plates/plate-circuitmind.jpg",
       caption: "Plate · CircuitMindAI — copper under the loupe.",
+      alt: "Halftone photograph: a printed circuit board under a loupe, traces filling the frame.",
     },
     figure: CIRCUITMIND_LINE,
     plies: [{ from: "f8", to: "c5" }],
@@ -421,7 +433,7 @@ export const OPENING_NODES: OpeningNode[] = [
     title: "The Knight Comes In",
     fact: `${mirrorfi.name} — Grand Prize, Solana Megahack 2025. No-code vault strategies across Drift, Jupiter, and Meteora; shareable MongoDB schemas; auto-rebalancing on live APY.`,
     commentary:
-      "The last minor piece. A hackathon that had to look like a product: shareable lines, a schema people could copy. Grand prize is a symbol. The development was the point.",
+      "Grand prize is a symbol. The work was a product: shareable vault lines, a schema people could copy. Then the last minor piece develops.",
     eval: 0.5,
     evalText: "+0.50",
     artifacts: [
@@ -431,6 +443,7 @@ export const OPENING_NODES: OpeningNode[] = [
     plate: {
       src: "/plates/plate-mirrorfi.jpg",
       caption: "Plate · MirrorFi — the vault wall.",
+      alt: "Halftone photograph: a vault door and lock-work, lit like a bank interior.",
     },
     figure: MIRRORFI_VAULT,
     plies: [{ from: "g8", to: "f6" }],
@@ -468,6 +481,7 @@ export const OPENING_NODES: OpeningNode[] = [
     plate: {
       src: "/plates/plate-veridian.jpg",
       caption: "Plate · Veridian — the central break, intercepted as infrastructure.",
+      alt: "Halftone photograph: an engineer at a drafting table, an infrastructure drawing unrolled before him.",
     },
     figure: VERIDIAN_PLANT,
     plies: [{ from: "d2", to: "d4" }],
@@ -489,7 +503,7 @@ export const OPENING_NODES: OpeningNode[] = [
     title: "The Closed Centre",
     fact: `${graphrag.name} — ${graphrag.subtitle}. LangGraph over Neo4j and a vector store, self-correcting Text-to-Cypher, +45% retrieval versus vector-only RAG.`,
     commentary:
-      "Black can refuse the capture and keep the centre closed. The graph is that kind of patience: prerequisites and credit-transfer as edges, not another embedding dump.",
+      "Prerequisites and credit-transfer live as edges, not another embedding dump. Black can refuse the capture and keep the centre closed — the graph is that kind of patience.",
     eval: 0.55,
     evalText: "+0.55",
     artifacts: [
@@ -499,6 +513,7 @@ export const OPENING_NODES: OpeningNode[] = [
     plate: {
       src: "/plates/plate-graphrag.jpg",
       caption: "Plate · Multi-Agent GraphRAG — the card catalog, not the slogan.",
+      alt: "Halftone photograph: wooden card-catalog drawers, one drawer open on a labelled card.",
     },
     plies: [{ from: "d7", to: "d6" }],
     hl: ["d7", "d6"],
@@ -518,7 +533,7 @@ export const OPENING_NODES: OpeningNode[] = [
     title: "Tucking the Bishop",
     fact: `${slm.name} — ${slm.subtitle}. 70B teacher into a 3B student via QLoRA; DeepSpeed and FlashAttention so the distillation fit; −50% latency, 12× inference.`,
     commentary:
-      "The Italian bishop steps back to b6 and still looks at the same diagonal. Distillation is that retreat: a smaller piece, the same job, cheaper to keep on the board.",
+      "Distillation keeps the same job on a smaller piece, cheaper to keep on the board. The Italian bishop steps back to b6 and still looks at the same diagonal.",
     eval: 0.5,
     evalText: "+0.50",
     artifacts: [
@@ -528,6 +543,7 @@ export const OPENING_NODES: OpeningNode[] = [
     plate: {
       src: "/plates/plate-slm.jpg",
       caption: "Plate · SLM Distillation — teacher and student on the same file.",
+      alt: "Halftone photograph: two machines side by side, the smaller one cabled to the larger.",
     },
     plies: [{ from: "c5", to: "b6" }],
     hl: ["c5", "b6"],
@@ -545,9 +561,9 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "Taking on d4",
     kind: "Method",
     title: "Taking on d4",
-    fact: "Numbers that had to survive the demo: +45% retrieval, −40% oversight, 0.87 AUC, 12× inference on the distilled SLM, 100M events/day.",
+    fact: "Named results that had to survive the demo: GraphRAG +45% retrieval versus vector-only; Western Digital −40% lab oversight; Financial Risk Predictor 0.87 AUC; SLM 12× inference; Lead Scorer 100M events/day.",
     commentary:
-      "Accepting the pawn means accepting the tension. I would rather show the graph than the slogan.",
+      "I would rather show the graph than the slogan. Accepting the pawn is accepting that the numbers have owners.",
     eval: 0.7,
     evalText: "+0.70",
     artifacts: [{ label: slm.name, href: `/projects/${slm.slug}` }],
@@ -567,9 +583,9 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "The Open File",
     kind: "Outlook",
     title: "The Open File",
-    fact: `Seeking ${resumeData.targetRoles}`,
+    fact: `Anas Tarek Qumhiyeh. Seeking ${resumeData.targetRoles} Replies within two days.`,
     commentary:
-      "Rooks belong on open files. This is the current position: sitting on the e-file, waiting for the square where the work already points.",
+      "I want the next line to be measured systems in fintech infrastructure — graduate or junior, on the open file. Rooks belong where the work already points.",
     eval: 0.8,
     evalText: "+0.80",
     artifacts: [

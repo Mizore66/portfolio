@@ -2,6 +2,7 @@
 
 import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
+import { SITE_HOST } from "@/lib/site";
 
 export function Masthead() {
   const year = new Date().getFullYear();
@@ -10,7 +11,7 @@ export function Masthead() {
     <header>
       <div className="border-b-2 border-ink px-4 py-2 sm:px-6">
         <p className="font-mono text-[12px] uppercase tracking-[0.28em] text-faded">
-          C50 · Italian Game · Vol. {year} · Moves are facts · Annotations are voice
+          C50 · Italian Game · Vol. {year} · {SITE_HOST} · Moves are facts · Annotations are voice
         </p>
       </div>
       <div className="border-b-2 border-ink px-4 py-5 sm:px-6">
@@ -18,7 +19,7 @@ export function Masthead() {
           <h1 className="font-display text-[clamp(2.15rem,6.4vw,4.5rem)] leading-[0.95] tracking-tight text-ink">
             Anas T. Qumhiyeh
           </h1>
-          <p data-testid="masthead-role" className="mt-2 font-mono text-[12px] uppercase tracking-[0.16em] text-book-blue">
+          <p data-testid="masthead-role" className="mt-2 font-display text-[16px] italic leading-snug text-book-blue">
             {BROADSHEET.dek}
           </p>
           <p className="mt-2 font-display text-xl italic text-faded sm:text-2xl">
@@ -48,8 +49,11 @@ export function Masthead() {
               {BROADSHEET.printEdition}
             </a>
           </div>
-          <p className="mt-2 hidden font-mono text-[12px] text-faded sm:block">
-            Click any move · ← → steps the mainline
+          <p className="read-hint-desktop mt-2 hidden font-mono text-[12px] text-faded min-[980px]:block">
+            {BROADSHEET.readHintDesktop}
+          </p>
+          <p className="read-hint-touch mt-2 font-mono text-[12px] text-faded min-[980px]:hidden">
+            {BROADSHEET.readHintTouch}
           </p>
         </div>
       </div>

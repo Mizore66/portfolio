@@ -5,6 +5,7 @@ import { ArtifactLinks } from "@/components/opening/ArtifactLinks";
 import { ArtistsImpression } from "@/components/opening/ArtistsImpression";
 import { GlyphStamp } from "@/components/opening/GlyphStamp";
 import { HalftonePlate } from "@/components/opening/HalftonePlate";
+import { InformantMark } from "@/components/opening/InformantMark";
 import { MiniBoard } from "@/components/opening/MiniBoard";
 import { NewsClipping } from "@/components/opening/NewsClipping";
 import { PatentFigure } from "@/components/opening/PatentFigure";
@@ -100,7 +101,7 @@ function Chapter({
             src={node.clipping.src}
             caption={node.clipping.caption}
             photoInset={node.clipping.inset}
-            alt={node.title}
+            alt={node.clipping.alt}
             inset={!node.clipping.inset}
           />
         ) : null}
@@ -108,7 +109,7 @@ function Chapter({
           <HalftonePlate
             src={node.plate.src}
             caption={node.plate.caption}
-            alt={node.title}
+            alt={node.plate.alt}
             inset
           />
         ) : null}
@@ -149,7 +150,7 @@ function Chapter({
                   <ArtistsImpression
                     src={head.impression.src}
                     caption={head.impression.caption}
-                    alt={head.title}
+                    alt={head.impression.alt}
                   />
                 ) : null}
                 <p className="max-w-prose font-lora text-[12px] leading-relaxed italic text-ink/90">
@@ -169,7 +170,7 @@ function Chapter({
                   <HalftonePlate
                     src={head.plate.src}
                     caption={head.plate.caption}
-                    alt={head.title}
+                    alt={head.plate.alt}
                     inset={Boolean(head.figure)}
                     block={!head.figure}
                   />
@@ -289,7 +290,7 @@ function ChapterButton({
         stamp ? (
           <GlyphStamp nodeId={node.id} sym={node.sym} />
         ) : (
-          <span className="ml-1 font-bold text-score-red">{node.sym}</span>
+          <InformantMark sym={node.sym} className="ml-1 font-bold text-score-red" />
         )
       ) : null}
       {!compact ? <span className="ml-2 text-ink">{node.title}</span> : null}

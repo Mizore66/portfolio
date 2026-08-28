@@ -137,7 +137,7 @@ export function buildPrintEditionPdf(): Uint8Array {
   txt("F2", 9, M, y, d.education.degree);
   y -= 12;
   for (const line of wrap(
-    `${d.education.school}, ${d.education.location}. Graduating ${d.education.graduation}. WAM ${d.education.wam}  |  CGPA ${d.education.cgpa}.`,
+    `${d.education.school}, ${d.education.location}. ${d.education.honours}. Graduated ${d.education.graduation}. WAM ${d.education.wam}  |  CGPA ${d.education.cgpa}.`,
     58,
   )) {
     txt("F1", 8, M, y, line);

@@ -12,6 +12,7 @@
     "match": "npx tsx src/lib/chess/match/cli.ts"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "clsx": "^2.1.1",
     "next": "16.2.4",
     "react": "19.2.4",

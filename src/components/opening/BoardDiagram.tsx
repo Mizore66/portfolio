@@ -233,7 +233,7 @@ export function BoardDiagram({
         </div>
         <div className="flex min-w-0 flex-1 items-start">
           <div
-            className="flex w-4 shrink-0 flex-col-reverse items-end justify-around pr-1 font-mono text-[9px] leading-none text-faded"
+            className="flex w-4 shrink-0 flex-col-reverse items-end justify-around pr-1 font-mono text-[10px] leading-none text-faded"
             data-testid="board-ranks"
             style={edge ? { height: edge + 4 } : undefined}
           >

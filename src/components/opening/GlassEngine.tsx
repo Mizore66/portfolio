@@ -72,6 +72,7 @@ export function useEngineSearch(
   net: NnueNet | null = null,
 ) {
   const [info, setInfo] = useState<SearchInfo | null>(null);
+  const [down, setDown] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -83,6 +84,7 @@ export function useEngineSearch(
       if (cancelled) return;
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const dwell = depthPaintMs(reduced);
+      setDown(false);
       try {
         const pos = fromPieces(positionAfter(plies), side, last);
         prepareSearch();
@@ -119,7 +121,10 @@ export function useEngineSearch(
           if (!more) break;
         }
       } catch {
-        if (!cancelled) setInfo(null);
+        if (!cancelled) {
+          setInfo(null);
+          setDown(true);
+        }
       }
       if (!cancelled) {
         setInfo((prev) => (prev ? { ...prev, thinking: false } : prev));
@@ -132,7 +137,7 @@ export function useEngineSearch(
     };
   }, [plies, side, evalMode, net]);
 
-  return info;
+  return { info, down };
 }
 
 export function GlassEngine({
@@ -144,6 +149,7 @@ export function GlassEngine({
   evalMode,
   onEvalMode,
   weightsStatus,
+  down,
 }: {
   info: SearchInfo | null;
   book?: BookLine | null;
@@ -153,18 +159,20 @@ export function GlassEngine({
   evalMode?: EvalMode;
   onEvalMode?: (mode: EvalMode) => void;
   weightsStatus?: "idle" | "loading" | "ready" | "error";
+  down?: boolean;
 }) {
   const line = visibleEngineLine(book ?? null, info);
   const mode = evalMode ?? "handcrafted";
   const usingLearned = info?.evalMode === "learned";
   const pvText = line.pv.length ? numberPv(line.pv, side, moveNumber) : "…";
-  const settling = line.settling || (!info && PHASE2_EXHIBITS);
+  const settling = !down && (line.settling || (!info && PHASE2_EXHIBITS));
 
   return (
     <section
       className="box-inset border-2 border-ink overflow-hidden"
       data-testid="glass-engine"
       data-eval-mode={usingLearned ? "learned" : "handcrafted"}
+      data-engine-down={down ? "true" : undefined}
       aria-live="polite"
       aria-label="Live engine search"
     >
@@ -200,7 +208,7 @@ export function GlassEngine({
         ) : null}
         <p
           className={cn(
-            "mt-2 truncate font-mono text-[12px]",
+            "mt-2 truncate font-mono text-[12px] tabular-nums",
             line.settling ? "text-faded" : "text-book-blue",
           )}
           data-testid="engine-pv"
@@ -212,10 +220,10 @@ export function GlassEngine({
           className="mt-2 min-h-4 font-mono text-[12px] text-faded"
           data-testid="engine-settling"
         >
-          {line.settling || !info ? BROADSHEET.settling : "\u00a0"}
+          {down ? "\u00a0" : line.settling || !info ? BROADSHEET.settling : "\u00a0"}
         </p>
         <p
-          className="mt-2 font-mono text-[12px] text-faded"
+          className="mt-2 font-mono text-[12px] text-faded tabular-nums"
           data-testid="engine-depth"
           data-depth={info?.depth ?? 0}
           data-nps={info?.nps ?? 0}
@@ -224,11 +232,21 @@ export function GlassEngine({
         >
           {info
             ? `d${info.depth} · ${info.nps.toLocaleString()} n/s${info.thinking ? " · …" : ""}`
-            : settling
-              ? BROADSHEET.settling
-              : BROADSHEET.searching}
+            : down
+              ? "—"
+              : settling
+                ? BROADSHEET.settling
+                : BROADSHEET.searching}
         </p>
       </div>
+      {down ? (
+        <p
+          className="mt-2 font-display text-[14px] italic leading-snug text-score-red"
+          data-testid="engine-down"
+        >
+          {BROADSHEET.engineDown}
+        </p>
+      ) : null}
       {PHASE2_EXHIBITS && mode === "learned" && weightsStatus !== "ready" ? (
         <p className="mt-2 font-mono text-[12px] text-score-red" data-testid="weights-pending">
           {weightsStatus === "error" ? BROADSHEET.weightsError : BROADSHEET.weightsPending}

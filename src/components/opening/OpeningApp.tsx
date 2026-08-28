@@ -93,7 +93,7 @@ export function OpeningApp() {
   const wantLearned = PHASE2_EXHIBITS && evalMode === "learned";
   const { net, status: weightsStatus } = useNnueWeights(wantLearned);
   const using: EvalMode = wantLearned && net ? "learned" : "handcrafted";
-  const engine = useEngineSearch(displayPlies, side, using, net);
+  const { info: engine, down: engineDown } = useEngineSearch(displayPlies, side, using, net);
   const book = extra.length === 0 ? nextMainlineBook(selectedId) : null;
   const engineLine = visibleEngineLine(book, engine);
   const atEnd = stepMainline(selectedId, 1) === selectedId;
@@ -117,7 +117,11 @@ export function OpeningApp() {
     if (!el) return;
     skipSpy.current = true;
     window.clearTimeout(skipSpyTimer.current);
-    const top = window.scrollY + el.getBoundingClientRect().top - 12;
+    const stack =
+      parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue("--sticky-stack"),
+      ) || 0;
+    const top = window.scrollY + el.getBoundingClientRect().top - stack - 12;
     const reduced = reducedMotion();
     window.scrollTo({ top: Math.max(0, top), behavior: reduced ? "auto" : "smooth" });
     const release = () => {
@@ -314,6 +318,42 @@ export function OpeningApp() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated]);
 
+  useEffect(() => {
+    if (!hydrated) return;
+    const params = new URLSearchParams(window.location.search);
+    const move = params.get("move");
+    if (!move) return;
+    const el = document.getElementById(`chapter-${move}`);
+    if (!el) return;
+    el.dataset.arrive = "true";
+    const timer = window.setTimeout(() => {
+      delete el.dataset.arrive;
+    }, 1600);
+    return () => window.clearTimeout(timer);
+  }, [hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    const el = document.querySelector<HTMLElement>("[data-sticky-board]");
+    if (!el) return;
+    const apply = () => {
+      const rect = el.getBoundingClientRect();
+      const full = rect.width >= window.innerWidth * 0.72;
+      const sticky = getComputedStyle(el).position === "sticky";
+      const h = sticky && full ? Math.round(rect.height) : 0;
+      document.documentElement.style.setProperty("--sticky-stack", `${h}px`);
+    };
+    apply();
+    const ro = new ResizeObserver(apply);
+    ro.observe(el);
+    window.addEventListener("resize", apply);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", apply);
+      document.documentElement.style.removeProperty("--sticky-stack");
+    };
+  }, [hydrated]);
+
   const lastExtra = extra[extra.length - 1];
   const highlight: [string, string] | null = lastExtra
     ? [lastExtra.from, lastExtra.to]
@@ -353,7 +393,7 @@ export function OpeningApp() {
   }
 
   return (
-    <div className="min-h-screen text-ink" data-hydrated={hydrated ? "true" : "false"}>
+    <div className="opening-shell min-h-screen text-ink" data-hydrated={hydrated ? "true" : "false"}>
       <a href="#the-game" className="skip-link">
         {BROADSHEET.skipLink}
       </a>
@@ -363,7 +403,7 @@ export function OpeningApp() {
           <main id="the-game">
           <div
             data-opening-spread=""
-            className="flex flex-col min-[980px]:flex-row-reverse min-[980px]:items-stretch"
+            className="flex flex-col min-[700px]:flex-row min-[980px]:flex-row-reverse min-[980px]:items-stretch"
           >
             <aside
               data-testid="board-column"
@@ -403,6 +443,7 @@ export function OpeningApp() {
                   evalMode={evalMode}
                   onEvalMode={setEvalMode}
                   weightsStatus={weightsStatus}
+                  down={engineDown}
                 />
                 </div>
                 <div className="flex flex-wrap items-center gap-3">

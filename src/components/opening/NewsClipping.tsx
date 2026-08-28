@@ -40,7 +40,7 @@ export function NewsClipping({
   src: string;
   alt: string;
   caption: string;
-  photoInset?: { src: string; caption: string };
+  photoInset?: { src: string; caption: string; alt?: string };
   inset?: boolean;
 }) {
   return (
@@ -62,7 +62,7 @@ export function NewsClipping({
           <div className="news-clipping-inset" data-testid="news-clipping-inset" data-clip={photoInset.src}>
             <PhotoWell
               src={photoInset.src}
-              alt={photoInset.caption}
+              alt={photoInset.alt ?? photoInset.caption}
               sizes="(max-width: 639px) 140px, 120px"
             />
           </div>

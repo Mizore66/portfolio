@@ -146,13 +146,13 @@ export type OpeningNode = {
   hl: [string, string] | null;
   cap: string;
   /** Newspaper plate — flagship and major projects only. */
-  plate?: { src: string; caption: string };
+  plate?: { src: string; caption: string; alt: string };
   /** Small static diagram in the scoresheet (career figures, castle, flagship, finale). */
   inlineDiagram?: boolean;
   /** Patent-drawing apparatus. Project nodes carry a figure AND a plate; role sheets are retired from the scoresheet. */
   figure?: ApparatusSpec;
   /** Declined / counterfactual: an artist's impression, not a file photo. */
-  impression?: { src: string; caption: string };
+  impression?: { src: string; caption: string; alt: string };
   /** Role/education news-clipping: kicker + headline + dateline over a file photo. */
   clipping?: {
     kicker: string;
@@ -160,7 +160,8 @@ export type OpeningNode = {
     dateline: string;
     src: string;
     caption: string;
-    inset?: { src: string; caption: string };
+    alt: string;
+    inset?: { src: string; caption: string; alt: string };
   };
   /** Optional one-move diagram quiz. Never a lock. */
   puzzle?: {

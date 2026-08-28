@@ -38,6 +38,12 @@ npm run build
 
 Print edition: `GET /print-edition` — a typeset one-pager whose diagram is occupancy-tested as 5. d4 of the Italian, not the starting position.
 
+## Production
+
+The live origin is `NEXT_PUBLIC_SITE_URL` (default `https://anasqumhiyeh.com`). That host is the masthead dateline. `/sitemap.xml` and `/robots.txt` are generated from it; the OG image is `/opengraph-image`. Analytics are `@vercel/analytics` — no cookies, no recruiter-identifying payload.
+
+Deploy on Vercel. Bind the custom domain, set `NEXT_PUBLIC_SITE_URL` to the https origin, and point DNS. After go-live: Lighthouse + axe on the real URL, then a pass on an actual phone. Retrain stays behind `training/GUARDS.md` and does not block launch. The five-stranger protocol (watch, don't coach) is the next copy review, not this repo.
+
 ## What this is not
 
 - Not a puzzle lock. You can read every fact without moving a piece.

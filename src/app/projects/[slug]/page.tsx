@@ -24,7 +24,7 @@ export default async function ProjectPage({
             <div className="flex items-center justify-between gap-3">
               <Link
                 href="/"
-                className="font-mono text-[11px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4 hover:text-score-red"
+                className="exhibit-back font-mono text-[11px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4 hover:text-score-red"
               >
                 ← Opening Preparation
               </Link>
@@ -48,7 +48,7 @@ export default async function ProjectPage({
               <HalftonePlate
                 src={project.plate}
                 caption={project.plateCaption}
-                alt={project.name}
+                alt={project.plateAlt}
                 priority
               />
             </div>
@@ -107,9 +107,9 @@ export default async function ProjectPage({
               </a>
               <Link
                 href="/"
-                className="border-2 border-ink px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-ink hover:bg-paper-deep"
+                className="exhibit-back border-2 border-ink px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-ink hover:bg-paper-deep"
               >
-                Back to the scoresheet
+                ← Opening Preparation
               </Link>
             </div>
           </div>
