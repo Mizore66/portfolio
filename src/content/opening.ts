@@ -38,6 +38,21 @@ export const BROADSHEET = {
   playInvite: "Play the position",
   playHint: "The annotator will respond",
   lampshade: "Annotators and engines have disagreed since 1997.",
+  lampshadeLearned: "The learned eval and the annotator have parted on this page.",
+  engineBadge: "ENGINE · 2200-anchored · +0 self-play",
+  weightsPending: "Learned weights still in the post — PeSTO on the masthead.",
+  weightsError: "The learned packet did not arrive. PeSTO holds the line.",
+  evaluationsKicker: "The evaluations meet",
+  evaluationsHed: "THE MATCH REPORT IS STILL IN THE STONE",
+  evaluationsDek:
+    "Two evals, one search. Handcrafted PeSTO against a 768×2×256 net trained on Lichess cloud evals (CC0). Fixed nodes a move, the same fifty openings, colours swapped. The delta is the measurement; the 2200 on the glass is a club-strength anchor, not a CCRL listing.",
+  evaluationsSprt: "Awaiting the first learned–handcrafted SPRT.",
+  evaluationsHonesty: "Honest Elo: the deltas are rigorous, the anchor is declared.",
+  eloChartKicker: "Elo over commits",
+  eloChartCaption: "Each point is a match JSON. Gate A sits at 0. Gate C is the first learned point.",
+  eloCommits: [
+    { commit: "a718d47", label: "A · PeSTO", elo: 0, games: 16 },
+  ] as { commit: string; label: string; elo: number; games: number }[],
   gameKicker: "The game",
   printEdition: "Print edition",
   printHref: "/print-edition",
@@ -49,7 +64,7 @@ export const BROADSHEET = {
   classifiedSticky: "Situations Wanted — apply within",
   colophonKicker: "How this paper was set",
   colophon:
-    "Type: Libre Baskerville, Lora, IBM Plex Mono. Ink #1a120c on cream #f6eedc. Radius none. The tree is the repertoire; the scoresheet is the CV; the glass case is mailbox-64 alpha-beta with PeSTO tables. The 2200 on the masthead of that case is club strength, not a published Elo. No template. Chess is content, never a lock.",
+    "Type: Libre Baskerville, Lora, IBM Plex Mono. Ink #1a120c on cream #f6eedc. Radius none. The tree is the repertoire; the scoresheet is the CV; the glass case is mailbox-64 alpha-beta with PeSTO tables, and a learned eval measured against them. The 2200 on the masthead of that case is club strength, not a published Elo. No template. Chess is content, never a lock.",
   colophonHonestyKicker: "Three registers",
   colophonHonesty:
     "Photographs real and composed; impressions imagined; the subject is real throughout.",

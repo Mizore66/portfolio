@@ -1,0 +1,25 @@
+{
+  "source": "https://database.lichess.org/#evals",
+  "url": "https://database.lichess.org/lichess_db_eval.jsonl.zst",
+  "license": "CC0-1.0",
+  "fetched": "2026-08-28",
+  "read": 10825117,
+  "kept": 6040000,
+  "train": 6000000,
+  "holdout": 40000,
+  "seconds": 426.4,
+  "min_depth": 8,
+  "white_mean_cp": 55.331260573421154,
+  "black_mean_cp": 42.63673992824283,
+  "cp_convention": "white_pov",
+  "filters": [
+    "dedupe 4-field FEN",
+    "drop ply<10 (fullmove when present; else 32-piece KQkq proxy)",
+    "drop EP",
+    "drop in-check",
+    "drop PV-capture (first UCI hits occupied/EP)",
+    "drop mate",
+    "clamp ±1500cp",
+    "WDL = sigmoid(stm_cp/410) with stm_cp from White-POV labels"
+  ]
+}

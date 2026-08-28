@@ -662,6 +662,11 @@
   min-height: 2.75em;
 }
 
+[data-testid="eval-toggle"] button[aria-pressed="true"] {
+  background: #1a120c;
+  color: #f6eedc;
+}
+
 @media (max-width: 979px) {
   [data-testid="board-column"].col-stack {
     padding-top: 8px;
@@ -685,6 +690,9 @@
   [data-testid="glass-engine"] .engine-lampshade,
   [data-testid="glass-engine"] [data-testid="engine-depth"] {
     display: none;
+  }
+  [data-testid="glass-engine"] [data-testid="eval-toggle"] {
+    display: flex;
   }
   [data-testid="glass-engine"] {
     display: flex;

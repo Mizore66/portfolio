@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { EvaluationsColumn } from "@/components/opening/EvaluationsColumn";
+import { EloCommitsChart } from "@/components/opening/EloCommitsChart";
 import { Colophon } from "@/components/opening/Colophon";
 import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
+import { PHASE2_EXHIBITS } from "@/lib/chess/phase2";
 
 export function BroadsheetFiller() {
   const [weather, setWeather] = useState(0);
@@ -38,6 +41,12 @@ export function BroadsheetFiller() {
           <p className="mt-2 font-mono text-[10px] text-faded">{BROADSHEET.availability}</p>
         </div>
       </div>
+      {PHASE2_EXHIBITS ? (
+        <>
+          <EvaluationsColumn />
+          <EloCommitsChart />
+        </>
+      ) : null}
       <Colophon />
       <div className="flex items-end justify-between gap-4">
         <button

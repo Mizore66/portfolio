@@ -12,13 +12,15 @@ on these sources when instructing the agent to proceed with Gates B–E (2026-08
 
 No Stockfish network weights are copied. Labels are public evals, not GPL'd parameters.
 
-**Run receipt:** `training/data/provenance.json` (gitignored pack; counts are copied here after ingest).
+**Run receipt:** `training/PROVENANCE.json` (packs in `training/data/` are gitignored).
 
 | Cut | Value |
 | --- | --- |
 | Stream | `lichess_db_eval.jsonl.zst` 2026-08-02 |
+| Fetched | 2026-08-28 |
+| Read / kept | 10 825 117 → 6 040 000 (6 000 000 train + 40 000 holdout) |
 | Min depth | 8 |
-| Label convention | White POV centipawns; STM WDL = sigmoid(±cp / 410) |
+| Label convention | White POV centipawns (white-to-move mean +55cp, black-to-move mean +43cp — first-move advantage, not STM bias); STM WDL = sigmoid(±cp / 410) |
 | Quiet | no EP, not in check, first PV move not a capture |
 | Early | ply &lt; 10 when clocks exist; else 32-piece + KQkq |
 

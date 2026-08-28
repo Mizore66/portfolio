@@ -51,4 +51,5 @@ next-env.d.ts
 /training/*.parquet
 /training/*.zst
 /training/*.npz
+/training/__pycache__/
 /tmp/

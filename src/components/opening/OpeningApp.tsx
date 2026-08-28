@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { BoardDiagram } from "@/components/opening/BoardDiagram";
 import { BroadsheetFiller } from "@/components/opening/BroadsheetFiller";
-import { GlassEngine, useEngineSearch } from "@/components/opening/GlassEngine";
+import { GlassEngine, useEngineSearch, useNnueWeights } from "@/components/opening/GlassEngine";
 import { IssueIndex } from "@/components/opening/IssueIndex";
 import { Masthead } from "@/components/opening/Masthead";
 import { NewspaperColumn } from "@/components/opening/NewspaperColumn";
@@ -17,7 +17,9 @@ import {
   isLegalPly,
   legalPlies,
   replyMove,
+  type EvalMode,
 } from "@/lib/chess/engine";
+import { PHASE2_DEFAULT_EVAL, PHASE2_EXHIBITS } from "@/lib/chess/phase2";
 import { expandPlayLine, sideAfter } from "@/lib/chess/play";
 import { positionAfter } from "@/lib/chess/replay";
 import { HOVER_PREVIEW_MS, playDelayMs } from "@/lib/opening/motion";
@@ -84,7 +86,11 @@ export function OpeningApp() {
   const displayPlies = useMemo(() => expandPlayLine(bookPlies, extra), [bookPlies, extra]);
   const startSide = sideToMove(selectedId);
   const side = sideAfter(startSide, extra.length);
-  const engine = useEngineSearch(displayPlies, side);
+  const [evalMode, setEvalMode] = useState<EvalMode>(PHASE2_DEFAULT_EVAL);
+  const wantLearned = PHASE2_EXHIBITS && evalMode === "learned";
+  const { net, status: weightsStatus } = useNnueWeights(wantLearned);
+  const using: EvalMode = wantLearned && net ? "learned" : "handcrafted";
+  const engine = useEngineSearch(displayPlies, side, using, net);
   const book = extra.length === 0 ? nextMainlineBook(selectedId) : null;
   const engineLine = visibleEngineLine(book, engine);
   const atEnd = stepMainline(selectedId, 1) === selectedId;
@@ -312,7 +318,12 @@ export function OpeningApp() {
   const evalLabel = engine
     ? `${engine.evalCp >= 0 ? "+" : ""}${(engine.evalCp / 100).toFixed(2)}`
     : "…";
-  const lampshade = `The engine gives ${evalLabel}. ${BROADSHEET.lampshade}`;
+  const annotatorCp = Math.round(node.eval * 100);
+  const learnedDisagrees =
+    using === "learned" && engine && Math.abs(engine.evalCp - annotatorCp) >= 80;
+  const lampshade = learnedDisagrees
+    ? `The engine gives ${evalLabel}. ${BROADSHEET.lampshade} ${BROADSHEET.lampshadeLearned}`
+    : `The engine gives ${evalLabel}. ${BROADSHEET.lampshade}`;
   const moveNumber =
     !node.color || node.moveNumber === 0
       ? 1
@@ -382,6 +393,9 @@ export function OpeningApp() {
                   side={side}
                   moveNumber={playMoveNumber}
                   lampshade={lampshade}
+                  evalMode={evalMode}
+                  onEvalMode={setEvalMode}
+                  weightsStatus={weightsStatus}
                 />
                 </div>
                 <div className="flex flex-wrap items-center gap-3">

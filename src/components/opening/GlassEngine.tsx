@@ -7,8 +7,12 @@ import {
   numberPv,
   prepareSearch,
   search,
+  type EvalMode,
   type SearchInfo,
 } from "@/lib/chess/engine";
+import { loadNnue } from "@/lib/chess/nnue/load";
+import type { NnueNet } from "@/lib/chess/nnue/types";
+import { PHASE2_EXHIBITS, PHASE2_WEIGHTS_URL } from "@/lib/chess/phase2";
 import { positionAfter } from "@/lib/chess/replay";
 import { SHOW_DEPTHS, visibleEngineLine, type BookLine } from "@/lib/chess/engine-view";
 import { BROADSHEET } from "@/content/opening";
@@ -33,12 +37,45 @@ function afterPaint(ms: number): Promise<void> {
   });
 }
 
-export function useEngineSearch(plies: Ply[], side: Color) {
+export function useNnueWeights(wanted: boolean) {
+  const [net, setNet] = useState<NnueNet | null>(null);
+  const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
+
+  useEffect(() => {
+    if (!wanted || !PHASE2_EXHIBITS) return;
+    if (net) return;
+    let cancelled = false;
+    setStatus("loading");
+    void loadNnue(PHASE2_WEIGHTS_URL)
+      .then((loaded) => {
+        if (cancelled) return;
+        setNet(loaded);
+        setStatus("ready");
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setStatus("error");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [wanted, net]);
+
+  return { net, status };
+}
+
+export function useEngineSearch(
+  plies: Ply[],
+  side: Color,
+  evalMode: EvalMode = "handcrafted",
+  net: NnueNet | null = null,
+) {
   const [info, setInfo] = useState<SearchInfo | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     const last = plies[plies.length - 1] ?? null;
+    const mode: EvalMode = evalMode === "learned" && net ? "learned" : "handcrafted";
 
     async function run() {
       await new Promise((r) => window.setTimeout(r, GLIDE_MS));
@@ -54,7 +91,11 @@ export function useEngineSearch(plies: Ply[], side: Color) {
           const spent = performance.now() - tSearch;
           if (depth > SHOW_DEPTHS && spent > SEARCH_BUDGET_MS) break;
           const remain = Math.max(SEARCH_BUDGET_MS - spent, 16);
-          const result = search(clonePos(pos), depth, { timeMs: remain });
+          const result = search(clonePos(pos), depth, {
+            timeMs: remain,
+            evalMode: mode,
+            net,
+          });
           if (cancelled) return;
           if (result.timedOut && result.pv.length === 0 && depth > 1) break;
           nodes += result.nodes;
@@ -70,6 +111,7 @@ export function useEngineSearch(plies: Ply[], side: Color) {
             pv: result.pv,
             best: result.best,
             thinking: more,
+            evalMode: mode,
           });
           await afterPaint(dwell);
           if (cancelled) return;
@@ -87,7 +129,7 @@ export function useEngineSearch(plies: Ply[], side: Color) {
     return () => {
       cancelled = true;
     };
-  }, [plies, side]);
+  }, [plies, side, evalMode, net]);
 
   return info;
 }
@@ -98,24 +140,55 @@ export function GlassEngine({
   side,
   moveNumber,
   lampshade,
+  evalMode,
+  onEvalMode,
+  weightsStatus,
 }: {
   info: SearchInfo | null;
   book?: BookLine | null;
   side: "w" | "b";
   moveNumber: number;
   lampshade: string;
+  evalMode?: EvalMode;
+  onEvalMode?: (mode: EvalMode) => void;
+  weightsStatus?: "idle" | "loading" | "ready" | "error";
 }) {
   const line = visibleEngineLine(book ?? null, info);
+  const mode = evalMode ?? "handcrafted";
+  const usingLearned = info?.evalMode === "learned";
   return (
     <section
       className="box-inset border-2 border-ink"
       data-testid="glass-engine"
+      data-eval-mode={usingLearned ? "learned" : "handcrafted"}
       aria-live="polite"
       aria-label="Live engine search"
     >
-      <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-faded">
-        Engine · 2200
+      <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-faded" data-testid="engine-badge">
+        {PHASE2_EXHIBITS ? BROADSHEET.engineBadge : "Engine · 2200"}
       </p>
+      {PHASE2_EXHIBITS && onEvalMode ? (
+        <div className="eval-toggle mt-1 flex gap-0" data-testid="eval-toggle" role="group" aria-label="Evaluation">
+          <button
+            type="button"
+            data-testid="eval-handcrafted"
+            aria-pressed={mode === "handcrafted"}
+            onClick={() => onEvalMode("handcrafted")}
+            className="border border-ink px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest"
+          >
+            Handcrafted
+          </button>
+          <button
+            type="button"
+            data-testid="eval-learned"
+            aria-pressed={mode === "learned"}
+            onClick={() => onEvalMode("learned")}
+            className="border border-ink border-l-0 px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest"
+          >
+            Learned
+          </button>
+        </div>
+      ) : null}
       <p className="mt-1 truncate font-mono text-[13px] text-book-blue" data-testid="engine-pv">
         {line.pv.length ? numberPv(line.pv, side, moveNumber) : "…"}
       </p>
@@ -123,12 +196,18 @@ export function GlassEngine({
         className="mt-1 font-mono text-[10px] text-faded"
         data-testid="engine-depth"
         data-depth={info?.depth ?? 0}
+        data-nps={info?.nps ?? 0}
         data-thinking={info?.thinking ? "true" : "false"}
       >
         {info
           ? `d${info.depth} · ${info.nps.toLocaleString()} n/s${info.thinking ? " · …" : ""}`
           : BROADSHEET.searching}
       </p>
+      {PHASE2_EXHIBITS && mode === "learned" && weightsStatus !== "ready" ? (
+        <p className="mt-1 font-mono text-[10px] text-score-red" data-testid="weights-pending">
+          {weightsStatus === "error" ? BROADSHEET.weightsError : BROADSHEET.weightsPending}
+        </p>
+      ) : null}
       <p
         data-testid="engine-lampshade"
         className="engine-lampshade mt-2 font-display text-[13px] leading-snug italic text-ink"
