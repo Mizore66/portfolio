@@ -1106,6 +1106,8 @@ test.describe("Opening Preparation", () => {
     expect(step.height).toBeGreaterThanOrEqual(44);
     expect(step.width).toBeGreaterThanOrEqual(44);
 
+    await expect(page.getByTestId("wayfind-index")).toHaveAttribute("data-shown", "false");
+
     const variation = page.locator("#chapter-e4 .notation-hit").first();
     await variation.scrollIntoViewIfNeeded();
     const hit = (await variation.boundingBox())!;
@@ -1115,8 +1117,6 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("#chapter-re1").getByText(/Outlook/i).first()).toBeVisible();
     await expect(page.locator("#chapter-re1").getByText(/^NEXT$/)).toHaveCount(0);
 
-    await expect(page.getByTestId("wayfind-index")).toHaveAttribute("data-shown", "false");
-    await page.evaluate(() => window.scrollTo(0, window.innerHeight * 2.2));
     await expect.poll(async () => page.getByTestId("wayfind-index").getAttribute("data-shown")).toBe(
       "true",
     );
