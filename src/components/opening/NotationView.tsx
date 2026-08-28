@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Fragment, memo } from "react";
 import { ArtifactLinks } from "@/components/opening/ArtifactLinks";
 import { ArtistsImpression } from "@/components/opening/ArtistsImpression";
@@ -8,7 +9,6 @@ import { HalftonePlate } from "@/components/opening/HalftonePlate";
 import { InformantMark } from "@/components/opening/InformantMark";
 import { MiniBoard } from "@/components/opening/MiniBoard";
 import { NewsClipping } from "@/components/opening/NewsClipping";
-import { PatentFigure } from "@/components/opening/PatentFigure";
 import { BROADSHEET } from "@/content/opening";
 import {
   buildNotation,
@@ -20,6 +20,11 @@ import {
 } from "@/lib/opening/tree";
 import type { OpeningNode } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
+
+const PatentFigure = dynamic(
+  () => import("@/components/opening/PatentFigure").then((m) => m.PatentFigure),
+  { ssr: false },
+);
 
 export const NotationView = memo(function NotationView({
   selectedId,

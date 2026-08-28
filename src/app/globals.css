@@ -1111,6 +1111,8 @@
 
 [data-chapter] {
   scroll-margin-top: calc(var(--sticky-stack, 0px) + 12px);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 720px;
 }
 
 [data-chapter][data-arrive] {

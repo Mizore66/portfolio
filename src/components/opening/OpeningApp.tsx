@@ -80,6 +80,8 @@ export function OpeningApp() {
   const skipSpy = useRef(false);
   const skipSpyTimer = useRef<number>(0);
   const [engineApi, setEngineApi] = useState<EngineApi | null>(null);
+  const engineApiRef = useRef(engineApi);
+  engineApiRef.current = engineApi;
 
   useEffect(() => {
     let cancelled = false;
@@ -135,6 +137,8 @@ export function OpeningApp() {
     () => (engineApi && pos ? engineApi.legalPlies(pos) : []),
     [engineApi, pos],
   );
+  const posRef = useRef(pos);
+  posRef.current = pos;
 
   const onSelect = useCallback(
     (id: string) => {
@@ -189,10 +193,12 @@ export function OpeningApp() {
 
   const onPlay = useCallback(
     (ply: Ply) => {
-      if (!engineApi || !pos) return;
+      const api = engineApiRef.current;
+      const boardPos = posRef.current;
+      if (!api || !boardPos) return;
       if (side !== startSide) return;
-      if (!engineApi.isLegalPly(pos, ply)) return;
-      extraLenRef.current = extra.length + 1;
+      if (!api.isLegalPly(boardPos, ply)) return;
+      extraLenRef.current = extraLenRef.current + 1;
       setPlaying(false);
       setPlayHint(false);
       setPlay((cur) => ({
@@ -201,7 +207,7 @@ export function OpeningApp() {
         note: null,
       }));
     },
-    [engineApi, pos, side, startSide, selectedId, extra.length],
+    [side, startSide, selectedId],
   );
 
   useEffect(() => {

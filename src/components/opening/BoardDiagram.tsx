@@ -18,6 +18,51 @@ import { GLIDE_MS } from "@/lib/opening/motion";
 import type { Ply } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
 
+type BoardDiagramProps = {
+  plies: Ply[];
+  highlight: [string, string] | null;
+  preview?: [string, string] | null;
+  caption: string;
+  evalCp: number | null;
+  evalLabel: string;
+  arrow?: Ply | null;
+  legal?: Ply[];
+  playable?: boolean;
+  playSide?: "w" | "b";
+  onPlay?: (ply: Ply) => void;
+  onSquare?: (sq: string) => void;
+  puzzlePrompt?: string | null;
+  puzzleNote?: string | null;
+  puzzleTarget?: string | null;
+  onStepPrev?: () => void;
+  onStepNext?: () => void;
+  canStepPrev?: boolean;
+  canStepNext?: boolean;
+};
+
+function boardUnchanged(prev: BoardDiagramProps, next: BoardDiagramProps) {
+  return (
+    prev.plies === next.plies &&
+    prev.highlight === next.highlight &&
+    prev.preview === next.preview &&
+    prev.caption === next.caption &&
+    prev.evalCp === next.evalCp &&
+    prev.evalLabel === next.evalLabel &&
+    prev.arrow === next.arrow &&
+    prev.playable === next.playable &&
+    prev.playSide === next.playSide &&
+    prev.puzzlePrompt === next.puzzlePrompt &&
+    prev.puzzleNote === next.puzzleNote &&
+    prev.puzzleTarget === next.puzzleTarget &&
+    prev.onPlay === next.onPlay &&
+    prev.onSquare === next.onSquare &&
+    prev.onStepPrev === next.onStepPrev &&
+    prev.onStepNext === next.onStepNext &&
+    prev.canStepPrev === next.canStepPrev &&
+    prev.canStepNext === next.canStepNext
+  );
+}
+
 export const BoardDiagram = memo(function BoardDiagram({
   plies,
   highlight,
@@ -38,30 +83,12 @@ export const BoardDiagram = memo(function BoardDiagram({
   onStepNext,
   canStepPrev,
   canStepNext,
-}: {
-  plies: Ply[];
-  highlight: [string, string] | null;
-  preview?: [string, string] | null;
-  caption: string;
-  evalCp: number | null;
-  evalLabel: string;
-  arrow?: Ply | null;
-  legal?: Ply[];
-  playable?: boolean;
-  playSide?: "w" | "b";
-  onPlay?: (ply: Ply) => void;
-  onSquare?: (sq: string) => void;
-  puzzlePrompt?: string | null;
-  puzzleNote?: string | null;
-  puzzleTarget?: string | null;
-  onStepPrev?: () => void;
-  onStepNext?: () => void;
-  canStepPrev?: boolean;
-  canStepNext?: boolean;
-}) {
+}: BoardDiagramProps) {
   const prevPlies = useRef<Ply[] | null>(null);
   const boardRef = useRef<HTMLDivElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
+  const legalRef = useRef(legal);
+  legalRef.current = legal;
   const [edge, setEdge] = useState(0);
   const plySig = plies.map((p) => `${p.from}${p.to}`).join(",");
   const [fromSel, setFromSel] = useState<{ sig: string; sq: string | null }>({
@@ -114,13 +141,14 @@ export const BoardDiagram = memo(function BoardDiagram({
     };
   }, [plies, plySig]);
 
-  const dests = fromSq ? (legal ?? []).filter((p) => p.from === fromSq).map((p) => p.to) : [];
+  const dests = fromSq ? (legalRef.current ?? []).filter((p) => p.from === fromSq).map((p) => p.to) : [];
   const occ = new Map(pieces.filter((p) => !p.captured).map((p) => [p.square, p]));
 
   useLayoutEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
     const fit = () => {
+      if (window.matchMedia("(max-width: 699px)").matches) return;
       if (el.clientWidth < 16) return;
       setEdge(snapInnerEdge(el.clientWidth));
     };
@@ -356,7 +384,7 @@ export const BoardDiagram = memo(function BoardDiagram({
       </figcaption>
     </figure>
   );
-});
+}, boardUnchanged);
 
 function squareShifted(fromPlies: Ply[], toPlies: Ply[], id: string): boolean {
   const a = positionAfter(fromPlies).find((p) => p.id === id);
