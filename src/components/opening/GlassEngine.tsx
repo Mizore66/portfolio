@@ -158,17 +158,18 @@ export function GlassEngine({
   const usingLearned = info?.evalMode === "learned";
   return (
     <section
-      className="box-inset border-2 border-ink"
+      className="box-inset border-2 border-ink overflow-hidden"
       data-testid="glass-engine"
       data-eval-mode={usingLearned ? "learned" : "handcrafted"}
       aria-live="polite"
       aria-label="Live engine search"
     >
-      <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-faded" data-testid="engine-badge">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
+      <p className="truncate font-mono text-[10px] uppercase tracking-[0.18em] text-faded" data-testid="engine-badge">
         {PHASE2_EXHIBITS ? BROADSHEET.engineBadge : "Engine · 2200"}
       </p>
       {PHASE2_EXHIBITS && onEvalMode ? (
-        <div className="eval-toggle mt-1 flex gap-0" data-testid="eval-toggle" role="group" aria-label="Evaluation">
+        <div className="eval-toggle flex gap-0" data-testid="eval-toggle" role="group" aria-label="Evaluation">
           <button
             type="button"
             data-testid="eval-handcrafted"
@@ -189,6 +190,7 @@ export function GlassEngine({
           </button>
         </div>
       ) : null}
+      </div>
       <p className="mt-1 truncate font-mono text-[13px] text-book-blue" data-testid="engine-pv">
         {line.pv.length ? numberPv(line.pv, side, moveNumber) : "…"}
       </p>

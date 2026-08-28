@@ -659,7 +659,7 @@
 }
 
 .engine-lampshade {
-  min-height: 2.75em;
+  min-height: 3.5em;
 }
 
 [data-testid="eval-toggle"] button[aria-pressed="true"] {
