@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Opening Preparation
 
-## Getting Started
+A recruiter-first portfolio: an annotated Italian Game mapped onto a career, not a chess puzzle. Moves are facts. Annotations are voice. Chess is the content, never a lock.
 
-First, run the development server:
+This is the public scoresheet of [Anas Tarek Qumhiyeh](https://github.com/Mizore66) — software engineer, MLOps and full-stack.
+
+## What you are looking at
+
+One newspaper. The masthead is the name. The repertoire tree and the sticky board sit on the front. Every node in the opening is a chapter in the scoresheet: a job or a project, written as Informant notes. The glass case on the right is a live search — mailbox-64 alpha-beta, PeSTO evaluation, labelled **2200** because that is club strength, not a published Elo.
+
+Two doors, always: the article is first-class (and the only door under 980px). The tree is desktop. Click any move. `←` `→` steps the mainline.
+
+## The engine's receipt
+
+The move generator is tested against start-position perft, which the colophon also prints:
+
+| depth | nodes |
+| ---: | ---: |
+| 1 | 20 |
+| 2 | 400 |
+| 3 | 8902 |
+
+There is no learned-eval exhibit yet. Phase 2 (NNUE inference, SPRT match harness) ships behind flags: PeSTO is never deleted, Gate A is the handcrafted-vs-handcrafted sanity match, and the site toggle/chart wait on a measured delta. The 2200 on the glass is an estimate of playing strength, not a leaderboard. Run `npx tsx src/lib/chess/match/cli.ts --suite mini --nodes 48` for a tiny self-play.
+
+## How to run it
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+```bash
+npx vitest run
+npx eslint src e2e --max-warnings=0
+npx playwright test
+npm run build
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Print edition: `GET /print-edition` — a typeset one-pager whose diagram is occupancy-tested as 5. d4 of the Italian, not the starting position.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Production
 
-## Learn More
+The live origin is `NEXT_PUBLIC_SITE_URL` (default `https://anasqumhiyeh.dev`). That host is the masthead dateline. `/sitemap.xml` and `/robots.txt` are generated from it; the OG image is `/opengraph-image`. Analytics are `@vercel/analytics` — no cookies, no recruiter-identifying payload.
 
-To learn more about Next.js, take a look at the following resources:
+Deploy on Vercel. The domain is registered at **Porkbun** — do not transfer it. In Vercel: project → Settings → Domains → Add `anasqumhiyeh.dev` (accept the `www` prompt). Then in Porkbun → domain → DNS:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Type | Host | Answer |
+| --- | --- | --- |
+| A | (blank) | `76.76.21.21` (or the IP on the Vercel domain card) |
+| CNAME | `www` | the CNAME Vercel shows (often `cname.vercel-dns.com`) |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Delete Porkbun’s parking ALIAS (pixie.porkbun.com) and any leftover `www` CNAME first, or the new records will collide. Leave MX alone if you use Porkbun email. After DNS is Valid, the paper is https://anasqumhiyeh.dev. Then Lighthouse + axe on that URL, then a pass on an actual phone. Retrain stays behind `training/GUARDS.md` and does not block launch. The five-stranger protocol (watch, don't coach) is the next copy review, not this repo.
 
-## Deploy on Vercel
+## What this is not
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Not a puzzle lock. You can read every fact without moving a piece.
+- Not invented product screenshots. Plates are theatrical file photos until a real capture exists.
+- Not a template. Type is Libre Baskerville, Lora, and IBM Plex Mono on cream `#f6eedc` with ink `#1a120c`. Radius 0.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Copy lives in `src/content/opening.ts`. Renderers do not hardcode ids or sentences.

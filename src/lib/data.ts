@@ -1,15 +1,18 @@
+import type { Apparatus, ApparatusSpec } from "@/lib/opening/types";
+import { CIRCUITMIND_LINE, MIRRORFI_VAULT, RISK_ENGINE, LEADS_HALL, VERIDIAN_PLANT, VERIDIAN_STILL, VERIDIAN_EXCHANGE } from "@/content/project-figures";
+
 export const resumeData = {
   name: "Anas Tarek Qumhiyeh",
-  headline: "Software Engineer (MLOps & Full-Stack) | Data Pipelines & Infrastructure",
-  targetRoles: "1-3 Years Experience level roles in Fintech, or AI Infrastructure.",
-  phone: "+60 11-12983-246",
+  headline: "Software engineer — MLOps and full-stack. Data pipelines and infrastructure.",
+  targetRoles: "graduate/junior engineering roles in fintech or AI infrastructure.",
   email: "anasqumhiyeh@gmail.com",
   linkedin: "linkedin.com/in/anasqumhiyeh/",
   github: "github.com/Mizore66",
   education: {
     school: "Monash University",
     location: "Bandar Sunway, Selangor, Malaysia",
-    degree: "Bachelor of Engineering (Honours), Specialization in Software Engineering",
+    degree: "Bachelor of Engineering (Honours), Specialisation in Software Engineering",
+    honours: "First Class Honours",
     graduation: "May 2026",
     wam: "82.1",
     cgpa: "3.82",
@@ -39,11 +42,11 @@ export const resumeData = {
       type: "Contract Employee",
       company: "Western Digital",
       period: "Feb 2025 – Dec 2025",
-      tech: ["Next.js", "PostgreSQL", "ASP.NET", "Docker"],
+      tech: ["Next.js", "ASP.NET", "PostgreSQL", "Docker"],
       bullets: [
-        "Designed and developed an interactive dashboard to control and monitor company's lab systems, reducing manual oversight time by 40%.",
-        "Implemented secure role-based access control (admin, user, superuser) of different CRUD operations and analytics for over 50 internal users.",
-        "Established WebSocket-based real-time communication with the company's DL model, then used the output to heuristically calculate fastest path data in under 100 ms.",
+        "Designed and developed an interactive dashboard to control and monitor the company's lab systems, reducing manual oversight time by 40%.",
+        "Implemented role-based access for 50+ staff across CRUD operations and analytics.",
+        "Opened a WebSocket to the lab's deep-learning model and computed the shortest path between stations in under 100 ms.",
       ],
       impact: "-40% manual oversight",
     },
@@ -54,7 +57,7 @@ export const resumeData = {
       tech: ["Docker", "Kubernetes", "MERN Stack", "Swagger", "Nest.js"],
       bullets: [
         "Engineered and maintained core backend services for the payment engine, handling the secure authorization and capture of user payment methods.",
-        "Authored detailed technical documentation for user payment checkout flows, standardizing processes and reducing onboarding time for new developers by 30%.",
+        "Authored technical documentation for payment checkout and capture so new developers could follow the path without a walkthrough.",
         "Developed and executed a comprehensive suite of unit tests for payment checkout and capture functionalities, achieving 92.5% code coverage and reducing production defects by 40%.",
       ],
       impact: "92.5% code coverage",
@@ -65,11 +68,11 @@ export const resumeData = {
       period: "Nov 2024 – Feb 2025",
       tech: ["MATLAB", "Python", "MathCAD"],
       bullets: [
-        "Contributed to the overhaul of back-end code converting from MATLAB to Python, reducing costs by 20% in the department and increasing application efficiency by 30%.",
-        "Developed user test case scenarios for the project after certain features were completed and pushed to production.",
-        "Communicated with department leadership to recommend bug fixes and ensure good UX.",
+        "Converted the department's MATLAB back-end to Python, replacing paid licences with free packages.",
+        "Wrote user test cases for features after they reached production.",
+        "Presented usability findings to department leadership.",
       ],
-      impact: "-20% department costs",
+      impact: "Converted MATLAB licences to Python",
     },
   ],
   projects: [
@@ -87,7 +90,23 @@ export const resumeData = {
       ],
       impact: "Zero-touch ML remediation",
       github: "https://github.com/Mizore66",
+      plate: "/plates/plate-veridian.jpg",
+      plateCaption: "Veridian intercepts the change — file photo.",
+      plateAlt: "Halftone photograph: an engineer at a drafting table, an infrastructure drawing unrolled before him.",
       description: "Veridian is a multi-agent MLOps tradeoff engine that autonomously intercepts Terraform and Kubernetes infrastructure-as-code changes, analyzes them for sustainability and cost efficiency, and recommends optimized alternatives — all without human intervention.",
+      patent: VERIDIAN_PLANT satisfies ApparatusSpec,
+      apparatus: {
+        name: "Veridian",
+        runtime: "Cloud Run",
+        path: [
+          { name: "GitLab Duo + MCP", role: "intercepts Terraform / K8s" },
+          { name: "Vertex AI", role: "profile the model" },
+        ],
+        beside: [
+          { name: "BigQuery", role: "ESG ledger — not this request" },
+          { name: "Python", role: "glue, not a hop" },
+        ],
+      } satisfies Apparatus,
     },
     {
       name: "CircuitMindAI",
@@ -103,7 +122,24 @@ export const resumeData = {
       ],
       impact: "Real-time PCB fault detection",
       github: "https://github.com/Mizore66",
+      plate: "/plates/plate-circuitmind.jpg",
+      plateCaption: "CircuitMindAI under the loupe — file photo.",
+      plateAlt: "Halftone photograph: a printed circuit board under a loupe, traces filling the frame.",
       description: "CircuitMindAI is a GenAI-powered PCB inspection platform that uses Amazon Nova Pro for vision-based fault detection and Nova Sonic for real-time voice-guided troubleshooting, all deployed on AWS with a fully automated CI/CD pipeline.",
+      patent: CIRCUITMIND_LINE satisfies ApparatusSpec,
+      apparatus: {
+        name: "CircuitMindAI",
+        runtime: "ECS Fargate",
+        path: [
+          { name: "Next.js", role: "UI" },
+          { name: "Express", role: "API" },
+        ],
+        forks: [
+          { name: "Bedrock Nova", role: "vision + voice" },
+          { name: "OpenSearch", role: "index" },
+        ],
+        beside: [{ name: "GitHub Actions", role: "CI/CD to ECR" }],
+      } satisfies Apparatus,
     },
     {
       name: "MirrorFi",
@@ -119,7 +155,22 @@ export const resumeData = {
       ],
       impact: "Grand Prize Winner",
       github: "https://github.com/Mizore66",
+      plate: "/plates/plate-mirrorfi.jpg",
+      plateCaption: "MirrorFi at the vault wall — file photo.",
+      plateAlt: "Halftone photograph: a vault door and lock-work, lit like a bank interior.",
       description: "MirrorFi is a Grand Prize-winning DeFi web application from Solana Megahack 2025 that lets users visually design, share, and execute multi-protocol yield strategies on Solana through an intuitive no-code interface.",
+      patent: MIRRORFI_VAULT satisfies ApparatusSpec,
+      apparatus: {
+        name: "MirrorFi",
+        path: [
+          { name: "Next.js", role: "no-code UI" },
+          { name: "Node.js", role: "API" },
+        ],
+        forks: [
+          { name: "MongoDB", role: "shareable strategies" },
+          { name: "Solana", role: "Drift · Jupiter · Meteora" },
+        ],
+      } satisfies Apparatus,
     },
     {
       name: "Multi-Agent GraphRAG",
@@ -135,7 +186,19 @@ export const resumeData = {
       ],
       impact: "+35% retrieval accuracy",
       github: "https://github.com/Mizore66",
+      plate: "/plates/plate-graphrag.jpg",
+      plateCaption: "GraphRAG at the card catalog — file photo.",
+      plateAlt: "Halftone photograph: wooden card-catalog drawers, one drawer open on a labelled card.",
       description: "A multi-agent orchestration framework that combines Neo4j Knowledge Graphs with Vector Databases using LangGraph, enabling intelligent hybrid retrieval that grounds LLM responses in factual enterprise data.",
+      patent: VERIDIAN_EXCHANGE satisfies ApparatusSpec,
+      apparatus: {
+        name: "Multi-Agent GraphRAG",
+        path: [{ name: "LangGraph", role: "orchestrator" }],
+        forks: [
+          { name: "Neo4j", role: "structured" },
+          { name: "Vector DB", role: "unstructured" },
+        ],
+      } satisfies Apparatus,
     },
     {
       name: "Financial Risk Predictor",
@@ -151,7 +214,20 @@ export const resumeData = {
       ],
       impact: "0.87 AUC-ROC score",
       github: "https://github.com/Mizore66",
+      plate: "/plates/plate-risk.jpg",
+      plateCaption: "Financial Risk Predictor — the ledger, file photo.",
+      plateAlt: "Halftone photograph: an open ledger with ruled columns, a pen resting on the page.",
       description: "A high-performance financial risk prediction system using ensemble methods (LightGBM/XGBoost) with SHAP-based interpretability, deployed as a scalable REST API via BentoML.",
+      patent: RISK_ENGINE satisfies ApparatusSpec,
+      apparatus: {
+        name: "Financial Risk Predictor",
+        path: [
+          { name: "Kafka", role: "daily retrain" },
+          { name: "LightGBM / XGBoost", role: "0.87 AUC" },
+          { name: "BentoML", role: "serving API" },
+        ],
+        beside: [{ name: "SHAP", role: "why the score" }],
+      } satisfies Apparatus,
     },
     {
       name: "Distributed Lead Scorer",
@@ -160,14 +236,25 @@ export const resumeData = {
       date: "May 2025",
       tech: ["PySpark", "PyTorch DDP", "Deep Interest Network", "Distributed Computing"],
       bullets: [
-        "Engineered a distributed data mining pipeline using PySpark to process and feature-engineer 100M+ daily user interaction events, reducing data latency from hours to minutes.",
+        "Engineered a distributed data mining pipeline using PySpark to process and feature-engineer 100M events/day, reducing data latency from hours to minutes.",
         "Developed and deployed a parallelized Deep Interest Network (DIN) using PyTorch DDP across a multi-GPU cluster for real-time conversion prediction.",
         "Built an automated model evaluation framework for continuous performance monitoring.",
         "Implemented a robust fault-tolerance strategy using checkpointing, ensuring zero data loss during multi-hour distributed training runs.",
       ],
-      impact: "100M+ events/day processed",
+      impact: "100M events/day processed",
       github: "https://github.com/Mizore66",
-      description: "A distributed data mining pipeline using PySpark and PyTorch DDP that processes 100M+ daily user interaction events and predicts conversion probability in real-time using a Deep Interest Network.",
+      plate: "/plates/plate-leads.jpg",
+      plateCaption: "Distributed Lead Scorer — the sorting hall, file photo.",
+      plateAlt: "Halftone photograph: a mail-sorting hall, pigeonholes stretching into the distance.",
+      description: "A distributed data mining pipeline using PySpark and PyTorch DDP that processes 100M events/day and predicts conversion probability in real-time using a Deep Interest Network.",
+      patent: LEADS_HALL satisfies ApparatusSpec,
+      apparatus: {
+        name: "Distributed Lead Scorer",
+        path: [
+          { name: "PySpark", role: "100M+ events / day" },
+          { name: "PyTorch DDP", role: "Deep Interest Network" },
+        ],
+      } satisfies Apparatus,
     },
     {
       name: "SLM Distillation Engine",
@@ -183,39 +270,21 @@ export const resumeData = {
       ],
       impact: "12x inference speedup",
       github: "https://github.com/Mizore66",
+      plate: "/plates/plate-slm.jpg",
+      plateCaption: "SLM Distillation — teacher and student machines, file photo.",
+      plateAlt: "Halftone photograph: two machines side by side, the smaller one cabled to the larger.",
       description: "A knowledge distillation pipeline that transfers reasoning capabilities from a 70B parameter teacher model to a compact 3B SLM using QLoRA, DeepSpeed, and FlashAttention for efficient domain-specific fine-tuning.",
+      patent: VERIDIAN_STILL satisfies ApparatusSpec,
+      apparatus: {
+        name: "SLM Distillation Engine",
+        runtime: "DeepSpeed",
+        path: [
+          { name: "70B teacher", role: "source" },
+          { name: "QLoRA", role: "distill" },
+          { name: "3B SLM", role: "12× inference" },
+        ],
+        beside: [{ name: "FlashAttention", role: "memory" }],
+      } satisfies Apparatus,
     },
   ],
 };
-
-export const systemPrompt = `You are a professional AI recruiter assistant for Anas Tarek Qumhiyeh's portfolio website. Your role is to act as Anas's professional advocate, answering questions from recruiters, hiring managers, and visitors about his background, skills, and experience.
-
-## About Anas
-${resumeData.headline}
-- Education: ${resumeData.education.degree} at ${resumeData.education.school} (${resumeData.education.graduation}), WAM: ${resumeData.education.wam}, CGPA: ${resumeData.education.cgpa}
-- Target Roles: ${resumeData.targetRoles}
-
-## Technical Skills
-- Languages: ${resumeData.skills.languages.join(", ")}
-- Frameworks: ${resumeData.skills.frameworks.join(", ")}
-- Developer Tools: ${resumeData.skills.devTools.join(", ")}
-- Libraries: ${resumeData.skills.libraries.join(", ")}
-- Databases: ${resumeData.skills.databases.join(", ")}
-
-## Experience
-${resumeData.experience.map(exp => `### ${exp.title}${exp.company ? ` at ${exp.company}` : ""} (${exp.period})
-Tech: ${exp.tech.join(", ")}
-${exp.bullets.map(b => `- ${b}`).join("\n")}`).join("\n\n")}
-
-## Projects
-${resumeData.projects.map(proj => `### ${proj.name} — ${proj.subtitle} (${proj.date})
-Tech: ${proj.tech.join(", ")}
-${proj.bullets.map(b => `- ${b}`).join("\n")}`).join("\n\n")}
-
-## Guidelines
-- Be enthusiastic, professional, and concise
-- Highlight Anas's strengths relevant to the question
-- If asked about something not covered, say you don't have that specific information but redirect to his strengths
-- Suggest reaching out to Anas directly for detailed discussions
-- Keep responses under 200 words unless asked for detail
-- Use technical language appropriate for the audience`;

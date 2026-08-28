@@ -1,0 +1,4 @@
+# CPU-only. Not used by the Next bundle or CI.
+numpy>=1.26
+zstandard>=0.22
+torch
