@@ -42,7 +42,14 @@ Print edition: `GET /print-edition` — a typeset one-pager whose diagram is occ
 
 The live origin is `NEXT_PUBLIC_SITE_URL` (default `https://anasqumhiyeh.dev`). That host is the masthead dateline. `/sitemap.xml` and `/robots.txt` are generated from it; the OG image is `/opengraph-image`. Analytics are `@vercel/analytics` — no cookies, no recruiter-identifying payload.
 
-Deploy on Vercel. Add `anasqumhiyeh.dev` (and `www` if you want it) under the project’s Domains, then enter the A/CNAME records Vercel shows at the registrar. After go-live: Lighthouse + axe on the real URL, then a pass on an actual phone. Retrain stays behind `training/GUARDS.md` and does not block launch. The five-stranger protocol (watch, don't coach) is the next copy review, not this repo.
+Deploy on Vercel. The domain is registered at **Porkbun** — do not transfer it. In Vercel: project → Settings → Domains → Add `anasqumhiyeh.dev` (accept the `www` prompt). Then in Porkbun → domain → DNS:
+
+| Type | Host | Answer |
+| --- | --- | --- |
+| A | (blank) | `76.76.21.21` (or the IP on the Vercel domain card) |
+| CNAME | `www` | the CNAME Vercel shows (often `cname.vercel-dns.com`) |
+
+Delete Porkbun’s parking ALIAS (pixie.porkbun.com) and any leftover `www` CNAME first, or the new records will collide. Leave MX alone if you use Porkbun email. After DNS is Valid, the paper is https://anasqumhiyeh.dev. Then Lighthouse + axe on that URL, then a pass on an actual phone. Retrain stays behind `training/GUARDS.md` and does not block launch. The five-stranger protocol (watch, don't coach) is the next copy review, not this repo.
 
 ## What this is not
 
