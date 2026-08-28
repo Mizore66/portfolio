@@ -10,8 +10,8 @@ const display = Libre_Baskerville({
   style: ["normal", "italic"],
   subsets: ["latin"],
   variable: "--font-display",
-  display: "swap",
-  preload: true,
+  display: "optional",
+  preload: false,
 });
 
 const lora = Lora({
@@ -26,7 +26,7 @@ const mono = IBM_Plex_Mono({
   weight: ["400", "500"],
   subsets: ["latin"],
   variable: "--font-mono",
-  display: "swap",
+  display: "optional",
   preload: false,
 });
 
@@ -70,15 +70,6 @@ export default function RootLayout({
       lang="en"
       className={`${display.variable} ${lora.variable} ${mono.variable}`}
     >
-      <head>
-        <link
-          rel="preload"
-          as="image"
-          href="/newsprint-grain.avif"
-          type="image/avif"
-          fetchPriority="high"
-        />
-      </head>
       <body className="relative z-[1] min-h-screen bg-transparent font-lora text-ink antialiased">
         <DeskCollage />
         {children}

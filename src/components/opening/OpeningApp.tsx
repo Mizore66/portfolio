@@ -9,7 +9,6 @@ import { Closer } from "@/components/opening/Closer";
 import { Colophon } from "@/components/opening/Colophon";
 import { GlassEngine, useEngineSearch, useNnueWeights } from "@/components/opening/GlassEngine";
 import { IssueIndex } from "@/components/opening/IssueIndex";
-import { Masthead } from "@/components/opening/Masthead";
 import { NewspaperColumn } from "@/components/opening/NewspaperColumn";
 import { SituationsWanted } from "@/components/opening/SituationsWanted";
 import { TodaysPuzzle } from "@/components/opening/TodaysPuzzle";
@@ -54,7 +53,13 @@ function reducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-export function OpeningApp({ staticBoard }: { staticBoard?: ReactNode } = {}) {
+export function OpeningApp({
+  staticBoard,
+  masthead,
+}: {
+  staticBoard?: ReactNode;
+  masthead?: ReactNode;
+} = {}) {
   const selection = useSyncExternalStore(
     subscribeSelection,
     getSelection,
@@ -480,7 +485,7 @@ export function OpeningApp({ staticBoard }: { staticBoard?: ReactNode } = {}) {
       </a>
       <div className="relative z-[1] flex justify-center px-2 py-3 sm:px-3">
         <div data-testid="newspaper-spread" className="sheet w-full max-w-[1180px]">
-          <Masthead />
+          {masthead}
           <main id="the-game">
           <div
             data-opening-spread=""

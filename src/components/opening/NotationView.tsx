@@ -263,8 +263,8 @@ function ChapterButton({
   flagship?: boolean;
 }) {
   const spoken = compact
-    ? [moveHeading(node), node.sym].filter(Boolean).join(" ")
-    : [moveHeading(node), node.sym, node.title].filter(Boolean).join(" ");
+    ? [node.fig, moveHeading(node), node.sym].filter(Boolean).join(" ")
+    : [node.fig, moveHeading(node), node.sym, node.title].filter(Boolean).join(" ");
 
   return (
     <button

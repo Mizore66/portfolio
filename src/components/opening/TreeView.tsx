@@ -12,6 +12,7 @@ import {
 import {
   isSingleMainlineAdvance,
   layoutTree,
+  moveHeading,
   OPENING_NODES,
   pathIdSet,
   TREE_NODE_W,
@@ -209,7 +210,9 @@ function TreeNode({
       type="button"
       data-node-id={node.id}
       aria-current={selected ? "true" : undefined}
-      aria-label={`${label} ${node.sym} ${node.title}`.trim()}
+      aria-label={[node.fig, node.moveNumber === 0 ? "start" : moveHeading(node), node.sym, node.title]
+        .filter(Boolean)
+        .join(" ")}
       onClick={() => onSelect(node.id)}
       onMouseEnter={() => onPreview?.(node.id)}
       onMouseLeave={() => onPreview?.(null)}

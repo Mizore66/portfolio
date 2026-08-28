@@ -226,9 +226,6 @@
 
 .newspaper-board {
   background-color: #f6eedc;
-  background-image: var(--newsprint-grain);
-  background-size: 280px;
-  background-blend-mode: overlay;
 }
 
 .tree-edge {
@@ -314,7 +311,10 @@
 }
 
 .artifact-link {
-  display: inline-block;
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  padding-block: 4px;
   transition:
     background var(--motion-fast) ease,
     color var(--motion-fast) ease;
@@ -990,9 +990,6 @@
     padding: 8px 16px 6px;
     border-bottom: 2px solid var(--ink);
     background-color: var(--paper);
-    background-image: var(--newsprint-grain);
-    background-size: 340px;
-    background-blend-mode: overlay;
   }
   [data-sticky-board] figcaption {
     margin-top: 16px;

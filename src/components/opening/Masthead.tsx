@@ -1,5 +1,3 @@
-"use client";
-
 import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
 import { SITE_HOST } from "@/lib/site";
