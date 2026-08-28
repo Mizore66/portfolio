@@ -217,18 +217,17 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
   useEffect(() => {
     const dlg = dialogRef.current;
     if (!dlg) return;
-    function onClick(e: MouseEvent) {
+    const onClick = (e: MouseEvent) => {
       if (e.target === dlg) close();
-    }
-    function onClose() {
+    };
+    const onClose = () => {
       invokerRef.current?.focus();
-    }
-    function focusables() {
-      return [...dlg.querySelectorAll<HTMLElement>("button, [href], [tabindex]:not([tabindex='-1'])")].filter(
+    };
+    const focusables = () =>
+      [...dlg.querySelectorAll<HTMLElement>("button, [href], [tabindex]:not([tabindex='-1'])")].filter(
         (el) => !el.hasAttribute("disabled"),
       );
-    }
-    function onKey(e: KeyboardEvent) {
+    const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Tab" || !dlg.open) return;
       const nodes = focusables();
       if (nodes.length === 0) {
@@ -251,7 +250,7 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
         e.preventDefault();
         last.focus();
       }
-    }
+    };
     dlg.addEventListener("click", onClick);
     dlg.addEventListener("close", onClose);
     document.addEventListener("keydown", onKey, true);
