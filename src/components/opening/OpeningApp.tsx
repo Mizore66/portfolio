@@ -498,6 +498,7 @@ export function OpeningApp({
                         }
                   }
                 >
+                <div data-testid="board-diagram">
                 {liveBoard || !staticBoard ? (
                 <BoardDiagram
                   plies={displayPlies}
@@ -523,6 +524,7 @@ export function OpeningApp({
                 ) : (
                   staticBoard
                 )}
+                </div>
                 </div>
                 <GlassEngine
                   info={engine}

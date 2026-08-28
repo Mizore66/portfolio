@@ -504,8 +504,9 @@
 /* Eval 2.5rem + row gap 0.5rem + ranks 1rem — sit the move caption on the files. */
 [data-testid="board-diagram"] {
   --board-indent: calc(2.5rem + 0.5rem + 1rem);
+  min-height: 220px;
 }
-[data-testid="board-diagram"] > figcaption {
+[data-testid="board-diagram"] figcaption {
   box-sizing: border-box;
   margin-top: 16px;
   margin-left: var(--board-indent);
@@ -969,8 +970,8 @@
 
 @media (max-width: 699px) {
   .board-size-wrap {
-    width: min(100%, 200px);
-    max-width: 200px;
+    width: min(204px, calc(100vw - 96px));
+    max-width: min(204px, calc(100vw - 96px));
   }
   /* Promote the compact board to a flex item of the tall page column.
      Sticky inside the short aside would scroll away with the rail. */
@@ -993,6 +994,7 @@
     align-self: flex-start;
     width: 100%;
     flex: 0 0 auto;
+    min-height: 220px;
     padding: 8px 16px 6px;
     border-bottom: 2px solid var(--ink);
     background-color: var(--paper);
@@ -1081,6 +1083,8 @@
 
 .piece-sprite {
   position: absolute;
+  left: 0;
+  top: 0;
   width: 0;
   height: 0;
   overflow: hidden;

@@ -55,7 +55,7 @@ export function StickyBoardStatic() {
   }
 
   return (
-    <figure data-testid="board-diagram">
+    <figure>
       <div className="flex items-stretch gap-2">
         <div className="flex w-10 shrink-0 self-stretch">
           <EvalBar value={node.eval} label={evalLabel} />

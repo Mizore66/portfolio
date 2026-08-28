@@ -251,7 +251,7 @@ export const BoardDiagram = memo(function BoardDiagram({
   }
 
   return (
-    <figure data-testid="board-diagram">
+    <figure>
       {puzzlePrompt ? (
         <p
           data-testid="find-the-break"
