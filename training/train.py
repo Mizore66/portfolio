@@ -55,9 +55,12 @@ class Nnue(nn.Module):
         self.l1 = nn.Linear(2 * acc, HIDDEN, bias=True)
         self.l2 = nn.Linear(HIDDEN, 1, bias=True)
         nn.init.normal_(self.ft.weight, 0.0, 8.0)
-        nn.init.uniform_(self.l1.weight, -0.4, 0.4)
+        nn.init.zeros_(self.ft_bias)
+        # Integer inference does crelu(hidden/255). Start with hidden/255 in the
+        # teens so l2 int8 can produce ~pawn-scale centipawns.
+        nn.init.normal_(self.l1.weight, 0.0, 24.0)
         nn.init.zeros_(self.l1.bias)
-        nn.init.uniform_(self.l2.weight, -0.4, 0.4)
+        nn.init.normal_(self.l2.weight, 0.0, 24.0)
         nn.init.zeros_(self.l2.bias)
 
     def forward(self, feat_stm, feat_nstm, mask_stm, mask_nstm, quant: bool) -> torch.Tensor:
@@ -75,7 +78,12 @@ class Nnue(nn.Module):
         acc_n = (ft_w[feat_nstm] * mask_nstm.unsqueeze(-1)).sum(dim=1) + ft_b
         h = torch.cat([acc_s.clamp(0, CRELU_MAX), acc_n.clamp(0, CRELU_MAX)], dim=1)
         hidden = F.linear(h, l1_w, l1_b)
-        h2 = (hidden / QA).trunc().clamp(0, CRELU_MAX)
+        # Infer uses integer trunc(hidden/QA). During float training keep the
+        # fractional part so units in (0, 1) still carry gradient; QAT rounds later.
+        if quant:
+            h2 = (hidden / QA).trunc().clamp(0, CRELU_MAX)
+        else:
+            h2 = (hidden / QA).clamp(0, CRELU_MAX)
         out = F.linear(h2, l2_w, l2_b).squeeze(-1)
         return out * (SCALE / (QA * QB))
 
@@ -157,7 +165,8 @@ def main() -> int:
     p.add_argument("--out", required=True, help="OPN2 weights path")
     p.add_argument("--epochs", type=int, default=3)
     p.add_argument("--batch", type=int, default=8192)
-    p.add_argument("--lr", type=float, default=1.5e-3)
+    p.add_argument("--max", type=int, default=0, help="cap training positions (0 = all)")
+    p.add_argument("--lr", type=float, default=8e-3)
     p.add_argument("--seed", type=int, default=0)
     args = p.parse_args()
 
@@ -166,9 +175,18 @@ def main() -> int:
     np.random.seed(args.seed)
     net = Nnue(acc=acc)
     train = load_pack(Path(args.data))
+    if args.max and args.max < len(train["wdl"]):
+        train = {k: v[: args.max] for k, v in train.items()}
     hold = load_pack(Path(args.holdout)) if args.holdout and Path(args.holdout).exists() else None
     n = len(train["wdl"])
-    opt = torch.optim.AdamW(net.parameters(), lr=args.lr, weight_decay=1e-4)
+    opt = torch.optim.AdamW(
+        [
+            {"params": net.ft.parameters(), "lr": args.lr, "weight_decay": 0.0},
+            {"params": [net.ft_bias], "lr": args.lr, "weight_decay": 0.0},
+            {"params": list(net.l1.parameters()) + list(net.l2.parameters()), "lr": args.lr * 0.4, "weight_decay": 1e-4},
+        ]
+    )
+    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=max(args.epochs, 1) * max(n // args.batch, 1), eta_min=args.lr * 0.05)
     date = time.strftime("%Y-%m-%d")
     net_id = f"nnue-lichess-cc0-{args.arch}-{date}"
     steps_per = n // args.batch
@@ -177,7 +195,7 @@ def main() -> int:
     rng = np.random.default_rng(args.seed)
     for epoch in range(args.epochs):
         net.train()
-        quant = epoch >= 1
+        quant = False
         t0 = time.time()
         running = 0.0
         steps = 0
@@ -186,17 +204,21 @@ def main() -> int:
             idx = order[start : start + args.batch]
             feat_s, feat_n, mask_s, mask_n, wdl, _cp, _stm = batch_tensors(train, idx)
             pred_cp = net(feat_s, feat_n, mask_s, mask_n, quant=quant)
+            stm_cp = torch.where(_stm > 0, _cp, -_cp).clamp(-1500, 1500)
             pred_wdl = torch.sigmoid(pred_cp / 410.0)
-            loss = F.mse_loss(pred_wdl, wdl)
+            tgt_wdl = torch.sigmoid(stm_cp / 410.0)
+            loss = F.mse_loss(pred_wdl, tgt_wdl) + F.huber_loss(pred_cp / 100.0, stm_cp / 100.0, delta=2.0)
             opt.zero_grad(set_to_none=True)
             loss.backward()
             nn.utils.clip_grad_norm_(net.parameters(), 5.0)
             opt.step()
+            sched.step()
             running += float(loss.item())
             steps += 1
             if steps % 50 == 0:
                 sys.stderr.write(
-                    f"  epoch {epoch + 1} step {steps}/{steps_per} loss {running / steps:.5f}\n"
+                    f"  epoch {epoch + 1} step {steps}/{steps_per} loss {running / steps:.5f} "
+                    f"cp {float(pred_cp.detach().mean()):+.1f}±{float(pred_cp.detach().std()):.0f}\n"
                 )
                 sys.stderr.flush()
         metrics: dict = {

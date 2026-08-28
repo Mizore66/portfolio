@@ -1,4 +1,6 @@
 import { spawnSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it, afterEach } from "vitest";
 import { accEqual, refreshAcc } from "./accumulator";
 import { featureIndex } from "./features";
@@ -22,6 +24,16 @@ describe("NNUE weights file", () => {
     const bad = Uint8Array.from(bytes);
     bad[0] = 65;
     expect(() => decodeNnue(bad)).toThrow(/magic/);
+  });
+
+  it("loads the shipped Lichess-CC0 net", () => {
+    const path = join(process.cwd(), "public/engine/nnue-lichess-cc0-768x2x256-32-1-2026-08-28.bin");
+    expect(existsSync(path)).toBe(true);
+    const net = decodeNnue(new Uint8Array(readFileSync(path)));
+    expect(net.id).toBe("nnue-lichess-cc0-768x2x256-32-1-2026-08-28");
+    expect(net.accSize).toBe(256);
+    expect(net.scale).toBe(400);
+    expect(net.ftW.length).toBe(768 * 256);
   });
 });
 
