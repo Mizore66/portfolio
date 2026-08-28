@@ -1002,6 +1002,7 @@ export function searchMove(pos: EnginePos, opts: SearchOptions & { nodes: number
       timeMs: opts.timeMs ?? 1e9,
       nodes: remain,
       evalMode: mode,
+      ...("net" in opts ? { net: opts.net } : {}),
     });
     used += result.nodes;
     if (result.best) last = { ...result, nodes: used };

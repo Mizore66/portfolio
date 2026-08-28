@@ -1,5 +1,7 @@
+import { spawnSync } from "node:child_process";
 import { describe, expect, it, afterEach } from "vitest";
 import { accEqual, refreshAcc } from "./accumulator";
+import { featureIndex } from "./features";
 import { decodeNnue, encodeNnue, toyNet } from "./format";
 import { evaluateNnue } from "./infer";
 import { attachNnue, configureEngine, playUci, startPos } from "../engine";
@@ -20,6 +22,32 @@ describe("NNUE weights file", () => {
     const bad = Uint8Array.from(bytes);
     bad[0] = 65;
     expect(() => decodeNnue(bad)).toThrow(/magic/);
+  });
+});
+
+describe("NNUE features", () => {
+  it("agrees with the Python indexer used at train time", () => {
+    const cases: Array<[number, number, 1 | -1]> = [
+      [1, 8, 1],
+      [9, 48, -1],
+      [6, 4, 1],
+      [14, 60, -1],
+      [5, 27, 1],
+      [10, 18, -1],
+    ];
+    const py = spawnSync(
+      "python3",
+      [
+        "-c",
+        "import sys; sys.path.insert(0,'training'); from board import feature_index as f\n" +
+          "print(' '.join(str(f(*map(int,c.split(',')))) for c in sys.argv[1:]))",
+        ...cases.map((c) => c.join(",")),
+      ],
+      { encoding: "utf8", cwd: process.cwd() },
+    );
+    expect(py.status, py.stderr).toBe(0);
+    const got = py.stdout.trim().split(/\s+/).map(Number);
+    expect(got).toEqual(cases.map(([p, s, v]) => featureIndex(p, s, v)));
   });
 });
 

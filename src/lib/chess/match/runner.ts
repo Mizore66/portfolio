@@ -11,7 +11,7 @@ import {
 } from "@/lib/chess/engine";
 import type { NnueNet } from "@/lib/chess/nnue/types";
 import { suiteByName } from "./openings";
-import { addPair, emptyPenta, formatSprtLine, reportElo, type EloReport, type Pentanomial } from "./sprt";
+import { addPair, emptyPenta, formatSprtLine, reportElo, sprtBounds, sprtLlr, type EloReport, type Pentanomial } from "./sprt";
 
 export type MatchSide = {
   evalMode: EvalMode;
@@ -24,6 +24,8 @@ export type MatchConfig = {
   nodes: number;
   suite: string;
   maxPly: number;
+  /** Stop when SPRT LLR hits a bound (H0=0, H1=+10). Full suite still runs if inconclusive. */
+  sprtStop?: boolean;
 };
 
 export type GameRecord = {
@@ -40,11 +42,13 @@ export type MatchReport = {
   nodes: number;
   a: EvalMode;
   b: EvalMode;
+  netId: string | null;
   games: GameRecord[];
   elo: EloReport;
   sprtLine: string;
   startedAt: string;
   elapsedMs: number;
+  stoppedEarly: boolean;
 };
 
 function scoreForA(result: GameRecord["result"], aIsWhite: boolean): number {
@@ -102,6 +106,8 @@ export function runMatch(cfg: MatchConfig): MatchReport {
   const games: GameRecord[] = [];
   const penta: Pentanomial = emptyPenta();
   const wdl = { w: 0, d: 0, l: 0 };
+  const bounds = sprtBounds();
+  let stoppedEarly = false;
 
   for (let i = 0; i < openings.length; i++) {
     const pairScores: [number, number] = [0, 0];
@@ -125,6 +131,13 @@ export function runMatch(cfg: MatchConfig): MatchReport {
       });
     }
     addPair(penta, pairScores);
+    if (cfg.sprtStop) {
+      const llr = sprtLlr(penta);
+      if (llr >= bounds.upper || llr <= bounds.lower) {
+        stoppedEarly = true;
+        break;
+      }
+    }
   }
 
   configureEngine({ evalMode: "handcrafted", net: null });
@@ -134,10 +147,12 @@ export function runMatch(cfg: MatchConfig): MatchReport {
     nodes: cfg.nodes,
     a: cfg.a.evalMode,
     b: cfg.b.evalMode,
+    netId: cfg.a.net?.id ?? cfg.b.net?.id ?? null,
     games,
     elo,
     sprtLine: formatSprtLine(elo),
     startedAt,
     elapsedMs: Math.round(performance.now() - t0),
+    stoppedEarly,
   };
 }

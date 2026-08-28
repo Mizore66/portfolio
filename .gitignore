@@ -45,3 +45,10 @@ yarn-error.log*
 next-env.d.ts
 
 /.likeness-refs
+
+# Phase 2 training dumps — weights in public/engine/ are committed; raw packs are not.
+/training/data/
+/training/*.parquet
+/training/*.zst
+/training/*.npz
+/tmp/

@@ -50,6 +50,8 @@ describe("Gate A — handcrafted vs handcrafted", () => {
     expect(report.elo.eloCi95[0]).toBeLessThanOrEqual(0);
     expect(report.elo.eloCi95[1]).toBeGreaterThanOrEqual(0);
     expect(report.sprtLine).toMatch(/sprt:/);
+    expect(report.netId).toBeNull();
+    expect(report.stoppedEarly).toBe(false);
     for (const pair of [0, 1, 2, 3, 4, 5, 6, 7]) {
       const g1 = report.games[pair * 2];
       const g2 = report.games[pair * 2 + 1];

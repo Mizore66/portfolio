@@ -1,5 +1,7 @@
 import { CRELU_MAX, QA, QB, type NnueAcc, type NnueNet } from "./types";
 
+const HIDDEN_SCRATCH = new Int32Array(32);
+
 function crelu(x: number): number {
   if (x < 0) return 0;
   if (x > CRELU_MAX) return CRELU_MAX;
@@ -14,7 +16,7 @@ export function evaluateNnue(net: NnueNet, acc: NnueAcc, side: 1 | -1): number {
   const stm = side === 1 ? acc.w : acc.b;
   const nstm = side === 1 ? acc.b : acc.w;
   const n = net.accSize;
-  const hidden = new Int32Array(32);
+  const hidden = HIDDEN_SCRATCH;
   const l1 = net.l1W;
   for (let i = 0; i < 32; i++) {
     let s = net.l1B[i];
