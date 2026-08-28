@@ -738,7 +738,7 @@ test.describe("Opening Preparation", () => {
     expect(role!.y).toBeGreaterThanOrEqual(0);
     expect(role!.y + role!.height).toBeLessThan(900);
     await expect(page.getByTestId("masthead-role")).toHaveText(/Software engineer/i);
-    await expect(page.locator("header")).toContainText(/anasqumhiyeh\.com/i);
+    await expect(page.locator("header")).toContainText(/anasqumhiyeh\.dev/i);
     await expect(page.locator("#chapter-e4")).toContainText(/Graduated May 2026/);
     await expect(page.locator("#chapter-e4")).toContainText(/First Class Honours/);
     await expect(page.getByTestId("masthead-proof")).toHaveCount(0);

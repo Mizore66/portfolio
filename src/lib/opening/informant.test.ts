@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { BROADSHEET, OPENING_NODES } from "@/content/opening";
 import { resumeData } from "@/lib/data";
+import { SITE_HOST, SITE_URL } from "@/lib/site";
 import { INFORMANT, informantTitle } from "./informant";
 
 describe("informant glyphs", () => {
@@ -24,6 +25,8 @@ describe("biography register", () => {
     expect(OPENING_NODES.find((n) => n.id === "start")?.fact).not.toMatch(/Graduating/i);
     expect(BROADSHEET.closer).toMatch(/next move writes/);
     expect(BROADSHEET.closer).toMatch(/measured systems in fintech infrastructure/);
+    expect(SITE_URL).toBe("https://anasqumhiyeh.dev");
+    expect(SITE_HOST).toBe("anasqumhiyeh.dev");
   });
 
   it("keeps British English in the public facts", () => {

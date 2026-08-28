@@ -40,9 +40,9 @@ Print edition: `GET /print-edition` — a typeset one-pager whose diagram is occ
 
 ## Production
 
-The live origin is `NEXT_PUBLIC_SITE_URL` (default `https://anasqumhiyeh.com`). That host is the masthead dateline. `/sitemap.xml` and `/robots.txt` are generated from it; the OG image is `/opengraph-image`. Analytics are `@vercel/analytics` — no cookies, no recruiter-identifying payload.
+The live origin is `NEXT_PUBLIC_SITE_URL` (default `https://anasqumhiyeh.dev`). That host is the masthead dateline. `/sitemap.xml` and `/robots.txt` are generated from it; the OG image is `/opengraph-image`. Analytics are `@vercel/analytics` — no cookies, no recruiter-identifying payload.
 
-Deploy on Vercel. Bind the custom domain, set `NEXT_PUBLIC_SITE_URL` to the https origin, and point DNS. After go-live: Lighthouse + axe on the real URL, then a pass on an actual phone. Retrain stays behind `training/GUARDS.md` and does not block launch. The five-stranger protocol (watch, don't coach) is the next copy review, not this repo.
+Deploy on Vercel. Add `anasqumhiyeh.dev` (and `www` if you want it) under the project’s Domains, then enter the A/CNAME records Vercel shows at the registrar. After go-live: Lighthouse + axe on the real URL, then a pass on an actual phone. Retrain stays behind `training/GUARDS.md` and does not block launch. The five-stranger protocol (watch, don't coach) is the next copy review, not this repo.
 
 ## What this is not
 
