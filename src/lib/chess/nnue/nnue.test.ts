@@ -26,14 +26,16 @@ describe("NNUE weights file", () => {
     expect(() => decodeNnue(bad)).toThrow(/magic/);
   });
 
-  it("loads the shipped Lichess-CC0 net", () => {
-    const path = join(process.cwd(), "public/engine/nnue-lichess-cc0-768x2x256-32-1-2026-08-28.bin");
-    expect(existsSync(path)).toBe(true);
-    const net = decodeNnue(new Uint8Array(readFileSync(path)));
-    expect(net.id).toBe("nnue-lichess-cc0-768x2x256-32-1-2026-08-28");
-    expect(net.accSize).toBe(256);
-    expect(net.scale).toBe(400);
-    expect(net.ftW.length).toBe(768 * 256);
+  it("loads the shipped Lichess-CC0 nets", () => {
+    for (const acc of [256, 128] as const) {
+      const path = join(process.cwd(), `public/engine/nnue-lichess-cc0-768x2x${acc}-32-1-2026-08-28.bin`);
+      expect(existsSync(path)).toBe(true);
+      const net = decodeNnue(new Uint8Array(readFileSync(path)));
+      expect(net.id).toBe(`nnue-lichess-cc0-768x2x${acc}-32-1-2026-08-28`);
+      expect(net.accSize).toBe(acc);
+      expect(net.scale).toBe(400);
+      expect(net.ftW.length).toBe(768 * acc);
+    }
   });
 });
 

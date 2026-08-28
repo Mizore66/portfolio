@@ -659,9 +659,26 @@ export function evaluateHandcrafted(pos: EnginePos): number {
   return ((mg * phase + eg * (24 - phase)) / 24) | 0;
 }
 
+/** Classical material, kings omitted. The quiet-trained net is a residual on top. */
+export function materialCp(pos: EnginePos): number {
+  let s = 0;
+  for (let i = 0; i < 64; i++) {
+    const p = pos.board[i];
+    if (!p) continue;
+    const t = kind(p);
+    if (t === 6) continue;
+    s += isWhite(p) ? VALUE[p] : -VALUE[p];
+  }
+  return s;
+}
+
+const NNUE_RESIDUAL = 60;
+
 function evaluate(pos: EnginePos, mode: EvalMode): number {
   if (mode === "learned" && pos.net && pos.acc) {
-    return evaluateNnue(pos.net, pos.acc, pos.side);
+    const n = evaluateNnue(pos.net, pos.acc, pos.side);
+    const residual = n > NNUE_RESIDUAL ? NNUE_RESIDUAL : n < -NNUE_RESIDUAL ? -NNUE_RESIDUAL : n;
+    return materialCp(pos) + residual;
   }
   return evaluateHandcrafted(pos);
 }
@@ -792,10 +809,12 @@ function hitLimit(stats: Stats): boolean {
   return false;
 }
 
-function quiesce(pos: EnginePos, alpha: number, beta: number, stats: Stats): number {
+function quiesce(pos: EnginePos, alpha: number, beta: number, stats: Stats, qsPly = 0): number {
   stats.nodes += 1;
   if (hitLimit(stats)) return alpha;
-  const stand = pos.side === 1 ? evaluate(pos, stats.evalMode) : -evaluate(pos, stats.evalMode);
+  // Quiet-trained net at the first stand-pat; PeSTO along the capture chain.
+  const mode: EvalMode = stats.evalMode === "learned" && qsPly === 0 ? "learned" : "handcrafted";
+  const stand = pos.side === 1 ? evaluate(pos, mode) : -evaluate(pos, mode);
   if (stand >= beta) return beta;
   if (stand > alpha) alpha = stand;
   const captures = order(
@@ -806,7 +825,7 @@ function quiesce(pos: EnginePos, alpha: number, beta: number, stats: Stats): num
   for (const m of captures) {
     if (stand + VALUE[m.captured] + 90 < alpha) continue;
     make(pos, m);
-    const sc = -quiesce(pos, -beta, -alpha, stats);
+    const sc = -quiesce(pos, -beta, -alpha, stats, qsPly + 1);
     unmake(pos, m);
     if (stats.timedOut) return alpha;
     if (sc >= beta) return beta;

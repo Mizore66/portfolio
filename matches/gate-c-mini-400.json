@@ -1,0 +1,169 @@
+{
+  "suiteId": "openings-v1-mini",
+  "nodes": 400,
+  "a": "learned",
+  "b": "handcrafted",
+  "netId": "nnue-lichess-cc0-768x2x128-32-1-2026-08-28",
+  "games": [
+    {
+      "openingIndex": 0,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 67,
+      "nodes": 9282
+    },
+    {
+      "openingIndex": 0,
+      "aIsWhite": false,
+      "result": "1-0",
+      "aScore": 0,
+      "plies": 16,
+      "nodes": 2768
+    },
+    {
+      "openingIndex": 1,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 70,
+      "nodes": 13579
+    },
+    {
+      "openingIndex": 1,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 53,
+      "nodes": 14159
+    },
+    {
+      "openingIndex": 2,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 68,
+      "nodes": 9354
+    },
+    {
+      "openingIndex": 2,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 80,
+      "nodes": 15368
+    },
+    {
+      "openingIndex": 3,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 49,
+      "nodes": 10109
+    },
+    {
+      "openingIndex": 3,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 80,
+      "nodes": 14950
+    },
+    {
+      "openingIndex": 4,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 63,
+      "nodes": 13124
+    },
+    {
+      "openingIndex": 4,
+      "aIsWhite": false,
+      "result": "1-0",
+      "aScore": 0,
+      "plies": 49,
+      "nodes": 9451
+    },
+    {
+      "openingIndex": 5,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 80,
+      "nodes": 13375
+    },
+    {
+      "openingIndex": 5,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 65,
+      "nodes": 10963
+    },
+    {
+      "openingIndex": 6,
+      "aIsWhite": true,
+      "result": "1-0",
+      "aScore": 1,
+      "plies": 49,
+      "nodes": 12675
+    },
+    {
+      "openingIndex": 6,
+      "aIsWhite": false,
+      "result": "1-0",
+      "aScore": 0,
+      "plies": 79,
+      "nodes": 14527
+    },
+    {
+      "openingIndex": 7,
+      "aIsWhite": true,
+      "result": "1-0",
+      "aScore": 1,
+      "plies": 49,
+      "nodes": 10279
+    },
+    {
+      "openingIndex": 7,
+      "aIsWhite": false,
+      "result": "1-0",
+      "aScore": 0,
+      "plies": 31,
+      "nodes": 7420
+    }
+  ],
+  "elo": {
+    "games": 16,
+    "pairs": 8,
+    "pentanomial": [
+      1,
+      2,
+      5,
+      0,
+      0
+    ],
+    "wdl": {
+      "w": 2,
+      "d": 8,
+      "l": 6
+    },
+    "score": 0.375,
+    "elo": -88.73949984654253,
+    "eloCi95": [
+      -196.41324477746434,
+      4.140244336467445
+    ],
+    "llr": -0.24260709478182219,
+    "bounds": {
+      "lower": -2.9444389791664403,
+      "upper": 2.9444389791664403
+    },
+    "decision": "inconclusive"
+  },
+  "sprtLine": "sprt: -88.7 ±100.3 Elo, 16 games, LLR -0.24 (inconclusive)",
+  "startedAt": "2026-08-28T06:15:49.583Z",
+  "elapsedMs": 11060,
+  "stoppedEarly": false
+}

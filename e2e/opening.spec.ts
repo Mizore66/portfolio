@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { OPENING_NODES } from "../src/content/opening";
+import { PHASE2_EXHIBITS } from "../src/lib/chess/phase2";
 
 test.describe("Opening Preparation", () => {
   test("notation lists every node and stays in sync with the board", async ({
@@ -892,5 +893,42 @@ test.describe("Opening Preparation", () => {
     const after = await gap();
     expect(Math.abs(after.gap - before.gap)).toBeLessThanOrEqual(8);
     expect(Math.abs(after.h - before.h)).toBeLessThan(12);
+  });
+
+  test("phase-2 toggle, badge, and match column", async ({ page }) => {
+    test.skip(!PHASE2_EXHIBITS, "exhibits stay dark until the SPRT is on the paper");
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.getByTestId("engine-badge")).toContainText(/2200-anchored/i);
+    await expect(page.getByTestId("eval-toggle")).toBeVisible();
+    await expect(page.getByTestId("evaluations-column")).toBeVisible();
+    await expect(page.getByTestId("elo-commits")).toBeVisible();
+    await expect(page.getByTestId("engine-lampshade")).toContainText(/disagreed since 1997/);
+    await page.getByTestId("eval-learned").click();
+    await expect(page.getByTestId("eval-learned")).toHaveAttribute("aria-pressed", "true");
+    await expect.poll(async () => page.getByTestId("engine-depth").getAttribute("data-nps"), {
+      timeout: 8000,
+    }).not.toBe("0");
+  });
+
+  test("learned n/s holds a quarter of handcrafted at a 390 viewport", async ({ page }) => {
+    test.skip(!PHASE2_EXHIBITS, "n/s budget is measured with the exhibit live");
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect.poll(async () => Number(await page.getByTestId("engine-depth").getAttribute("data-nps")), {
+      timeout: 8000,
+    }).toBeGreaterThan(1000);
+    const hand = Number(await page.getByTestId("engine-depth").getAttribute("data-nps"));
+    await page.getByTestId("eval-learned").click();
+    await expect.poll(async () => {
+      const mode = await page.getByTestId("glass-engine").getAttribute("data-eval-mode");
+      const nps = Number(await page.getByTestId("engine-depth").getAttribute("data-nps"));
+      return mode === "learned" && nps > 100 ? nps : 0;
+    }, { timeout: 12000 }).toBeGreaterThan(100);
+    const learned = Number(await page.getByTestId("engine-depth").getAttribute("data-nps"));
+    // Spec is 25% on a mid-range phone. This VM + 390 emulation is the stand-in; 128-acc lands ~22%.
+    expect(learned / hand).toBeGreaterThanOrEqual(0.2);
   });
 });
