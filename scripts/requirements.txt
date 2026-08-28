@@ -1,0 +1,2 @@
+# Raster checks used by src/lib/opening/callout-ink.test.ts
+pillow>=10
