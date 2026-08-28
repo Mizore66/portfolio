@@ -918,6 +918,29 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("evaluations-net")).toContainText(/768x2x128/);
     await expect(page.getByTestId("evaluations-column")).not.toContainText(/sprt:/i);
     await expect(page.getByTestId("elo-commits")).toBeVisible();
+    await expect(page.getByText(/^Assessment$/i)).toHaveCount(0);
+
+    const badgeBox = (await page.getByTestId("engine-badge").boundingBox())!;
+    const toggleBox = (await page.getByTestId("eval-toggle").boundingBox())!;
+    const pvBox = (await page.getByTestId("engine-pv").boundingBox())!;
+    expect(Math.abs(badgeBox.x - toggleBox.x)).toBeLessThanOrEqual(2);
+    expect(Math.abs(toggleBox.x - pvBox.x)).toBeLessThanOrEqual(2);
+
+    const bar = (await page.getByTestId("eval-bar").boundingBox())!;
+    const caption = (await page.locator("[data-testid='board-diagram'] figcaption").boundingBox())!;
+    expect(bar.y + bar.height).toBeLessThanOrEqual(caption.y + 1);
+
+    const chart = page.getByTestId("elo-commits");
+    await chart.scrollIntoViewIfNeeded();
+    const svg = chart.locator("svg");
+    const svgBox = (await svg.boundingBox())!;
+    const texts = svg.locator("text");
+    const n = await texts.count();
+    for (let i = 0; i < n; i++) {
+      const t = (await texts.nth(i).boundingBox())!;
+      expect(t.x).toBeGreaterThanOrEqual(svgBox.x - 1);
+      expect(t.x + t.width).toBeLessThanOrEqual(svgBox.x + svgBox.width + 1);
+    }
     await expect(page.getByTestId("engine-lampshade")).toContainText(/disagreed since 1997/);
     await page.getByTestId("eval-learned").click();
     await expect(page.getByTestId("eval-learned")).toHaveAttribute("aria-pressed", "true");

@@ -197,11 +197,11 @@ export function BoardDiagram({
           className={cn(dark ? "board-sq-dark" : "board-sq-light", dest && "board-sq-dest")}
           style={
             committed
-              ? { boxShadow: "inset 0 0 0 100px rgba(139, 36, 28, 0.38)" }
+              ? { boxShadow: "inset 0 0 0 100px rgba(139, 36, 28, 0.38), inset 0 0 0 1px #1a120c" }
               : ghost
-                ? { boxShadow: "inset 0 0 0 100px rgba(30, 58, 114, 0.32)" }
+                ? { boxShadow: "inset 0 0 0 100px rgba(30, 58, 114, 0.32), inset 0 0 0 1px #1a120c" }
                 : selected
-                  ? { boxShadow: "inset 0 0 0 100px rgba(30, 58, 114, 0.22)" }
+                  ? { boxShadow: "inset 0 0 0 100px rgba(30, 58, 114, 0.22), inset 0 0 0 1px #1a120c" }
                   : undefined
           }
         />,
@@ -225,8 +225,12 @@ export function BoardDiagram({
         </p>
       ) : null}
       <div className="flex items-stretch gap-2">
-        <p className="eval-axis-label max-[979px]:hidden">{BROADSHEET.assessment}</p>
-        <EvalBar value={evalCp ?? 0} label={evalLabel} />
+        <div
+          className={cn("flex w-10 shrink-0", edge ? "self-start" : "self-stretch")}
+          style={edge ? { height: edge + 4 } : undefined}
+        >
+          <EvalBar value={evalCp ?? 0} label={evalLabel} />
+        </div>
         <div className="flex min-w-0 flex-1 items-start">
           <div
             className="flex w-4 shrink-0 flex-col-reverse items-end justify-around pr-1 font-mono text-[9px] leading-none text-faded"

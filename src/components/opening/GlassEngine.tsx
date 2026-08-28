@@ -168,16 +168,16 @@ export function GlassEngine({
       aria-live="polite"
       aria-label="Live engine search"
     >
-      <p
-        className="truncate font-mono text-[12px] uppercase tracking-[0.18em] text-faded"
-        data-testid="engine-badge"
-        title={PHASE2_EXHIBITS ? BROADSHEET.engineBadge : "Engine · 2200"}
-      >
-        {PHASE2_EXHIBITS ? BROADSHEET.engineBadge : "Engine · 2200"}
-      </p>
       <div className="engine-readout" data-testid="engine-readout">
+        <p
+          className="truncate font-mono text-[12px] uppercase tracking-[0.18em] text-faded"
+          data-testid="engine-badge"
+          title={PHASE2_EXHIBITS ? BROADSHEET.engineBadge : "Engine · 2200"}
+        >
+          {PHASE2_EXHIBITS ? BROADSHEET.engineBadge : "Engine · 2200"}
+        </p>
         {PHASE2_EXHIBITS && onEvalMode ? (
-          <div className="eval-toggle flex gap-0" data-testid="eval-toggle" role="group" aria-label="Evaluation">
+          <div className="eval-toggle mt-2 flex gap-0" data-testid="eval-toggle" role="group" aria-label="Evaluation">
             <button
               type="button"
               data-testid="eval-handcrafted"

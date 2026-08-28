@@ -41,7 +41,6 @@ export const BROADSHEET = {
   lampshadeLearned: "The learned eval and the annotator have parted on this page.",
   engineBadge: "ENGINE · 2200-anchored · −100 @ 1k nodes · fixed-N",
   settling: "settling…",
-  assessment: "Assessment",
   stepPrev: "Previous move",
   stepNext: "Next move",
   weightsPending: "Learned weights still in the post — PeSTO on the masthead.",
@@ -64,7 +63,7 @@ export const BROADSHEET = {
   closerSign: "Anas Tarek Qumhiyeh",
   eloCommits: [
     { commit: "gate-a", label: "A · PeSTO", elo: 0, games: 100 },
-    { commit: "gate-c", label: "C · 128 @1k", elo: -100, games: 100 },
+    { commit: "gate-c", label: "C · 128", elo: -100, games: 100 },
   ] as { commit: string; label: string; elo: number; games: number }[],
   gameKicker: "The game",
   printEdition: "Print edition",

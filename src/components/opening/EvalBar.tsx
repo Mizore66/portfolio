@@ -13,10 +13,9 @@ export function EvalBar({
   return (
     <div
       data-testid="eval-bar"
-      className="relative w-10 shrink-0 self-stretch overflow-hidden border-2 border-ink bg-ink"
+      className="relative h-full w-full overflow-hidden border-2 border-ink bg-ink"
       role="meter"
-      aria-label="Assessment — engine evaluation"
-      title="Assessment — engine evaluation"
+      aria-label="Engine evaluation"
       aria-valuemin={-8}
       aria-valuemax={8}
       aria-valuenow={Number(value.toFixed(2))}
