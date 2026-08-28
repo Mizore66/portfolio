@@ -488,11 +488,12 @@ test.describe("Opening Preparation", () => {
     await page.goto("/");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
+    const boardX = (await page.getByTestId("board-diagram").boundingBox())!.x;
     const filesX = (await page.getByTestId("board-files").boundingBox())!.x;
     const captionX = (await page.getByTestId("board-caption").boundingBox())!.x;
     const engineX = (await page.getByTestId("glass-engine").boundingBox())!.x;
     expect(Math.abs(filesX - captionX)).toBeLessThan(2);
-    expect(Math.abs(filesX - engineX)).toBeLessThan(4);
+    expect(Math.abs(boardX - engineX)).toBeLessThan(2);
 
     const overflowY = await page.getByTestId("board-column").evaluate((el) => getComputedStyle(el).overflowY);
     expect(overflowY === "auto" || overflowY === "scroll").toBe(false);
@@ -941,8 +942,8 @@ test.describe("Opening Preparation", () => {
     const mid = (b: { x: number; width: number }) => b.x + b.width / 2;
     expect(bar.y + bar.height).toBeLessThanOrEqual(caption.y + 1);
     expect(Math.abs(mid(files) - mid(caption))).toBeLessThanOrEqual(3);
-    expect(Math.abs(mid(files) - mid(engine))).toBeLessThanOrEqual(4);
-    expect(Math.abs(files.x - engine.x)).toBeLessThanOrEqual(4);
+    const board = (await page.getByTestId("board-diagram").boundingBox())!;
+    expect(Math.abs(board.x - engine.x)).toBeLessThanOrEqual(2);
 
     const chart = page.getByTestId("elo-commits");
     await chart.scrollIntoViewIfNeeded();

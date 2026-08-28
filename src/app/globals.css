@@ -429,8 +429,7 @@
   text-align: center;
 }
 
-/* Eval 2.5rem + row gap 0.5rem + ranks 1rem — keep the caption and glass case on the files. */
-.board-engine-cluster,
+/* Eval 2.5rem + row gap 0.5rem + ranks 1rem — sit the move caption on the files. */
 [data-testid="board-diagram"] {
   --board-indent: calc(2.5rem + 0.5rem + 1rem);
 }
@@ -445,11 +444,6 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-  }
-  .board-engine-cluster [data-testid="glass-engine"] {
-    box-sizing: border-box;
-    margin-left: var(--board-indent);
-    width: calc(100% - var(--board-indent));
   }
 }
 
