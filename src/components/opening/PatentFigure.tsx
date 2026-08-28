@@ -205,6 +205,8 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
     dialogRef.current?.showModal();
   }, []);
 
+  const swipeStart = useRef<number | null>(null);
+
   useEffect(() => {
     const dlg = dialogRef.current;
     if (!dlg) return;
@@ -260,15 +262,25 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
         className="patent-lightbox"
         data-testid="patent-lightbox"
         aria-labelledby={titleId}
+        onTouchStart={(e) => {
+          swipeStart.current = e.touches[0]?.clientY ?? null;
+        }}
+        onTouchEnd={(e) => {
+          const start = swipeStart.current;
+          const y = e.changedTouches[0]?.clientY;
+          swipeStart.current = null;
+          if (start == null || y == null) return;
+          if (y - start > 64) close();
+        }}
       >
         <div className="patent-lightbox-sheet">
           <div className="flex items-start justify-between gap-3 border-b border-ink pb-2">
-            <p id={titleId} className="font-display text-[14px] italic text-ink">
+            <p id={titleId} className="font-display text-[16px] italic text-ink">
               {caption}
             </p>
             <button
               type="button"
-              className="shrink-0 border-2 border-ink px-2 py-1 font-mono text-[10px] uppercase tracking-widest"
+              className="hit-target shrink-0 border-2 border-ink px-3 font-mono text-[12px] uppercase tracking-widest"
               onClick={close}
             >
               Close

@@ -9,7 +9,7 @@ export function Masthead() {
   return (
     <header>
       <div className="border-b-2 border-ink px-4 py-2 sm:px-6">
-        <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-faded">
+        <p className="font-mono text-[12px] uppercase tracking-[0.28em] text-faded">
           C50 · Italian Game · Vol. {year} · Moves are facts · Annotations are voice
         </p>
       </div>
@@ -24,7 +24,7 @@ export function Masthead() {
           <p className="mt-2 font-display text-xl italic text-faded sm:text-2xl">
             Opening Preparation
           </p>
-          <p className="mt-3 max-w-3xl font-mono text-[11px] text-faded">
+          <p className="mt-4 max-w-3xl font-mono text-[12px] text-faded">
             <a
               className="text-book-blue underline decoration-1 underline-offset-4 hover:text-score-red"
               href={`mailto:${resumeData.email}`}

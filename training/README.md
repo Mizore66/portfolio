@@ -19,5 +19,8 @@ python3 training/train.py \
 4. `train.py` is the PyTorch trainer (MSE in WDL space, QAT from epoch 2).
 5. Export `OPN2` weights; load only through `decodeNnue` — mismatched headers throw.
 6. Measure with the match harness. No measurement, no merge.
+7. Hold-out r, float-vs-int parity, accumulator incremental==full, and the material sanity suite: `training/HOLDOUT.md`, `training/GUARDS.md`, `src/lib/chess/nnue/guards.test.ts`.
 
 Architecture ceiling: 768 → 2×256 (or 2×128) → 32 → 1. No HalfKP, no Leela.
+
+The paper loads the **128** net. The 256 file is a comparison artifact. A Gate C number is only an exhibit after Gate A at the same node cap, reported as fixed-N unless the SPRT actually hits a bound.

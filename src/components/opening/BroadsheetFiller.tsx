@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { EvaluationsColumn } from "@/components/opening/EvaluationsColumn";
 import { EloCommitsChart } from "@/components/opening/EloCommitsChart";
+import { Closer } from "@/components/opening/Closer";
 import { Colophon } from "@/components/opening/Colophon";
 import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
@@ -16,29 +17,29 @@ export function BroadsheetFiller() {
   return (
     <aside
       data-testid="broadsheet-filler"
-      className="mt-2 flex flex-col gap-6 border-t-2 border-ink pt-6"
+      className="mt-8 flex flex-col gap-8 border-t-2 border-ink pt-8"
       aria-label="Classifieds"
     >
-      <div className="grid gap-6 sm:grid-cols-2">
-        <div className="border-2 border-ink p-3">
-          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
+      <div className="grid gap-8 sm:grid-cols-2">
+        <div className="border-2 border-ink p-4">
+          <p className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
             {BROADSHEET.errataKicker}
           </p>
-          <p className="mt-2 font-display text-[13px] leading-snug italic text-ink">
+          <p className="mt-2 font-display text-[16px] leading-snug italic text-ink">
             {BROADSHEET.errata}
           </p>
         </div>
-        <div className="border-2 border-dashed border-ink p-3">
-          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
+        <div className="border-2 border-dashed border-ink p-4">
+          <p className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
             {BROADSHEET.classifiedKicker}
           </p>
           <a
             href={`mailto:${resumeData.email}`}
-            className="mt-2 block font-display text-[13px] leading-snug italic text-ink hover:text-score-red"
+            className="mt-2 block font-display text-[16px] leading-snug italic text-ink hover:text-score-red"
           >
             {BROADSHEET.classified}
           </a>
-          <p className="mt-2 font-mono text-[10px] text-faded">{BROADSHEET.availability}</p>
+          <p className="mt-2 font-mono text-[12px] text-faded">{BROADSHEET.availability}</p>
         </div>
       </div>
       {PHASE2_EXHIBITS ? (
@@ -47,13 +48,12 @@ export function BroadsheetFiller() {
           <EloCommitsChart />
         </>
       ) : null}
-      <Colophon />
       <div className="flex items-end justify-between gap-4">
         <button
           type="button"
           data-testid="weather-cycle"
           onClick={() => setWeather((n) => (n + 1) % BROADSHEET.weatherCycle.length)}
-          className="text-left font-mono text-[10px] uppercase tracking-[0.22em] text-faded hover:text-ink"
+          className="hit-target text-left font-mono text-[12px] uppercase tracking-[0.22em] text-faded hover:text-ink"
         >
           {BROADSHEET.weatherKicker}
           <span className="mx-2 text-ink">·</span>
@@ -64,11 +64,13 @@ export function BroadsheetFiller() {
           data-testid="press-stamp"
           aria-pressed={pressed}
           onClick={() => setPressed(true)}
-          className="border-2 border-ink px-2 py-1 font-display text-[11px] italic text-score-red"
+          className="hit-target border-2 border-ink px-3 font-display text-[12px] italic text-score-red"
         >
           {pressed ? BROADSHEET.pressMark : BROADSHEET.stamp}
         </button>
       </div>
+      <Closer />
+      <Colophon />
     </aside>
   );
 }

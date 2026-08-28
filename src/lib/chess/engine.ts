@@ -672,7 +672,7 @@ export function materialCp(pos: EnginePos): number {
   return s;
 }
 
-const NNUE_RESIDUAL = 60;
+export const NNUE_RESIDUAL = 60;
 
 function evaluate(pos: EnginePos, mode: EvalMode): number {
   if (mode === "learned" && pos.net && pos.acc) {
@@ -681,6 +681,15 @@ function evaluate(pos: EnginePos, mode: EvalMode): number {
     return materialCp(pos) + residual;
   }
   return evaluateHandcrafted(pos);
+}
+
+/** Stand-pat eval for diagnostics. Attaches the configured net when learned. */
+export function evaluateNow(pos: EnginePos, mode: EvalMode): number {
+  if (mode === "learned" && loadedNet) {
+    pos.net = loadedNet;
+    if (!pos.acc) pos.acc = refreshAcc(pos.board, loadedNet);
+  }
+  return evaluate(pos, mode);
 }
 
 function uci(m: Move): string {

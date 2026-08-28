@@ -69,7 +69,7 @@ export function MiniBoard({
           );
         })}
       </div>
-      <figcaption className="mt-1 text-center font-display text-[10px] italic leading-tight text-ink">
+      <figcaption className="mt-2 text-center font-display text-[12px] italic leading-tight text-ink">
         {caption}
       </figcaption>
     </figure>

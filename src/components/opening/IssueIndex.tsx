@@ -21,10 +21,10 @@ export function IssueIndex({
       aria-label={BROADSHEET.issueKicker}
       className="border-2 border-ink px-2 py-2 max-[979px]:hidden"
     >
-      <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-faded">
+      <p className="font-mono text-[12px] uppercase tracking-[0.18em] text-faded">
         {BROADSHEET.issueKicker}
       </p>
-      <ol className="mt-1">
+      <ol className="mt-2">
         {chapters.map((node) => {
           const current = node.id === currentId;
           return (
@@ -35,14 +35,14 @@ export function IssueIndex({
                 aria-current={current ? "true" : undefined}
                 onClick={() => onSelect(node.id)}
                 className={cn(
-                  "flex w-full items-baseline justify-between gap-2 border-l-2 py-px pl-1.5 text-left font-mono text-[10px] leading-tight",
+                  "issue-row flex w-full items-center justify-between gap-2 border-l-2 pl-2 text-left font-mono text-[12px] leading-none",
                   current
                     ? "border-score-red font-semibold text-score-red"
                     : "border-transparent text-ink hover:border-ink",
                 )}
               >
                 <span>{moveHeading(node)}</span>
-                <span className="truncate font-sans text-[9px] uppercase tracking-wider text-faded">
+                <span className="truncate font-sans text-[12px] uppercase tracking-wider text-faded">
                   {node.kind}
                 </span>
               </button>

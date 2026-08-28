@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { BROADSHEET } from "@/content/opening";
 import { EvalBar } from "@/components/opening/EvalBar";
 import { NewspaperPiece } from "@/components/opening/NewspaperPiece";
 import {
@@ -33,6 +34,10 @@ export function BoardDiagram({
   puzzlePrompt,
   puzzleNote,
   puzzleTarget,
+  onStepPrev,
+  onStepNext,
+  canStepPrev,
+  canStepNext,
 }: {
   plies: Ply[];
   highlight: [string, string] | null;
@@ -49,6 +54,10 @@ export function BoardDiagram({
   puzzlePrompt?: string | null;
   puzzleNote?: string | null;
   puzzleTarget?: string | null;
+  onStepPrev?: () => void;
+  onStepNext?: () => void;
+  canStepPrev?: boolean;
+  canStepNext?: boolean;
 }) {
   const prevPlies = useRef<Ply[] | null>(null);
   const boardRef = useRef<HTMLDivElement>(null);
@@ -209,13 +218,14 @@ export function BoardDiagram({
         >
           {puzzlePrompt}
           {puzzleNote ? (
-            <span className="mt-1 block font-mono text-[11px] not-italic text-score-red">
+            <span className="mt-2 block font-mono text-[12px] not-italic text-score-red">
               {puzzleNote}
             </span>
           ) : null}
         </p>
       ) : null}
       <div className="flex items-stretch gap-2">
+        <p className="eval-axis-label max-[979px]:hidden">{BROADSHEET.assessment}</p>
         <EvalBar value={evalCp ?? 0} label={evalLabel} />
         <div className="flex min-w-0 flex-1 items-start">
           <div
@@ -297,8 +307,32 @@ export function BoardDiagram({
           </div>
         </div>
       </div>
-      <figcaption className="mt-3 px-1 text-center font-display text-[13px] italic text-ink">
-        {caption}
+      <figcaption className="mt-4 flex items-center justify-center gap-2 px-1">
+        {onStepPrev ? (
+          <button
+            type="button"
+            data-testid="board-step-prev"
+            aria-label={BROADSHEET.stepPrev}
+            disabled={!canStepPrev}
+            onClick={onStepPrev}
+            className="hit-target board-step inline-flex min-w-8 items-center justify-center border-2 border-ink px-2 font-mono text-[16px] leading-none text-ink disabled:opacity-40"
+          >
+            ‹
+          </button>
+        ) : null}
+        <span className="min-w-0 text-center font-display text-[12px] italic text-ink">{caption}</span>
+        {onStepNext ? (
+          <button
+            type="button"
+            data-testid="board-step-next"
+            aria-label={BROADSHEET.stepNext}
+            disabled={!canStepNext}
+            onClick={onStepNext}
+            className="hit-target board-step inline-flex min-w-8 items-center justify-center border-2 border-ink px-2 font-mono text-[16px] leading-none text-ink disabled:opacity-40"
+          >
+            ›
+          </button>
+        ) : null}
       </figcaption>
     </figure>
   );

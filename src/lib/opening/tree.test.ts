@@ -85,7 +85,9 @@ describe("repertoire book and issue index", () => {
   });
 
   it("lists White's six mainline chapters for the sticky rail", () => {
-    expect(issueChapters().map((n) => n.id)).toEqual(["e4", "nf3", "bc4", "oo", "d4", "re1"]);
+    const ids = issueChapters().map((n) => n.id);
+    expect(ids).toEqual(["e4", "nf3", "bc4", "oo", "d4", "re1"]);
+    expect(ids.length).toBeLessThanOrEqual(7);
   });
 });
 

@@ -33,7 +33,7 @@ export function NotationView({
 
   return (
     <article aria-label="Scoresheet" className="p-0" data-testid="notation-view">
-      <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.25em] text-faded">
+      <p className="mb-8 font-mono text-[12px] uppercase tracking-[0.25em] text-faded">
         {BROADSHEET.gameKicker} · every node, in order
       </p>
       <div className="m-0">
@@ -71,18 +71,19 @@ function Chapter({
       id={`chapter-${node.id}`}
       data-chapter={node.id}
       className={cn(
-        "scroll-mt-4 border-t-2 border-ink py-6",
+        "scroll-mt-4 border-t-2 border-ink pt-8 pb-10",
         flagship && "border-t-[3px]",
       )}
     >
       <div className="mb-3">
-        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
+        <p className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
           {node.kind}
         </p>
-        <h2 className="mt-1 font-display text-[clamp(1.5rem,2.5vw,1.85rem)] leading-tight text-ink">
+        <h2 className="mt-2 font-display text-[clamp(1.5rem,2.5vw,1.85rem)] leading-tight text-ink">
           <ChapterButton
             node={node}
             selected={selected}
+            flagship={flagship}
             onSelect={onSelect}
             onPreview={onPreview}
             stamp={selected && Boolean(node.sym)}
@@ -112,12 +113,12 @@ function Chapter({
           />
         ) : null}
         {node.fact ? (
-          <p className="drop-cap max-w-prose font-display text-[15.5px] leading-relaxed text-ink">
+          <p className="drop-cap max-w-prose font-display text-[16px] leading-relaxed text-ink">
             {node.fact}
           </p>
         ) : null}
         {node.commentary ? (
-          <p className="mt-3 max-w-prose font-lora text-[15px] leading-relaxed italic text-ink">
+          <p className="mt-4 max-w-prose font-lora text-[16px] leading-relaxed italic text-ink">
             {node.commentary}
           </p>
         ) : null}
@@ -151,7 +152,7 @@ function Chapter({
                     alt={head.title}
                   />
                 ) : null}
-                <p className="max-w-prose font-lora text-[13px] leading-relaxed italic text-ink/90">
+                <p className="max-w-prose font-lora text-[12px] leading-relaxed italic text-ink/90">
                   <VariationRun
                     line={line}
                     selectedId={selectedId}
@@ -160,7 +161,7 @@ function Chapter({
                   />
                 </p>
                 {head?.impression && head.commentary ? (
-                  <p className="mt-3 max-w-prose font-lora text-[13px] leading-relaxed italic text-ink">
+                  <p className="mt-4 max-w-prose font-lora text-[16px] leading-relaxed italic text-ink">
                     {head.commentary}
                   </p>
                 ) : null}
@@ -185,7 +186,7 @@ function Chapter({
         </div>
       ) : null}
 
-      <p className="mt-4 font-mono text-[11px] leading-relaxed text-faded">
+      <p className="line-so-far mt-4 font-mono text-[12px] leading-relaxed text-faded">
         <span className="uppercase tracking-[0.18em]">The line so far</span>
         <br />
         <span className="text-ink">{formatLine(node.id)}</span>
@@ -245,6 +246,7 @@ function ChapterButton({
   onPreview,
   compact,
   stamp,
+  flagship,
 }: {
   node: OpeningNode;
   selected: boolean;
@@ -252,6 +254,7 @@ function ChapterButton({
   onPreview?: (id: string | null) => void;
   compact?: boolean;
   stamp?: boolean;
+  flagship?: boolean;
 }) {
   const spoken = compact
     ? [moveHeading(node), node.sym].filter(Boolean).join(" ")
@@ -263,6 +266,7 @@ function ChapterButton({
       data-node-id={node.id}
       aria-label={spoken}
       aria-current={selected ? "true" : undefined}
+      data-flagship-mark={flagship && selected ? "true" : undefined}
       onClick={() => onSelect(node.id)}
       onMouseEnter={() => onPreview?.(node.id)}
       onMouseLeave={() => onPreview?.(null)}
@@ -270,9 +274,10 @@ function ChapterButton({
       onBlur={() => onPreview?.(null)}
       className={cn(
         "inline text-left font-[inherit] text-[1em] leading-[inherit] focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2",
-        compact && "font-display text-[13px] not-italic",
-        node.type === "not-taken" && "border border-dashed border-ink px-0.5",
-        selected && "bg-score-red/15 box-decoration-clone",
+        compact && "font-display text-[12px] not-italic",
+        node.type === "not-taken" && "border border-dashed border-ink px-1",
+        selected && flagship && "bg-score-red/15 box-decoration-clone",
+        selected && !flagship && "underline decoration-score-red/50 decoration-2 underline-offset-4",
       )}
     >
       <span className="text-book-blue">

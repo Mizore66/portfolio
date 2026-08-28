@@ -19,6 +19,7 @@ import { BROADSHEET } from "@/content/opening";
 import { GLIDE_MS, depthPaintMs } from "@/lib/opening/motion";
 import type { Color } from "@/lib/chess/replay";
 import type { Ply } from "@/lib/opening/types";
+import { cn } from "@/lib/utils";
 
 const MAX_DEPTH = 11;
 const SEARCH_BUDGET_MS = 900;
@@ -156,6 +157,9 @@ export function GlassEngine({
   const line = visibleEngineLine(book ?? null, info);
   const mode = evalMode ?? "handcrafted";
   const usingLearned = info?.evalMode === "learned";
+  const pvText = line.pv.length ? numberPv(line.pv, side, moveNumber) : "…";
+  const settling = line.settling || (!info && PHASE2_EXHIBITS);
+
   return (
     <section
       className="box-inset border-2 border-ink overflow-hidden"
@@ -164,55 +168,66 @@ export function GlassEngine({
       aria-live="polite"
       aria-label="Live engine search"
     >
-      <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
-      <p className="truncate font-mono text-[10px] uppercase tracking-[0.18em] text-faded" data-testid="engine-badge">
+      <p className="font-mono text-[12px] uppercase tracking-[0.18em] text-faded" data-testid="engine-badge">
         {PHASE2_EXHIBITS ? BROADSHEET.engineBadge : "Engine · 2200"}
       </p>
-      {PHASE2_EXHIBITS && onEvalMode ? (
-        <div className="eval-toggle flex gap-0" data-testid="eval-toggle" role="group" aria-label="Evaluation">
-          <button
-            type="button"
-            data-testid="eval-handcrafted"
-            aria-pressed={mode === "handcrafted"}
-            onClick={() => onEvalMode("handcrafted")}
-            className="border border-ink px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest"
-          >
-            Handcrafted
-          </button>
-          <button
-            type="button"
-            data-testid="eval-learned"
-            aria-pressed={mode === "learned"}
-            onClick={() => onEvalMode("learned")}
-            className="border border-ink border-l-0 px-2 py-0.5 font-mono text-[9px] uppercase tracking-widest"
-          >
-            Learned
-          </button>
-        </div>
-      ) : null}
+      <div className="engine-readout" data-testid="engine-readout">
+        {PHASE2_EXHIBITS && onEvalMode ? (
+          <div className="eval-toggle flex gap-0" data-testid="eval-toggle" role="group" aria-label="Evaluation">
+            <button
+              type="button"
+              data-testid="eval-handcrafted"
+              aria-pressed={mode === "handcrafted"}
+              onClick={() => onEvalMode("handcrafted")}
+              className="hit-target border border-ink px-3 font-mono text-[12px] uppercase tracking-widest"
+            >
+              Handcrafted
+            </button>
+            <button
+              type="button"
+              data-testid="eval-learned"
+              aria-pressed={mode === "learned"}
+              onClick={() => onEvalMode("learned")}
+              className="hit-target border border-ink border-l-0 px-3 font-mono text-[12px] uppercase tracking-widest"
+            >
+              Learned
+            </button>
+          </div>
+        ) : null}
+        <p
+          className={cn(
+            "mt-2 truncate font-mono text-[12px]",
+            line.settling ? "text-faded" : "text-book-blue",
+          )}
+          data-testid="engine-pv"
+          data-settling={line.settling ? "true" : "false"}
+        >
+          {pvText}
+        </p>
+        <p
+          className="mt-2 font-mono text-[12px] text-faded"
+          data-testid="engine-depth"
+          data-depth={info?.depth ?? 0}
+          data-nps={info?.nps ?? 0}
+          data-thinking={info?.thinking ? "true" : "false"}
+        >
+          {info
+            ? `d${info.depth} · ${info.nps.toLocaleString()} n/s${info.thinking ? " · …" : ""}${
+                line.settling ? ` · ${BROADSHEET.settling}` : ""
+              }`
+            : settling
+              ? BROADSHEET.settling
+              : BROADSHEET.searching}
+        </p>
       </div>
-      <p className="mt-1 truncate font-mono text-[13px] text-book-blue" data-testid="engine-pv">
-        {line.pv.length ? numberPv(line.pv, side, moveNumber) : "…"}
-      </p>
-      <p
-        className="mt-1 font-mono text-[10px] text-faded"
-        data-testid="engine-depth"
-        data-depth={info?.depth ?? 0}
-        data-nps={info?.nps ?? 0}
-        data-thinking={info?.thinking ? "true" : "false"}
-      >
-        {info
-          ? `d${info.depth} · ${info.nps.toLocaleString()} n/s${info.thinking ? " · …" : ""}`
-          : BROADSHEET.searching}
-      </p>
       {PHASE2_EXHIBITS && mode === "learned" && weightsStatus !== "ready" ? (
-        <p className="mt-1 font-mono text-[10px] text-score-red" data-testid="weights-pending">
+        <p className="mt-2 font-mono text-[12px] text-score-red" data-testid="weights-pending">
           {weightsStatus === "error" ? BROADSHEET.weightsError : BROADSHEET.weightsPending}
         </p>
       ) : null}
       <p
         data-testid="engine-lampshade"
-        className="engine-lampshade mt-2 font-display text-[13px] leading-snug italic text-ink"
+        className="engine-lampshade mt-2 font-display text-[12px] leading-snug italic text-ink"
       >
         {lampshade}
       </p>

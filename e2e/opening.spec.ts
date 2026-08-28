@@ -791,6 +791,11 @@ test.describe("Opening Preparation", () => {
     );
     await expect(page.getByTestId("colophon")).toContainText("The witnesses");
     await expect(page.getByTestId("colophon")).toContainText("Vitest signs the parts list");
+    await expect(page.getByTestId("closer")).toBeVisible();
+    await expect(page.getByTestId("closer")).toContainText(/The scoresheet stands/i);
+    const closerY = (await page.getByTestId("closer").boundingBox())!.y;
+    const coloY = (await page.getByTestId("colophon").boundingBox())!.y;
+    expect(coloY).toBeGreaterThan(closerY);
     await expect(page.getByTestId("inventor-plate")).toBeVisible();
     await page.getByTestId("weather-cycle").click();
     await expect(page.getByTestId("weather-cycle")).toContainText(/Fog on the e-file|High pressure/);
@@ -901,8 +906,14 @@ test.describe("Opening Preparation", () => {
     await page.goto("/");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByTestId("engine-badge")).toContainText(/2200-anchored/i);
+    await expect(page.getByTestId("engine-badge")).toContainText(/1k nodes/i);
+    await expect(page.getByTestId("engine-badge")).toContainText(/fixed-N/i);
     await expect(page.getByTestId("eval-toggle")).toBeVisible();
+    await expect(page.getByTestId("engine-readout")).toBeVisible();
     await expect(page.getByTestId("evaluations-column")).toBeVisible();
+    await expect(page.getByTestId("evaluations-column")).toContainText(/1 000 nodes|1000 nodes|fixed-N/i);
+    await expect(page.getByTestId("evaluations-net")).toContainText(/768x2x128/);
+    await expect(page.getByTestId("evaluations-column")).not.toContainText(/sprt:/i);
     await expect(page.getByTestId("elo-commits")).toBeVisible();
     await expect(page.getByTestId("engine-lampshade")).toContainText(/disagreed since 1997/);
     await page.getByTestId("eval-learned").click();
@@ -930,5 +941,61 @@ test.describe("Opening Preparation", () => {
     const learned = Number(await page.getByTestId("engine-depth").getAttribute("data-nps"));
     // Spec is 25% on a mid-range phone. This VM + 390 emulation is the stand-in; 128-acc lands ~22%.
     expect(learned / hand).toBeGreaterThanOrEqual(0.2);
+  });
+
+  test("interactive targets, flagship mark, and board steppers hold the audit floor", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+
+    const hand = (await page.getByTestId("eval-handcrafted").boundingBox())!;
+    const learned = (await page.getByTestId("eval-learned").boundingBox())!;
+    expect(hand.height).toBeGreaterThanOrEqual(32);
+    expect(learned.height).toBeGreaterThanOrEqual(32);
+
+    const issueRow = (await page.locator('[data-testid="issue-index"] [data-node-id="d4"]').boundingBox())!;
+    expect(issueRow.height).toBeGreaterThanOrEqual(28);
+
+    const stamp = page.getByTestId("stamp-the-square");
+    await expect(stamp).toBeVisible();
+    const stampBox = (await stamp.boundingBox())!;
+    expect(stampBox.height).toBeGreaterThanOrEqual(32);
+    const stampBorder = await stamp.evaluate((el) => getComputedStyle(el).borderTopWidth);
+    expect(Number.parseFloat(stampBorder)).toBeGreaterThanOrEqual(2);
+
+    await page.getByTestId("board-step-next").click();
+    await expect(page.locator('[data-testid="tree-view"] [data-node-id="e4"]')).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
+    await expect(page.locator("#chapter-e4 h2 [data-node-id='e4']")).not.toHaveAttribute(
+      "data-flagship-mark",
+    );
+
+    await page.goto("/?move=d4");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.locator("#chapter-d4 h2 [data-node-id='d4']")).toHaveAttribute(
+      "data-flagship-mark",
+      "true",
+    );
+  });
+
+  test("the patent lightbox close target is 44px and a backdrop tap dismisses", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/?move=d4");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await page.locator("#chapter-d4 [data-testid='patent-expand']").click();
+    const lightbox = page.locator("#chapter-d4 [data-testid='patent-lightbox']");
+    await expect(lightbox).toBeVisible();
+    const close = lightbox.getByRole("button", { name: "Close" });
+    const box = (await close.boundingBox())!;
+    expect(box.height).toBeGreaterThanOrEqual(44);
+    expect(box.width).toBeGreaterThanOrEqual(44);
+    await lightbox.click({ position: { x: 4, y: 4 } });
+    await expect(lightbox).toBeHidden();
   });
 });

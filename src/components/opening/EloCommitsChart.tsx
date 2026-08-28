@@ -16,8 +16,8 @@ export function EloCommitsChart() {
   const poly = points.map((p, i) => `${x(i).toFixed(1)},${y(p.elo).toFixed(1)}`).join(" ");
 
   return (
-    <figure data-testid="elo-commits" className="border-2 border-ink p-3" aria-label={BROADSHEET.eloChartKicker}>
-      <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">{BROADSHEET.eloChartKicker}</p>
+    <figure data-testid="elo-commits" className="border-2 border-ink p-4" aria-label={BROADSHEET.eloChartKicker}>
+      <p className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">{BROADSHEET.eloChartKicker}</p>
       <svg viewBox={`0 0 ${w} ${h}`} className="mt-2 w-full text-ink" role="img" aria-label={BROADSHEET.eloChartKicker}>
         <line x1={pad.l} y1={zeroY} x2={w - pad.r} y2={zeroY} stroke="#1a120c" strokeWidth="1" strokeDasharray="3 3" />
         <line x1={pad.l} y1={pad.t} x2={pad.l} y2={h - pad.b} stroke="#1a120c" strokeWidth="1.5" />
@@ -59,7 +59,7 @@ export function EloCommitsChart() {
           0
         </text>
       </svg>
-      <figcaption className="mt-1 font-display text-[12px] italic text-ink">{BROADSHEET.eloChartCaption}</figcaption>
+      <figcaption className="mt-2 font-display text-[12px] italic text-ink">{BROADSHEET.eloChartCaption}</figcaption>
     </figure>
   );
 }

@@ -37,7 +37,7 @@ export function HalftonePlate({
         />
         <span className="halftone-plate-screen" aria-hidden="true" />
       </div>
-      <figcaption className="mt-2 border-t border-ink pt-1 font-display text-[13px] italic text-ink">
+      <figcaption className="mt-2 border-t border-ink pt-2 font-display text-[12px] italic text-ink">
         {caption}
       </figcaption>
     </figure>

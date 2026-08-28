@@ -53,3 +53,4 @@ next-env.d.ts
 /training/*.npz
 /training/__pycache__/
 /tmp/
+/matches/*.log

@@ -2,26 +2,26 @@ import { BROADSHEET } from "@/content/opening";
 import { PHASE2_MATCH } from "@/lib/chess/phase2";
 
 export function EvaluationsColumn() {
-  const elo = PHASE2_MATCH.elo;
-  const sign = elo >= 0 ? "+" : "";
-  const winner = elo >= 0 ? "LEARNED DEFEATS HANDCRAFTED" : "HANDCRAFTED DEFEATS LEARNED";
   return (
     <section
       data-testid="evaluations-column"
-      className="border-2 border-ink p-3"
+      className="border-2 border-ink p-4"
       aria-label={BROADSHEET.evaluationsKicker}
     >
-      <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
+      <p className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
         {BROADSHEET.evaluationsKicker}
       </p>
-      <h2 className="mt-2 font-display text-[22px] leading-tight text-ink">
-        {BROADSHEET.evaluationsHed || `${winner} BY ${sign}${elo.toFixed(1)}`}
+      <h2 className="mt-2 font-display text-[24px] leading-tight text-ink">
+        {BROADSHEET.evaluationsHed}
       </h2>
-      <p className="mt-2 font-lora text-[13px] leading-relaxed text-ink">{BROADSHEET.evaluationsDek}</p>
-      <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-faded">
-        {PHASE2_MATCH.sprtLine || BROADSHEET.evaluationsSprt}
+      <p className="mt-4 font-lora text-[16px] leading-relaxed text-ink">{BROADSHEET.evaluationsDek}</p>
+      <p className="mt-4 font-mono text-[12px] uppercase tracking-[0.08em] text-faded">
+        {PHASE2_MATCH.reportLine || BROADSHEET.evaluationsSprt}
       </p>
-      <p className="mt-2 font-display text-[13px] italic leading-snug text-ink">
+      <p className="mt-2 font-mono text-[12px] text-ink" data-testid="evaluations-net">
+        {PHASE2_MATCH.netId} · {PHASE2_MATCH.regime}
+      </p>
+      <p className="mt-4 font-display text-[16px] italic leading-snug text-ink">
         {BROADSHEET.evaluationsHonesty}
       </p>
     </section>

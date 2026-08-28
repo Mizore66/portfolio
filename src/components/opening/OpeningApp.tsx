@@ -385,6 +385,10 @@ export function OpeningApp() {
                   puzzlePrompt={node.puzzle && extra.length === 0 ? node.puzzle.prompt : null}
                   puzzleNote={puzzleNote}
                   puzzleTarget={node.puzzle && extra.length === 0 ? node.puzzle.target : null}
+                  onStepPrev={() => userSelect(stepMainline(selectedId, -1))}
+                  onStepNext={() => userSelect(stepMainline(selectedId, 1))}
+                  canStepPrev={stepMainline(selectedId, -1) !== selectedId}
+                  canStepNext={!atEnd}
                 />
                 </div>
                 <GlassEngine
@@ -406,7 +410,7 @@ export function OpeningApp() {
                     aria-pressed={playing}
                     onClick={onReadTheGame}
                     className={cn(
-                      "inline-flex items-center gap-2 border-2 border-ink px-3 py-2 font-mono text-[11px] uppercase tracking-widest",
+                      "paper-control",
                       playing ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-paper-deep",
                     )}
                   >
@@ -418,7 +422,7 @@ export function OpeningApp() {
                     data-testid="play-the-position"
                     onClick={onPlayThePosition}
                     className={cn(
-                      "inline-flex items-center gap-2 border-2 border-ink px-3 py-2 font-mono text-[11px] uppercase tracking-widest",
+                      "paper-control",
                       playHint ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-paper-deep",
                     )}
                   >
@@ -427,7 +431,7 @@ export function OpeningApp() {
                   </button>
                 </div>
                 {playHint ? (
-                  <p className="font-display text-[13px] italic text-ink">{BROADSHEET.playHint}</p>
+                  <p className="font-display text-[16px] italic text-ink">{BROADSHEET.playHint}</p>
                 ) : null}
                 <IssueIndex selectedId={selectedId} onSelect={userSelect} />
                 <div className="max-[979px]:hidden">

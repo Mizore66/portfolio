@@ -15,7 +15,8 @@ export function EvalBar({
       data-testid="eval-bar"
       className="relative w-10 shrink-0 self-stretch overflow-hidden border-2 border-ink bg-ink"
       role="meter"
-      aria-label="Engine evaluation"
+      aria-label="Assessment — engine evaluation"
+      title="Assessment — engine evaluation"
       aria-valuemin={-8}
       aria-valuemax={8}
       aria-valuenow={Number(value.toFixed(2))}
@@ -26,7 +27,7 @@ export function EvalBar({
       />
       <p
         data-testid="engine-eval"
-        className="absolute inset-x-0 overflow-hidden whitespace-nowrap px-px text-center font-mono text-[9px] font-semibold leading-none tracking-tighter tabular-nums"
+        className="absolute inset-x-0 overflow-hidden whitespace-nowrap px-px text-center font-mono text-[12px] font-semibold leading-none tracking-tighter tabular-nums"
         style={{
           top: whiteAhead ? undefined : 5,
           bottom: whiteAhead ? 5 : undefined,

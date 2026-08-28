@@ -1,4 +1,5 @@
 import { spawnSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it, afterEach } from "vitest";
 import { configureEngine, playUci, startPos } from "../engine";
@@ -58,6 +59,27 @@ describe("Gate A — handcrafted vs handcrafted", () => {
       expect(g1.aScore + g2.aScore).toBe(1);
     }
   }, 30_000);
+
+  it("has a 1000-node openings-v1 receipt at 0 Elo", () => {
+    const raw = JSON.parse(
+      readFileSync(join(process.cwd(), "matches/gate-a-v1-1000.json"), "utf8"),
+    ) as {
+      nodes: number;
+      a: string;
+      b: string;
+      elo: { elo: number; wdl: { w: number; d: number; l: number }; score: number };
+      stoppedEarly: boolean;
+      games: unknown[];
+    };
+    expect(raw.nodes).toBe(1000);
+    expect(raw.a).toBe("handcrafted");
+    expect(raw.b).toBe("handcrafted");
+    expect(raw.games).toHaveLength(100);
+    expect(raw.stoppedEarly).toBe(false);
+    expect(raw.elo.score).toBe(0.5);
+    expect(raw.elo.elo).toBe(0);
+    expect(raw.elo.wdl.w).toBe(raw.elo.wdl.l);
+  });
 });
 
 describe("eval filter pipeline", () => {

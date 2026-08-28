@@ -30,7 +30,7 @@ export default async function ProjectPage({
               </Link>
               <span className="font-mono text-[11px] text-faded">{project.date}</span>
             </div>
-            <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.28em] text-faded">
+            <p className="mt-3 font-mono text-[12px] uppercase tracking-[0.28em] text-faded">
               Clipping · Exhibit · {project.subtitle}
             </p>
           </header>
@@ -39,8 +39,8 @@ export default async function ProjectPage({
             <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-faded">
               Pasted from the desk
             </p>
-            <h1 className="mt-2 font-display text-4xl text-ink">{project.name}</h1>
-            <p className="mt-4 drop-cap font-lora text-lg leading-relaxed italic text-ink">
+            <h1 className="exhibit-title mt-2 font-display text-ink">{project.name}</h1>
+            <p className="mt-4 drop-cap font-lora text-[16px] leading-relaxed italic text-ink">
               {project.description}
             </p>
 
@@ -58,7 +58,7 @@ export default async function ProjectPage({
             </div>
 
             <section className="mt-10">
-              <h2 className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
+              <h2 className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
                 Tech
               </h2>
               <ul className="mt-3 flex flex-wrap gap-2">
@@ -74,7 +74,7 @@ export default async function ProjectPage({
             </section>
 
             <section className="mt-10">
-              <h2 className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
+              <h2 className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
                 The line
               </h2>
               <ol className="mt-3 space-y-3">
@@ -83,14 +83,14 @@ export default async function ProjectPage({
                     <span className="font-mono text-[11px] text-score-red">
                       {String(i + 1).padStart(2, "0")}
                     </span>
-                    <p className="font-display text-[15px] leading-relaxed">{bullet}</p>
+                    <p className="font-display text-[16px] leading-relaxed">{bullet}</p>
                   </li>
                 ))}
               </ol>
             </section>
 
             <section className="mt-10 border-2 border-ink p-4 newsprint-deep">
-              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-faded">
+              <p className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
                 Measurable impact
               </p>
               <p className="mt-1 font-display text-xl text-score-red">{project.impact}</p>
