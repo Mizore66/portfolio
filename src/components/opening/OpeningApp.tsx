@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { BoardDiagram } from "@/components/opening/BoardDiagram";
 import { BroadsheetFiller } from "@/components/opening/BroadsheetFiller";
@@ -53,7 +54,7 @@ function reducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-export function OpeningApp() {
+export function OpeningApp({ staticBoard }: { staticBoard?: ReactNode } = {}) {
   const selection = useSyncExternalStore(
     subscribeSelection,
     getSelection,
@@ -452,6 +453,9 @@ export function OpeningApp() {
     [userSelect, selectedId],
   );
 
+  const liveBoard =
+    selectedId !== FLAGSHIP_ID || extra.length > 0 || playing || playHint || previewHl !== null;
+
   function onReadTheGame() {
     if (playing) {
       setPlaying(false);
@@ -488,7 +492,20 @@ export function OpeningApp() {
             >
               <div className="flex flex-col gap-3 min-[980px]:gap-4 min-[980px]:sticky min-[980px]:top-3 newsprint-sticky z-10 max-[699px]:contents">
                 <div className="board-engine-cluster" data-testid="board-engine-cluster">
-                <div data-sticky-board="">
+                <div
+                  data-sticky-board=""
+                  onClick={
+                    liveBoard || !staticBoard
+                      ? undefined
+                      : (e) => {
+                          const t = e.target as HTMLElement;
+                          if (t.closest('[data-testid="board-step-next"]')) onStepNext();
+                          else if (t.closest('[data-testid="board-step-prev"]')) onStepPrev();
+                          else if (t.closest("#play-board")) setPlayHint(true);
+                        }
+                  }
+                >
+                {liveBoard || !staticBoard ? (
                 <BoardDiagram
                   plies={displayPlies}
                   highlight={highlight}
@@ -510,6 +527,9 @@ export function OpeningApp() {
                   canStepPrev={stepMainline(selectedId, -1) !== selectedId}
                   canStepNext={!atEnd}
                 />
+                ) : (
+                  staticBoard
+                )}
                 </div>
                 <GlassEngine
                   info={engine}
