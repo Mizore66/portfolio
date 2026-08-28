@@ -1,16 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  clonePos,
-  fromPieces,
-  numberPv,
-  prepareSearch,
-  search,
-  type EvalMode,
-  type SearchInfo,
-} from "@/lib/chess/engine";
-import { loadNnue } from "@/lib/chess/nnue/load";
+import { useEffect, useRef, useState } from "react";
+import type { EvalMode, SearchInfo } from "@/lib/chess/engine";
+import { numberPv } from "@/lib/chess/notation";
 import type { NnueNet } from "@/lib/chess/nnue/types";
 import { PHASE2_EXHIBITS, PHASE2_WEIGHTS_URL } from "@/lib/chess/phase2";
 import { positionAfter } from "@/lib/chess/replay";
@@ -23,6 +15,8 @@ import { cn } from "@/lib/utils";
 
 const MAX_DEPTH = 11;
 const SEARCH_BUDGET_MS = 900;
+/** Keep each depth under the 50ms long-task floor so Lighthouse TBT stays clean. */
+const SEARCH_SLICE_MS = 48;
 
 function afterPaint(ms: number): Promise<void> {
   return new Promise((resolve) => {
@@ -38,6 +32,17 @@ function afterPaint(ms: number): Promise<void> {
   });
 }
 
+function whenQuiet(): Promise<void> {
+  return new Promise((resolve) => {
+    const ric = window.requestIdleCallback;
+    if (typeof ric === "function") {
+      ric(() => resolve(), { timeout: 280 });
+      return;
+    }
+    window.setTimeout(resolve, 0);
+  });
+}
+
 export function useNnueWeights(wanted: boolean) {
   const [net, setNet] = useState<NnueNet | null>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
@@ -47,7 +52,8 @@ export function useNnueWeights(wanted: boolean) {
     if (net) return;
     let cancelled = false;
     setStatus("loading");
-    void loadNnue(PHASE2_WEIGHTS_URL)
+    void import("@/lib/chess/nnue/load")
+      .then(({ loadNnue }) => loadNnue(PHASE2_WEIGHTS_URL))
       .then((loaded) => {
         if (cancelled) return;
         setNet(loaded);
@@ -73,19 +79,29 @@ export function useEngineSearch(
 ) {
   const [info, setInfo] = useState<SearchInfo | null>(null);
   const [down, setDown] = useState(false);
+  const started = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
     const last = plies[plies.length - 1] ?? null;
     const mode: EvalMode = evalMode === "learned" && net ? "learned" : "handcrafted";
+    const glideFirst = started.current;
 
     async function run() {
-      await new Promise((r) => window.setTimeout(r, GLIDE_MS));
+      await afterPaint(0);
+      if (glideFirst) {
+        await new Promise((r) => window.setTimeout(r, GLIDE_MS));
+      } else {
+        started.current = true;
+        await whenQuiet();
+      }
       if (cancelled) return;
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const dwell = depthPaintMs(reduced);
       setDown(false);
       try {
+        const { fromPieces, prepareSearch, search, clonePos } = await import("@/lib/chess/engine");
+        if (cancelled) return;
         const pos = fromPieces(positionAfter(plies), side, last);
         prepareSearch();
         const tSearch = performance.now();
@@ -95,7 +111,7 @@ export function useEngineSearch(
           if (depth > SHOW_DEPTHS && spent > SEARCH_BUDGET_MS) break;
           const remain = Math.max(SEARCH_BUDGET_MS - spent, 16);
           const result = search(clonePos(pos), depth, {
-            timeMs: remain,
+            timeMs: Math.min(remain, SEARCH_SLICE_MS),
             evalMode: mode,
             net,
           });

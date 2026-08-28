@@ -11,6 +11,7 @@ const display = Libre_Baskerville({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
+  preload: true,
 });
 
 const lora = Lora({
@@ -18,6 +19,7 @@ const lora = Lora({
   style: ["normal", "italic"],
   variable: "--font-lora",
   display: "swap",
+  preload: false,
 });
 
 const mono = IBM_Plex_Mono({
@@ -25,6 +27,7 @@ const mono = IBM_Plex_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -67,6 +70,15 @@ export default function RootLayout({
       lang="en"
       className={`${display.variable} ${lora.variable} ${mono.variable}`}
     >
+      <head>
+        <link
+          rel="preload"
+          as="image"
+          href="/newsprint-grain.avif"
+          type="image/avif"
+          fetchPriority="high"
+        />
+      </head>
       <body className="relative z-[1] min-h-screen bg-transparent font-lora text-ink antialiased">
         <DeskCollage />
         {children}

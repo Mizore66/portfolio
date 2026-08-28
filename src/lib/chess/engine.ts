@@ -8,6 +8,9 @@ import { evaluateNnue } from "@/lib/chess/nnue/infer";
 import type { NnueAcc, NnueNet } from "@/lib/chess/nnue/types";
 import type { Ply } from "@/lib/opening/types";
 
+export { START_PERFT } from "./perft-table";
+export { numberPv } from "./notation";
+
 export type EvalMode = "handcrafted" | "learned";
 
 export type SearchOptions = {
@@ -551,13 +554,6 @@ export function isLegalPly(pos: EnginePos, ply: Ply): boolean {
   return legalMoves(pos).some((m) => alg(m.from) === ply.from && alg(m.to) === ply.to);
 }
 
-/** Start-position node counts — the generator's receipt, shown in the colophon. */
-export const START_PERFT = [
-  { depth: 1, nodes: 20 },
-  { depth: 2, nodes: 400 },
-  { depth: 3, nodes: 8902 },
-] as const;
-
 export function perft(pos: EnginePos, depth: number): number {
   if (depth === 0) return 1;
   const moves = legalMoves(pos);
@@ -744,19 +740,6 @@ function formatPv(pos: EnginePos, uciList: string[]): string[] {
     make(work, m);
   }
   return out;
-}
-
-export function numberPv(pv: string[], side: Color, moveNumber: number): string {
-  const parts: string[] = [];
-  let s = side;
-  let n = moveNumber;
-  for (const san of pv) {
-    if (s === "w") parts.push(`${n}. ${san}`);
-    else parts.push(parts.length === 0 ? `${n}…${san}` : san);
-    if (s === "b") n += 1;
-    s = s === "w" ? "b" : "w";
-  }
-  return parts.join(" ");
 }
 
 const TT_SIZE = 1 << 18;

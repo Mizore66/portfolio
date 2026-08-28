@@ -119,15 +119,30 @@
   transform: none;
 }
 
+:root {
+  --newsprint-grain: image-set(
+    url("/newsprint-grain.avif") type("image/avif"),
+    url("/newsprint-grain.webp") type("image/webp")
+  );
+}
+
 .desk-collage {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
   background-color: #2c1c12;
-  background-image: url("/newsprint-collage.jpg");
-  background-size: cover;
-  background-position: center;
+}
+
+@media (min-width: 980px) {
+  .desk-collage {
+    background-image: image-set(
+      url("/newsprint-collage.avif") type("image/avif"),
+      url("/newsprint-collage.webp") type("image/webp")
+    );
+    background-size: cover;
+    background-position: center;
+  }
 }
 
 .desk-collage::after {
@@ -152,7 +167,7 @@
 /* Readable writing surface. Collage stays in the gutters (Apple: content on a surface). */
 .sheet {
   background-color: var(--paper);
-  background-image: url("/newsprint-grain.png");
+  background-image: var(--newsprint-grain);
   background-size: 340px;
   background-blend-mode: overlay;
   color: var(--ink);
@@ -179,7 +194,7 @@
 
 .newsprint-sticky {
   background-color: var(--paper);
-  background-image: url("/newsprint-grain.png");
+  background-image: var(--newsprint-grain);
   background-size: 340px;
   background-blend-mode: overlay;
 }
@@ -211,7 +226,7 @@
 
 .newspaper-board {
   background-color: #f6eedc;
-  background-image: url("/newsprint-grain.png");
+  background-image: var(--newsprint-grain);
   background-size: 280px;
   background-blend-mode: overlay;
 }
@@ -975,7 +990,7 @@
     padding: 8px 16px 6px;
     border-bottom: 2px solid var(--ink);
     background-color: var(--paper);
-    background-image: url("/newsprint-grain.png");
+    background-image: var(--newsprint-grain);
     background-size: 340px;
     background-blend-mode: overlay;
   }
@@ -1020,7 +1035,7 @@
     padding: 8px 0;
     border-bottom: 0;
     background-color: var(--paper);
-    background-image: url("/newsprint-grain.png");
+    background-image: var(--newsprint-grain);
     background-size: 340px;
     background-blend-mode: overlay;
   }
@@ -1141,7 +1156,7 @@
   display: grid;
   gap: 24px;
   background-color: var(--paper);
-  background-image: url("/newsprint-grain.png");
+  background-image: var(--newsprint-grain);
   background-size: 340px;
   background-blend-mode: overlay;
 }

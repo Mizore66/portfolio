@@ -15,13 +15,7 @@ import { TodaysPuzzle } from "@/components/opening/TodaysPuzzle";
 import { TreeView } from "@/components/opening/TreeView";
 import { WayfindIndex } from "@/components/opening/WayfindIndex";
 import { BROADSHEET } from "@/content/opening";
-import {
-  fromPieces,
-  isLegalPly,
-  legalPlies,
-  replyMove,
-  type EvalMode,
-} from "@/lib/chess/engine";
+import type { EvalMode } from "@/lib/chess/engine";
 import { PHASE2_DEFAULT_EVAL, PHASE2_EXHIBITS } from "@/lib/chess/phase2";
 import { expandPlayLine, sideAfter } from "@/lib/chess/play";
 import { positionAfter } from "@/lib/chess/replay";
@@ -47,6 +41,7 @@ import type { Ply } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
 
 const NO_EXTRA: Ply[] = [];
+type EngineApi = typeof import("@/lib/chess/engine");
 
 function reducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -78,6 +73,27 @@ export function OpeningApp() {
   const hoverTimer = useRef<number>(0);
   const skipSpy = useRef(false);
   const skipSpyTimer = useRef<number>(0);
+  const [engineApi, setEngineApi] = useState<EngineApi | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    let idle = 0;
+    const load = () => {
+      void import("@/lib/chess/engine").then((mod) => {
+        if (!cancelled) setEngineApi(mod);
+      });
+    };
+    if (typeof requestIdleCallback === "function") {
+      idle = requestIdleCallback(load, { timeout: 400 });
+    } else {
+      idle = window.setTimeout(load, 0);
+    }
+    return () => {
+      cancelled = true;
+      if (typeof cancelIdleCallback === "function") cancelIdleCallback(idle);
+      else window.clearTimeout(idle);
+    };
+  }, []);
   const selectedRef = useRef(selectedId);
   const hydrated = useSyncExternalStore(
     () => () => {},
@@ -99,10 +115,20 @@ export function OpeningApp() {
   const atEnd = stepMainline(selectedId, 1) === selectedId;
   const piecesNow = useMemo(() => positionAfter(displayPlies), [displayPlies]);
   const pos = useMemo(
-    () => fromPieces(piecesNow, side, displayPlies[displayPlies.length - 1] ?? lastPly(selectedId)),
-    [piecesNow, side, displayPlies, selectedId],
+    () =>
+      engineApi
+        ? engineApi.fromPieces(
+            piecesNow,
+            side,
+            displayPlies[displayPlies.length - 1] ?? lastPly(selectedId),
+          )
+        : null,
+    [engineApi, piecesNow, side, displayPlies, selectedId],
   );
-  const legal = useMemo(() => legalPlies(pos), [pos]);
+  const legal = useMemo(
+    () => (engineApi && pos ? engineApi.legalPlies(pos) : []),
+    [engineApi, pos],
+  );
 
   const onSelect = useCallback(
     (id: string) => {
@@ -156,8 +182,9 @@ export function OpeningApp() {
   );
 
   function onPlay(ply: Ply) {
+    if (!engineApi || !pos) return;
     if (side !== startSide) return;
-    if (!isLegalPly(pos, ply)) return;
+    if (!engineApi.isLegalPly(pos, ply)) return;
     extraLenRef.current = extra.length + 1;
     setPlaying(false);
     setPlayHint(false);
@@ -169,6 +196,7 @@ export function OpeningApp() {
   }
 
   useEffect(() => {
+    if (!engineApi) return;
     if (extra.length === 0) return;
     const replySide = sideAfter(startSide, extra.length);
     if (replySide === startSide) return;
@@ -179,8 +207,8 @@ export function OpeningApp() {
       const line = expandPlayLine(bookPlies, extra);
       const last = line[line.length - 1] ?? null;
       const board = positionAfter(line);
-      const replyPos = fromPieces(board, replySide, last);
-      const best = replyMove(replyPos);
+      const replyPos = engineApi.fromPieces(board, replySide, last);
+      const best = engineApi.replyMove(replyPos);
       if (cancelled || !best) return;
       setPlay((cur) => {
         if (cur.id !== selectedId) return cur;
@@ -192,7 +220,7 @@ export function OpeningApp() {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [extra, startSide, bookPlies, selectedId]);
+  }, [engineApi, extra, startSide, bookPlies, selectedId]);
 
   function onPuzzleSquare(sq: string) {
     const puzzle = node.puzzle;
