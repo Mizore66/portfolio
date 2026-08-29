@@ -80,6 +80,62 @@ describe("Gate A — handcrafted vs handcrafted", () => {
     expect(raw.elo.elo).toBe(0);
     expect(raw.elo.wdl.w).toBe(raw.elo.wdl.l);
   });
+
+  it("has a 50000-node openings-v1 receipt at 0 Elo", () => {
+    const raw = JSON.parse(
+      readFileSync(join(process.cwd(), "matches/gate-a-v1-50000.json"), "utf8"),
+    ) as {
+      nodes: number;
+      a: string;
+      b: string;
+      elo: {
+        elo: number;
+        pairs: number;
+        pentanomial: number[];
+        wdl: { w: number; d: number; l: number };
+        score: number;
+      };
+      stoppedEarly: boolean;
+      games: unknown[];
+    };
+    expect(raw.nodes).toBe(50_000);
+    expect(raw.a).toBe("handcrafted");
+    expect(raw.b).toBe("handcrafted");
+    expect(raw.games).toHaveLength(100);
+    expect(raw.stoppedEarly).toBe(false);
+    expect(raw.elo.score).toBe(0.5);
+    expect(raw.elo.elo).toBe(0);
+    expect(raw.elo.pairs).toBe(50);
+    expect(raw.elo.pentanomial).toEqual([0, 0, 50, 0, 0]);
+    expect(raw.elo.wdl.w).toBe(raw.elo.wdl.l);
+  });
+});
+
+describe("Gate C — learned vs handcrafted", () => {
+  it("has a 50000-node openings-v1 receipt for the depth-12 256", () => {
+    const raw = JSON.parse(
+      readFileSync(join(process.cwd(), "matches/gate-c-v1-50000.json"), "utf8"),
+    ) as {
+      nodes: number;
+      a: string;
+      b: string;
+      netId: string;
+      elo: { elo: number; wdl: { w: number; d: number; l: number }; games: number };
+      stoppedEarly: boolean;
+      games: unknown[];
+      sprtLine: string;
+    };
+    expect(raw.nodes).toBe(50_000);
+    expect(raw.a).toBe("learned");
+    expect(raw.b).toBe("handcrafted");
+    expect(raw.netId).toBe("nnue-lichess-cc0-768x2x256-32-1-2026-08-29");
+    expect(raw.games).toHaveLength(100);
+    expect(raw.stoppedEarly).toBe(false);
+    expect(raw.elo.games).toBe(100);
+    expect(raw.elo.wdl).toEqual({ w: 1, d: 59, l: 40 });
+    expect(raw.elo.elo).toBeCloseTo(-143.1, 1);
+    expect(raw.sprtLine).toMatch(/-143\.1/);
+  });
 });
 
 describe("eval filter pipeline", () => {
@@ -98,5 +154,26 @@ describe("eval filter pipeline", () => {
     expect(rows).toHaveLength(1);
     expect(rows[0].ply).toBeGreaterThanOrEqual(10);
     expect(rows[0].wdl).toBeGreaterThan(0.5);
+  });
+
+  it("round-trips STM features back to a board", () => {
+    const result = spawnSync(
+      "python3",
+      [
+        "-c",
+        [
+          "import sys; sys.path.insert(0,'training')",
+          "from board import parse_fen, features, board_from_features",
+          "fen='rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1'",
+          "board, stm, _, _ = parse_fen(fen)",
+          "got = board_from_features(features(board, stm), stm)",
+          "assert got == board, (got, board)",
+          "print('ok')",
+        ].join("; "),
+      ],
+      { encoding: "utf8", cwd: process.cwd() },
+    );
+    expect(result.status, result.stderr).toBe(0);
+    expect(result.stdout.trim()).toBe("ok");
   });
 });

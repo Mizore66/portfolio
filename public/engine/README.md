@@ -1,14 +1,16 @@
 # Trained nets
 
-The site lazy-loads **one** OPN2 file, the 2×128 net, when the LEARNED toggle is used.
+The site lazy-loads **one** OPN2 file when LEARNED is on. Inference can run in `public/engine/nnue.wasm` (same integer forward pass as `evaluateNnue`).
 
 | id | hold-out r vs SF | bytes | role |
 | --- | --- | --- | --- |
-| `nnue-lichess-cc0-768x2x128-32-1-2026-08-28` | 0.31 | 205 275 | **shipped** — n/s closer to the 25% budget; **this** net played Gate C |
-| `nnue-lichess-cc0-768x2x256-32-1-2026-08-28` | 0.50 | 410 331 | kept for comparison; not loaded by the paper |
+| `nnue-lichess-cc0-768x2x256-32-1-2026-08-29` | 0.64 | 410 331 | **playing** — 20M, min_depth 12, 3 epochs. r vs PeSTO 0.70 |
+| `nnue-lichess-cc0-768x2x128-32-1-2026-08-28` | 0.31 | 205 275 | v1; 1k Gate C opponent |
+| `nnue-lichess-cc0-768x2x256-32-1-2026-08-28` | 0.50 | 410 331 | v1 256 comparison; not loaded |
+| `nnue.wasm` | — | ~6 KB | integer forward pass (Rust → wasm32) |
 
-Both trained on Lichess evals CC0 (ingest 6M quiet + 40k holdout). The 128 net’s trainer log is 3M positions / 2 epochs; the 256 is 6M / 3 epochs. See `training/HOLDOUT.md`.
+Rebuild: `npm run nnue:wasm`.
 
-Do not replace the shipped file without a new `fixed-N:` or `sprt:` line.
+Playing net: Lichess evals CC0, 20M quiet + 40k hold-out, min_depth 12. See `training/HOLDOUT.md`. LEARNED is the playing eval; PeSTO is a comparison toggle.
 
-Match (openings-v1, **1000** nodes/move, 100 games, **fixed-N**, SPRT unterminated): `fixed-N: −100.0 ±35.4 Elo @ 1000 nodes, 100 games, LLR −1.69 (inconclusive)`.
+Published 50k column: `fixed-N: −143.1 ±40.5 Elo @ 50000 nodes, 100 games, LLR −2.33 (inconclusive)`. The v1 128 at 1k was −100 — different net, different cap.

@@ -1,10 +1,12 @@
 /**
- * Club-strength alpha-beta (~2200). Mailbox 64, make/unmake, tapered PeSTO,
- * pawn structure, transposition table, null-move, iterative callers.
+ * Club-strength alpha-beta (~2200). Mailbox 64, make/unmake, LEARNED NNUE by
+ * default (tapered PeSTO remains a comparison eval), pawn structure,
+ * transposition table, null-move, iterative callers.
  */
 import { FILES, initialPieces, squareFile, squareRank, type Color, type Piece, type PieceType } from "@/lib/chess/replay";
 import { addPiece, cloneAcc, refreshAcc, removePiece } from "@/lib/chess/nnue/accumulator";
 import { evaluateNnue } from "@/lib/chess/nnue/infer";
+import { evaluateNnueWasm, wasmReady } from "@/lib/chess/nnue/wasm";
 import type { NnueAcc, NnueNet } from "@/lib/chess/nnue/types";
 import type { Ply } from "@/lib/opening/types";
 
@@ -672,7 +674,7 @@ export const NNUE_RESIDUAL = 60;
 
 function evaluate(pos: EnginePos, mode: EvalMode): number {
   if (mode === "learned" && pos.net && pos.acc) {
-    const n = evaluateNnue(pos.net, pos.acc, pos.side);
+    const n = wasmReady() ? evaluateNnueWasm(pos.acc, pos.side) : evaluateNnue(pos.net, pos.acc, pos.side);
     const residual = n > NNUE_RESIDUAL ? NNUE_RESIDUAL : n < -NNUE_RESIDUAL ? -NNUE_RESIDUAL : n;
     return materialCp(pos) + residual;
   }
@@ -804,11 +806,10 @@ function hitLimit(stats: Stats): boolean {
   return false;
 }
 
-function quiesce(pos: EnginePos, alpha: number, beta: number, stats: Stats, qsPly = 0): number {
+function quiesce(pos: EnginePos, alpha: number, beta: number, stats: Stats): number {
   stats.nodes += 1;
   if (hitLimit(stats)) return alpha;
-  // Quiet-trained net at the first stand-pat; PeSTO along the capture chain.
-  const mode: EvalMode = stats.evalMode === "learned" && qsPly === 0 ? "learned" : "handcrafted";
+  const mode: EvalMode = stats.evalMode;
   const stand = pos.side === 1 ? evaluate(pos, mode) : -evaluate(pos, mode);
   if (stand >= beta) return beta;
   if (stand > alpha) alpha = stand;
@@ -820,7 +821,7 @@ function quiesce(pos: EnginePos, alpha: number, beta: number, stats: Stats, qsPl
   for (const m of captures) {
     if (stand + VALUE[m.captured] + 90 < alpha) continue;
     make(pos, m);
-    const sc = -quiesce(pos, -beta, -alpha, stats, qsPly + 1);
+    const sc = -quiesce(pos, -beta, -alpha, stats);
     unmake(pos, m);
     if (stats.timedOut) return alpha;
     if (sc >= beta) return beta;

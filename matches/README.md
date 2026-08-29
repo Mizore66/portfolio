@@ -18,6 +18,14 @@ WDL 17–66–17. Pentanomial is fifty 1–1 pairs (identical engines, colours s
 
 A vitest mini at 48 nodes still lives in `src/lib/chess/match/match.test.ts` and must stay ~0 Elo.
 
+Same engines at the spec cap, 50 000 nodes/move, three process shards:
+
+`matches/gate-a-v1-50000.json`:
+
+`sprt: +0.0 ±0.0 Elo, 100 games, LLR -0.06 (inconclusive)`
+
+WDL 17–66–17. Pentanomial is fifty 1–1 pairs again. Elo 0.0 with a degenerate interval. The 1k calibration transfers: the harness is not the source of a 50k delta either. Wall-clock ~18 min on three shards (parent `elapsedMs` 1 088 973).
+
 ## Gate C — learned vs handcrafted (first column)
 
 Net **`nnue-lichess-cc0-768x2x128-32-1-2026-08-28`** (not the 256 file).
@@ -32,4 +40,18 @@ That line is a **fixed-N** result. The SPRT was halted at 100 games with LLR −
 
 The spec default is 50 000 nodes. This first column used 1000. Do not compare it to a future 50k number.
 
-The 128 net is a residual on classical material. PeSTO remains the stronger eval at this cap.
+The 128 net is a residual on classical material. Do not compare 1k to 50k.
+
+## Gate C — learned vs handcrafted (50k column)
+
+Net **`nnue-lichess-cc0-768x2x256-32-1-2026-08-29`**. Four process shards, 50 000 nodes/move, 100 games.
+
+`matches/gate-c-v1-50000.json`:
+
+`sprt: -143.1 ±40.5 Elo, 100 games, LLR -2.33 (inconclusive)`
+
+That line is a **fixed-N** result. The SPRT never hit a bound (LLR −2.33 vs ±≈2.94). The paper reports it as:
+
+`fixed-N: −143.1 ±40.5 Elo @ 50000 nodes, 100 games, LLR −2.33 (inconclusive; SPRT unterminated)`
+
+WDL 1–59–40. Gate A at the same cap was 0.0 Elo, so the −143 is not a colour or adjudication artefact. Wall-clock ~46 min (`elapsedMs` 2 746 036). LEARNED is now the playing eval; PeSTO stays as a comparison toggle and the historical opponent.

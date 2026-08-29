@@ -32,11 +32,26 @@ No Stockfish network weights are copied. Labels are public evals, not GPL'd para
 4. Quiet pass: no EP; not in check; first PV ply is not a capture. (The TypeScript `isQuietPosition` qsearch cut is the engine's own debug filter — it is **not** used to label training data, so the net is not PeSTO-shaped by construction.)
 5. Convert White-POV cp → STM WDL via `sigmoid(stm_cp / 410)` for the loss.
 
+## Phase 2 retrain (2026-08-29)
+
+Same CC0 dump, stricter cut. Receipt: `training/PROVENANCE-d12.json` (packs in `training/data-d12/` are gitignored). v1 numbers above stay as history.
+
+| Cut | Value |
+| --- | --- |
+| Stream | `lichess_db_eval.jsonl.zst` 2026-08-02 |
+| Fetched | 2026-08-29 |
+| Read / kept | 35 405 130 → 20 040 000 (20 000 000 train + 40 000 holdout) |
+| Min depth | **12** |
+| Label convention | White POV centipawns (white-to-move mean +52cp, black-to-move mean +39cp); STM WDL = sigmoid(±cp / 410) |
+| Quiet | same filters as v1 |
+
+Playing-net identity for this ingest is `nnue-lichess-cc0-768x2x256-32-1-2026-08-29`. Progress gate passed (r vs SF 0.64, r vs PeSTO 0.70). Gate C @ 50k printed `fixed-N: −143.1 ±40.5 Elo`. LEARNED is the playing eval.
+
 ## Phase 2b (later)
 
 Self-play labels from this engine at a deeper node cap. Measured against the 2a net by the match harness. Not started.
 
 ## Net ids
 
-`nnue-<data>-<arch>-<date>` e.g. `nnue-lichess-cc0-768x2x256-32-1-2026-08-28`.
+`nnue-<data>-<arch>-<date>` e.g. `nnue-lichess-cc0-768x2x256-32-1-2026-08-29`.
 The same id is the weights filename stem, the match-report field, and the site copy.

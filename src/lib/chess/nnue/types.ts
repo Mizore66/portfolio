@@ -1,4 +1,4 @@
-/** NNUE-style net for the TypeScript engine. PeSTO remains the default eval. */
+/** NNUE-style net for the TypeScript engine. LEARNED is the playing eval. */
 
 export const NNUE_MAGIC = "OPN2";
 export const ARCH_256 = "768x2x256-32-1";

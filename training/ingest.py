@@ -74,7 +74,7 @@ def main() -> int:
 
     src = args.input or args.url
     reader, proc, raw = open_zst_stream(src)
-    seen: set[str] = set()
+    seen: set[int] = set()
     kept = 0
     read = 0
     white_cp = 0.0

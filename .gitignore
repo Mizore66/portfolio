@@ -48,6 +48,8 @@ next-env.d.ts
 
 # Phase 2 training dumps — weights in public/engine/ are committed; raw packs are not.
 /training/data/
+/training/data-d12/
+/training/logs/
 /training/*.parquet
 /training/*.zst
 /training/*.npz

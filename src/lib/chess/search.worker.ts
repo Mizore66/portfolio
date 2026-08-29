@@ -2,11 +2,28 @@
 
 import { clonePos, fromPieces, prepareSearch, search, type EvalMode } from "@/lib/chess/engine";
 import { positionAfter } from "@/lib/chess/replay";
+import { encodeNnue } from "@/lib/chess/nnue/format";
 import type { NnueNet } from "@/lib/chess/nnue/types";
+import { loadNnueWasm } from "@/lib/chess/nnue/wasm";
 import type { SearchCancel, SearchEvent, SearchJob } from "@/lib/chess/search-job";
 
 let activeId = -1;
 let cachedNet: NnueNet | null = null;
+let wasmNetId: string | null = null;
+
+async function ensureWasm(net: NnueNet | null) {
+  if (!net || wasmNetId === net.id) return;
+  try {
+    const wasm = await fetch("/engine/nnue.wasm").then((r) => {
+      if (!r.ok) throw new Error(String(r.status));
+      return r.arrayBuffer();
+    });
+    await loadNnueWasm(wasm, encodeNnue(net));
+    wasmNetId = net.id;
+  } catch {
+    wasmNetId = null;
+  }
+}
 
 function netFor(job: SearchJob): NnueNet | null {
   if (job.net) {
@@ -27,6 +44,7 @@ self.onmessage = async (event: MessageEvent<SearchJob | SearchCancel>) => {
   activeId = job.jobId;
   try {
     const net = netFor(job);
+    await ensureWasm(net);
     const mode: EvalMode = job.evalMode === "learned" && net ? "learned" : "handcrafted";
     const pos = fromPieces(positionAfter(job.plies), job.side, job.last);
     prepareSearch();

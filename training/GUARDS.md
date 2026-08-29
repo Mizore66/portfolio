@@ -9,11 +9,11 @@ Diagnostics that must exist before treating a self-play number as an exhibit.
 | Incremental accumulator == full refresh | `guards.test.ts` + `nnue.test.ts` | Make/unmake drift |
 | Ten-position material order | `guards.test.ts` | Learned eval cannot rank KQ > KR > KN > K |
 | Gate A calibration @ 1k | `matches/gate-a-v1-1000.json` | Harness bias (colour, adjudication) at the same node cap as Gate C |
-| Gate A calibration @ 50k | not yet run | Calibration does not transfer across regimes. A 1k sanity run does not license a 50k rematch. |
+| Gate A calibration @ 50k | `matches/gate-a-v1-50000.json` | Calibration does not transfer across regimes. A 1k sanity run does not license a 50k rematch. |
 
-## Retrain gates (approved; not this pass)
+## Retrain gates (this pass)
 
-Do not rematch, do not 50k, do not WASM until both gates below pass. Rematching an unimproved net at 50k measures the same weakness at fifty times the compute.
+Data gate ingest is on disk (`training/PROVENANCE-d12.json`). Gate A @ 50k printed `sprt: +0.0 ±0.0 Elo`. Progress gate passed (`corr_sf` 0.64, r vs PeSTO 0.70). Gate C @ 50k printed `fixed-N: −143.1 ±40.5 Elo @ 50000 nodes, 100 games, LLR −2.33 (inconclusive; SPRT unterminated)` — WDL 1–59–40. LEARNED is the playing eval. PeSTO remains a comparison toggle. WASM is harness infrastructure, not Elo.
 
 ### Data gate
 

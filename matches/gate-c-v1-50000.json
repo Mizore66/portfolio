@@ -1,0 +1,841 @@
+{
+  "suiteId": "openings-v1",
+  "nodes": 50000,
+  "a": "learned",
+  "b": "handcrafted",
+  "netId": "nnue-lichess-cc0-768x2x256-32-1-2026-08-29",
+  "games": [
+    {
+      "openingIndex": 0,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 82,
+      "nodes": 2528645
+    },
+    {
+      "openingIndex": 0,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 13,
+      "nodes": 358410
+    },
+    {
+      "openingIndex": 1,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 71,
+      "nodes": 2255051
+    },
+    {
+      "openingIndex": 1,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 107,
+      "nodes": 3322053
+    },
+    {
+      "openingIndex": 2,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 116,
+      "nodes": 3621163
+    },
+    {
+      "openingIndex": 2,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 160,
+      "nodes": 5346463
+    },
+    {
+      "openingIndex": 3,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 87,
+      "nodes": 2590683
+    },
+    {
+      "openingIndex": 3,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 66,
+      "nodes": 1980600
+    },
+    {
+      "openingIndex": 4,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 114,
+      "nodes": 3463107
+    },
+    {
+      "openingIndex": 4,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 54,
+      "nodes": 1500088
+    },
+    {
+      "openingIndex": 5,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 81,
+      "nodes": 2528889
+    },
+    {
+      "openingIndex": 5,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 97,
+      "nodes": 3125169
+    },
+    {
+      "openingIndex": 6,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 150,
+      "nodes": 4773614
+    },
+    {
+      "openingIndex": 6,
+      "aIsWhite": false,
+      "result": "1-0",
+      "aScore": 0,
+      "plies": 59,
+      "nodes": 1785456
+    },
+    {
+      "openingIndex": 7,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 132,
+      "nodes": 4226750
+    },
+    {
+      "openingIndex": 7,
+      "aIsWhite": false,
+      "result": "1-0",
+      "aScore": 0,
+      "plies": 107,
+      "nodes": 3384347
+    },
+    {
+      "openingIndex": 8,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 140,
+      "nodes": 4582422
+    },
+    {
+      "openingIndex": 8,
+      "aIsWhite": false,
+      "result": "1-0",
+      "aScore": 0,
+      "plies": 133,
+      "nodes": 4059266
+    },
+    {
+      "openingIndex": 9,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 68,
+      "nodes": 1906448
+    },
+    {
+      "openingIndex": 9,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 111,
+      "nodes": 3924702
+    },
+    {
+      "openingIndex": 10,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 92,
+      "nodes": 2650644
+    },
+    {
+      "openingIndex": 10,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 47,
+      "nodes": 1422236
+    },
+    {
+      "openingIndex": 11,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 70,
+      "nodes": 2142178
+    },
+    {
+      "openingIndex": 11,
+      "aIsWhite": false,
+      "result": "1-0",
+      "aScore": 0,
+      "plies": 103,
+      "nodes": 3030092
+    },
+    {
+      "openingIndex": 12,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 70,
+      "nodes": 2131378
+    },
+    {
+      "openingIndex": 12,
+      "aIsWhite": false,
+      "result": "1-0",
+      "aScore": 0,
+      "plies": 115,
+      "nodes": 3498806
+    },
+    {
+      "openingIndex": 13,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 70,
+      "nodes": 2090134
+    },
+    {
+      "openingIndex": 13,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 50,
+      "nodes": 1452925
+    },
+    {
+      "openingIndex": 14,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 137,
+      "nodes": 4177152
+    },
+    {
+      "openingIndex": 14,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 60,
+      "nodes": 1826126
+    },
+    {
+      "openingIndex": 15,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 138,
+      "nodes": 4419972
+    },
+    {
+      "openingIndex": 15,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 71,
+      "nodes": 2113990
+    },
+    {
+      "openingIndex": 16,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 51,
+      "nodes": 1453875
+    },
+    {
+      "openingIndex": 16,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 116,
+      "nodes": 3541308
+    },
+    {
+      "openingIndex": 17,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 70,
+      "nodes": 2078192
+    },
+    {
+      "openingIndex": 17,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 118,
+      "nodes": 3548324
+    },
+    {
+      "openingIndex": 18,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 79,
+      "nodes": 2461727
+    },
+    {
+      "openingIndex": 18,
+      "aIsWhite": false,
+      "result": "1-0",
+      "aScore": 0,
+      "plies": 105,
+      "nodes": 3263966
+    },
+    {
+      "openingIndex": 19,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 95,
+      "nodes": 2954034
+    },
+    {
+      "openingIndex": 19,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 71,
+      "nodes": 2113732
+    },
+    {
+      "openingIndex": 20,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 80,
+      "nodes": 2587196
+    },
+    {
+      "openingIndex": 20,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 98,
+      "nodes": 3147869
+    },
+    {
+      "openingIndex": 21,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 124,
+      "nodes": 4081060
+    },
+    {
+      "openingIndex": 21,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 138,
+      "nodes": 4677660
+    },
+    {
+      "openingIndex": 22,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 92,
+      "nodes": 2626490
+    },
+    {
+      "openingIndex": 22,
+      "aIsWhite": false,
+      "result": "1-0",
+      "aScore": 0,
+      "plies": 123,
+      "nodes": 3789346
+    },
+    {
+      "openingIndex": 23,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 70,
+      "nodes": 2094843
+    },
+    {
+      "openingIndex": 23,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 84,
+      "nodes": 2429143
+    },
+    {
+      "openingIndex": 24,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 68,
+      "nodes": 2133924
+    },
+    {
+      "openingIndex": 24,
+      "aIsWhite": false,
+      "result": "1-0",
+      "aScore": 0,
+      "plies": 85,
+      "nodes": 2759867
+    },
+    {
+      "openingIndex": 25,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 122,
+      "nodes": 3836147
+    },
+    {
+      "openingIndex": 25,
+      "aIsWhite": false,
+      "result": "1-0",
+      "aScore": 0,
+      "plies": 107,
+      "nodes": 3027003
+    },
+    {
+      "openingIndex": 26,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 97,
+      "nodes": 3028721
+    },
+    {
+      "openingIndex": 26,
+      "aIsWhite": false,
+      "result": "1-0",
+      "aScore": 0,
+      "plies": 115,
+      "nodes": 3511020
+    },
+    {
+      "openingIndex": 27,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 70,
+      "nodes": 2109952
+    },
+    {
+      "openingIndex": 27,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 50,
+      "nodes": 1448439
+    },
+    {
+      "openingIndex": 28,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 98,
+      "nodes": 3159797
+    },
+    {
+      "openingIndex": 28,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 50,
+      "nodes": 1441375
+    },
+    {
+      "openingIndex": 29,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 114,
+      "nodes": 3486056
+    },
+    {
+      "openingIndex": 29,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 54,
+      "nodes": 1501541
+    },
+    {
+      "openingIndex": 30,
+      "aIsWhite": true,
+      "result": "1-0",
+      "aScore": 1,
+      "plies": 73,
+      "nodes": 2276549
+    },
+    {
+      "openingIndex": 30,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 36,
+      "nodes": 1095653
+    },
+    {
+      "openingIndex": 31,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 124,
+      "nodes": 3910279
+    },
+    {
+      "openingIndex": 31,
+      "aIsWhite": false,
+      "result": "1-0",
+      "aScore": 0,
+      "plies": 159,
+      "nodes": 5191244
+    },
+    {
+      "openingIndex": 32,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 63,
+      "nodes": 1861604
+    },
+    {
+      "openingIndex": 32,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 70,
+      "nodes": 2103628
+    },
+    {
+      "openingIndex": 33,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 61,
+      "nodes": 1904336
+    },
+    {
+      "openingIndex": 33,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 88,
+      "nodes": 2907955
+    },
+    {
+      "openingIndex": 34,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 101,
+      "nodes": 3073108
+    },
+    {
+      "openingIndex": 34,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 160,
+      "nodes": 5115946
+    },
+    {
+      "openingIndex": 35,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 113,
+      "nodes": 3447019
+    },
+    {
+      "openingIndex": 35,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 53,
+      "nodes": 1501554
+    },
+    {
+      "openingIndex": 36,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 70,
+      "nodes": 2202334
+    },
+    {
+      "openingIndex": 36,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 82,
+      "nodes": 2382315
+    },
+    {
+      "openingIndex": 37,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 55,
+      "nodes": 1653776
+    },
+    {
+      "openingIndex": 37,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 99,
+      "nodes": 3239349
+    },
+    {
+      "openingIndex": 38,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 79,
+      "nodes": 2550612
+    },
+    {
+      "openingIndex": 38,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 70,
+      "nodes": 2186499
+    },
+    {
+      "openingIndex": 39,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 30,
+      "nodes": 787279
+    },
+    {
+      "openingIndex": 39,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 65,
+      "nodes": 1994267
+    },
+    {
+      "openingIndex": 40,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 93,
+      "nodes": 2887488
+    },
+    {
+      "openingIndex": 40,
+      "aIsWhite": false,
+      "result": "1-0",
+      "aScore": 0,
+      "plies": 61,
+      "nodes": 1910113
+    },
+    {
+      "openingIndex": 41,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 81,
+      "nodes": 2503272
+    },
+    {
+      "openingIndex": 41,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 12,
+      "nodes": 328202
+    },
+    {
+      "openingIndex": 42,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 29,
+      "nodes": 876838
+    },
+    {
+      "openingIndex": 42,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 88,
+      "nodes": 2756817
+    },
+    {
+      "openingIndex": 43,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 112,
+      "nodes": 3430815
+    },
+    {
+      "openingIndex": 43,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 52,
+      "nodes": 1419163
+    },
+    {
+      "openingIndex": 44,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 136,
+      "nodes": 4428093
+    },
+    {
+      "openingIndex": 44,
+      "aIsWhite": false,
+      "result": "1-0",
+      "aScore": 0,
+      "plies": 89,
+      "nodes": 2639746
+    },
+    {
+      "openingIndex": 45,
+      "aIsWhite": true,
+      "result": "0-1",
+      "aScore": 0,
+      "plies": 133,
+      "nodes": 4074034
+    },
+    {
+      "openingIndex": 45,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 60,
+      "nodes": 1782129
+    },
+    {
+      "openingIndex": 46,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 119,
+      "nodes": 3787036
+    },
+    {
+      "openingIndex": 46,
+      "aIsWhite": false,
+      "result": "1-0",
+      "aScore": 0,
+      "plies": 84,
+      "nodes": 2722897
+    },
+    {
+      "openingIndex": 47,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 136,
+      "nodes": 4162554
+    },
+    {
+      "openingIndex": 47,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 59,
+      "nodes": 1776865
+    },
+    {
+      "openingIndex": 48,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 73,
+      "nodes": 2256835
+    },
+    {
+      "openingIndex": 48,
+      "aIsWhite": false,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 82,
+      "nodes": 2594446
+    },
+    {
+      "openingIndex": 49,
+      "aIsWhite": true,
+      "result": "1/2-1/2",
+      "aScore": 0.5,
+      "plies": 123,
+      "nodes": 3909218
+    },
+    {
+      "openingIndex": 49,
+      "aIsWhite": false,
+      "result": "1-0",
+      "aScore": 0,
+      "plies": 103,
+      "nodes": 3194751
+    }
+  ],
+  "elo": {
+    "games": 100,
+    "pairs": 50,
+    "pentanomial": [
+      7,
+      26,
+      16,
+      1,
+      0
+    ],
+    "wdl": {
+      "w": 1,
+      "d": 59,
+      "l": 40
+    },
+    "score": 0.305,
+    "elo": -143.07398609733121,
+    "eloCi95": [
+      -185.40610223695575,
+      -104.43098371656005
+    ],
+    "llr": -2.332562116545813,
+    "bounds": {
+      "lower": -2.9444389791664403,
+      "upper": 2.9444389791664403
+    },
+    "decision": "inconclusive"
+  },
+  "sprtLine": "sprt: -143.1 ±40.5 Elo, 100 games, LLR -2.33 (inconclusive)",
+  "startedAt": "2026-08-29T11:35:09.066Z",
+  "elapsedMs": 2746036,
+  "stoppedEarly": false
+}
