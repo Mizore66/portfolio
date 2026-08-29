@@ -665,9 +665,12 @@ test.describe("Opening Preparation", () => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.locator('#chapter-e4 img[src*="clip-sunway"]')).toBeVisible();
+    await expect(page.locator('#chapter-bc4 img[src*="clip-wd"]')).toBeVisible();
 
     const target = await page.locator("#chapter-oo").evaluate((el) => {
-      return window.scrollY + el.getBoundingClientRect().top - 40;
+      const line = window.innerHeight * 0.28;
+      return window.scrollY + el.getBoundingClientRect().top - line;
     });
     await page.evaluate((y) => window.scrollTo(0, y), target);
     const y0 = await page.evaluate(() => window.scrollY);
