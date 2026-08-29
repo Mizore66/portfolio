@@ -7,11 +7,44 @@ import type { NnueNet } from "@/lib/chess/nnue/types";
 import { PHASE2_EXHIBITS, PHASE2_WEIGHTS_URL } from "@/lib/chess/phase2";
 import { positionAfter } from "@/lib/chess/replay";
 import { SHOW_DEPTHS, visibleEngineLine, type BookLine } from "@/lib/chess/engine-view";
+import type { SearchEvent, SearchJob } from "@/lib/chess/search-job";
 import { BROADSHEET } from "@/content/opening";
 import { GLIDE_MS, depthPaintMs } from "@/lib/opening/motion";
 import type { Color } from "@/lib/chess/replay";
 import type { Ply } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
+
+/** One module worker for both PeSTO and the learned net. Recreate only after a crash. */
+let sharedSearchWorker: Worker | null = null;
+let searchJobSeq = 0;
+let workerInbox: ((event: MessageEvent<SearchEvent>) => void) | null = null;
+let workerOnError: (() => void) | null = null;
+
+function dropSearchWorker() {
+  sharedSearchWorker?.terminate();
+  sharedSearchWorker = null;
+  workerInbox = null;
+  workerOnError = null;
+}
+
+function acquireSearchWorker(): Worker | null {
+  if (sharedSearchWorker) return sharedSearchWorker;
+  if (typeof Worker === "undefined") return null;
+  try {
+    const worker = new Worker(new URL("../../lib/chess/search.worker.ts", import.meta.url), {
+      type: "module",
+    });
+    worker.onmessage = (event: MessageEvent<SearchEvent>) => workerInbox?.(event);
+    worker.onerror = () => {
+      workerOnError?.();
+      dropSearchWorker();
+    };
+    sharedSearchWorker = worker;
+    return worker;
+  } catch {
+    return null;
+  }
+}
 
 const MAX_DEPTH = 11;
 const SEARCH_BUDGET_MS = 900;
@@ -79,7 +112,7 @@ export function useEngineSearch(
     const glideFirst = started.current;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const dwell = depthPaintMs(reduced);
-    const box: { worker: Worker | null } = { worker: null };
+    const jobId = ++searchJobSeq;
 
     async function runOnMain() {
       await afterPaint(glideFirst ? GLIDE_MS : 0);
@@ -139,17 +172,15 @@ export function useEngineSearch(
       if (cancelled) return;
       started.current = true;
       setDown(false);
-      try {
-        box.worker = new Worker(new URL("../../lib/chess/search.worker.ts", import.meta.url), {
-          type: "module",
-        });
-      } catch {
+      const worker = acquireSearchWorker();
+      if (!worker) {
         await runOnMain();
         return;
       }
-      box.worker.onmessage = (event: MessageEvent) => {
+      workerInbox = (event: MessageEvent<SearchEvent>) => {
         if (cancelled) return;
-        const data = event.data as { type: string } & SearchInfo;
+        const data = event.data;
+        if (data.jobId !== jobId) return;
         if (data.type === "info") {
           setInfo({
             depth: data.depth,
@@ -172,35 +203,40 @@ export function useEngineSearch(
           setDown(true);
         }
       };
-      box.worker.onerror = () => {
+      workerOnError = () => {
         if (!cancelled) {
           setInfo(null);
           setDown(true);
         }
       };
-      box.worker.postMessage({
+      const job: SearchJob = {
+        type: "search",
+        jobId,
         plies,
         side,
         last,
         evalMode: mode,
+        net: mode === "learned" ? net : null,
         maxDepth: MAX_DEPTH,
         sliceMs: SEARCH_SLICE_MS,
         showDepths: SHOW_DEPTHS,
         budgetMs: SEARCH_BUDGET_MS,
         dwellMs: dwell,
-      });
+      };
+      if (cancelled) return;
+      try {
+        worker.postMessage(job);
+      } catch {
+        dropSearchWorker();
+        await runOnMain();
+      }
     }
 
-    if (mode === "handcrafted") {
-      void runInWorker();
-    } else {
-      started.current = true;
-      void runOnMain();
-    }
+    void runInWorker();
 
     return () => {
       cancelled = true;
-      box.worker?.terminate();
+      sharedSearchWorker?.postMessage({ type: "cancel", jobId });
     };
   }, [plies, side, evalMode, net]);
 
