@@ -197,7 +197,7 @@ export const BoardDiagram = memo(function BoardDiagram({
       return;
     }
     const piece = occ.get(sq);
-    if (fromSq && dests.includes(sq)) {
+    if (fromSq && sq !== fromSq && (dests.length === 0 || dests.includes(sq))) {
       attempt(fromSq, sq);
       return;
     }
@@ -296,6 +296,7 @@ export const BoardDiagram = memo(function BoardDiagram({
                   aria-label={caption}
                   data-testid="board-plane"
                   data-play-side={playSide}
+                  data-from={fromSq ?? undefined}
                   className={cn("newspaper-board relative h-full w-full", playable && "cursor-pointer")}
                   tabIndex={playable ? 0 : undefined}
                   id="play-board"

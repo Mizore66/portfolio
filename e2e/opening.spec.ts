@@ -538,6 +538,7 @@ test.describe("Opening Preparation", () => {
     const pawn = page.locator('[data-piece-id="wPe2"]');
     const before = await pawn.boundingBox();
     await page.locator('[data-sq="e2"]').click();
+    await expect(page.getByTestId("board-plane")).toHaveAttribute("data-from", "e2");
     await page.locator('[data-sq="e4"]').click();
     await expect(page.getByTestId("board-plane")).toHaveAttribute("data-play-side", "b");
     await expect(page.getByTestId("board-plane")).toHaveAttribute("data-play-side", "w", {

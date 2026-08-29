@@ -48,8 +48,8 @@ function acquireSearchWorker(): Worker | null {
 
 const MAX_DEPTH = 11;
 const SEARCH_BUDGET_MS = 900;
-/** Wall time for one iterative depth. d5 at the flagship is ~260ms on this VM. */
-const SEARCH_SLICE_MS = 400;
+/** Wall time for one iterative depth. Learned d5 is slower than PeSTO's ~260ms. */
+const SEARCH_SLICE_MS = 1600;
 
 function afterPaint(ms: number): Promise<void> {
   return new Promise((resolve) => {
@@ -134,7 +134,8 @@ export function useEngineSearch(
             net,
           });
           if (cancelled) return;
-          if (result.timedOut && result.pv.length === 0 && depth > 1) break;
+          if (result.timedOut && result.pv.length === 0 && depth > SHOW_DEPTHS) break;
+          if (result.pv.length === 0) continue;
           nodes += result.nodes;
           const ms = Math.max(1, performance.now() - tSearch);
           const more =

@@ -60,7 +60,8 @@ self.onmessage = async (event: MessageEvent<SearchJob | SearchCancel>) => {
         net,
       });
       if (activeId !== job.jobId) return;
-      if (result.timedOut && result.pv.length === 0 && depth > 1) break;
+      if (result.timedOut && result.pv.length === 0 && depth > job.showDepths) break;
+      if (result.pv.length === 0) continue;
       nodes += result.nodes;
       const ms = Math.max(1, performance.now() - tSearch);
       const more =

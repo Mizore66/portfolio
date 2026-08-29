@@ -92,21 +92,11 @@ export function OpeningApp({
 
   useEffect(() => {
     let cancelled = false;
-    let idle = 0;
-    const load = () => {
-      void import("@/lib/chess/engine").then((mod) => {
-        if (!cancelled) setEngineApi(mod);
-      });
-    };
-    if (typeof requestIdleCallback === "function") {
-      idle = requestIdleCallback(load, { timeout: 400 });
-    } else {
-      idle = window.setTimeout(load, 0);
-    }
+    void import("@/lib/chess/engine").then((mod) => {
+      if (!cancelled) setEngineApi(mod);
+    });
     return () => {
       cancelled = true;
-      if (typeof cancelIdleCallback === "function") cancelIdleCallback(idle);
-      else window.clearTimeout(idle);
     };
   }, []);
   const selectedRef = useRef(selectedId);
