@@ -40,4 +40,18 @@ That line is a **fixed-N** result. The SPRT was halted at 100 games with LLR −
 
 The spec default is 50 000 nodes. This first column used 1000. Do not compare it to a future 50k number.
 
-The 128 net is a residual on classical material. PeSTO remains the stronger eval at this cap. Gate A at 50k is already 0.0 Elo (see above); Gate C at 50k waits on the depth-12 256 retrain.
+The 128 net is a residual on classical material. Do not compare 1k to 50k.
+
+## Gate C — learned vs handcrafted (50k column)
+
+Net **`nnue-lichess-cc0-768x2x256-32-1-2026-08-29`**. Four process shards, 50 000 nodes/move, 100 games.
+
+`matches/gate-c-v1-50000.json`:
+
+`sprt: -143.1 ±40.5 Elo, 100 games, LLR -2.33 (inconclusive)`
+
+That line is a **fixed-N** result. The SPRT never hit a bound (LLR −2.33 vs ±≈2.94). The paper reports it as:
+
+`fixed-N: −143.1 ±40.5 Elo @ 50000 nodes, 100 games, LLR −2.33 (inconclusive; SPRT unterminated)`
+
+WDL 1–59–40. Gate A at the same cap was 0.0 Elo, so the −143 is not a colour or adjudication artefact. Wall-clock ~46 min (`elapsedMs` 2 746 036). LEARNED is now the playing eval; PeSTO stays as a comparison toggle and the historical opponent.

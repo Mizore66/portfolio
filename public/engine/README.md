@@ -11,6 +11,6 @@ The site lazy-loads **one** OPN2 file when LEARNED is on. Inference can run in `
 
 Rebuild: `npm run nnue:wasm`.
 
-Playing net: Lichess evals CC0, 20M quiet + 40k hold-out, min_depth 12. See `training/HOLDOUT.md`. PeSTO stays the default eval until Gate C @ 50k prints.
+Playing net: Lichess evals CC0, 20M quiet + 40k hold-out, min_depth 12. See `training/HOLDOUT.md`. LEARNED is the playing eval; PeSTO is a comparison toggle.
 
-Published 1k column (the v1 128, not this file): `fixed-N: −100.0 ±35.4 Elo @ 1000 nodes, 100 games, LLR −1.69 (inconclusive)`.
+Published 50k column: `fixed-N: −143.1 ±40.5 Elo @ 50000 nodes, 100 games, LLR −2.33 (inconclusive)`. The v1 128 at 1k was −100 — different net, different cap.

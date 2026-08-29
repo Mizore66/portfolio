@@ -13,7 +13,7 @@ Diagnostics that must exist before treating a self-play number as an exhibit.
 
 ## Retrain gates (this pass)
 
-Data gate ingest is on disk (`training/PROVENANCE-d12.json`). Gate A @ 50k printed `sprt: +0.0 ±0.0 Elo, 100 games, LLR -0.06 (inconclusive)` — fifty 1–1 pairs. Progress gate passed for `nnue-lichess-cc0-768x2x256-32-1-2026-08-29`: hold-out r vs SF **0.64** (v1 128 was 0.31, v1 256 was 0.50); r vs PeSTO **0.70** on 40k (not ≈ 1.0). Gate C @ 50k is next. WASM is harness infrastructure, not Elo. Do not rematch the v1 128 at 50k. PeSTO stays the playing eval until Gate C prints.
+Data gate ingest is on disk (`training/PROVENANCE-d12.json`). Gate A @ 50k printed `sprt: +0.0 ±0.0 Elo`. Progress gate passed (`corr_sf` 0.64, r vs PeSTO 0.70). Gate C @ 50k printed `fixed-N: −143.1 ±40.5 Elo @ 50000 nodes, 100 games, LLR −2.33 (inconclusive; SPRT unterminated)` — WDL 1–59–40. LEARNED is the playing eval. PeSTO remains a comparison toggle. WASM is harness infrastructure, not Elo.
 
 ### Data gate
 

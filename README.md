@@ -6,7 +6,7 @@ This is the public scoresheet of [Anas Tarek Qumhiyeh](https://github.com/Mizore
 
 ## What you are looking at
 
-One newspaper. The masthead is the name. The repertoire tree and the sticky board sit on the front. Every node in the opening is a chapter in the scoresheet: a job or a project, written as Informant notes. The glass case on the right is a live search — mailbox-64 alpha-beta, PeSTO by default, running off the main thread. A LEARNED toggle loads the shipped 768×2×256 residual net (`nnue-lichess-cc0-768x2x256-32-1-2026-08-29`). The 2200 on that case is club strength, not a published Elo.
+One newspaper. The masthead is the name. The repertoire tree and the sticky board sit on the front. Every node in the opening is a chapter in the scoresheet: a job or a project, written as Informant notes. The glass case on the right is a live search — mailbox-64 alpha-beta, LEARNED by default (PeSTO is a comparison toggle), running off the main thread. The shipped net is `nnue-lichess-cc0-768x2x256-32-1-2026-08-29`. The 2200 on that case is club strength, not a published Elo.
 
 Two doors, always: the article is first-class (and the only door under 980px). The tree is desktop. Click any move. `←` `→` steps the mainline.
 
@@ -20,11 +20,11 @@ The move generator is tested against start-position perft, which the colophon al
 | 2 | 400 |
 | 3 | 8902 |
 
-The learned exhibit is on the paper. PeSTO remains the default eval until Gate C @ 50k prints. The playing net is `nnue-lichess-cc0-768x2x256-32-1-2026-08-29` (20M quiet CC0, min_depth 12, hold-out r vs Stockfish **0.64**, r vs PeSTO 0.70). Gate A at 1 000 and 50 000 nodes/move was 0.0 Elo (handcrafted vs itself). The published Gate C column is still the v1 128 at 1k:
+The learned exhibit is on the paper. LEARNED is the playing eval; PeSTO is a comparison toggle. The net is `nnue-lichess-cc0-768x2x256-32-1-2026-08-29` (20M quiet CC0, min_depth 12, hold-out r vs Stockfish **0.64**, r vs PeSTO 0.70). Gate A at 50 000 nodes/move was 0.0 Elo (handcrafted vs itself). Gate C, same cap, 100 games, colours swapped:
 
-`fixed-N: −100.0 ±35.4 Elo @ 1000 nodes, 100 games, LLR −1.69 (inconclusive; SPRT unterminated)`
+`fixed-N: −143.1 ±40.5 Elo @ 50000 nodes, 100 games, LLR −2.33 (inconclusive; SPRT unterminated)`
 
-That is not a terminated SPRT and not the spec’s 50 000-node regime. Deltas are rigorous; the 2200 is an anchor, not a CCRL listing. See `training/GUARDS.md`. Run `npx tsx src/lib/chess/match/cli.ts --suite mini --nodes 48` for a tiny self-play.
+That is not a terminated SPRT. Deltas are rigorous; the 2200 is an anchor, not a CCRL listing. See `training/GUARDS.md`. Run `npx tsx src/lib/chess/match/cli.ts --suite mini --nodes 48` for a tiny self-play.
 
 ## How to run it
 

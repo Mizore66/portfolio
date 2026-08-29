@@ -111,6 +111,33 @@ describe("Gate A — handcrafted vs handcrafted", () => {
   });
 });
 
+describe("Gate C — learned vs handcrafted", () => {
+  it("has a 50000-node openings-v1 receipt for the depth-12 256", () => {
+    const raw = JSON.parse(
+      readFileSync(join(process.cwd(), "matches/gate-c-v1-50000.json"), "utf8"),
+    ) as {
+      nodes: number;
+      a: string;
+      b: string;
+      netId: string;
+      elo: { elo: number; wdl: { w: number; d: number; l: number }; games: number };
+      stoppedEarly: boolean;
+      games: unknown[];
+      sprtLine: string;
+    };
+    expect(raw.nodes).toBe(50_000);
+    expect(raw.a).toBe("learned");
+    expect(raw.b).toBe("handcrafted");
+    expect(raw.netId).toBe("nnue-lichess-cc0-768x2x256-32-1-2026-08-29");
+    expect(raw.games).toHaveLength(100);
+    expect(raw.stoppedEarly).toBe(false);
+    expect(raw.elo.games).toBe(100);
+    expect(raw.elo.wdl).toEqual({ w: 1, d: 59, l: 40 });
+    expect(raw.elo.elo).toBeCloseTo(-143.1, 1);
+    expect(raw.sprtLine).toMatch(/-143\.1/);
+  });
+});
+
 describe("eval filter pipeline", () => {
   it("drops early, EP, and duplicate rows from the sample", () => {
     const result = spawnSync(

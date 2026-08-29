@@ -4,7 +4,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import type { EvalMode, SearchInfo } from "@/lib/chess/engine";
 import { numberPv } from "@/lib/chess/notation";
 import type { NnueNet } from "@/lib/chess/nnue/types";
-import { PHASE2_EXHIBITS, PHASE2_WEIGHTS_URL } from "@/lib/chess/phase2";
+import { PHASE2_DEFAULT_EVAL, PHASE2_EXHIBITS, PHASE2_WEIGHTS_URL } from "@/lib/chess/phase2";
 import { positionAfter } from "@/lib/chess/replay";
 import { SHOW_DEPTHS, visibleEngineLine, type BookLine } from "@/lib/chess/engine-view";
 import type { SearchEvent, SearchJob } from "@/lib/chess/search-job";
@@ -98,7 +98,7 @@ export function useNnueWeights(wanted: boolean) {
 export function useEngineSearch(
   plies: Ply[],
   side: Color,
-  evalMode: EvalMode = "handcrafted",
+  evalMode: EvalMode = PHASE2_DEFAULT_EVAL,
   net: NnueNet | null = null,
 ) {
   const [info, setInfo] = useState<SearchInfo | null>(null);
@@ -265,7 +265,7 @@ export const GlassEngine = memo(function GlassEngine({
   down?: boolean;
 }) {
   const line = visibleEngineLine(book ?? null, info);
-  const mode = evalMode ?? "handcrafted";
+  const mode = evalMode ?? PHASE2_DEFAULT_EVAL;
   const usingLearned = info?.evalMode === "learned";
   const pvText = line.pv.length ? numberPv(line.pv, side, moveNumber) : "…";
   const settling = !down && (line.settling || (!info && PHASE2_EXHIBITS));

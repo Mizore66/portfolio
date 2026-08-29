@@ -805,11 +805,10 @@ function hitLimit(stats: Stats): boolean {
   return false;
 }
 
-function quiesce(pos: EnginePos, alpha: number, beta: number, stats: Stats, qsPly = 0): number {
+function quiesce(pos: EnginePos, alpha: number, beta: number, stats: Stats): number {
   stats.nodes += 1;
   if (hitLimit(stats)) return alpha;
-  // Quiet-trained net at the first stand-pat; PeSTO along the capture chain.
-  const mode: EvalMode = stats.evalMode === "learned" && qsPly === 0 ? "learned" : "handcrafted";
+  const mode: EvalMode = stats.evalMode;
   const stand = pos.side === 1 ? evaluate(pos, mode) : -evaluate(pos, mode);
   if (stand >= beta) return beta;
   if (stand > alpha) alpha = stand;
@@ -821,7 +820,7 @@ function quiesce(pos: EnginePos, alpha: number, beta: number, stats: Stats, qsPl
   for (const m of captures) {
     if (stand + VALUE[m.captured] + 90 < alpha) continue;
     make(pos, m);
-    const sc = -quiesce(pos, -beta, -alpha, stats, qsPly + 1);
+    const sc = -quiesce(pos, -beta, -alpha, stats);
     unmake(pos, m);
     if (stats.timedOut) return alpha;
     if (sc >= beta) return beta;
