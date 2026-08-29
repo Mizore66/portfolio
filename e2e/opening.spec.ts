@@ -530,6 +530,11 @@ test.describe("Opening Preparation", () => {
       page.locator('[data-testid="tree-view"] [data-node-id="start"]'),
     ).toHaveAttribute("aria-current", "true");
     await expect(page.getByTestId("board-plane")).toHaveAttribute("aria-label", "Starting position");
+    await expect
+      .poll(async () => Number(await page.getByTestId("engine-depth").getAttribute("data-nps")), {
+        timeout: 8000,
+      })
+      .toBeGreaterThan(0);
     const pawn = page.locator('[data-piece-id="wPe2"]');
     const before = await pawn.boundingBox();
     await page.locator('[data-sq="e2"]').click();

@@ -310,6 +310,7 @@
   margin: 41% auto 0;
   background: var(--score-red);
   opacity: 0.55;
+  pointer-events: none;
 }
 
 @keyframes piece-lift {
@@ -1476,6 +1477,13 @@
   .board-sq-from {
     outline: 2px dashed CanvasText;
     outline-offset: -2px;
+  }
+}
+
+@media (max-width: 699px) {
+  html {
+    /* Sticky board is a top bar here; don't wait on JS to keep headings clear. */
+    --sticky-stack: 232px;
   }
 }
 

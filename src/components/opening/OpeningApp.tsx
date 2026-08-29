@@ -405,6 +405,7 @@ export function OpeningApp({
       document.documentElement.style.setProperty("--sticky-stack", `${h}px`);
     };
     // Setting a property on <html> invalidates inherited styles, including the LCP board.
+    // Deep links need the margin on the first paint, or the heading sits under the bar.
     let idle = 0;
     let cleanupRo = () => {};
     const arm = () => {
@@ -417,7 +418,10 @@ export function OpeningApp({
         window.removeEventListener("resize", apply);
       };
     };
-    if (typeof requestIdleCallback === "function") {
+    const deepLink = new URLSearchParams(window.location.search).has("move");
+    if (deepLink) {
+      arm();
+    } else if (typeof requestIdleCallback === "function") {
       idle = requestIdleCallback(arm, { timeout: 1800 });
     } else {
       idle = window.setTimeout(arm, 1800);

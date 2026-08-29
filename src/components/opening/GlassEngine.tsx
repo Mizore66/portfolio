@@ -7,7 +7,7 @@ import type { NnueNet } from "@/lib/chess/nnue/types";
 import { PHASE2_DEFAULT_EVAL, PHASE2_EXHIBITS, PHASE2_WEIGHTS_URL } from "@/lib/chess/phase2";
 import { positionAfter } from "@/lib/chess/replay";
 import { SHOW_DEPTHS, visibleEngineLine, type BookLine } from "@/lib/chess/engine-view";
-import type { SearchEvent, SearchJob } from "@/lib/chess/search-job";
+import { searchSliceMs, type SearchEvent, type SearchJob } from "@/lib/chess/search-job";
 import { BROADSHEET } from "@/content/opening";
 import { GLIDE_MS, depthPaintMs } from "@/lib/opening/motion";
 import type { Color } from "@/lib/chess/replay";
@@ -128,9 +128,8 @@ export function useEngineSearch(
         for (let depth = 1; depth <= MAX_DEPTH && !cancelled; depth++) {
           const spent = performance.now() - tSearch;
           if (depth > SHOW_DEPTHS && spent > SEARCH_BUDGET_MS) break;
-          const remain = Math.max(SEARCH_BUDGET_MS - spent, 16);
           const result = search(clonePos(pos), depth, {
-            timeMs: Math.min(remain, SEARCH_SLICE_MS),
+            timeMs: searchSliceMs(depth, spent, SHOW_DEPTHS, SEARCH_BUDGET_MS, SEARCH_SLICE_MS),
             evalMode: mode,
             net,
           });

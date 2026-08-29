@@ -5,7 +5,7 @@ import { positionAfter } from "@/lib/chess/replay";
 import { encodeNnue } from "@/lib/chess/nnue/format";
 import type { NnueNet } from "@/lib/chess/nnue/types";
 import { loadNnueWasm } from "@/lib/chess/nnue/wasm";
-import type { SearchCancel, SearchEvent, SearchJob } from "@/lib/chess/search-job";
+import { searchSliceMs, type SearchCancel, type SearchEvent, type SearchJob } from "@/lib/chess/search-job";
 
 let activeId = -1;
 let cachedNet: NnueNet | null = null;
@@ -54,9 +54,8 @@ self.onmessage = async (event: MessageEvent<SearchJob | SearchCancel>) => {
       if (activeId !== job.jobId) return;
       const spent = performance.now() - tSearch;
       if (depth > job.showDepths && spent > job.budgetMs) break;
-      const remain = Math.max(job.budgetMs - spent, 16);
       const result = search(clonePos(pos), depth, {
-        timeMs: Math.min(remain, job.sliceMs),
+        timeMs: searchSliceMs(depth, spent, job.showDepths, job.budgetMs, job.sliceMs),
         evalMode: mode,
         net,
       });
