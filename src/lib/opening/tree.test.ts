@@ -7,6 +7,8 @@ import {
   layoutTree,
   nextMainlineBook,
   pathIdSet,
+  selectionTitle,
+  spokenChapter,
   todaysPuzzle,
   TREE_NODE_W,
 } from "./tree";
@@ -145,5 +147,17 @@ describe("art taxonomy", () => {
   it("files today's puzzle on a scoresheet node, not a hardcoded id", () => {
     const puzzle = todaysPuzzle();
     expect(puzzle?.puzzle?.target).toBe("d4");
+    expect(puzzle?.puzzle?.hit).toMatch(/found over the board/);
+  });
+});
+
+describe("spoken chapter labels", () => {
+  it("puts punctuation between the move and the title", () => {
+    expect(spokenChapter(getNode("e4"))).toBe("1. e4! — The University Opening");
+    expect(spokenChapter(getNode("d4"))).toBe("5. d4!! — The Central Break");
+    expect(spokenChapter(getNode("start"))).toBe("Opening Preparation");
+    expect(spokenChapter(getNode("e4"), true)).toBe("1. e4!");
+    expect(selectionTitle(getNode("d4"))).toBe("5. d4!! — The Central Break · A. T. Qumhiyeh");
+    expect(selectionTitle(getNode("start"))).toBe("Anas T. Qumhiyeh — Opening Preparation");
   });
 });

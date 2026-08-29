@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { IMAGE_SIZES } from "@/lib/image-sizes";
 
 export function ArtistsImpression({
   src,
@@ -17,7 +18,7 @@ export function ArtistsImpression({
           alt={alt}
           width={1400}
           height={933}
-          sizes="(max-width: 639px) 280px, 200px"
+          sizes={IMAGE_SIZES.projectPlate}
           className="artists-impression-img"
         />
         <span className="artists-impression-screen" aria-hidden="true" />

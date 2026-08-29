@@ -11,7 +11,7 @@ export function EvalBar({
   return (
     <div
       data-testid="eval-bar"
-      className="relative h-full w-full overflow-hidden border-2 border-ink bg-ink"
+      className="eval-bar relative h-full w-full overflow-hidden border-2 border-ink bg-ink"
       role="meter"
       aria-label="Engine evaluation"
       title="Engine evaluation"

@@ -235,16 +235,13 @@ export const BoardDiagram = memo(function BoardDiagram({
           key={sq}
           data-sq={sq}
           data-hl={committed ? "true" : ghost ? "preview" : undefined}
-          className={cn(dark ? "board-sq-dark" : "board-sq-light", dest && "board-sq-dest")}
-          style={
-            committed
-              ? { boxShadow: "inset 0 0 0 100px rgba(139, 36, 28, 0.38), inset 0 0 0 1px #1a120c" }
-              : ghost
-                ? { boxShadow: "inset 0 0 0 100px rgba(30, 58, 114, 0.32), inset 0 0 0 1px #1a120c" }
-                : selected
-                  ? { boxShadow: "inset 0 0 0 100px rgba(30, 58, 114, 0.22), inset 0 0 0 1px #1a120c" }
-                  : undefined
-          }
+          className={cn(
+            dark ? "board-sq-dark" : "board-sq-light",
+            dest && "board-sq-dest",
+            committed && "board-sq-last",
+            ghost && "board-sq-preview",
+            selected && "board-sq-from",
+          )}
         />,
       );
     }

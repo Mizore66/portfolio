@@ -1,8 +1,36 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { HalftonePlate } from "@/components/opening/HalftonePlate";
 import { PatentFigure } from "@/components/opening/PatentFigure";
 import { resumeData } from "@/lib/data";
+import { IMAGE_SIZES } from "@/lib/image-sizes";
+import { SITE_URL } from "@/lib/site";
+
+export function generateStaticParams() {
+  return resumeData.projects.map((p) => ({ slug: p.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const project = resumeData.projects.find((p) => p.slug === slug);
+  if (!project) return { title: "Correction — A. T. Qumhiyeh" };
+  return {
+    title: `${project.name} — Exhibit · A. T. Qumhiyeh`,
+    description: project.description,
+    alternates: { canonical: `/projects/${slug}` },
+    openGraph: {
+      title: `${project.name} — Exhibit · A. T. Qumhiyeh`,
+      description: project.description,
+      url: `${SITE_URL}/projects/${slug}`,
+      type: "article",
+    },
+  };
+}
 
 export default async function ProjectPage({
   params,
@@ -24,7 +52,7 @@ export default async function ProjectPage({
             <div className="flex items-center justify-between gap-3">
               <Link
                 href="/"
-                className="exhibit-back font-mono text-[11px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4 hover:text-score-red"
+                className="exhibit-back font-mono text-[11px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4"
               >
                 ← Opening Preparation
               </Link>
@@ -49,6 +77,7 @@ export default async function ProjectPage({
                 src={project.plate}
                 caption={project.plateCaption}
                 alt={project.plateAlt}
+                sizes={IMAGE_SIZES.exhibitPlate}
                 priority
               />
             </div>
@@ -101,13 +130,13 @@ export default async function ProjectPage({
                 href={project.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="border-2 border-ink bg-book-blue px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-paper hover:bg-ink"
+                className="external-mark exhibit-repo border-2 border-ink bg-book-blue px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-paper"
               >
                 Repository
               </a>
               <Link
                 href="/"
-                className="exhibit-back border-2 border-ink px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-ink hover:bg-paper-deep"
+                className="exhibit-back border-2 border-ink px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-ink"
               >
                 ← Opening Preparation
               </Link>

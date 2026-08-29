@@ -269,6 +269,14 @@ export const GlassEngine = memo(function GlassEngine({
   const usingLearned = info?.evalMode === "learned";
   const pvText = line.pv.length ? numberPv(line.pv, side, moveNumber) : "…";
   const settling = !down && (line.settling || (!info && PHASE2_EXHIBITS));
+  const settled = Boolean(!down && info && !info.thinking && !line.settling);
+  const announcement = down
+    ? BROADSHEET.engineDown
+    : weightsStatus === "error"
+      ? BROADSHEET.weightsError
+      : settled && info
+        ? `Engine settled at depth ${info.depth}.`
+        : "";
 
   return (
     <section
@@ -276,9 +284,12 @@ export const GlassEngine = memo(function GlassEngine({
       data-testid="glass-engine"
       data-eval-mode={usingLearned ? "learned" : "handcrafted"}
       data-engine-down={down ? "true" : undefined}
-      aria-live="polite"
+      aria-live="off"
       aria-label="Live engine search"
     >
+      <p className="sr-only" aria-live="polite" aria-atomic="true" data-testid="engine-announce">
+        {announcement}
+      </p>
       <div className="engine-readout" data-testid="engine-readout">
         <p
           className="font-mono text-[12px] uppercase leading-snug tracking-[0.12em] text-faded"

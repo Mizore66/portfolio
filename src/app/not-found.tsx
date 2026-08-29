@@ -18,7 +18,7 @@ export default function NotFound() {
           <p className="mt-8">
             <Link
               href="/"
-              className="font-mono text-[11px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4 hover:text-score-red"
+              className="font-mono text-[11px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4 exhibit-back"
             >
               ← {BROADSHEET.homeLink}
             </Link>

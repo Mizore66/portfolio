@@ -28,18 +28,18 @@ export function Masthead() {
               {resumeData.email}
             </a>
             <a
-              className="masthead-chip"
+              className="masthead-chip external-mark"
               href={`https://${resumeData.github}`}
               target="_blank"
-              rel="noopener noreferrer"
+              rel="me noopener noreferrer"
             >
               GitHub
             </a>
             <a
-              className="masthead-chip"
+              className="masthead-chip external-mark"
               href={`https://${resumeData.linkedin}`}
               target="_blank"
-              rel="noopener noreferrer"
+              rel="me noopener noreferrer"
             >
               LinkedIn
             </a>

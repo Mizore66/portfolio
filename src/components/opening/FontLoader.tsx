@@ -2,7 +2,8 @@
 
 import { useEffect } from "react";
 
-/** Pull webfonts after LCP so 190KB of woff2 cannot win the first-paint race. */
+/** Pull webfonts after LCP so 190KB of woff2 cannot win the first-paint race.
+ *  next/font/google self-hosts at build — no fonts.googleapis.com at runtime. */
 export function FontLoader() {
   useEffect(() => {
     let cancelled = false;

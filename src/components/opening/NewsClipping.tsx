@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { IMAGE_SIZES } from "@/lib/image-sizes";
 
 function PhotoWell({
   src,
@@ -56,14 +57,14 @@ export function NewsClipping({
         <PhotoWell
           src={src}
           alt={alt}
-          sizes={inset ? "(max-width: 639px) 280px, 200px" : "(max-width: 980px) 92vw, 480px"}
+          sizes={inset ? IMAGE_SIZES.rolePlate : IMAGE_SIZES.columnPlate}
         />
         {photoInset ? (
           <div className="news-clipping-inset" data-testid="news-clipping-inset" data-clip={photoInset.src}>
             <PhotoWell
               src={photoInset.src}
               alt={photoInset.alt ?? photoInset.caption}
-              sizes="(max-width: 639px) 140px, 120px"
+              sizes={IMAGE_SIZES.clippingInset}
             />
           </div>
         ) : null}

@@ -21,3 +21,9 @@ export function playDelayMs(plyCount: number): number {
 export function depthPaintMs(reducedMotion: boolean): number {
   return reducedMotion ? 0 : DEPTH_PAINT_MS;
 }
+
+/** Ghost previews and lift are hover-only; touch must not stick them. */
+export function canHoverPreview(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(hover: hover)").matches;
+}

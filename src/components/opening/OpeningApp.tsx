@@ -18,14 +18,17 @@ import type { EvalMode } from "@/lib/chess/engine";
 import { PHASE2_DEFAULT_EVAL, PHASE2_EXHIBITS } from "@/lib/chess/phase2";
 import { expandPlayLine, sideAfter } from "@/lib/chess/play";
 import { positionAfter } from "@/lib/chess/replay";
-import { HOVER_PREVIEW_MS, playDelayMs } from "@/lib/opening/motion";
+import { HOVER_PREVIEW_MS, canHoverPreview, playDelayMs } from "@/lib/opening/motion";
 import {
+  BRAND_TITLE,
   collectPlies,
   FLAGSHIP_ID,
   getNode,
+  isOpeningId,
   lastPly,
   nextMainlineBook,
   ROOT_ID,
+  selectionTitle,
   sideToMove,
   stepMainline,
 } from "@/lib/opening/tree";
@@ -187,6 +190,7 @@ export function OpeningApp({
         setPreviewHl(null);
         return;
       }
+      if (!canHoverPreview()) return;
       hoverTimer.current = window.setTimeout(() => {
         setPreviewHl(getNode(id).hl);
       }, HOVER_PREVIEW_MS);
@@ -286,6 +290,13 @@ export function OpeningApp({
   useEffect(() => {
     extraLenRef.current = extra.length;
   }, [extra.length]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const move = params.get("move");
+    document.title =
+      move && isOpeningId(move) ? selectionTitle(getNode(selectedId)) : BRAND_TITLE;
+  }, [selectedId]);
 
   useEffect(() => {
     playingRef.current = playing;

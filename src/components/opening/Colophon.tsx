@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { BROADSHEET } from "@/content/opening";
+import { IMAGE_SIZES } from "@/lib/image-sizes";
 import { START_PERFT } from "@/lib/chess/perft-table";
 
 export function Colophon() {
@@ -15,7 +16,7 @@ export function Colophon() {
             alt="Halftone photograph: the engineer on a public escalator, looking toward the camera."
             width={1400}
             height={933}
-            sizes="148px"
+            sizes={IMAGE_SIZES.inventor}
             className="halftone-plate-img"
           />
           <span className="halftone-plate-screen" aria-hidden="true" />

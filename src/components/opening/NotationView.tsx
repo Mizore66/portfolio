@@ -10,14 +10,7 @@ import { InformantMark } from "@/components/opening/InformantMark";
 import { MiniBoard } from "@/components/opening/MiniBoard";
 import { NewsClipping } from "@/components/opening/NewsClipping";
 import { BROADSHEET } from "@/content/opening";
-import {
-  buildNotation,
-  collectPlies,
-  FLAGSHIP_ID,
-  formatLine,
-  moveHeading,
-  type NotationBlock,
-} from "@/lib/opening/tree";
+import { FLAGSHIP_ID, formatLine, moveHeading, spokenChapter, type NotationBlock } from "@/lib/opening/tree";
 import type { OpeningNode } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
 
@@ -262,9 +255,7 @@ function ChapterButton({
   stamp?: boolean;
   flagship?: boolean;
 }) {
-  const spoken = compact
-    ? [node.fig, moveHeading(node), node.sym].filter(Boolean).join(" ")
-    : [node.fig, moveHeading(node), node.sym, node.title].filter(Boolean).join(" ");
+  const spoken = spokenChapter(node, compact);
 
   return (
     <button
@@ -282,7 +273,8 @@ function ChapterButton({
         "move-tint inline text-left font-[inherit] text-[1em] leading-[inherit] focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2",
         compact && "notation-hit font-display text-[12px] not-italic",
         node.type === "not-taken" && "border border-dashed border-ink px-1",
-        selected && !flagship && "underline decoration-score-red/50 decoration-2 underline-offset-4",
+        selected && !flagship && "is-selected underline decoration-score-red/50 decoration-2 underline-offset-4",
+        selected && flagship && "is-selected",
       )}
     >
       <span className="text-book-blue">

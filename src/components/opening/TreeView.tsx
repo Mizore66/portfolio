@@ -12,9 +12,9 @@ import {
 import {
   isSingleMainlineAdvance,
   layoutTree,
-  moveHeading,
   OPENING_NODES,
   pathIdSet,
+  spokenChapter,
   TREE_NODE_W,
   type Point,
 } from "@/lib/opening/tree";
@@ -210,9 +210,7 @@ function TreeNode({
       type="button"
       data-node-id={node.id}
       aria-current={selected ? "true" : undefined}
-      aria-label={[node.fig, node.moveNumber === 0 ? "start" : moveHeading(node), node.sym, node.title]
-        .filter(Boolean)
-        .join(" ")}
+      aria-label={spokenChapter(node)}
       onClick={() => onSelect(node.id)}
       onMouseEnter={() => onPreview?.(node.id)}
       onMouseLeave={() => onPreview?.(null)}
@@ -229,7 +227,7 @@ function TreeNode({
         node.type === "mainline" && "text-book-blue",
         node.type === "variation" && "italic text-ink",
         node.type === "not-taken" && "border border-dashed border-ink italic text-ink",
-        selected && "z-20 bg-paper text-score-red not-italic outline outline-2 outline-score-red",
+        selected && "is-selected z-20 bg-paper text-score-red not-italic outline outline-2 outline-score-red",
       )}
     >
       <span className="relative leading-none">

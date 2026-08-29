@@ -1197,4 +1197,83 @@ test.describe("Opening Preparation", () => {
       /brilliant/i,
     );
   });
+
+  test("deep links print a unique title; the apex is the canonical host", async ({ page }) => {
+    await page.goto("/?move=e4");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page).toHaveTitle(/1\. e4! — The University Opening/);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /anasqumhiyeh\.dev\/?$/);
+    const json = await page.locator('script[type="application/ld+json"]').textContent();
+    expect(json).toBeTruthy();
+    const ld = JSON.parse(json!);
+    expect(ld.name).toBe("Anas Tarek Qumhiyeh");
+    expect(ld.alternateName).toBe("Anas T. Qumhiyeh");
+    await expect(page.locator("[data-testid='masthead-contacts'] a[href*='github']")).toHaveAttribute(
+      "rel",
+      /me/,
+    );
+    await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  });
+
+  test("role plates do not advertise a 3840-wide candidate", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/?move=e4");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    const img = page.locator('#chapter-e4 img[src*="clip-sunway"]').first();
+    await expect(img).toBeVisible();
+    const sizes = await img.getAttribute("sizes");
+    expect(sizes).toContain("184px");
+    const srcset = await img.getAttribute("srcset");
+    expect(srcset ?? "").not.toMatch(/3840/);
+  });
+
+  test("the document does not phone Google Fonts, and 320px does not scroll sideways", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 320, height: 640 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    const html = await page.content();
+    expect(html).not.toMatch(/fonts\.googleapis\.com/);
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+    );
+    expect(overflow).toBe(false);
+  });
+
+  test("WCAG 1.4.12 text spacing does not clip the justified column", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/?move=e4");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await page.addStyleTag({
+      content: `* { letter-spacing: 0.12em !important; word-spacing: 0.16em !important; line-height: 1.5 !important; } p { margin-bottom: 2em !important; }`,
+    });
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+    );
+    expect(overflow).toBe(false);
+    const clip = await page.locator("#chapter-e4 .drop-cap").evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      return r.width > 0 && el.scrollWidth <= el.clientWidth + 8;
+    });
+    expect(clip).toBe(true);
+  });
+
+  test("200% zoom falls into the compact stack without a sideways scroll", async ({ page }) => {
+    await page.setViewportSize({ width: 640, height: 720 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+    );
+    expect(overflow).toBe(false);
+  });
+
+  test("the exhibit is in the annotator register", async ({ page }) => {
+    await page.goto("/projects/circuitmindai");
+    await expect(page.getByRole("heading", { level: 1, name: "CircuitMindAI" })).toBeVisible();
+    await expect(page.locator("body")).toContainText(/Nova Pro reads the copper/);
+    await expect(page.locator("body")).not.toContainText(/GenAI-powered/);
+    await expect(page).toHaveTitle(/CircuitMindAI — Exhibit/);
+  });
 });

@@ -15,7 +15,12 @@ export function ArtifactLinks({ artifacts }: { artifacts: Artifact[] }) {
         return (
           <li key={a.href + a.label}>
             {external ? (
-              <a href={a.href} className={className} target={a.href.startsWith("http") ? "_blank" : undefined} rel={a.href.startsWith("http") ? "noopener noreferrer" : undefined}>
+              <a
+                href={a.href}
+                className={a.href.startsWith("http") ? `${className} external-mark` : className}
+                target={a.href.startsWith("http") ? "_blank" : undefined}
+                rel={a.href.startsWith("http") ? "noopener noreferrer" : undefined}
+              >
                 {a.label}
               </a>
             ) : (
