@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { APEX_HOST, wwwToApex } from "./canonical-host";
 
@@ -15,5 +17,11 @@ describe("wwwToApex", () => {
     expect(wwwToApex(new URL("https://anasqumhiyeh.dev/"), "anasqumhiyeh.dev")).toBeNull();
     expect(wwwToApex(new URL("http://localhost:3000/"), "localhost:3000")).toBeNull();
     expect(wwwToApex(new URL("https://portfolio.vercel.app/"), "portfolio.vercel.app")).toBeNull();
+  });
+
+  it("keeps the proxy matcher a string Next can parse at compile time", () => {
+    const src = readFileSync(join(process.cwd(), "src/proxy.ts"), "utf8");
+    expect(src).toMatch(/matcher:\s*"\/:path\*"/);
+    expect(src).not.toMatch(/value:\s*`/);
   });
 });

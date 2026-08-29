@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { APEX_HOST, wwwToApex } from "@/lib/canonical-host";
+import { wwwToApex } from "@/lib/canonical-host";
 
-/** 301 www → apex so canonical, og:url, and the masthead dateline agree. */
+/** 301 www → apex so canonical, og:url, and the masthead dateline agree.
+ *  Host is checked in the handler: Next's matcher parser requires string
+ *  literals, and `has[].value` templates fail the compile. */
 export function proxy(request: NextRequest) {
   const dest = wwwToApex(request.nextUrl, request.headers.get("host") ?? "");
   if (dest) return NextResponse.redirect(dest, 301);
@@ -10,14 +12,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    {
-      source: "/",
-      has: [{ type: "host", value: `www.${APEX_HOST}` }],
-    },
-    {
-      source: "/:path*",
-      has: [{ type: "host", value: `www.${APEX_HOST}` }],
-    },
-  ],
+  matcher: "/:path*",
 };

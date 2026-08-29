@@ -274,8 +274,8 @@ export const GlassEngine = memo(function GlassEngine({
     ? BROADSHEET.engineDown
     : weightsStatus === "error"
       ? BROADSHEET.weightsError
-      : settled && info
-        ? `Engine settled at depth ${info.depth}.`
+      : settled
+        ? "Engine settled."
         : "";
 
   return (

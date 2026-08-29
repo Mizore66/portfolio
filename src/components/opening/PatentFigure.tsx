@@ -179,7 +179,7 @@ function Engraving({ spec, labeled }: { spec: ApparatusSpec; labeled?: boolean }
     <div className="patent-engraving" data-testid={labeled ? "patent-engraving" : undefined}>
       <Image
         src={spec.engraving.src}
-        alt={spec.engraving.alt ?? ""}
+        alt={spec.engraving.alt}
         width={spec.engraving.width}
         height={spec.engraving.height}
         className="patent-engraving-img"

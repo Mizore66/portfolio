@@ -26,6 +26,7 @@ describe("patent apparatuses are data, not art", () => {
       expect(spec.detail, `FIG. ${spec.fig}`).toBeTruthy();
       expect(spec.engraving.src, `FIG. ${spec.fig}`).toMatch(/^\/figures\/fig-/);
       expect(spec.engraving.width).toBe(1400);
+      expect(spec.engraving.alt, `FIG. ${spec.fig}`).toMatch(/^Patent-style engraving:/);
       const marks = spec.numerals;
       expect(marks.length, `FIG. ${spec.fig} numerals`).toBeGreaterThanOrEqual(8);
       expect(marks.length, `FIG. ${spec.fig} numerals`).toBeLessThanOrEqual(14);

@@ -236,6 +236,7 @@
 .board-sq-light,
 .board-sq-dark {
   position: relative;
+  forced-color-adjust: none;
 }
 .board-sq-light {
   background-color: #f3ead4;
