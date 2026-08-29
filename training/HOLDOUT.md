@@ -13,3 +13,11 @@ Ingest kept 6 040 000 quiet CC0 rows (`training/PROVENANCE.json`: min_depth 
 The 256 file is a better fit (r = 0.50) and is **not** the net on the paper. Naming the 256 in a training commit and then matching the 128 is an identity mismatch — this table is the correction.
 
 Quantization parity, incremental-vs-full accumulator, and the ten-position material suite live in `src/lib/chess/nnue/guards.test.ts`.
+
+Mimicry vs PeSTO (White-POV Pearson on reconstructed hold-out boards):
+
+```bash
+npx tsx training/holdout-pesto.ts public/engine/<id>.bin --holdout training/data-d12/holdout.npz
+```
+
+r vs PeSTO must not approach 1.0. The v1 256 scored r ≈ 0.48 on a 500-position smoke of the depth-12 hold-out; the 2026-08-29 net gets the full 40k after train.py exports.

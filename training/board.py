@@ -76,6 +76,24 @@ def features(board: list[int], perspective: int) -> list[int]:
     return out
 
 
+def board_from_features(feats: list[int], perspective: int) -> list[int]:
+    """Invert `features()`. Used to score PeSTO on hold-out packs that store only indices."""
+    board = [0] * 64
+    for feat in feats:
+        plane = int(feat) // 64
+        sq_p = int(feat) % 64
+        ptype = plane % 6
+        own = plane < 6
+        if perspective == 1:
+            square = sq_p
+            white = own
+        else:
+            square = sq_p ^ 56
+            white = not own
+        board[square] = (ptype + 1) if white else (ptype + 1) + 8
+    return board
+
+
 def _ray_hit(board: list[int], target: int, df: int, dr: int) -> int:
     f = (target & 7) + df
     r = (target >> 3) + dr

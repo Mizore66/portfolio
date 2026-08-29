@@ -25,4 +25,11 @@ python3 training/train.py \
 
 Architecture ceiling: 768 → 2×256 (or 2×128) → 32 → 1. No HalfKP, no Leela.
 
-The paper loads the **128** net. The 256 file is a comparison artifact. A Gate C number is only an exhibit after Gate A at the same node cap, reported as fixed-N unless the SPRT actually hits a bound.
+v1 paper loads the **128** net; the 2026-08-28 256 file is a comparison artifact. The 2026-08-29 256 retrain becomes the playing net only after hold-out progress and a 50k Gate C line. A Gate C number is only an exhibit after Gate A at the same node cap, reported as fixed-N unless the SPRT actually hits a bound.
+
+Mimicry guard (not CI; needs the gitignored pack):
+
+```bash
+npx tsx training/holdout-pesto.ts public/engine/nnue-lichess-cc0-768x2x256-32-1-2026-08-29.bin \
+  --holdout training/data-d12/holdout.npz
+```
