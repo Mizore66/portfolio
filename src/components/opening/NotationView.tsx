@@ -10,7 +10,15 @@ import { InformantMark } from "@/components/opening/InformantMark";
 import { MiniBoard } from "@/components/opening/MiniBoard";
 import { NewsClipping } from "@/components/opening/NewsClipping";
 import { BROADSHEET } from "@/content/opening";
-import { FLAGSHIP_ID, formatLine, moveHeading, spokenChapter, type NotationBlock } from "@/lib/opening/tree";
+import {
+  buildNotation,
+  collectPlies,
+  FLAGSHIP_ID,
+  formatLine,
+  moveHeading,
+  spokenChapter,
+  type NotationBlock,
+} from "@/lib/opening/tree";
 import type { OpeningNode } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
 
