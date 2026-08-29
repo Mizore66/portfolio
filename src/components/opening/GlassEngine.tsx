@@ -1,40 +1,69 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  clonePos,
-  fromPieces,
-  numberPv,
-  prepareSearch,
-  search,
-  type EvalMode,
-  type SearchInfo,
-} from "@/lib/chess/engine";
-import { loadNnue } from "@/lib/chess/nnue/load";
+import { memo, useEffect, useRef, useState } from "react";
+import type { EvalMode, SearchInfo } from "@/lib/chess/engine";
+import { numberPv } from "@/lib/chess/notation";
 import type { NnueNet } from "@/lib/chess/nnue/types";
 import { PHASE2_EXHIBITS, PHASE2_WEIGHTS_URL } from "@/lib/chess/phase2";
 import { positionAfter } from "@/lib/chess/replay";
 import { SHOW_DEPTHS, visibleEngineLine, type BookLine } from "@/lib/chess/engine-view";
+import type { SearchEvent, SearchJob } from "@/lib/chess/search-job";
 import { BROADSHEET } from "@/content/opening";
 import { GLIDE_MS, depthPaintMs } from "@/lib/opening/motion";
 import type { Color } from "@/lib/chess/replay";
 import type { Ply } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
 
+/** One module worker for both PeSTO and the learned net. Recreate only after a crash. */
+let sharedSearchWorker: Worker | null = null;
+let searchJobSeq = 0;
+let workerInbox: ((event: MessageEvent<SearchEvent>) => void) | null = null;
+let workerOnError: (() => void) | null = null;
+
+function dropSearchWorker() {
+  sharedSearchWorker?.terminate();
+  sharedSearchWorker = null;
+  workerInbox = null;
+  workerOnError = null;
+}
+
+function acquireSearchWorker(): Worker | null {
+  if (sharedSearchWorker) return sharedSearchWorker;
+  if (typeof Worker === "undefined") return null;
+  try {
+    const worker = new Worker(new URL("../../lib/chess/search.worker.ts", import.meta.url), {
+      type: "module",
+    });
+    worker.onmessage = (event: MessageEvent<SearchEvent>) => workerInbox?.(event);
+    worker.onerror = () => {
+      workerOnError?.();
+      dropSearchWorker();
+    };
+    sharedSearchWorker = worker;
+    return worker;
+  } catch {
+    return null;
+  }
+}
+
 const MAX_DEPTH = 11;
 const SEARCH_BUDGET_MS = 900;
+/** Wall time for one iterative depth. d5 at the flagship is ~260ms on this VM. */
+const SEARCH_SLICE_MS = 400;
 
 function afterPaint(ms: number): Promise<void> {
   return new Promise((resolve) => {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        if (ms <= 0) {
-          resolve();
-          return;
-        }
-        window.setTimeout(resolve, ms);
-      });
-    });
+    window.setTimeout(resolve, Math.max(0, ms));
+  });
+}
+
+function whenIdle(timeoutMs: number): Promise<void> {
+  return new Promise((resolve) => {
+    if (typeof requestIdleCallback === "function") {
+      requestIdleCallback(() => resolve(), { timeout: timeoutMs });
+      return;
+    }
+    window.setTimeout(resolve, 0);
   });
 }
 
@@ -47,7 +76,8 @@ export function useNnueWeights(wanted: boolean) {
     if (net) return;
     let cancelled = false;
     setStatus("loading");
-    void loadNnue(PHASE2_WEIGHTS_URL)
+    void import("@/lib/chess/nnue/load")
+      .then(({ loadNnue }) => loadNnue(PHASE2_WEIGHTS_URL))
       .then((loaded) => {
         if (cancelled) return;
         setNet(loaded);
@@ -73,19 +103,24 @@ export function useEngineSearch(
 ) {
   const [info, setInfo] = useState<SearchInfo | null>(null);
   const [down, setDown] = useState(false);
+  const started = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
     const last = plies[plies.length - 1] ?? null;
     const mode: EvalMode = evalMode === "learned" && net ? "learned" : "handcrafted";
+    const glideFirst = started.current;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const dwell = depthPaintMs(reduced);
+    const jobId = ++searchJobSeq;
 
-    async function run() {
-      await new Promise((r) => window.setTimeout(r, GLIDE_MS));
+    async function runOnMain() {
+      await afterPaint(glideFirst ? GLIDE_MS : 0);
       if (cancelled) return;
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const dwell = depthPaintMs(reduced);
       setDown(false);
       try {
+        const { fromPieces, prepareSearch, search, clonePos } = await import("@/lib/chess/engine");
+        if (cancelled) return;
         const pos = fromPieces(positionAfter(plies), side, last);
         prepareSearch();
         const tSearch = performance.now();
@@ -95,7 +130,7 @@ export function useEngineSearch(
           if (depth > SHOW_DEPTHS && spent > SEARCH_BUDGET_MS) break;
           const remain = Math.max(SEARCH_BUDGET_MS - spent, 16);
           const result = search(clonePos(pos), depth, {
-            timeMs: remain,
+            timeMs: Math.min(remain, SEARCH_SLICE_MS),
             evalMode: mode,
             net,
           });
@@ -131,16 +166,84 @@ export function useEngineSearch(
       }
     }
 
-    void run();
+    async function runInWorker() {
+      await afterPaint(glideFirst ? GLIDE_MS : 0);
+      if (!glideFirst) await whenIdle(1800);
+      if (cancelled) return;
+      started.current = true;
+      setDown(false);
+      const worker = acquireSearchWorker();
+      if (!worker) {
+        await runOnMain();
+        return;
+      }
+      workerInbox = (event: MessageEvent<SearchEvent>) => {
+        if (cancelled) return;
+        const data = event.data;
+        if (data.jobId !== jobId) return;
+        if (data.type === "info") {
+          setInfo({
+            depth: data.depth,
+            nodes: data.nodes,
+            nps: data.nps,
+            evalCp: data.evalCp,
+            pv: data.pv,
+            best: data.best,
+            thinking: data.thinking,
+            evalMode: data.evalMode,
+          });
+          return;
+        }
+        if (data.type === "done") {
+          setInfo((prev) => (prev ? { ...prev, thinking: false } : prev));
+          return;
+        }
+        if (data.type === "error") {
+          setInfo(null);
+          setDown(true);
+        }
+      };
+      workerOnError = () => {
+        if (!cancelled) {
+          setInfo(null);
+          setDown(true);
+        }
+      };
+      const job: SearchJob = {
+        type: "search",
+        jobId,
+        plies,
+        side,
+        last,
+        evalMode: mode,
+        net: mode === "learned" ? net : null,
+        maxDepth: MAX_DEPTH,
+        sliceMs: SEARCH_SLICE_MS,
+        showDepths: SHOW_DEPTHS,
+        budgetMs: SEARCH_BUDGET_MS,
+        dwellMs: dwell,
+      };
+      if (cancelled) return;
+      try {
+        worker.postMessage(job);
+      } catch {
+        dropSearchWorker();
+        await runOnMain();
+      }
+    }
+
+    void runInWorker();
+
     return () => {
       cancelled = true;
+      sharedSearchWorker?.postMessage({ type: "cancel", jobId });
     };
   }, [plies, side, evalMode, net]);
 
   return { info, down };
 }
 
-export function GlassEngine({
+export const GlassEngine = memo(function GlassEngine({
   info,
   book,
   side,
@@ -260,4 +363,4 @@ export function GlassEngine({
       </p>
     </section>
   );
-}
+});

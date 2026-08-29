@@ -1,6 +1,10 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { collectPlies } from "@/lib/opening/tree";
 import { positionAfter } from "@/lib/chess/replay";
+import { decodeNnue } from "@/lib/chess/nnue/format";
+import { PHASE2_NET_ID } from "@/lib/chess/phase2";
 import { fromPieces, isLegalPly, legalPlies, numberPv, perft, prepareSearch, replyMove, search, startPos, START_PERFT } from "./engine";
 
 describe("engine move generator", () => {
@@ -72,6 +76,27 @@ describe("engine search", () => {
     expect(a.score).toBe(b.score);
     expect(a.pv.length).toBeGreaterThan(0);
     expect(a.pv[0]).toBe(b.pv[0]);
+  });
+
+  it("uses a structured-cloned OPN2 net the way the search worker will", () => {
+    const path = join(process.cwd(), "public", "engine", `${PHASE2_NET_ID}.bin`);
+    const net = decodeNnue(new Uint8Array(readFileSync(path)));
+    const wire = structuredClone(net);
+    expect(wire.id).toBe(PHASE2_NET_ID);
+    expect(wire.ftW).toBeInstanceOf(Int16Array);
+    expect(wire.ftW[0]).toBe(net.ftW[0]);
+    prepareSearch();
+    const pesto = search(startPos(), 2, { evalMode: "handcrafted", net: null, timeMs: 400 });
+    prepareSearch();
+    const learned = search(startPos(), 2, { evalMode: "learned", net: wire, timeMs: 400 });
+    expect(learned.pv.length).toBeGreaterThan(0);
+    expect(learned.nodes).toBeGreaterThan(0);
+    expect(learned.best).toBeTruthy();
+    expect(Number.isFinite(learned.score)).toBe(true);
+    prepareSearch();
+    const again = search(startPos(), 2, { evalMode: "learned", net, timeMs: 400 });
+    expect(again.score).toBe(learned.score);
+    expect(pesto.pv.length).toBeGreaterThan(0);
   });
 });
 

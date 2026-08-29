@@ -8,6 +8,9 @@ import { evaluateNnue } from "@/lib/chess/nnue/infer";
 import type { NnueAcc, NnueNet } from "@/lib/chess/nnue/types";
 import type { Ply } from "@/lib/opening/types";
 
+export { START_PERFT } from "./perft-table";
+export { numberPv } from "./notation";
+
 export type EvalMode = "handcrafted" | "learned";
 
 export type SearchOptions = {
@@ -551,13 +554,6 @@ export function isLegalPly(pos: EnginePos, ply: Ply): boolean {
   return legalMoves(pos).some((m) => alg(m.from) === ply.from && alg(m.to) === ply.to);
 }
 
-/** Start-position node counts — the generator's receipt, shown in the colophon. */
-export const START_PERFT = [
-  { depth: 1, nodes: 20 },
-  { depth: 2, nodes: 400 },
-  { depth: 3, nodes: 8902 },
-] as const;
-
 export function perft(pos: EnginePos, depth: number): number {
   if (depth === 0) return 1;
   const moves = legalMoves(pos);
@@ -746,23 +742,11 @@ function formatPv(pos: EnginePos, uciList: string[]): string[] {
   return out;
 }
 
-export function numberPv(pv: string[], side: Color, moveNumber: number): string {
-  const parts: string[] = [];
-  let s = side;
-  let n = moveNumber;
-  for (const san of pv) {
-    if (s === "w") parts.push(`${n}. ${san}`);
-    else parts.push(parts.length === 0 ? `${n}…${san}` : san);
-    if (s === "b") n += 1;
-    s = s === "w" ? "b" : "w";
-  }
-  return parts.join(" ");
-}
-
 const TT_SIZE = 1 << 18;
 const TT_MASK = TT_SIZE - 1;
-type TTEntry = { key: number; depth: number; score: number; flag: 0 | 1 | 2; move: string };
+type TTEntry = { key: number; depth: number; score: number; flag: 0 | 1 | 2; move: string; gen: number };
 const tt: (TTEntry | undefined)[] = new Array(TT_SIZE);
+let ttGen = 1;
 let killers: string[][] = [];
 let history: Int16Array = new Int16Array(64 * 64);
 
@@ -780,9 +764,11 @@ function key32(pos: EnginePos): number {
 }
 
 export function prepareSearch() {
-  tt.fill(undefined);
+  // Age the table instead of tt.fill(2^18) — that fill is a long task on mobile.
+  ttGen = (ttGen + 1) | 0;
+  if (ttGen === 0) ttGen = 1;
   killers = Array.from({ length: 64 }, () => ["", ""]);
-  history = new Int16Array(64 * 64);
+  history.fill(0);
 }
 
 function order(moves: Move[], ply: number, hashMove: string): Move[] {
@@ -865,7 +851,7 @@ function alphabeta(
   const slot = key & TT_MASK;
   const hit = tt[slot];
   let hashMove = "";
-  if (hit && hit.key === key) {
+  if (hit && hit.key === key && hit.gen === ttGen) {
     hashMove = hit.move;
     if (hit.depth >= depth) {
       if (hit.flag === 0) return hit.score;
@@ -925,7 +911,7 @@ function alphabeta(
         }
       }
       history[m.from * 64 + m.to] = Math.min(30000, history[m.from * 64 + m.to] + depth * depth);
-      tt[slot] = { key, depth, score: sc, flag: 2, move: u };
+      tt[slot] = { key, depth, score: sc, flag: 2, move: u, gen: ttGen };
       return beta;
     }
     if (sc > alpha) {
@@ -942,6 +928,7 @@ function alphabeta(
     score: alpha,
     flag: alpha > alpha0 ? 0 : 1,
     move: bestUci || (moves[0] ? uci(moves[0]) : ""),
+    gen: ttGen,
   };
   return alpha;
 }

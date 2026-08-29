@@ -6,7 +6,7 @@ This is the public scoresheet of [Anas Tarek Qumhiyeh](https://github.com/Mizore
 
 ## What you are looking at
 
-One newspaper. The masthead is the name. The repertoire tree and the sticky board sit on the front. Every node in the opening is a chapter in the scoresheet: a job or a project, written as Informant notes. The glass case on the right is a live search — mailbox-64 alpha-beta, PeSTO evaluation, labelled **2200** because that is club strength, not a published Elo.
+One newspaper. The masthead is the name. The repertoire tree and the sticky board sit on the front. Every node in the opening is a chapter in the scoresheet: a job or a project, written as Informant notes. The glass case on the right is a live search — mailbox-64 alpha-beta, PeSTO by default, running off the main thread. A LEARNED toggle loads the shipped 768×2×128 residual net. The 2200 on that case is club strength, not a published Elo.
 
 Two doors, always: the article is first-class (and the only door under 980px). The tree is desktop. Click any move. `←` `→` steps the mainline.
 
@@ -20,7 +20,11 @@ The move generator is tested against start-position perft, which the colophon al
 | 2 | 400 |
 | 3 | 8902 |
 
-There is no learned-eval exhibit yet. Phase 2 (NNUE inference, SPRT match harness) ships behind flags: PeSTO is never deleted, Gate A is the handcrafted-vs-handcrafted sanity match, and the site toggle/chart wait on a measured delta. The 2200 on the glass is an estimate of playing strength, not a leaderboard. Run `npx tsx src/lib/chess/match/cli.ts --suite mini --nodes 48` for a tiny self-play.
+The learned exhibit is on the paper. PeSTO remains the default eval and is never deleted. The shipped net is `nnue-lichess-cc0-768x2x128-32-1-2026-08-28` (hold-out r vs Stockfish 0.31). Gate A at 1 000 nodes/move was 0.0 Elo (handcrafted vs itself). Gate C, same cap, 100 games, colours swapped:
+
+`fixed-N: −100.0 ±35.4 Elo @ 1000 nodes, 100 games, LLR −1.69 (inconclusive; SPRT unterminated)`
+
+That is not a terminated SPRT and not the spec’s 50 000-node regime. The 256-wide file is a comparison artifact; it did not play. Deltas are rigorous; the 2200 is an anchor, not a CCRL listing. Retrain stays behind `training/GUARDS.md`. Run `npx tsx src/lib/chess/match/cli.ts --suite mini --nodes 48` for a tiny self-play.
 
 ## How to run it
 

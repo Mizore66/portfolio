@@ -20,7 +20,11 @@ describe("visibleEngineLine", () => {
     expect(line.settling).toBe(true);
     expect(line.pv[0]).toBe("exd4");
     expect(line.best).toEqual({ from: "e5", to: "d4" });
-    expect(visibleEngineLine(book, null)).toEqual({ pv: [], best: null, settling: false });
+    expect(visibleEngineLine(book, null)).toEqual({
+      pv: ["exd4"],
+      best: { from: "e5", to: "d4" },
+      settling: true,
+    });
   });
 
   it("prefers the repertoire ply over Nc3 once depth is honest", () => {

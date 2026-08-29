@@ -115,6 +115,38 @@ const BODY: Record<PieceType, (props: Paths) => ReactElement> = {
   K: King,
 };
 
+const PIECE_TYPES: PieceType[] = ["P", "R", "N", "B", "Q", "K"];
+const PIECE_COLORS: Color[] = ["w", "b"];
+
+function pieceSymbolId(type: PieceType, color: Color) {
+  return `np-${color}${type}`;
+}
+
+/** One copy of the Burnett silhouettes — boards reference these with <use>. */
+export function NewspaperPieceSprite() {
+  return (
+    <svg aria-hidden className="piece-sprite" width={0} height={0}>
+      <defs>
+        {PIECE_COLORS.flatMap((color) =>
+          PIECE_TYPES.map((type) => {
+            const Body = BODY[type];
+            const white = color === "w";
+            return (
+              <symbol
+                id={pieceSymbolId(type, color)}
+                key={`${color}${type}`}
+                viewBox="0 0 45 45"
+              >
+                <Body fill={white ? PAPER : CHARCOAL} stroke={INK} />
+              </symbol>
+            );
+          }),
+        )}
+      </defs>
+    </svg>
+  );
+}
+
 export function NewspaperPiece({
   type,
   color,
@@ -122,8 +154,6 @@ export function NewspaperPiece({
   type: PieceType;
   color: Color;
 }) {
-  const white = color === "w";
-  const Body = BODY[type];
   return (
     <svg
       viewBox="0 0 45 45"
@@ -132,7 +162,7 @@ export function NewspaperPiece({
       data-piece-color={color}
       className="block h-full w-full overflow-visible"
     >
-      <Body fill={white ? PAPER : CHARCOAL} stroke={INK} />
+      <use href={`#${pieceSymbolId(type, color)}`} />
     </svg>
   );
 }

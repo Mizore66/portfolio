@@ -6,11 +6,13 @@ import {
   useMemo,
   useRef,
   useState,
+  memo,
   type CSSProperties,
 } from "react";
 import {
   isSingleMainlineAdvance,
   layoutTree,
+  moveHeading,
   OPENING_NODES,
   pathIdSet,
   TREE_NODE_W,
@@ -30,7 +32,7 @@ function branchPath(from: Point, to: Point) {
   return `M ${from.x} ${from.y + STEM} V ${midY} H ${to.x} V ${to.y - STEM}`;
 }
 
-export function TreeView({
+export const TreeView = memo(function TreeView({
   selectedId,
   onSelect,
   onPreview,
@@ -130,7 +132,7 @@ export function TreeView({
       </div>
     </div>
   );
-}
+});
 
 function TreeEdge({
   child,
@@ -208,7 +210,9 @@ function TreeNode({
       type="button"
       data-node-id={node.id}
       aria-current={selected ? "true" : undefined}
-      aria-label={`${label} ${node.sym} ${node.title}`.trim()}
+      aria-label={[node.fig, node.moveNumber === 0 ? "start" : moveHeading(node), node.sym, node.title]
+        .filter(Boolean)
+        .join(" ")}
       onClick={() => onSelect(node.id)}
       onMouseEnter={() => onPreview?.(node.id)}
       onMouseLeave={() => onPreview?.(null)}

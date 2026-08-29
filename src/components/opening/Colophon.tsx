@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { BROADSHEET } from "@/content/opening";
-import { START_PERFT } from "@/lib/chess/engine";
+import { START_PERFT } from "@/lib/chess/perft-table";
 
 export function Colophon() {
   return (

@@ -1,6 +1,7 @@
 "use client";
 
-import { Fragment } from "react";
+import dynamic from "next/dynamic";
+import { Fragment, memo } from "react";
 import { ArtifactLinks } from "@/components/opening/ArtifactLinks";
 import { ArtistsImpression } from "@/components/opening/ArtistsImpression";
 import { GlyphStamp } from "@/components/opening/GlyphStamp";
@@ -8,7 +9,6 @@ import { HalftonePlate } from "@/components/opening/HalftonePlate";
 import { InformantMark } from "@/components/opening/InformantMark";
 import { MiniBoard } from "@/components/opening/MiniBoard";
 import { NewsClipping } from "@/components/opening/NewsClipping";
-import { PatentFigure } from "@/components/opening/PatentFigure";
 import { BROADSHEET } from "@/content/opening";
 import {
   buildNotation,
@@ -21,7 +21,12 @@ import {
 import type { OpeningNode } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
 
-export function NotationView({
+const PatentFigure = dynamic(
+  () => import("@/components/opening/PatentFigure").then((m) => m.PatentFigure),
+  { ssr: false },
+);
+
+export const NotationView = memo(function NotationView({
   selectedId,
   onSelect,
   onPreview,
@@ -50,7 +55,7 @@ export function NotationView({
       </div>
     </article>
   );
-}
+});
 
 function Chapter({
   block,
@@ -258,8 +263,8 @@ function ChapterButton({
   flagship?: boolean;
 }) {
   const spoken = compact
-    ? [moveHeading(node), node.sym].filter(Boolean).join(" ")
-    : [moveHeading(node), node.sym, node.title].filter(Boolean).join(" ");
+    ? [node.fig, moveHeading(node), node.sym].filter(Boolean).join(" ")
+    : [node.fig, moveHeading(node), node.sym, node.title].filter(Boolean).join(" ");
 
   return (
     <button

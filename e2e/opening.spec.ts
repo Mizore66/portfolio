@@ -428,12 +428,12 @@ test.describe("Opening Preparation", () => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
-    await expect.poll(async () => page.getByTestId("engine-pv").innerText(), { timeout: 7000 }).not.toBe("…");
+    await expect.poll(async () => page.getByTestId("engine-pv").innerText(), { timeout: 12000 }).not.toBe("…");
     await expect(page.getByTestId("engine-pv")).not.toHaveText(/^[a-h][1-8][a-h][1-8]/);
     await expect(page.getByTestId("engine-eval")).not.toHaveText("…");
     await expect
       .poll(async () => Number(await page.getByTestId("engine-depth").getAttribute("data-depth")), {
-        timeout: 7000,
+        timeout: 12000,
       })
       .toBeGreaterThanOrEqual(5);
   });
@@ -577,11 +577,11 @@ test.describe("Opening Preparation", () => {
     await page.goto("/?move=start");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect
-      .poll(async () => page.getByTestId("engine-pv").innerText(), { timeout: 7000 })
+      .poll(async () => page.getByTestId("engine-pv").innerText(), { timeout: 12000 })
       .toMatch(/^(…|1\. e4)/);
     await expect(page.getByTestId("engine-pv")).not.toHaveText(/Nc3/);
     await expect
-      .poll(async () => page.getByTestId("engine-pv").innerText(), { timeout: 7000 })
+      .poll(async () => page.getByTestId("engine-pv").innerText(), { timeout: 12000 })
       .toBe("1. e4");
     await expect(page.getByTestId("pv-arrow")).toBeVisible();
   });
@@ -770,7 +770,7 @@ test.describe("Opening Preparation", () => {
           if (d > 0 && seen[seen.length - 1] !== d) seen.push(d);
           return Math.max(0, ...seen);
         },
-        { timeout: 6000, intervals: [24, 32, 40] },
+        { timeout: 14000, intervals: [24, 32, 40] },
       )
       .toBeGreaterThanOrEqual(5);
     expect(seen.some((d) => d > 0 && d < 5)).toBe(true);

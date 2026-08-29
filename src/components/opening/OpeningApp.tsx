@@ -1,5 +1,7 @@
 "use client";
 
+import dynamic from "next/dynamic";
+import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { BoardDiagram } from "@/components/opening/BoardDiagram";
 import { BroadsheetFiller } from "@/components/opening/BroadsheetFiller";
@@ -7,21 +9,12 @@ import { Closer } from "@/components/opening/Closer";
 import { Colophon } from "@/components/opening/Colophon";
 import { GlassEngine, useEngineSearch, useNnueWeights } from "@/components/opening/GlassEngine";
 import { IssueIndex } from "@/components/opening/IssueIndex";
-import { Masthead } from "@/components/opening/Masthead";
 import { NewspaperColumn } from "@/components/opening/NewspaperColumn";
-import { NotationView } from "@/components/opening/NotationView";
 import { SituationsWanted } from "@/components/opening/SituationsWanted";
 import { TodaysPuzzle } from "@/components/opening/TodaysPuzzle";
-import { TreeView } from "@/components/opening/TreeView";
 import { WayfindIndex } from "@/components/opening/WayfindIndex";
 import { BROADSHEET } from "@/content/opening";
-import {
-  fromPieces,
-  isLegalPly,
-  legalPlies,
-  replyMove,
-  type EvalMode,
-} from "@/lib/chess/engine";
+import type { EvalMode } from "@/lib/chess/engine";
 import { PHASE2_DEFAULT_EVAL, PHASE2_EXHIBITS } from "@/lib/chess/phase2";
 import { expandPlayLine, sideAfter } from "@/lib/chess/play";
 import { positionAfter } from "@/lib/chess/replay";
@@ -46,13 +39,25 @@ import {
 import type { Ply } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
 
+const NotationView = dynamic(() =>
+  import("@/components/opening/NotationView").then((m) => m.NotationView),
+);
+const TreeView = dynamic(() =>
+  import("@/components/opening/TreeView").then((m) => m.TreeView),
+);
+
 const NO_EXTRA: Ply[] = [];
+type EngineApi = typeof import("@/lib/chess/engine");
 
 function reducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-export function OpeningApp() {
+export function OpeningApp({
+  staticBoard,
+}: {
+  staticBoard?: ReactNode;
+} = {}) {
   const selection = useSyncExternalStore(
     subscribeSelection,
     getSelection,
@@ -78,12 +83,34 @@ export function OpeningApp() {
   const hoverTimer = useRef<number>(0);
   const skipSpy = useRef(false);
   const skipSpyTimer = useRef<number>(0);
+  const [engineApi, setEngineApi] = useState<EngineApi | null>(null);
+  const engineApiRef = useRef(engineApi);
+  engineApiRef.current = engineApi;
+
+  useEffect(() => {
+    let cancelled = false;
+    let idle = 0;
+    const load = () => {
+      void import("@/lib/chess/engine").then((mod) => {
+        if (!cancelled) setEngineApi(mod);
+      });
+    };
+    if (typeof requestIdleCallback === "function") {
+      idle = requestIdleCallback(load, { timeout: 400 });
+    } else {
+      idle = window.setTimeout(load, 0);
+    }
+    return () => {
+      cancelled = true;
+      if (typeof cancelIdleCallback === "function") cancelIdleCallback(idle);
+      else window.clearTimeout(idle);
+    };
+  }, []);
   const selectedRef = useRef(selectedId);
-  const hydrated = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false,
-  );
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    setReady(true);
+  }, []);
   const node = getNode(selectedId);
   const bookPlies = useMemo(() => collectPlies(selectedId), [selectedId]);
   const displayPlies = useMemo(() => expandPlayLine(bookPlies, extra), [bookPlies, extra]);
@@ -99,10 +126,22 @@ export function OpeningApp() {
   const atEnd = stepMainline(selectedId, 1) === selectedId;
   const piecesNow = useMemo(() => positionAfter(displayPlies), [displayPlies]);
   const pos = useMemo(
-    () => fromPieces(piecesNow, side, displayPlies[displayPlies.length - 1] ?? lastPly(selectedId)),
-    [piecesNow, side, displayPlies, selectedId],
+    () =>
+      engineApi
+        ? engineApi.fromPieces(
+            piecesNow,
+            side,
+            displayPlies[displayPlies.length - 1] ?? lastPly(selectedId),
+          )
+        : null,
+    [engineApi, piecesNow, side, displayPlies, selectedId],
   );
-  const legal = useMemo(() => legalPlies(pos), [pos]);
+  const legal = useMemo(
+    () => (engineApi && pos ? engineApi.legalPlies(pos) : []),
+    [engineApi, pos],
+  );
+  const posRef = useRef(pos);
+  posRef.current = pos;
 
   const onSelect = useCallback(
     (id: string) => {
@@ -155,20 +194,27 @@ export function OpeningApp() {
     [selectedId, setPreviewHl],
   );
 
-  function onPlay(ply: Ply) {
-    if (side !== startSide) return;
-    if (!isLegalPly(pos, ply)) return;
-    extraLenRef.current = extra.length + 1;
-    setPlaying(false);
-    setPlayHint(false);
-    setPlay((cur) => ({
-      id: selectedId,
-      extra: [...(cur.id === selectedId ? cur.extra : []), ply],
-      note: null,
-    }));
-  }
+  const onPlay = useCallback(
+    (ply: Ply) => {
+      const api = engineApiRef.current;
+      const boardPos = posRef.current;
+      if (!api || !boardPos) return;
+      if (side !== startSide) return;
+      if (!api.isLegalPly(boardPos, ply)) return;
+      extraLenRef.current = extraLenRef.current + 1;
+      setPlaying(false);
+      setPlayHint(false);
+      setPlay((cur) => ({
+        id: selectedId,
+        extra: [...(cur.id === selectedId ? cur.extra : []), ply],
+        note: null,
+      }));
+    },
+    [side, startSide, selectedId],
+  );
 
   useEffect(() => {
+    if (!engineApi) return;
     if (extra.length === 0) return;
     const replySide = sideAfter(startSide, extra.length);
     if (replySide === startSide) return;
@@ -179,8 +225,8 @@ export function OpeningApp() {
       const line = expandPlayLine(bookPlies, extra);
       const last = line[line.length - 1] ?? null;
       const board = positionAfter(line);
-      const replyPos = fromPieces(board, replySide, last);
-      const best = replyMove(replyPos);
+      const replyPos = engineApi.fromPieces(board, replySide, last);
+      const best = engineApi.replyMove(replyPos);
       if (cancelled || !best) return;
       setPlay((cur) => {
         if (cur.id !== selectedId) return cur;
@@ -192,17 +238,24 @@ export function OpeningApp() {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [extra, startSide, bookPlies, selectedId]);
+  }, [engineApi, extra, startSide, bookPlies, selectedId]);
 
-  function onPuzzleSquare(sq: string) {
-    const puzzle = node.puzzle;
-    if (!puzzle || extra.length > 0) return;
-    if (sq === puzzle.target) {
-      userSelect(FLAGSHIP_ID);
-      return;
-    }
-    setPlay((cur) => ({ id: selectedId, extra: cur.id === selectedId ? cur.extra : [], note: puzzle.miss }));
-  }
+  const onPuzzleSquare = useCallback(
+    (sq: string) => {
+      const puzzle = node.puzzle;
+      if (!puzzle || extraLenRef.current > 0) return;
+      if (sq === puzzle.target) {
+        userSelect(FLAGSHIP_ID);
+        return;
+      }
+      setPlay((cur) => ({
+        id: selectedId,
+        extra: cur.id === selectedId ? cur.extra : [],
+        note: puzzle.miss,
+      }));
+    },
+    [node.puzzle, selectedId, userSelect],
+  );
 
   useEffect(() => {
     return () => {
@@ -307,19 +360,17 @@ export function OpeningApp() {
       io.disconnect();
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [onSelect, hydrated]);
+  }, [onSelect]);
 
   useEffect(() => {
-    if (!hydrated) return;
     if (selectedId === FLAGSHIP_ID) return;
     const timer = window.setTimeout(() => scrollToChapter(selectedId), 40);
     return () => window.clearTimeout(timer);
-    // Deep-link once after hydration — not on every selectedId change.
+    // Deep-link once after mount — not on every selectedId change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hydrated]);
+  }, []);
 
   useEffect(() => {
-    if (!hydrated) return;
     const params = new URLSearchParams(window.location.search);
     const move = params.get("move");
     if (!move) return;
@@ -330,10 +381,9 @@ export function OpeningApp() {
       delete el.dataset.arrive;
     }, 1600);
     return () => window.clearTimeout(timer);
-  }, [hydrated]);
+  }, []);
 
   useEffect(() => {
-    if (!hydrated) return;
     const el = document.querySelector<HTMLElement>("[data-sticky-board]");
     if (!el) return;
     const apply = () => {
@@ -343,25 +393,43 @@ export function OpeningApp() {
       const h = sticky && full ? Math.round(rect.height) : 0;
       document.documentElement.style.setProperty("--sticky-stack", `${h}px`);
     };
-    apply();
-    const ro = new ResizeObserver(apply);
-    ro.observe(el);
-    window.addEventListener("resize", apply);
+    // Setting a property on <html> invalidates inherited styles, including the LCP board.
+    let idle = 0;
+    let cleanupRo = () => {};
+    const arm = () => {
+      apply();
+      const ro = new ResizeObserver(apply);
+      ro.observe(el);
+      window.addEventListener("resize", apply);
+      cleanupRo = () => {
+        ro.disconnect();
+        window.removeEventListener("resize", apply);
+      };
+    };
+    if (typeof requestIdleCallback === "function") {
+      idle = requestIdleCallback(arm, { timeout: 1800 });
+    } else {
+      idle = window.setTimeout(arm, 1800);
+    }
     return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", apply);
+      if (typeof cancelIdleCallback === "function") cancelIdleCallback(idle);
+      else window.clearTimeout(idle);
+      cleanupRo();
       document.documentElement.style.removeProperty("--sticky-stack");
     };
-  }, [hydrated]);
+  }, []);
 
   const lastExtra = extra[extra.length - 1];
-  const highlight: [string, string] | null = lastExtra
-    ? [lastExtra.from, lastExtra.to]
-    : node.hl;
+  const highlight = useMemo<[string, string] | null>(
+    () => (lastExtra ? [lastExtra.from, lastExtra.to] : node.hl),
+    [lastExtra, node.hl],
+  );
   const evalLabel = engine
     ? `${engine.evalCp >= 0 ? "+" : ""}${(engine.evalCp / 100).toFixed(2)}`
     : "…";
   const annotatorCp = Math.round(node.eval * 100);
+  const annotatorLabel = `${node.eval >= 0 ? "+" : ""}${node.eval.toFixed(2)}`;
+  const boardArrow = extra.length === 0 ? (book?.plies[0] ?? null) : (engineLine.best ?? null);
   const learnedDisagrees =
     using === "learned" && engine && Math.abs(engine.evalCp - annotatorCp) >= 80;
   const lampshade = learnedDisagrees
@@ -374,6 +442,18 @@ export function OpeningApp() {
         ? node.moveNumber
         : node.moveNumber + 1;
   const playMoveNumber = extra.length === 0 ? moveNumber : moveNumber + Math.floor((extra.length + (startSide === "b" ? 1 : 0)) / 2);
+
+  const onStepPrev = useCallback(
+    () => userSelect(stepMainline(selectedId, -1)),
+    [userSelect, selectedId],
+  );
+  const onStepNext = useCallback(
+    () => userSelect(stepMainline(selectedId, 1)),
+    [userSelect, selectedId],
+  );
+
+  const liveBoard =
+    selectedId !== FLAGSHIP_ID || extra.length > 0 || playing || playHint || previewHl !== null;
 
   function onReadTheGame() {
     if (playing) {
@@ -393,14 +473,8 @@ export function OpeningApp() {
   }
 
   return (
-    <div className="opening-shell min-h-screen text-ink" data-hydrated={hydrated ? "true" : "false"}>
-      <a href="#the-game" className="skip-link">
-        {BROADSHEET.skipLink}
-      </a>
-      <div className="relative z-[1] flex justify-center px-2 py-3 sm:px-3">
-        <div data-testid="newspaper-spread" className="sheet w-full max-w-[1180px]">
-          <Masthead />
-          <main id="the-game">
+    <>
+      <main id="the-game">
           <div
             data-opening-spread=""
             className="flex flex-col min-[700px]:flex-row min-[980px]:flex-row-reverse min-[980px]:items-stretch"
@@ -411,15 +485,29 @@ export function OpeningApp() {
             >
               <div className="flex flex-col gap-3 min-[980px]:gap-4 min-[980px]:sticky min-[980px]:top-3 newsprint-sticky z-10 max-[699px]:contents">
                 <div className="board-engine-cluster" data-testid="board-engine-cluster">
-                <div data-sticky-board="">
+                <div
+                  data-sticky-board=""
+                  onClick={
+                    liveBoard || !staticBoard
+                      ? undefined
+                      : (e) => {
+                          const t = e.target as HTMLElement;
+                          if (t.closest('[data-testid="board-step-next"]')) onStepNext();
+                          else if (t.closest('[data-testid="board-step-prev"]')) onStepPrev();
+                          else if (t.closest("#play-board")) setPlayHint(true);
+                        }
+                  }
+                >
+                <div data-testid="board-diagram">
+                {liveBoard || !staticBoard ? (
                 <BoardDiagram
                   plies={displayPlies}
                   highlight={highlight}
                   preview={previewHl}
                   caption={node.cap}
-                  evalCp={engine ? engine.evalCp / 100 : null}
-                  evalLabel={evalLabel}
-                  arrow={engineLine.best}
+                  evalCp={node.eval}
+                  evalLabel={annotatorLabel}
+                  arrow={boardArrow}
                   legal={legal}
                   playable
                   playSide={side}
@@ -428,11 +516,15 @@ export function OpeningApp() {
                   puzzlePrompt={node.puzzle && extra.length === 0 ? node.puzzle.prompt : null}
                   puzzleNote={puzzleNote}
                   puzzleTarget={node.puzzle && extra.length === 0 ? node.puzzle.target : null}
-                  onStepPrev={() => userSelect(stepMainline(selectedId, -1))}
-                  onStepNext={() => userSelect(stepMainline(selectedId, 1))}
+                  onStepPrev={onStepPrev}
+                  onStepNext={onStepNext}
                   canStepPrev={stepMainline(selectedId, -1) !== selectedId}
                   canStepNext={!atEnd}
                 />
+                ) : (
+                  staticBoard
+                )}
+                </div>
                 </div>
                 <GlassEngine
                   info={engine}
@@ -451,6 +543,7 @@ export function OpeningApp() {
                     type="button"
                     data-play-control=""
                     data-testid="read-the-game"
+                    data-hydrated={ready ? "true" : "false"}
                     aria-pressed={playing}
                     onClick={onReadTheGame}
                     className={cn(
@@ -510,13 +603,11 @@ export function OpeningApp() {
             </section>
           </div>
           </main>
-          <footer data-testid="paper-footer" className="paper-footer">
-            <Closer />
-            <Colophon />
-          </footer>
-        </div>
-        <WayfindIndex selectedId={selectedId} onSelect={userSelect} />
-      </div>
-    </div>
+      <footer data-testid="paper-footer" className="paper-footer">
+        <Closer />
+        <Colophon />
+      </footer>
+      <WayfindIndex selectedId={selectedId} onSelect={userSelect} />
+    </>
   );
 }

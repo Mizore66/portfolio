@@ -34,6 +34,7 @@ export function HalftonePlate({
           sizes={inset ? "(max-width: 639px) 280px, 200px" : "(max-width: 980px) 92vw, 480px"}
           className="halftone-plate-img"
           priority={priority}
+          fetchPriority={priority ? "high" : "low"}
         />
         <span className="halftone-plate-screen" aria-hidden="true" />
       </div>

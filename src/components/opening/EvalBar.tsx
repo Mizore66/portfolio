@@ -1,5 +1,3 @@
-"use client";
-
 export function EvalBar({
   value,
   label,

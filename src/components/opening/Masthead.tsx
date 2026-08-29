@@ -1,5 +1,3 @@
-"use client";
-
 import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
 import { SITE_HOST } from "@/lib/site";
@@ -10,13 +8,13 @@ export function Masthead() {
   return (
     <header>
       <div className="border-b-2 border-ink px-4 py-2 sm:px-6">
-        <p className="font-mono text-[12px] uppercase tracking-[0.28em] text-faded">
+        <p className="masthead-kicker">
           C50 · Italian Game · Vol. {year} · {SITE_HOST} · Moves are facts · Annotations are voice
         </p>
       </div>
       <div className="border-b-2 border-ink px-4 py-5 sm:px-6">
         <div className="min-w-0">
-          <h1 className="font-display text-[clamp(2.15rem,6.4vw,4.5rem)] leading-[0.95] tracking-tight text-ink">
+          <h1 className="masthead-title">
             Anas T. Qumhiyeh
           </h1>
           <p data-testid="masthead-role" className="mt-2 font-display text-[16px] italic leading-snug text-book-blue">

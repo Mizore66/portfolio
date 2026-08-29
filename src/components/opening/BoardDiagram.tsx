@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { memo, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { BROADSHEET } from "@/content/opening";
 import { EvalBar } from "@/components/opening/EvalBar";
 import { NewspaperPiece } from "@/components/opening/NewspaperPiece";
+import { PvArrow } from "@/components/opening/PvArrow";
 import {
   animationPlan,
   FILES,
@@ -18,27 +19,7 @@ import { GLIDE_MS } from "@/lib/opening/motion";
 import type { Ply } from "@/lib/opening/types";
 import { cn } from "@/lib/utils";
 
-export function BoardDiagram({
-  plies,
-  highlight,
-  preview,
-  caption,
-  evalCp,
-  evalLabel,
-  arrow,
-  legal,
-  playable,
-  playSide,
-  onPlay,
-  onSquare,
-  puzzlePrompt,
-  puzzleNote,
-  puzzleTarget,
-  onStepPrev,
-  onStepNext,
-  canStepPrev,
-  canStepNext,
-}: {
+type BoardDiagramProps = {
   plies: Ply[];
   highlight: [string, string] | null;
   preview?: [string, string] | null;
@@ -58,10 +39,57 @@ export function BoardDiagram({
   onStepNext?: () => void;
   canStepPrev?: boolean;
   canStepNext?: boolean;
-}) {
+};
+
+function boardUnchanged(prev: BoardDiagramProps, next: BoardDiagramProps) {
+  return (
+    prev.plies === next.plies &&
+    prev.highlight === next.highlight &&
+    prev.preview === next.preview &&
+    prev.caption === next.caption &&
+    prev.evalCp === next.evalCp &&
+    prev.evalLabel === next.evalLabel &&
+    prev.arrow === next.arrow &&
+    prev.playable === next.playable &&
+    prev.playSide === next.playSide &&
+    prev.puzzlePrompt === next.puzzlePrompt &&
+    prev.puzzleNote === next.puzzleNote &&
+    prev.puzzleTarget === next.puzzleTarget &&
+    prev.onPlay === next.onPlay &&
+    prev.onSquare === next.onSquare &&
+    prev.onStepPrev === next.onStepPrev &&
+    prev.onStepNext === next.onStepNext &&
+    prev.canStepPrev === next.canStepPrev &&
+    prev.canStepNext === next.canStepNext
+  );
+}
+
+export const BoardDiagram = memo(function BoardDiagram({
+  plies,
+  highlight,
+  preview,
+  caption,
+  evalCp,
+  evalLabel,
+  arrow,
+  legal,
+  playable,
+  playSide,
+  onPlay,
+  onSquare,
+  puzzlePrompt,
+  puzzleNote,
+  puzzleTarget,
+  onStepPrev,
+  onStepNext,
+  canStepPrev,
+  canStepNext,
+}: BoardDiagramProps) {
   const prevPlies = useRef<Ply[] | null>(null);
   const boardRef = useRef<HTMLDivElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
+  const legalRef = useRef(legal);
+  legalRef.current = legal;
   const [edge, setEdge] = useState(0);
   const plySig = plies.map((p) => `${p.from}${p.to}`).join(",");
   const [fromSel, setFromSel] = useState<{ sig: string; sq: string | null }>({
@@ -80,7 +108,13 @@ export function BoardDiagram({
     const from = prevPlies.current;
     const fromSig = from?.map((p) => `${p.from}${p.to}`).join(",") ?? null;
 
-    if (reduced || from === null) {
+    if (from === null) {
+      // SSR already painted this position. A setState here restarts LCP on the sticky board.
+      prevPlies.current = plies;
+      return;
+    }
+
+    if (reduced) {
       prevPlies.current = plies;
       setPieces(positionAfter(plies).map((p) => ({ ...p, delay: 0 })));
       setLiftIds(new Set());
@@ -108,18 +142,25 @@ export function BoardDiagram({
     };
   }, [plies, plySig]);
 
-  const dests = fromSq ? (legal ?? []).filter((p) => p.from === fromSq).map((p) => p.to) : [];
+  const dests = fromSq ? (legalRef.current ?? []).filter((p) => p.from === fromSq).map((p) => p.to) : [];
   const occ = new Map(pieces.filter((p) => !p.captured).map((p) => [p.square, p]));
 
   useLayoutEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
     const fit = () => {
+      if (window.matchMedia("(max-width: 699px)").matches) return;
       if (el.clientWidth < 16) return;
       setEdge(snapInnerEdge(el.clientWidth));
     };
-    fit();
-    const ro = new ResizeObserver(fit);
+    let primed = false;
+    const ro = new ResizeObserver(() => {
+      if (!primed) {
+        primed = true;
+        return;
+      }
+      fit();
+    });
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
@@ -210,7 +251,7 @@ export function BoardDiagram({
   }
 
   return (
-    <figure data-testid="board-diagram">
+    <figure>
       {puzzlePrompt ? (
         <p
           data-testid="find-the-break"
@@ -344,44 +385,11 @@ export function BoardDiagram({
       </figcaption>
     </figure>
   );
-}
+}, boardUnchanged);
 
 function squareShifted(fromPlies: Ply[], toPlies: Ply[], id: string): boolean {
   const a = positionAfter(fromPlies).find((p) => p.id === id);
   const b = positionAfter(toPlies).find((p) => p.id === id);
   if (!a || !b) return false;
   return a.square !== b.square || a.captured !== b.captured;
-}
-
-function PvArrow({ ply }: { ply: Ply }) {
-  const x1 = (squareFile(ply.from) + 0.5) * 12.5;
-  const y1 = (7 - squareRank(ply.from) + 0.5) * 12.5;
-  const x2 = (squareFile(ply.to) + 0.5) * 12.5;
-  const y2 = (7 - squareRank(ply.to) + 0.5) * 12.5;
-  return (
-    <svg
-      className="pointer-events-none absolute inset-0 z-[1] h-full w-full"
-      viewBox="0 0 100 100"
-      preserveAspectRatio="none"
-      aria-hidden
-      data-testid="pv-arrow"
-    >
-      <defs>
-        <marker id="pv-head" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
-          <path d="M0 0 L5 2.5 L0 5 z" fill="#8b241c" />
-        </marker>
-      </defs>
-      <line
-        x1={x1}
-        y1={y1}
-        x2={x2}
-        y2={y2}
-        stroke="#8b241c"
-        strokeWidth={1.6}
-        strokeLinecap="round"
-        markerEnd="url(#pv-head)"
-        opacity={0.92}
-      />
-    </svg>
-  );
 }
