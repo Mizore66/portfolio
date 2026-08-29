@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useId, useRef } from "react";
 import Image from "next/image";
 import { pt } from "@/components/opening/patent-ink";
+import { IMAGE_SIZES } from "@/lib/image-sizes";
 import type { ApparatusSpec, GlyphId, PatentNumeral } from "@/lib/opening/types";
 
 const DAGGER = "† composed from the archives";
@@ -178,11 +179,11 @@ function Engraving({ spec, labeled }: { spec: ApparatusSpec; labeled?: boolean }
     <div className="patent-engraving" data-testid={labeled ? "patent-engraving" : undefined}>
       <Image
         src={spec.engraving.src}
-        alt=""
+        alt={spec.engraving.alt}
         width={spec.engraving.width}
         height={spec.engraving.height}
         className="patent-engraving-img"
-        sizes="(max-width: 980px) 92vw, 640px"
+        sizes={IMAGE_SIZES.patentSheet}
       />
       <Overlay spec={spec} caption={`APPARATUS FOR ${spec.function}. Filed ${spec.filed}.`} />
     </div>

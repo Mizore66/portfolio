@@ -127,6 +127,26 @@ export function moveHeading(node: OpeningNode): string {
   return `${node.moveNumber}…${node.san}`;
 }
 
+/** Screen-reader heading: punctuation between the move and the chapter title. */
+export function spokenChapter(node: OpeningNode, compact?: boolean): string {
+  if (!node.color || node.moveNumber === 0) {
+    return compact ? "start" : node.title;
+  }
+  const move = `${moveHeading(node)}${node.sym}`;
+  if (compact) return move;
+  return `${move} — ${node.title}`;
+}
+
+/** Tab and history title for a selected node. Bare `/` keeps the brand title. */
+export function selectionTitle(node: OpeningNode): string {
+  if (!node.color || node.moveNumber === 0) {
+    return "Anas T. Qumhiyeh — Opening Preparation";
+  }
+  return `${moveHeading(node)}${node.sym} — ${node.title} · A. T. Qumhiyeh`;
+}
+
+export const BRAND_TITLE = "Anas T. Qumhiyeh — Opening Preparation";
+
 export type NotationBlock = {
   node: OpeningNode;
   variationStart: boolean;

@@ -44,8 +44,8 @@ export const BROADSHEET = {
   stepPrev: "Previous move",
   stepNext: "Next move",
   weightsPending: "Learned weights still in the post — handcrafted holds the line.",
-  weightsError: "The learned packet did not arrive. Handcrafted holds the line.",
-  engineDown: "The engine is thinking about something else. — Ed.",
+  weightsError: "The learned packet did not arrive. Refresh, or trust the annotator. — Ed.",
+  engineDown: "The engine is thinking about something else. Refresh, or trust the annotator. — Ed.",
   readHintDesktop: "Click any move. ← → steps the mainline, or skip the diagram and read the scoresheet.",
   readHintTouch: "Tap the chevrons under the board, or skip the diagram and read the scoresheet.",
   evaluationsKicker: "The evaluations meet",
@@ -75,12 +75,12 @@ export const BROADSHEET = {
   wayfindLabel: "index",
   skipLink: "Skip to the game",
   dek: "Software engineer — MLOps and full-stack. Data pipelines and infrastructure.",
-  availability: "Seeking graduate/junior engineering roles in fintech or AI infrastructure. Replies within two days.",
+  availability: "Seeking graduate/junior engineering roles in fintech or AI infrastructure. Replies within two days (MYT).",
   puzzleKicker: "Today's puzzle",
   classifiedSticky: "Situations Wanted — apply within",
   colophonKicker: "How this paper was set",
   colophon:
-    "Type: Libre Baskerville, Lora, IBM Plex Mono. Ink #1a120c on cream #f6eedc. Radius none. The tree is the repertoire; the scoresheet is the CV; the glass case is mailbox-64 alpha-beta with PeSTO tables, and a learned eval measured against them. The 2200 on the masthead of that case is club strength, not a published Elo. No template. Chess is content, never a lock.",
+    "Type: Libre Baskerville, Lora, IBM Plex Mono. Ink #1a120c on cream #f6eedc. Radius none. The tree is the repertoire; the scoresheet is the CV; the glass case is mailbox-64 alpha-beta with LEARNED as the masthead eval — PeSTO remains a comparison toggle. Gate C at 50 000 nodes printed −143.1 ±40.5 Elo, 100 games, LLR −2.33. The 2200 on that case is club strength, not a published Elo. No template. Chess is content, never a lock.",
   colophonHonestyKicker: "Three registers",
   colophonHonesty:
     "Photographs real and composed; impressions imagined; the subject is real throughout.",
@@ -100,6 +100,10 @@ export const BROADSHEET = {
 /**
  * The opening tree. Adding or editing a node happens only here.
  * Renderers (tree, notation, board, panel) never hardcode ids or copy.
+ *
+ * House style (casing): Title Case for chapter titles; ALL CAPS for headlines;
+ * small caps for kickers; sentence case for facts. Compact numbers in facts
+ * ("100M events/day"); words-style only in annotations.
  */
 export const OPENING_NODES: OpeningNode[] = [
   {
@@ -452,8 +456,8 @@ export const OPENING_NODES: OpeningNode[] = [
     puzzle: {
       prompt: "White to move — find the break.",
       target: "d4",
-      hit: "d4!! — the annotator agrees.",
-      miss: "A developing move. The break was d4.",
+      hit: "!! — found over the board.",
+      miss: "A developing move. The break was d4. — Ed.",
     },
   },
   {
@@ -501,7 +505,7 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "The Closed Centre",
     kind: "Project",
     title: "The Closed Centre",
-    fact: `${graphrag.name} — ${graphrag.subtitle}. LangGraph over Neo4j and a vector store, self-correcting Text-to-Cypher, +45% retrieval versus vector-only RAG.`,
+    fact: `${graphrag.name} — ${graphrag.subtitle}. LangGraph over Neo4j and a vector store on the university's policy corpus. +35% retrieval versus vector-only.`,
     commentary:
       "Prerequisites and credit-transfer live as edges, not another embedding dump. Black can refuse the capture and keep the centre closed — the graph is that kind of patience.",
     eval: 0.55,
@@ -561,7 +565,7 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "Taking on d4",
     kind: "Method",
     title: "Taking on d4",
-    fact: "Named results that had to survive the demo: GraphRAG +45% retrieval versus vector-only; Western Digital −40% lab oversight; Financial Risk Predictor 0.87 AUC; SLM 12× inference; Lead Scorer 100M events/day.",
+    fact: "Named results that had to survive the demo: Veridian 99.9% uptime (−15% cloud emissions); Monash GraphRAG +45% retrieval versus vector-only; Western Digital −40% lab oversight; Financial Risk Predictor 0.87 AUC; SLM Distillation 12× inference; Lead Scorer 100M events/day.",
     commentary:
       "I would rather show the graph than the slogan. Accepting the pawn is accepting that the numbers have owners.",
     eval: 0.7,
@@ -583,7 +587,7 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "The Open File",
     kind: "Outlook",
     title: "The Open File",
-    fact: `Anas Tarek Qumhiyeh. Seeking ${resumeData.targetRoles} Replies within two days.`,
+    fact: `Anas Tarek Qumhiyeh. Seeking ${resumeData.targetRoles} Replies within two days (MYT).`,
     commentary:
       "I want the next line to be measured systems in fintech infrastructure — graduate or junior, on the open file. Rooks belong where the work already points.",
     eval: 0.8,

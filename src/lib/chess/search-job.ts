@@ -19,6 +19,18 @@ export type SearchJob = {
   dwellMs: number;
 };
 
+/** Depths the glass must paint get a full slice even after the race budget. */
+export function searchSliceMs(
+  depth: number,
+  spent: number,
+  showDepths: number,
+  budgetMs: number,
+  sliceMs: number,
+): number {
+  if (depth <= showDepths) return sliceMs;
+  return Math.min(sliceMs, Math.max(budgetMs - spent, 16));
+}
+
 export type SearchCancel = {
   type: "cancel";
   jobId: number;

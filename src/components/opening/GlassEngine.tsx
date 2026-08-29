@@ -7,7 +7,7 @@ import type { NnueNet } from "@/lib/chess/nnue/types";
 import { PHASE2_DEFAULT_EVAL, PHASE2_EXHIBITS, PHASE2_WEIGHTS_URL } from "@/lib/chess/phase2";
 import { positionAfter } from "@/lib/chess/replay";
 import { SHOW_DEPTHS, visibleEngineLine, type BookLine } from "@/lib/chess/engine-view";
-import type { SearchEvent, SearchJob } from "@/lib/chess/search-job";
+import { searchSliceMs, type SearchEvent, type SearchJob } from "@/lib/chess/search-job";
 import { BROADSHEET } from "@/content/opening";
 import { GLIDE_MS, depthPaintMs } from "@/lib/opening/motion";
 import type { Color } from "@/lib/chess/replay";
@@ -48,8 +48,8 @@ function acquireSearchWorker(): Worker | null {
 
 const MAX_DEPTH = 11;
 const SEARCH_BUDGET_MS = 900;
-/** Wall time for one iterative depth. d5 at the flagship is ~260ms on this VM. */
-const SEARCH_SLICE_MS = 400;
+/** Wall time for one iterative depth. Learned d5 is slower than PeSTO's ~260ms. */
+const SEARCH_SLICE_MS = 1600;
 
 function afterPaint(ms: number): Promise<void> {
   return new Promise((resolve) => {
@@ -128,14 +128,14 @@ export function useEngineSearch(
         for (let depth = 1; depth <= MAX_DEPTH && !cancelled; depth++) {
           const spent = performance.now() - tSearch;
           if (depth > SHOW_DEPTHS && spent > SEARCH_BUDGET_MS) break;
-          const remain = Math.max(SEARCH_BUDGET_MS - spent, 16);
           const result = search(clonePos(pos), depth, {
-            timeMs: Math.min(remain, SEARCH_SLICE_MS),
+            timeMs: searchSliceMs(depth, spent, SHOW_DEPTHS, SEARCH_BUDGET_MS, SEARCH_SLICE_MS),
             evalMode: mode,
             net,
           });
           if (cancelled) return;
-          if (result.timedOut && result.pv.length === 0 && depth > 1) break;
+          if (result.timedOut && result.pv.length === 0 && depth > SHOW_DEPTHS) break;
+          if (result.pv.length === 0) continue;
           nodes += result.nodes;
           const ms = Math.max(1, performance.now() - tSearch);
           const more =
@@ -269,6 +269,14 @@ export const GlassEngine = memo(function GlassEngine({
   const usingLearned = info?.evalMode === "learned";
   const pvText = line.pv.length ? numberPv(line.pv, side, moveNumber) : "…";
   const settling = !down && (line.settling || (!info && PHASE2_EXHIBITS));
+  const settled = Boolean(!down && info && !info.thinking && !line.settling);
+  const announcement = down
+    ? BROADSHEET.engineDown
+    : weightsStatus === "error"
+      ? BROADSHEET.weightsError
+      : settled
+        ? "Engine settled."
+        : "";
 
   return (
     <section
@@ -276,9 +284,12 @@ export const GlassEngine = memo(function GlassEngine({
       data-testid="glass-engine"
       data-eval-mode={usingLearned ? "learned" : "handcrafted"}
       data-engine-down={down ? "true" : undefined}
-      aria-live="polite"
+      aria-live="off"
       aria-label="Live engine search"
     >
+      <p className="sr-only" aria-live="polite" aria-atomic="true" data-testid="engine-announce">
+        {announcement}
+      </p>
       <div className="engine-readout" data-testid="engine-readout">
         <p
           className="font-mono text-[12px] uppercase leading-snug tracking-[0.12em] text-faded"

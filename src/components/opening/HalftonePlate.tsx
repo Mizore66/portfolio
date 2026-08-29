@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { IMAGE_SIZES } from "@/lib/image-sizes";
 
 export function HalftonePlate({
   src,
@@ -7,6 +8,7 @@ export function HalftonePlate({
   inset,
   block,
   priority,
+  sizes,
 }: {
   src: string;
   caption: string;
@@ -15,6 +17,7 @@ export function HalftonePlate({
   /** Centered, no wrap — for a parenthetical that has no text left to float into. */
   block?: boolean;
   priority?: boolean;
+  sizes?: string;
 }) {
   return (
     <figure
@@ -31,7 +34,10 @@ export function HalftonePlate({
           alt={alt}
           width={1400}
           height={933}
-          sizes={inset ? "(max-width: 639px) 280px, 200px" : "(max-width: 980px) 92vw, 480px"}
+          sizes={
+            sizes ??
+            (inset ? IMAGE_SIZES.projectPlate : block ? IMAGE_SIZES.rolePlate : IMAGE_SIZES.exhibitPlate)
+          }
           className="halftone-plate-img"
           priority={priority}
           fetchPriority={priority ? "high" : "low"}

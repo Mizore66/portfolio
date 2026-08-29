@@ -17,7 +17,11 @@ export const CIRCUITMIND_LINE: ApparatusSpec = {
   viewBox: SHEET,
   layout: "elevation",
   flow: [1, 2, 3, 4],
-  engraving: { src: "/figures/fig-circuitmind.webp", ...ENGRAVING },
+  engraving: {
+    src: "/figures/fig-circuitmind.webp",
+    ...ENGRAVING,
+    alt: "Patent-style engraving: an inspection line in numbered parts — hopper, belt, loupe over a printed circuit, pigeonholes, stamp, and bedplate.",
+  },
   review: {
     status: "validated",
     notes:
@@ -60,7 +64,11 @@ export const MIRRORFI_VAULT: ApparatusSpec = {
   viewBox: SHEET,
   layout: "elevation",
   flow: [1, 2, 3, 4],
-  engraving: { src: "/figures/fig-mirrorfi.webp", ...ENGRAVING },
+  engraving: {
+    src: "/figures/fig-mirrorfi.webp",
+    ...ENGRAVING,
+    alt: "Patent-style engraving: a vault in numbered parts — hopper, chute, three lock-boxes, pigeonholes, governor, and gauge.",
+  },
   review: {
     status: "validated",
     notes:
@@ -103,7 +111,11 @@ export const RISK_ENGINE: ApparatusSpec = {
   viewBox: SHEET,
   layout: "elevation",
   flow: [1, 2, 3],
-  engraving: { src: "/figures/fig-risk.webp", ...ENGRAVING },
+  engraving: {
+    src: "/figures/fig-risk.webp",
+    ...ENGRAVING,
+    alt: "Patent-style engraving: an underwriting mill in numbered parts — hopper, millwheels, stamp, loupe, belt, and gauge.",
+  },
   review: {
     status: "validated",
     notes:
@@ -144,7 +156,11 @@ export const LEADS_HALL: ApparatusSpec = {
   viewBox: SHEET,
   layout: "elevation",
   flow: [1, 2, 3, 4],
-  engraving: { src: "/figures/fig-leads.webp", ...ENGRAVING },
+  engraving: {
+    src: "/figures/fig-leads.webp",
+    ...ENGRAVING,
+    alt: "Patent-style engraving: a sorting hall in numbered parts — hopper, pigeonholes, belt, millwheel, stamp, and gauge.",
+  },
   review: {
     status: "validated",
     notes:
@@ -186,7 +202,11 @@ export const VERIDIAN_PLANT: ApparatusSpec = {
   viewBox: SHEET,
   layout: "elevation",
   flow: [1, 2, 3, 4],
-  engraving: { src: "/figures/fig-veridian.webp", ...ENGRAVING },
+  engraving: {
+    src: "/figures/fig-veridian.webp",
+    ...ENGRAVING,
+    alt: "Patent-style engraving: an economized plant in numbered parts — hopper, telegraph, crucible, valve, bedplate, and gauges.",
+  },
   review: {
     status: "validated",
     notes:
@@ -230,7 +250,11 @@ export const VERIDIAN_STILL: ApparatusSpec = {
   viewBox: SHEET,
   layout: "elevation",
   flow: [1, 2, 3, 4, 5],
-  engraving: { src: "/figures/fig-slm.webp", ...ENGRAVING },
+  engraving: {
+    src: "/figures/fig-slm.webp",
+    ...ENGRAVING,
+    alt: "Patent-style engraving: a pot still in seven numbered parts — kettle, furnace, column, condenser, cask, and gauges.",
+  },
   review: {
     status: "validated",
     notes:
@@ -274,7 +298,11 @@ export const VERIDIAN_EXCHANGE: ApparatusSpec = {
   viewBox: SHEET,
   layout: "elevation",
   flow: [1, 2, 3, 4, 5, 6],
-  engraving: { src: "/figures/fig-graphrag.webp", ...ENGRAVING },
+  engraving: {
+    src: "/figures/fig-graphrag.webp",
+    ...ENGRAVING,
+    alt: "Patent-style engraving: a regulations exchange in numbered parts — intake, keyer, a wire wall of drums, carriages, wicket, and delivery.",
+  },
   review: {
     status: "validated",
     notes:

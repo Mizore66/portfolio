@@ -1,0 +1,22 @@
+import { resumeData } from "@/lib/data";
+import { SITE_URL } from "@/lib/site";
+
+export const PERSON_NAME = "Anas Tarek Qumhiyeh";
+export const PERSON_ALT_NAME = "Anas T. Qumhiyeh";
+
+/** Handwritten. The sentence Google shows recruiters. */
+export const META_DESCRIPTION =
+  "The annotated career of Anas T. Qumhiyeh, software engineer — a chess-opening portfolio with a live engine, patent drawings, and measured claims.";
+
+export function personJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: PERSON_NAME,
+    alternateName: PERSON_ALT_NAME,
+    url: SITE_URL,
+    email: `mailto:${resumeData.email}`,
+    jobTitle: "Software engineer",
+    sameAs: [`https://${resumeData.github}`, `https://${resumeData.linkedin.replace(/\/$/, "")}`],
+  };
+}

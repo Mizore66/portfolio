@@ -13,7 +13,11 @@ export const FIGURES = {
     viewBox: SHEET,
     layout: "elevation",
     flow: [1, 2, 3, 4, 5, 6],
-    engraving: { src: "/figures/fig-e4.webp", ...ENGRAVING },
+    engraving: {
+      src: "/figures/fig-e4.webp",
+      ...ENGRAVING,
+      alt: "Patent-style engraving: a foundry in numbered parts — hopper, crucible, funnel, molds, roller, type case, and gauges.",
+    },
     review: {
       status: "validated",
       notes:
@@ -55,7 +59,11 @@ export const FIGURES = {
     viewBox: SHEET,
     layout: "elevation",
     flow: [1, 2, 5, 3, 4, 7],
-    engraving: { src: "/figures/fig-nf3.webp", ...ENGRAVING },
+    engraving: {
+      src: "/figures/fig-nf3.webp",
+      ...ENGRAVING,
+      alt: "Patent-style engraving: a mill in numbered parts — hopper, millwheel, belts, boiler, valve, and gauges.",
+    },
     review: {
       status: "validated",
       notes:
@@ -98,7 +106,11 @@ export const FIGURES = {
     viewBox: SHEET,
     layout: "elevation",
     flow: [1, 2, 3, 4, 5, 6, 7],
-    engraving: { src: "/figures/fig-nc6.webp", ...ENGRAVING },
+    engraving: {
+      src: "/figures/fig-nc6.webp",
+      ...ENGRAVING,
+      alt: "Patent-style engraving: a pneumatic-tube exchange in numbered parts — intake, valve, tube, capsule, governor, vault, and seal press.",
+    },
     review: {
       status: "validated",
       notes:
@@ -140,7 +152,11 @@ export const FIGURES = {
     viewBox: SHEET,
     layout: "elevation",
     flow: [1, 2, 3, 4, 5, 6, 7, 8],
-    engraving: { src: "/figures/fig-bc4.webp", ...ENGRAVING },
+    engraving: {
+      src: "/figures/fig-bc4.webp",
+      ...ENGRAVING,
+      alt: "Patent-style engraving: a laboratory control console in numbered parts — gauge panel, three keys, telegraph, relay, and a distant mill.",
+    },
     review: {
       status: "validated",
       notes:
@@ -183,7 +199,11 @@ export const FIGURES = {
     viewBox: SHEET,
     layout: "elevation",
     flow: [2, 3, 1, 4, 5, 6, 7],
-    engraving: { src: "/figures/fig-oo.webp", ...ENGRAVING },
+    engraving: {
+      src: "/figures/fig-oo.webp",
+      ...ENGRAVING,
+      alt: "Patent-style engraving: a Watt governor in numbered parts — flyball head, boiler, belt, valve, keys, and gauges.",
+    },
     review: {
       status: "validated",
       notes:
@@ -229,7 +249,11 @@ export const VERIDIAN_PRESS: ApparatusSpec = {
   viewBox: SHEET,
   layout: "elevation",
   flow: [1, 2, 3, 4, 5, 6, 7],
-  engraving: { src: "/figures/fig-d4.webp", ...ENGRAVING },
+  engraving: {
+    src: "/figures/fig-d4.webp",
+    ...ENGRAVING,
+    alt: "Patent-style engraving: a morning press in numbered parts — hopper, composing room, stereotype, roller, belt, and edition.",
+  },
   review: {
     status: "validated",
     notes:

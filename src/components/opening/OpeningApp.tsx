@@ -18,14 +18,17 @@ import type { EvalMode } from "@/lib/chess/engine";
 import { PHASE2_DEFAULT_EVAL, PHASE2_EXHIBITS } from "@/lib/chess/phase2";
 import { expandPlayLine, sideAfter } from "@/lib/chess/play";
 import { positionAfter } from "@/lib/chess/replay";
-import { HOVER_PREVIEW_MS, playDelayMs } from "@/lib/opening/motion";
+import { HOVER_PREVIEW_MS, canHoverPreview, playDelayMs } from "@/lib/opening/motion";
 import {
+  BRAND_TITLE,
   collectPlies,
   FLAGSHIP_ID,
   getNode,
+  isOpeningId,
   lastPly,
   nextMainlineBook,
   ROOT_ID,
+  selectionTitle,
   sideToMove,
   stepMainline,
 } from "@/lib/opening/tree";
@@ -89,21 +92,11 @@ export function OpeningApp({
 
   useEffect(() => {
     let cancelled = false;
-    let idle = 0;
-    const load = () => {
-      void import("@/lib/chess/engine").then((mod) => {
-        if (!cancelled) setEngineApi(mod);
-      });
-    };
-    if (typeof requestIdleCallback === "function") {
-      idle = requestIdleCallback(load, { timeout: 400 });
-    } else {
-      idle = window.setTimeout(load, 0);
-    }
+    void import("@/lib/chess/engine").then((mod) => {
+      if (!cancelled) setEngineApi(mod);
+    });
     return () => {
       cancelled = true;
-      if (typeof cancelIdleCallback === "function") cancelIdleCallback(idle);
-      else window.clearTimeout(idle);
     };
   }, []);
   const selectedRef = useRef(selectedId);
@@ -187,6 +180,7 @@ export function OpeningApp({
         setPreviewHl(null);
         return;
       }
+      if (!canHoverPreview()) return;
       hoverTimer.current = window.setTimeout(() => {
         setPreviewHl(getNode(id).hl);
       }, HOVER_PREVIEW_MS);
@@ -286,6 +280,13 @@ export function OpeningApp({
   useEffect(() => {
     extraLenRef.current = extra.length;
   }, [extra.length]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const move = params.get("move");
+    document.title =
+      move && isOpeningId(move) ? selectionTitle(getNode(selectedId)) : BRAND_TITLE;
+  }, [selectedId]);
 
   useEffect(() => {
     playingRef.current = playing;
@@ -394,6 +395,7 @@ export function OpeningApp({
       document.documentElement.style.setProperty("--sticky-stack", `${h}px`);
     };
     // Setting a property on <html> invalidates inherited styles, including the LCP board.
+    // Deep links need the margin on the first paint, or the heading sits under the bar.
     let idle = 0;
     let cleanupRo = () => {};
     const arm = () => {
@@ -406,7 +408,10 @@ export function OpeningApp({
         window.removeEventListener("resize", apply);
       };
     };
-    if (typeof requestIdleCallback === "function") {
+    const deepLink = new URLSearchParams(window.location.search).has("move");
+    if (deepLink) {
+      arm();
+    } else if (typeof requestIdleCallback === "function") {
       idle = requestIdleCallback(arm, { timeout: 1800 });
     } else {
       idle = window.setTimeout(arm, 1800);

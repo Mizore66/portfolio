@@ -60,7 +60,7 @@ export function WayfindIndex({
                     type="button"
                     data-node-id={node.id}
                     aria-current={current ? "true" : undefined}
-                    className={cn("wayfind-row", current && "wayfind-row-current")}
+                    className={cn("wayfind-row", current && "wayfind-row-current is-selected")}
                     onClick={() => {
                       onSelect(node.id);
                       setOpen(false);

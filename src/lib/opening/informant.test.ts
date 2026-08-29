@@ -27,6 +27,10 @@ describe("biography register", () => {
     expect(BROADSHEET.closer).toMatch(/measured systems in fintech infrastructure/);
     expect(SITE_URL).toBe("https://anasqumhiyeh.dev");
     expect(SITE_HOST).toBe("anasqumhiyeh.dev");
+    expect(BROADSHEET.availability).toMatch(/MYT/);
+    expect(BROADSHEET.engineDown).toMatch(/Refresh, or trust the annotator/);
+    expect(BROADSHEET.colophon).toMatch(/LEARNED as the masthead eval/);
+    expect(BROADSHEET.colophon).not.toMatch(/in training/i);
   });
 
   it("keeps British English in the public facts", () => {

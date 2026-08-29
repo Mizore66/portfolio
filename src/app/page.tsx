@@ -1,8 +1,22 @@
+import type { Metadata } from "next";
 import { Masthead } from "@/components/opening/Masthead";
 import { NewspaperPieceSprite } from "@/components/opening/NewspaperPiece";
 import { OpeningApp } from "@/components/opening/OpeningApp";
 import { StickyBoardStatic } from "@/components/opening/StickyBoardStatic";
 import { BROADSHEET } from "@/content/opening";
+import { BRAND_TITLE, getNode, isOpeningId, selectionTitle } from "@/lib/opening/tree";
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ move?: string }>;
+}): Promise<Metadata> {
+  const q = await searchParams;
+  if (!q.move || !isOpeningId(q.move)) {
+    return { title: BRAND_TITLE };
+  }
+  return { title: selectionTitle(getNode(q.move)) };
+}
 
 export default function Home() {
   return (

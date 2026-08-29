@@ -98,7 +98,7 @@ export type ApparatusSpec = {
   /** Fig.2. caption — the raster already contains the section. */
   detail: { title: string };
   /** Generated engraving, duotoned, no text. */
-  engraving: { src: string; width: number; height: number };
+  engraving: { src: string; width: number; height: number; alt: string };
   /** Filing furniture. Defaults to a two-sheet patent, this sheet 1. */
   sheets?: number;
   sheet?: number;
