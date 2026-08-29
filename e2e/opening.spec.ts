@@ -892,6 +892,7 @@ test.describe("Opening Preparation", () => {
     }
 
     await page.setViewportSize({ width: 768, height: 1024 });
+    await expect(page.getByTestId("board-plane")).toBeVisible();
     const plane768 = (await page.getByTestId("board-plane").boundingBox())!;
     const board768 = (await page.getByTestId("board-diagram").boundingBox())!;
     const engine768 = (await page.getByTestId("glass-engine").boundingBox())!;
@@ -1320,7 +1321,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect
       .poll(async () =>
-        page.locator(".newspaper-board").evaluate((el) => getComputedStyle(el).forcedColorAdjust),
+        page.getByTestId("board-plane").evaluate((el) => getComputedStyle(el).forcedColorAdjust),
       )
       .toBe("none");
     await expect

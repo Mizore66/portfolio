@@ -1280,6 +1280,10 @@
   }
 }
 
+.print-sheet-mark {
+  display: none;
+}
+
 @media print {
   .desk-collage,
   .desk-plain,
@@ -1358,10 +1362,6 @@
     font-style: italic;
     color: #6b6353;
   }
-}
-
-.print-sheet-mark {
-  display: none;
 }
 
 .board-sq-last {
