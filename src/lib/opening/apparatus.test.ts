@@ -27,6 +27,7 @@ describe("patent apparatuses are data, not art", () => {
       expect(spec.engraving.src, `FIG. ${spec.fig}`).toMatch(/^\/figures\/fig-/);
       expect(spec.engraving.width).toBe(1400);
       expect(spec.engraving.alt, `FIG. ${spec.fig}`).toMatch(/^Patent-style engraving:/);
+      expect(spec.engraving.alt, `FIG. ${spec.fig}`).not.toMatch(/file photo/i);
       const marks = spec.numerals;
       expect(marks.length, `FIG. ${spec.fig} numerals`).toBeGreaterThanOrEqual(8);
       expect(marks.length, `FIG. ${spec.fig} numerals`).toBeLessThanOrEqual(14);
@@ -49,6 +50,9 @@ describe("patent apparatuses are data, not art", () => {
       for (const n of spec.flow) {
         expect(nums).toContain(n);
       }
+    }
+    for (const p of resumeData.projects) {
+      expect(p.patent.engraving.alt, p.slug).not.toBe(p.plateCaption);
     }
   });
 

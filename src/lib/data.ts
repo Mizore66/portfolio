@@ -1,6 +1,10 @@
 import type { Apparatus, ApparatusSpec } from "@/lib/opening/types";
 import { CIRCUITMIND_LINE, MIRRORFI_VAULT, RISK_ENGINE, LEADS_HALL, VERIDIAN_PLANT, VERIDIAN_STILL, VERIDIAN_EXCHANGE } from "@/content/project-figures";
 
+export function repoArtifacts(github: string): { label: string; href: string }[] {
+  return github ? [{ label: "Repository", href: github }] : [];
+}
+
 export const resumeData = {
   name: "Anas Tarek Qumhiyeh",
   headline: "Software engineer — MLOps and full-stack. Data pipelines and infrastructure.",
@@ -89,12 +93,13 @@ export const resumeData = {
         "BigQuery holds the ESG ledger; it is not on the request.",
       ],
       impact: "Zero-touch ML remediation",
-      github: "https://github.com/Mizore66",
+      github: "",
       plate: "/plates/plate-veridian.jpg",
       plateCaption: "Veridian intercepts the change — file photo.",
       plateAlt: "Halftone photograph: an engineer at a drafting table, an infrastructure drawing unrolled before him.",
       description:
         "GitLab Duo intercepts the Terraform change; an MCP server on Cloud Run asks Vertex what the model needs; BigQuery keeps the carbon ledger off that request.",
+      meta: "GitLab Duo intercepts Terraform; Vertex names a lower-carbon box; BigQuery keeps the carbon ledger off the request.",
       patent: VERIDIAN_PLANT satisfies ApparatusSpec,
       apparatus: {
         name: "Veridian",
@@ -122,12 +127,13 @@ export const resumeData = {
         "A REST API for the line, not a slogan about performance.",
       ],
       impact: "Real-time PCB fault detection",
-      github: "https://github.com/Mizore66",
+      github: "https://github.com/Mizore66/CircuitMindAI",
       plate: "/plates/plate-circuitmind.jpg",
       plateCaption: "CircuitMindAI under the loupe — file photo.",
       plateAlt: "Halftone photograph: a printed circuit board under a loupe, traces filling the frame.",
       description:
         "CircuitMindAI inspects circuit boards: Nova Pro reads the copper, Nova Sonic talks the operator through the fault. Next.js and Express sit on ECS Fargate; GitHub Actions stamps the image.",
+      meta: "Nova Pro reads the copper; Nova Sonic talks the operator through the fault. Next.js and Express on ECS Fargate.",
       patent: CIRCUITMIND_LINE satisfies ApparatusSpec,
       apparatus: {
         name: "CircuitMindAI",
@@ -156,12 +162,13 @@ export const resumeData = {
         "A governor rebalances the pool when APY moves.",
       ],
       impact: "Grand Prize Winner",
-      github: "https://github.com/Mizore66",
+      github: "https://github.com/Mizore66/MirrorFi",
       plate: "/plates/plate-mirrorfi.jpg",
       plateCaption: "MirrorFi at the vault wall — file photo.",
       plateAlt: "Halftone photograph: a vault door and lock-work, lit like a bank interior.",
       description:
         "A Next.js desk draws the vault line; Node.js talks to Drift, Jupiter, and Meteora; MongoDB stores the copy so another desk can run it.",
+      meta: "A desk for drawing, sharing, and firing Solana vault lines. Drift, Jupiter and Meteora in one schematic. Grand Prize, Megahack 2025.",
       patent: MIRRORFI_VAULT satisfies ApparatusSpec,
       apparatus: {
         name: "MirrorFi",
@@ -188,12 +195,13 @@ export const resumeData = {
         "Ambiguous questions fall back to a broader semantic search.",
       ],
       impact: "+35% retrieval accuracy",
-      github: "https://github.com/Mizore66",
+      github: "",
       plate: "/plates/plate-graphrag.jpg",
       plateCaption: "GraphRAG at the card catalog — file photo.",
       plateAlt: "Halftone photograph: wooden card-catalog drawers, one drawer open on a labelled card.",
       description:
         "LangGraph asks Neo4j for the university's policy corpus, then a vector store when the graph is silent. Agents write Cypher, check it, and try again.",
+      meta: "LangGraph over the university's policy corpus: agents write Cypher, check it, and fall back to a vector store. +35% retrieval.",
       patent: VERIDIAN_EXCHANGE satisfies ApparatusSpec,
       apparatus: {
         name: "Multi-Agent GraphRAG",
@@ -217,12 +225,13 @@ export const resumeData = {
         "Daily retrain from Kafka so the score is this morning's tape.",
       ],
       impact: "0.87 AUC-ROC score",
-      github: "https://github.com/Mizore66",
+      github: "",
       plate: "/plates/plate-risk.jpg",
       plateCaption: "Financial Risk Predictor — the ledger, file photo.",
       plateAlt: "Halftone photograph: an open ledger with ruled columns, a pen resting on the page.",
       description:
         "Kafka feeds the daily tape; LightGBM and XGBoost score it; SHAP writes why; BentoML serves the number.",
+      meta: "Kafka feeds the daily tape. LightGBM and XGBoost score it at 0.87 AUC. SHAP writes why. BentoML serves the number.",
       patent: RISK_ENGINE satisfies ApparatusSpec,
       apparatus: {
         name: "Financial Risk Predictor",
@@ -247,12 +256,13 @@ export const resumeData = {
         "Checkpoints: zero tape lost on a multi-hour run.",
       ],
       impact: "100M events/day processed",
-      github: "https://github.com/Mizore66",
+      github: "",
       plate: "/plates/plate-leads.jpg",
       plateCaption: "Distributed Lead Scorer — the sorting hall, file photo.",
       plateAlt: "Halftone photograph: a mail-sorting hall, pigeonholes stretching into the distance.",
       description:
         "PySpark sorts 100M events/day into features; a Deep Interest Network on PyTorch DDP scores conversion; checkpoints so a dead job does not lose the tape.",
+      meta: "PySpark sorts 100M events a day. A Deep Interest Network on PyTorch DDP scores conversion. Checkpoints so a dead job keeps the tape.",
       patent: LEADS_HALL satisfies ApparatusSpec,
       apparatus: {
         name: "Distributed Lead Scorer",
@@ -275,12 +285,13 @@ export const resumeData = {
         "98% pass on the edge-case reward metric.",
       ],
       impact: "12x inference speedup",
-      github: "https://github.com/Mizore66",
+      github: "",
       plate: "/plates/plate-slm.jpg",
       plateCaption: "SLM Distillation — teacher and student machines, file photo.",
       plateAlt: "Halftone photograph: two machines side by side, the smaller one cabled to the larger.",
       description:
         "A 70B teacher writes the traces; QLoRA, DeepSpeed and FlashAttention compress them into a 3B student that keeps the same job.",
+      meta: "A 70B teacher writes the traces; QLoRA, DeepSpeed and FlashAttention compress them into a 3B student. 12× inference.",
       patent: VERIDIAN_STILL satisfies ApparatusSpec,
       apparatus: {
         name: "SLM Distillation Engine",

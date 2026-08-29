@@ -285,10 +285,9 @@ function ChapterButton({
         selected && flagship && "is-selected",
       )}
     >
+      <span aria-hidden="true">
       <span className="text-book-blue">
-        <span className="mr-1" aria-hidden="true">
-          {node.fig}
-        </span>
+        <span className="mr-1">{node.fig}</span>
         {moveHeading(node)}
       </span>
       {node.sym ? (
@@ -298,7 +297,8 @@ function ChapterButton({
           <InformantMark sym={node.sym} className="ml-1 font-bold text-score-red" />
         )
       ) : null}
-      {!compact ? <span className="ml-2 text-ink">{node.title}</span> : null}
+      {!compact ? <span className="ml-2 text-ink"> — {node.title}</span> : null}
+      </span>
     </button>
   );
 }

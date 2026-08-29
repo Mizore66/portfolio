@@ -1217,6 +1217,7 @@ test.describe("Opening Preparation", () => {
     const ld = JSON.parse(json!);
     expect(ld.name).toBe("Anas Tarek Qumhiyeh");
     expect(ld.alternateName).toBe("Anas T. Qumhiyeh");
+    expect(ld.alumniOf.name).toBe("Monash University");
     await expect(page.locator("[data-testid='masthead-contacts'] a[href*='github']")).toHaveAttribute(
       "rel",
       /me/,
@@ -1234,6 +1235,7 @@ test.describe("Opening Preparation", () => {
     expect(sizes).toContain("184px");
     const srcset = await img.getAttribute("srcset");
     expect(srcset ?? "").not.toMatch(/3840/);
+    expect(srcset ?? "").not.toMatch(/1920/);
   });
 
   test("the document does not phone Google Fonts, and 320px does not scroll sideways", async ({
@@ -1284,5 +1286,83 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("body")).toContainText(/Nova Pro reads the copper/);
     await expect(page.locator("body")).not.toContainText(/GenAI-powered/);
     await expect(page).toHaveTitle(/CircuitMindAI — Exhibit/);
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+      "content",
+      /Nova Pro reads the copper/,
+    );
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+      "content",
+      "summary_large_image",
+    );
+    await expect(page.locator("a.exhibit-repo")).toHaveAttribute(
+      "href",
+      "https://github.com/Mizore66/CircuitMindAI",
+    );
+  });
+
+  test("a deep-link session writes distinct titles into history", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/?move=e4");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page).toHaveTitle(/1\. e4! — The University Opening/);
+    await page.locator('[data-testid="notation-view"] [data-node-id="e5"]').click();
+    await expect(page).toHaveURL(/move=e5/);
+    await expect(page).toHaveTitle(/1…e5 — Meeting e4 with e5/);
+    await page.goBack();
+    await expect(page).toHaveURL(/move=e4/);
+    await expect(page).toHaveTitle(/1\. e4! — The University Opening/);
+  });
+
+  test("forced-colors keeps the board, eval bar, and selection", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.emulateMedia({ forcedColors: "active" });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect
+      .poll(async () =>
+        page.locator(".newspaper-board").evaluate((el) => getComputedStyle(el).forcedColorAdjust),
+      )
+      .toBe("none");
+    await expect
+      .poll(async () =>
+        page.getByTestId("eval-bar").evaluate((el) => getComputedStyle(el).forcedColorAdjust),
+      )
+      .toBe("none");
+    const selected = page.locator('[data-testid="tree-view"] [data-node-id="d4"]');
+    await expect(selected).toHaveClass(/is-selected/);
+    await expect
+      .poll(async () => selected.evaluate((el) => getComputedStyle(el).outlineStyle))
+      .not.toBe("none");
+  });
+
+  test("a missing learned packet prints the editor's line on the glass", async ({ page }) => {
+    await page.route("**/engine/*.bin", (route) => route.abort());
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.getByTestId("weights-pending")).toContainText(
+      /learned packet did not arrive/i,
+    );
+    await expect(page.getByTestId("weights-pending")).toContainText(/trust the annotator/);
+  });
+
+  test("print media keeps figures together and shows the sheet mark", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/?move=d4");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await page.emulateMedia({ media: "print" });
+    await expect
+      .poll(async () =>
+        page.locator("#chapter-d4 [data-testid='patent-figure']").evaluate((el) => {
+          const s = getComputedStyle(el);
+          return s.breakInside || s.pageBreakInside;
+        }),
+      )
+      .toMatch(/avoid/);
+    await expect
+      .poll(async () =>
+        page.locator(".print-sheet-mark").evaluate((el) => getComputedStyle(el).display),
+      )
+      .not.toBe("none");
   });
 });

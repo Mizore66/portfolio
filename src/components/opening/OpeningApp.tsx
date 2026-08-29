@@ -35,6 +35,7 @@ import {
 import { visibleEngineLine } from "@/lib/chess/engine-view";
 import {
   getSelection,
+  pushSelection,
   replaceSelection,
   SERVER_SELECTION,
   subscribeSelection,
@@ -167,10 +168,11 @@ export function OpeningApp({
   const userSelect = useCallback(
     (id: string) => {
       setPlaying(false);
-      onSelect(id);
+      setPreviewHl(null);
+      pushSelection(id, tape);
       scrollToChapter(id);
     },
-    [onSelect, scrollToChapter, setPlaying],
+    [tape, scrollToChapter, setPlaying],
   );
 
   const onPreview = useCallback(
@@ -264,14 +266,12 @@ export function OpeningApp({
       const target = e.target as HTMLElement | null;
       if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return;
       e.preventDefault();
-      setPlaying(false);
       const next = stepMainline(selectedId, e.key === "ArrowRight" ? 1 : -1);
-      onSelect(next);
-      scrollToChapter(next);
+      userSelect(next);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onSelect, scrollToChapter, selectedId]);
+  }, [userSelect, selectedId]);
 
   useEffect(() => {
     selectedRef.current = selectedId;

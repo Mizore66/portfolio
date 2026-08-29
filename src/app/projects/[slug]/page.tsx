@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { HalftonePlate } from "@/components/opening/HalftonePlate";
 import { PatentFigure } from "@/components/opening/PatentFigure";
+import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
 import { SITE_URL } from "@/lib/site";
@@ -19,15 +20,22 @@ export async function generateMetadata({
   const { slug } = await params;
   const project = resumeData.projects.find((p) => p.slug === slug);
   if (!project) return { title: "Correction — A. T. Qumhiyeh" };
+  const title = `${project.name} — Exhibit · A. T. Qumhiyeh`;
+  const description = project.meta;
   return {
-    title: `${project.name} — Exhibit · A. T. Qumhiyeh`,
-    description: project.description,
+    title,
+    description,
     alternates: { canonical: `/projects/${slug}` },
     openGraph: {
-      title: `${project.name} — Exhibit · A. T. Qumhiyeh`,
-      description: project.description,
+      title,
+      description,
       url: `${SITE_URL}/projects/${slug}`,
       type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
     },
   };
 }
@@ -46,103 +54,123 @@ export default async function ProjectPage({
 
   return (
     <div className="min-h-screen text-ink">
+      <a href="#exhibit" className="skip-link">
+        {BROADSHEET.skipExhibit}
+      </a>
       <div className="relative z-[1] mx-auto max-w-2xl px-3 py-8 sm:px-5 sm:py-12">
-        <article className="exhibit-clip sheet">
-          <header className="border-b-2 border-ink px-6 py-4">
-            <div className="flex items-center justify-between gap-3">
-              <Link
-                href="/"
-                className="exhibit-back font-mono text-[11px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4"
-              >
-                ← Opening Preparation
-              </Link>
-              <span className="font-mono text-[11px] text-faded">{project.date}</span>
-            </div>
-            <p className="mt-3 font-mono text-[12px] uppercase tracking-[0.28em] text-faded">
-              Clipping · Exhibit · {project.subtitle}
-            </p>
-          </header>
-
-          <div className="sheet-fade px-6 py-10">
-            <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-faded">
-              Pasted from the desk
-            </p>
-            <h1 className="exhibit-title mt-2 font-display text-ink">{project.name}</h1>
-            <p className="mt-4 drop-cap font-lora text-[16px] leading-relaxed italic text-ink">
-              {project.description}
-            </p>
-
-            <div className="mt-8">
-              <HalftonePlate
-                src={project.plate}
-                caption={project.plateCaption}
-                alt={project.plateAlt}
-                sizes={IMAGE_SIZES.exhibitPlate}
-                priority
-              />
-            </div>
-
-            <div className="mt-8">
-              <PatentFigure spec={project.patent} />
-            </div>
-
-            <section className="mt-10">
-              <h2 className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
-                Tech
-              </h2>
-              <ul className="mt-3 flex flex-wrap gap-2">
-                {project.tech.map((t) => (
-                  <li
-                    key={t}
-                    className="border-2 border-ink px-2 py-0.5 font-mono text-[11px] text-book-blue"
-                  >
-                    {t}
-                  </li>
-                ))}
-              </ul>
-            </section>
-
-            <section className="mt-10">
-              <h2 className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
-                The line
-              </h2>
-              <ol className="mt-3 space-y-3">
-                {project.bullets.map((bullet, i) => (
-                  <li key={i} className="flex gap-3">
-                    <span className="font-mono text-[11px] text-score-red">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <p className="font-display text-[16px] leading-relaxed">{bullet}</p>
-                  </li>
-                ))}
-              </ol>
-            </section>
-
-            <section className="mt-10 border-2 border-ink p-4 newsprint-deep">
-              <p className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
-                Measurable impact
+        <main id="exhibit">
+          <article className="exhibit-clip sheet" aria-labelledby="exhibit-title">
+            <header className="border-b-2 border-ink px-6 py-4">
+              <div className="flex items-center justify-between gap-3">
+                <Link
+                  href="/"
+                  className="exhibit-back font-mono text-[11px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4"
+                >
+                  ← Opening Preparation
+                </Link>
+                <span className="font-mono text-[11px] text-faded">{project.date}</span>
+              </div>
+              <p className="mt-3 font-mono text-[12px] uppercase tracking-[0.28em] text-faded">
+                Clipping · Exhibit · {project.subtitle}
               </p>
-              <p className="mt-1 font-display text-xl text-score-red">{project.impact}</p>
-            </section>
+            </header>
 
-            <div className="mt-10 flex flex-wrap gap-4">
-              <a
-                href={project.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="external-mark exhibit-repo border-2 border-ink bg-book-blue px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-paper"
-              >
-                Repository
-              </a>
-              <Link
-                href="/"
-                className="exhibit-back border-2 border-ink px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-ink"
-              >
-                ← Opening Preparation
-              </Link>
+            <div className="sheet-fade px-6 py-10">
+              <section aria-labelledby="exhibit-title">
+                <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-faded">
+                  Pasted from the desk
+                </p>
+                <h1 id="exhibit-title" className="exhibit-title mt-2 font-display text-ink">
+                  {project.name}
+                </h1>
+                <p className="mt-4 drop-cap font-lora text-[16px] leading-relaxed italic text-ink">
+                  {project.description}
+                </p>
+              </section>
+
+              <section className="mt-8" aria-label="File photo">
+                <HalftonePlate
+                  src={project.plate}
+                  caption={project.plateCaption}
+                  alt={project.plateAlt}
+                  sizes={IMAGE_SIZES.exhibitPlate}
+                  priority
+                />
+              </section>
+
+              <section className="mt-8" aria-label="Patent sheet">
+                <PatentFigure spec={project.patent} />
+              </section>
+
+              <section className="mt-10" aria-labelledby="exhibit-tech">
+                <h2
+                  id="exhibit-tech"
+                  className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded"
+                >
+                  Tech
+                </h2>
+                <ul className="mt-3 flex flex-wrap gap-2">
+                  {project.tech.map((t) => (
+                    <li
+                      key={t}
+                      className="border-2 border-ink px-2 py-0.5 font-mono text-[11px] text-book-blue"
+                    >
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+
+              <section className="mt-10" aria-labelledby="exhibit-line">
+                <h2
+                  id="exhibit-line"
+                  className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded"
+                >
+                  The line
+                </h2>
+                <ol className="mt-3 space-y-3">
+                  {project.bullets.map((bullet, i) => (
+                    <li key={i} className="flex gap-3">
+                      <span className="font-mono text-[11px] text-score-red">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <p className="font-display text-[16px] leading-relaxed">{bullet}</p>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+
+              <section className="mt-10 border-2 border-ink p-4 newsprint-deep" aria-labelledby="exhibit-impact">
+                <p
+                  id="exhibit-impact"
+                  className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded"
+                >
+                  Measurable impact
+                </p>
+                <p className="mt-1 font-display text-xl text-score-red">{project.impact}</p>
+              </section>
+
+              <nav className="mt-10 flex flex-wrap gap-4" aria-label="Exhibit links">
+                {project.github ? (
+                  <a
+                    href={project.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="external-mark exhibit-repo border-2 border-ink bg-book-blue px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-paper"
+                  >
+                    Repository
+                  </a>
+                ) : null}
+                <Link
+                  href="/"
+                  className="exhibit-back border-2 border-ink px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-ink"
+                >
+                  ← Opening Preparation
+                </Link>
+              </nav>
             </div>
-          </div>
-        </article>
+          </article>
+        </main>
       </div>
     </div>
   );

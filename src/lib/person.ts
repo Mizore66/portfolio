@@ -15,8 +15,13 @@ export function personJsonLd() {
     name: PERSON_NAME,
     alternateName: PERSON_ALT_NAME,
     url: SITE_URL,
+    image: `${SITE_URL}/opengraph-image`,
     email: `mailto:${resumeData.email}`,
     jobTitle: "Software engineer",
+    alumniOf: {
+      "@type": "CollegeOrUniversity",
+      name: resumeData.education.school,
+    },
     sameAs: [`https://${resumeData.github}`, `https://${resumeData.linkedin.replace(/\/$/, "")}`],
   };
 }

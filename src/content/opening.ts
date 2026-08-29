@@ -1,5 +1,5 @@
 import { CIRCUITMIND_LINE, MIRRORFI_VAULT, RISK_ENGINE, LEADS_HALL, VERIDIAN_PLANT } from "@/content/project-figures";
-import { resumeData } from "@/lib/data";
+import { repoArtifacts, resumeData } from "@/lib/data";
 import type { OpeningNode } from "@/lib/opening/types";
 
 export const ROOT_ID = "start";
@@ -74,6 +74,7 @@ export const BROADSHEET = {
   issueKicker: "In this issue",
   wayfindLabel: "index",
   skipLink: "Skip to the game",
+  skipExhibit: "Skip to the exhibit",
   dek: "Software engineer — MLOps and full-stack. Data pipelines and infrastructure.",
   availability: "Seeking graduate/junior engineering roles in fintech or AI infrastructure. Replies within two days (MYT).",
   puzzleKicker: "Today's puzzle",
@@ -178,7 +179,7 @@ export const OPENING_NODES: OpeningNode[] = [
     evalText: "!?",
     artifacts: [
       { label: risk.name, href: `/projects/${risk.slug}` },
-      { label: "Repository", href: risk.github },
+      ...repoArtifacts(risk.github),
     ],
     plate: {
       src: "/plates/plate-risk.jpg",
@@ -266,7 +267,7 @@ export const OPENING_NODES: OpeningNode[] = [
     evalText: "+0.45",
     artifacts: [
       { label: lead.name, href: `/projects/${lead.slug}` },
-      { label: "Repository", href: lead.github },
+      ...repoArtifacts(lead.github),
     ],
     plate: {
       src: "/plates/plate-leads.jpg",
@@ -385,7 +386,7 @@ export const OPENING_NODES: OpeningNode[] = [
     evalText: "+0.45",
     artifacts: [
       { label: circuit.name, href: `/projects/${circuit.slug}` },
-      { label: "Repository", href: circuit.github },
+      ...repoArtifacts(circuit.github),
     ],
     plate: {
       src: "/plates/plate-circuitmind.jpg",
@@ -442,7 +443,7 @@ export const OPENING_NODES: OpeningNode[] = [
     evalText: "+0.50",
     artifacts: [
       { label: mirrorfi.name, href: `/projects/${mirrorfi.slug}` },
-      { label: "Repository", href: mirrorfi.github },
+      ...repoArtifacts(mirrorfi.github),
     ],
     plate: {
       src: "/plates/plate-mirrorfi.jpg",
@@ -512,7 +513,7 @@ export const OPENING_NODES: OpeningNode[] = [
     evalText: "+0.55",
     artifacts: [
       { label: graphrag.name, href: `/projects/${graphrag.slug}` },
-      { label: "Repository", href: graphrag.github },
+      ...repoArtifacts(graphrag.github),
     ],
     plate: {
       src: "/plates/plate-graphrag.jpg",
@@ -542,7 +543,7 @@ export const OPENING_NODES: OpeningNode[] = [
     evalText: "+0.50",
     artifacts: [
       { label: slm.name, href: `/projects/${slm.slug}` },
-      { label: "Repository", href: slm.github },
+      ...repoArtifacts(slm.github),
     ],
     plate: {
       src: "/plates/plate-slm.jpg",

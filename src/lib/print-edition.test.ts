@@ -42,4 +42,19 @@ describe("print edition", () => {
     expect(text).not.toContain("% occ e1 wK");
     expect(text).not.toContain("% occ e2 wP");
   });
+
+  it("prints the same dates and claims as the résumé source", () => {
+    const text = new TextDecoder().decode(buildPrintEditionPdf());
+    expect(text).toContain("Graduated May 2026");
+    expect(text).toContain("WAM 82.1");
+    expect(text).toContain("3.82");
+    for (const job of resumeData.experience) {
+      expect(text).toContain(job.period.replace(/[–—]/g, "-"));
+    }
+    for (const p of resumeData.projects) {
+      expect(text).toContain(p.name);
+    }
+    expect(text).toContain("Zero-touch ML");
+    expect(text).toContain("12x inference speedup");
+  });
 });

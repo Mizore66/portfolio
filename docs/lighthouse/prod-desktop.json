@@ -1,0 +1,129 @@
+{
+  "formFactor": "desktop",
+  "lighthouseVersion": "12.6.0",
+  "fetchTime": "2026-08-29T18:59:01.402Z",
+  "requestedUrl": "https://anasqumhiyeh.dev/",
+  "finalUrl": "https://anasqumhiyeh.dev/",
+  "categories": {
+    "performance": {
+      "title": "Performance",
+      "score": 0.99
+    },
+    "accessibility": {
+      "title": "Accessibility",
+      "score": 1
+    },
+    "best-practices": {
+      "title": "Best Practices",
+      "score": 1
+    },
+    "seo": {
+      "title": "SEO",
+      "score": 1
+    }
+  },
+  "audits": {
+    "first-contentful-paint": {
+      "title": "First Contentful Paint",
+      "score": 1,
+      "displayValue": "0.5\u00a0s",
+      "numericValue": 492.09900000000005
+    },
+    "largest-contentful-paint": {
+      "title": "Largest Contentful Paint",
+      "score": 0.98,
+      "displayValue": "0.7\u00a0s",
+      "numericValue": 735.099
+    },
+    "total-blocking-time": {
+      "title": "Total Blocking Time",
+      "score": 1,
+      "displayValue": "0\u00a0ms",
+      "numericValue": 0
+    },
+    "cumulative-layout-shift": {
+      "title": "Cumulative Layout Shift",
+      "score": 1,
+      "displayValue": "0",
+      "numericValue": 0
+    },
+    "speed-index": {
+      "title": "Speed Index",
+      "score": 0.99,
+      "displayValue": "0.8\u00a0s",
+      "numericValue": 825.9306811151563
+    },
+    "interactive": {
+      "title": "Time to Interactive",
+      "score": 1,
+      "displayValue": "0.7\u00a0s",
+      "numericValue": 735.099
+    },
+    "server-response-time": {
+      "title": "Initial server response time was short",
+      "score": 1,
+      "displayValue": "Root document took 10\u00a0ms",
+      "numericValue": 11.852999999999994
+    },
+    "unused-javascript": {
+      "title": "Reduce unused JavaScript",
+      "score": 0,
+      "displayValue": "Est savings of 43\u00a0KiB",
+      "numericValue": 40
+    },
+    "legacy-javascript": {
+      "title": "Avoid serving legacy JavaScript to modern browsers",
+      "score": 0,
+      "displayValue": "Est savings of 14\u00a0KiB",
+      "numericValue": 40
+    },
+    "label-content-name-mismatch": {
+      "title": "Elements with visible text labels do not have matching accessible names.",
+      "score": 0,
+      "displayValue": null,
+      "numericValue": null
+    },
+    "canonical": {
+      "title": "Document has a valid `rel=canonical`",
+      "score": 1,
+      "displayValue": null,
+      "numericValue": null
+    },
+    "document-title": {
+      "title": "Document has a `<title>` element",
+      "score": 1,
+      "displayValue": null,
+      "numericValue": null
+    },
+    "html-has-lang": {
+      "title": "`<html>` element has a `[lang]` attribute",
+      "score": 1,
+      "displayValue": null,
+      "numericValue": null
+    },
+    "meta-description": {
+      "title": "Document has a meta description",
+      "score": 1,
+      "displayValue": null,
+      "numericValue": null
+    },
+    "uses-responsive-images": {
+      "title": "Properly size images",
+      "score": 1,
+      "displayValue": "",
+      "numericValue": 0
+    },
+    "redirects": {
+      "title": "Avoid multiple page redirects",
+      "score": 1,
+      "displayValue": "",
+      "numericValue": 0
+    },
+    "render-blocking-resources": {
+      "title": "Eliminate render-blocking resources",
+      "score": 1,
+      "displayValue": null,
+      "numericValue": 0
+    }
+  }
+}

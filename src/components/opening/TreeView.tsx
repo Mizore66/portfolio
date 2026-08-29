@@ -230,6 +230,7 @@ function TreeNode({
         selected && "is-selected z-20 bg-paper text-score-red not-italic outline outline-2 outline-score-red",
       )}
     >
+      <span aria-hidden="true" className="flex flex-col items-center">
       <span className="relative leading-none">
         {node.color === "w" && node.moveNumber > 0 ? (
           <span className="mr-0.5 font-mono text-[9px] font-normal not-italic text-faded">
@@ -253,6 +254,7 @@ function TreeNode({
       </span>
       <span className="mt-0.5 line-clamp-2 font-lora text-[10px] font-normal not-italic leading-tight text-ink">
         {node.title}
+      </span>
       </span>
     </button>
   );

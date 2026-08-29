@@ -26,6 +26,11 @@ export const metadata: Metadata = {
     type: "website",
     url: SITE_URL,
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Anas T. Qumhiyeh — Opening Preparation",
+    description: META_DESCRIPTION,
+  },
 };
 
 export const viewport: Viewport = {
@@ -49,6 +54,9 @@ export default function RootLayout({
         <FontLoader />
         <DeskCollage />
         {children}
+        <p className="print-sheet-mark" aria-hidden="true">
+          Opening Preparation
+        </p>
         {process.env.VERCEL ? <Analytics /> : null}
       </body>
     </html>
