@@ -1,6 +1,7 @@
 /**
- * Club-strength alpha-beta (~2200). Mailbox 64, make/unmake, tapered PeSTO,
- * pawn structure, transposition table, null-move, iterative callers.
+ * Club-strength alpha-beta (~2200). Mailbox 64, make/unmake, LEARNED NNUE by
+ * default (tapered PeSTO remains a comparison eval), pawn structure,
+ * transposition table, null-move, iterative callers.
  */
 import { FILES, initialPieces, squareFile, squareRank, type Color, type Piece, type PieceType } from "@/lib/chess/replay";
 import { addPiece, cloneAcc, refreshAcc, removePiece } from "@/lib/chess/nnue/accumulator";
