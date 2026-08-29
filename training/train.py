@@ -193,9 +193,11 @@ def main() -> int:
     sys.stderr.write(f"train: {n:,} positions  acc={acc}  steps/epoch={steps_per}  id={net_id}\n")
 
     rng = np.random.default_rng(args.seed)
+    torch.set_num_threads(max(1, min(4, os.cpu_count() or 1)))
     for epoch in range(args.epochs):
         net.train()
-        quant = False
+        # QAT from epoch 2 so the export matches evaluateNnue.
+        quant = epoch >= 1
         t0 = time.time()
         running = 0.0
         steps = 0

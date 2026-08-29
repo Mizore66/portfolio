@@ -74,7 +74,7 @@ def flatten_lichess(row: dict[str, Any]) -> dict[str, Any] | None:
     return row
 
 
-def keep(row: dict[str, Any], seen: set[str], quiet: bool = True, min_depth: int = 0) -> dict[str, Any] | None:
+def keep(row: dict[str, Any], seen: set[int], quiet: bool = True, min_depth: int = 0) -> dict[str, Any] | None:
     flat = flatten_lichess(row)
     if not flat:
         return None
@@ -102,7 +102,7 @@ def keep(row: dict[str, Any], seen: set[str], quiet: bool = True, min_depth: int
         line = str(flat.get("line") or "").split()
         if line and uci_is_capture(board, ep, line[0]):
             return None
-    key = hashlib.sha1(fen.encode()).hexdigest()
+    key = int.from_bytes(hashlib.sha1(fen.encode()).digest()[:8], "little")
     if key in seen:
         return None
     seen.add(key)
@@ -128,7 +128,7 @@ def main() -> int:
     p.add_argument("--min-depth", type=int, default=0)
     args = p.parse_args()
     inf = open(args.input, encoding="utf-8") if args.input else sys.stdin
-    seen: set[str] = set()
+    seen: set[int] = set()
     kept = 0
     read = 0
     try:

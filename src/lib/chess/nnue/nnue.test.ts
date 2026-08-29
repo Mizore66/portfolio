@@ -83,6 +83,22 @@ describe("NNUE accumulator", () => {
     expect(pos.acc!.w.some((v, i) => v !== net.ftB[i])).toBe(true);
   });
 
+  it("WASM forward pass matches evaluateNnue on the shipped 128 net", async () => {
+    const { loadNnueWasm, evaluateNnueWasm } = await import("./wasm");
+    const path = join(process.cwd(), "public/engine/nnue-lichess-cc0-768x2x128-32-1-2026-08-28.bin");
+    const wasmPath = join(process.cwd(), "public/engine/nnue.wasm");
+    expect(existsSync(wasmPath)).toBe(true);
+    const netBytes = new Uint8Array(readFileSync(path));
+    const net = decodeNnue(netBytes);
+    await loadNnueWasm(readFileSync(wasmPath), netBytes);
+    configureEngine({ evalMode: "learned", net });
+    const pos = startPos();
+    attachNnue(pos);
+    expect(evaluateNnueWasm(pos.acc!, 1)).toBe(evaluateNnue(net, pos.acc!, 1));
+    expect(playUci(pos, "e2e4")).toBe(true);
+    expect(evaluateNnueWasm(pos.acc!, pos.side)).toBe(evaluateNnue(net, pos.acc!, pos.side));
+  });
+
   it("stays on PeSTO when learned is selected but no net is loaded", () => {
     configureEngine({ evalMode: "learned", net: null });
     const pos = startPos();

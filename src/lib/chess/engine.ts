@@ -5,6 +5,7 @@
 import { FILES, initialPieces, squareFile, squareRank, type Color, type Piece, type PieceType } from "@/lib/chess/replay";
 import { addPiece, cloneAcc, refreshAcc, removePiece } from "@/lib/chess/nnue/accumulator";
 import { evaluateNnue } from "@/lib/chess/nnue/infer";
+import { evaluateNnueWasm, wasmReady } from "@/lib/chess/nnue/wasm";
 import type { NnueAcc, NnueNet } from "@/lib/chess/nnue/types";
 import type { Ply } from "@/lib/opening/types";
 
@@ -672,7 +673,7 @@ export const NNUE_RESIDUAL = 60;
 
 function evaluate(pos: EnginePos, mode: EvalMode): number {
   if (mode === "learned" && pos.net && pos.acc) {
-    const n = evaluateNnue(pos.net, pos.acc, pos.side);
+    const n = wasmReady() ? evaluateNnueWasm(pos.acc, pos.side) : evaluateNnue(pos.net, pos.acc, pos.side);
     const residual = n > NNUE_RESIDUAL ? NNUE_RESIDUAL : n < -NNUE_RESIDUAL ? -NNUE_RESIDUAL : n;
     return materialCp(pos) + residual;
   }
