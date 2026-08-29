@@ -17,7 +17,8 @@ import type { NnueNet } from "./types";
 import type { Color, Piece, PieceType } from "@/lib/chess/replay";
 
 const SHIPPED_128 = "nnue-lichess-cc0-768x2x128-32-1-2026-08-28";
-const SHIPPED_256 = "nnue-lichess-cc0-768x2x256-32-1-2026-08-28";
+const SHIPPED_256_V1 = "nnue-lichess-cc0-768x2x256-32-1-2026-08-28";
+const PLAYING_256 = "nnue-lichess-cc0-768x2x256-32-1-2026-08-29";
 
 function engineDir(...parts: string[]) {
   return join(process.cwd(), "public", "engine", ...parts);
@@ -61,8 +62,8 @@ afterEach(() => {
 });
 
 describe("§9 holdout correlation receipts", () => {
-  it("records r vs Stockfish for both trained nets", () => {
-    const rows = [SHIPPED_128, SHIPPED_256].map((id) => {
+  it("records r vs Stockfish for v1 nets and the depth-12 256", () => {
+    const rows = [SHIPPED_128, SHIPPED_256_V1, PLAYING_256].map((id) => {
       const path = engineDir(`${id}.json`);
       expect(existsSync(path)).toBe(true);
       return JSON.parse(readFileSync(path, "utf8")) as {
@@ -70,22 +71,28 @@ describe("§9 holdout correlation receipts", () => {
         corr_sf: number;
         mae_cp: number;
         positions: number;
+        epochs: number;
       };
     });
     const small = rows.find((r) => r.id === SHIPPED_128)!;
-    const large = rows.find((r) => r.id === SHIPPED_256)!;
+    const v1Large = rows.find((r) => r.id === SHIPPED_256_V1)!;
+    const playing = rows.find((r) => r.id === PLAYING_256)!;
     expect(small.corr_sf).toBeCloseTo(0.305, 2);
-    expect(large.corr_sf).toBeCloseTo(0.504, 2);
+    expect(v1Large.corr_sf).toBeCloseTo(0.504, 2);
+    expect(playing.corr_sf).toBeCloseTo(0.64, 2);
     expect(small.mae_cp).toBeGreaterThan(100);
-    expect(large.corr_sf).toBeGreaterThan(small.corr_sf);
+    expect(v1Large.corr_sf).toBeGreaterThan(small.corr_sf);
+    expect(playing.corr_sf).toBeGreaterThan(v1Large.corr_sf);
     expect(small.positions).toBe(3_000_000);
-    expect(large.positions).toBe(6_000_000);
+    expect(v1Large.positions).toBe(6_000_000);
+    expect(playing.positions).toBe(20_000_000);
+    expect(playing.epochs).toBe(3);
   });
 });
 
 describe("§9 quantization float-vs-int parity", () => {
-  it("keeps trunc and float forward passes within a pawn on the shipped 128 net", () => {
-    const net = loadShipped(SHIPPED_128);
+  it("keeps trunc and float forward passes within a pawn on the playing 256 net", () => {
+    const net = loadShipped(PLAYING_256);
     configureEngine({ evalMode: "learned", net });
     const positions: EnginePos[] = [
       startPos(),
@@ -117,8 +124,8 @@ describe("§9 quantization float-vs-int parity", () => {
 });
 
 describe("§9 incremental vs full accumulator", () => {
-  it("matches refreshAcc after a quiet Italian, a capture, and castling on the shipped 128", () => {
-    const net = loadShipped(SHIPPED_128);
+  it("matches refreshAcc after a quiet Italian, a capture, and castling on the playing 256", () => {
+    const net = loadShipped(PLAYING_256);
     configureEngine({ evalMode: "learned", net });
     const pos = startPos();
     attachNnue(pos);
@@ -142,8 +149,8 @@ describe("§9 incremental vs full accumulator", () => {
 });
 
 describe("ten-position material sanity (learned hybrid)", () => {
-  it("orders basic material with the shipped 128 residual-on-material eval", () => {
-    const net = loadShipped(SHIPPED_128);
+  it("orders basic material with the playing 256 residual-on-material eval", () => {
+    const net = loadShipped(PLAYING_256);
     configureEngine({ evalMode: "learned", net });
 
     const suite: Array<{ name: string; extra?: Piece[] }> = [

@@ -25,7 +25,7 @@ python3 training/train.py \
 
 Architecture ceiling: 768 → 2×256 (or 2×128) → 32 → 1. No HalfKP, no Leela.
 
-v1 paper loads the **128** net; the 2026-08-28 256 file is a comparison artifact. The 2026-08-29 256 retrain becomes the playing net only after hold-out progress and a 50k Gate C line. A Gate C number is only an exhibit after Gate A at the same node cap, reported as fixed-N unless the SPRT actually hits a bound.
+v1 paper loaded the **128** net; the 2026-08-28 256 file is a comparison artifact. The 2026-08-29 256 is the playing net (`PHASE2_NET_ID`). A Gate C number is only an exhibit after Gate A at the same node cap, reported as fixed-N unless the SPRT actually hits a bound.
 
 Mimicry guard (not CI; needs the gitignored pack):
 

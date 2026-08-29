@@ -45,7 +45,7 @@ Same CC0 dump, stricter cut. Receipt: `training/PROVENANCE-d12.json` (packs in `
 | Label convention | White POV centipawns (white-to-move mean +52cp, black-to-move mean +39cp); STM WDL = sigmoid(±cp / 410) |
 | Quiet | same filters as v1 |
 
-Playing-net identity for this ingest is `nnue-lichess-cc0-768x2x256-32-1-2026-08-29` once train.py exports and Gate C prints. Do not load it until hold-out r vs SF beats the v1 128 (0.31) and r vs PeSTO does not approach 1.0.
+Playing-net identity for this ingest is `nnue-lichess-cc0-768x2x256-32-1-2026-08-29`. Progress gate passed (r vs SF 0.64, r vs PeSTO 0.70). Gate C @ 50k is the remaining exhibit before PeSTO is removed as the default eval.
 
 ## Phase 2b (later)
 

@@ -27,14 +27,19 @@ describe("NNUE weights file", () => {
   });
 
   it("loads the shipped Lichess-CC0 nets", () => {
-    for (const acc of [256, 128] as const) {
-      const path = join(process.cwd(), `public/engine/nnue-lichess-cc0-768x2x${acc}-32-1-2026-08-28.bin`);
+    const ids = [
+      "nnue-lichess-cc0-768x2x256-32-1-2026-08-29",
+      "nnue-lichess-cc0-768x2x256-32-1-2026-08-28",
+      "nnue-lichess-cc0-768x2x128-32-1-2026-08-28",
+    ] as const;
+    for (const id of ids) {
+      const path = join(process.cwd(), `public/engine/${id}.bin`);
       expect(existsSync(path)).toBe(true);
       const net = decodeNnue(new Uint8Array(readFileSync(path)));
-      expect(net.id).toBe(`nnue-lichess-cc0-768x2x${acc}-32-1-2026-08-28`);
-      expect(net.accSize).toBe(acc);
+      expect(net.id).toBe(id);
+      expect(net.accSize).toBe(id.includes("128") ? 128 : 256);
       expect(net.scale).toBe(400);
-      expect(net.ftW.length).toBe(768 * acc);
+      expect(net.ftW.length).toBe(768 * net.accSize);
     }
   });
 });
@@ -83,9 +88,9 @@ describe("NNUE accumulator", () => {
     expect(pos.acc!.w.some((v, i) => v !== net.ftB[i])).toBe(true);
   });
 
-  it("WASM forward pass matches evaluateNnue on the shipped 128 net", async () => {
+  it("WASM forward pass matches evaluateNnue on the playing 256 net", async () => {
     const { loadNnueWasm, evaluateNnueWasm } = await import("./wasm");
-    const path = join(process.cwd(), "public/engine/nnue-lichess-cc0-768x2x128-32-1-2026-08-28.bin");
+    const path = join(process.cwd(), "public/engine/nnue-lichess-cc0-768x2x256-32-1-2026-08-29.bin");
     const wasmPath = join(process.cwd(), "public/engine/nnue.wasm");
     expect(existsSync(wasmPath)).toBe(true);
     const netBytes = new Uint8Array(readFileSync(path));
