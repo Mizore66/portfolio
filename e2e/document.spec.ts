@@ -41,6 +41,8 @@ test.describe("document mode", () => {
     await expect(page.getByTestId("about-band")).toContainText(/played chess since I was a teenager/);
     await expect(page.getByTestId("retrieval-split")).toContainText(/different corpus/);
     await expect(page.getByTestId("path-filter")).toContainText(/ML \/ data systems/);
+    await expect(page.getByRole("link", { name: /Skip to selected work/i })).toHaveCount(1);
+    await expect(page.getByTestId("lab-teaser")).toContainText(/learned evaluator lost/i);
   });
 });
 
@@ -114,6 +116,16 @@ test.describe("opening paper", () => {
     await expect(page).toHaveURL(/\/opening-preparation/);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByRole("heading", { level: 3, name: "The University Opening" })).toBeVisible();
+  });
+
+  test("the front page is shorter than the scoresheet plate", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    const home = await page.evaluate(() => document.documentElement.scrollHeight);
+    await page.goto("/opening-preparation");
+    const paper = await page.evaluate(() => document.documentElement.scrollHeight);
+    expect(home).toBeLessThan(paper);
+    expect(home).toBeLessThan(14000);
   });
 });
 

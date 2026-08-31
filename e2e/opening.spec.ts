@@ -703,8 +703,9 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("header")).toHaveCount(1);
     await expect(page.locator("main")).toHaveCount(1);
     await expect(page.locator("footer")).toHaveCount(1);
-    const skip = page.getByRole("link", { name: /Skip to selected work/i });
+    const skip = page.locator(".skip-link");
     await expect(skip).toHaveCount(1);
+    await expect(skip).toHaveAccessibleName(/Skip chessboard/i);
     await skip.focus();
     await expect(skip).toBeVisible();
     await expect(page.locator("#chapter-e4 h3 button")).toHaveAttribute(
@@ -966,7 +967,7 @@ test.describe("Opening Preparation", () => {
     expect(badgeFits).toBe(true);
     await expect(page.getByTestId("eval-toggle")).toBeVisible();
     await expect(page.getByTestId("engine-readout")).toBeVisible();
-    await expect(page.getByTestId("lab-teaser")).toContainText(/learned evaluator lost/i);
+    await expect(page.getByTestId("lab-teaser")).toHaveCount(0);
     await expect(page.getByTestId("evaluations-column")).toHaveCount(0);
     await expect(page.getByText(/^Assessment$/i)).toHaveCount(0);
     await expect(page.getByTestId("eval-bar")).toHaveAttribute("aria-label", "Engine evaluation");
