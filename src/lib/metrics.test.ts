@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { PROJECT_FIGURES } from "@/content/project-figures";
 import { resumeData } from "@/lib/data";
-import { FEATURED_PROJECT_SLUGS, HERO_DESKS, HERO_PROOF, METRICS, POSITIONING, projectOrigin, projectPath } from "@/lib/metrics";
+import { FEATURED_PROJECT_SLUGS, HERO_DESKS, HERO_PROOF, METRICS, POSITIONING, exhibitTitle, projectOrigin, projectPath } from "@/lib/metrics";
 import { getNode } from "@/lib/opening/tree";
 
 describe("measured claims have one owner each", () => {
@@ -90,10 +90,13 @@ describe("measured claims have one owner each", () => {
     expect(POSITIONING.deskNote).toMatch(/internal screenshots stay off the paper/);
     expect(POSITIONING.nameNote).toMatch(/Anas Tarek Qumhiyeh on the résumé/);
     expect(POSITIONING.availability).not.toMatch(/visa|relocat|work authorization/i);
+    expect(exhibitTitle({ name: "Veridian", subtitle: "MLOps Tradeoff Engine" })).toBe(
+      "Veridian — MLOps Tradeoff Engine",
+    );
     for (const p of resumeData.projects) {
       expect(projectOrigin(p)).not.toBe("Production");
-      expect(`${p.purpose} ${p.description} ${"judgment" in p ? p.judgment : ""}`).not.toMatch(
-        /Team of \d|4 months · Production/i,
+      expect(`${p.purpose} ${p.description} ${"judgment" in p ? p.judgment : ""} ${"why" in p ? p.why : ""}`).not.toMatch(
+        /Team of \d|4 months · Production|today I would/i,
       );
     }
   });

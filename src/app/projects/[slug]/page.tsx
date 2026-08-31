@@ -8,7 +8,7 @@ import { PatentFigure } from "@/components/opening/PatentFigure";
 import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
-import { projectOrigin, type EvidenceKind } from "@/lib/metrics";
+import { exhibitTitle, projectOrigin, type EvidenceKind } from "@/lib/metrics";
 import { projectJsonLd } from "@/lib/person";
 import { SITE_URL } from "@/lib/site";
 
@@ -24,7 +24,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const project = resumeData.projects.find((p) => p.slug === slug);
   if (!project) return { title: "Correction — A. T. Qumhiyeh" };
-  const title = `${project.name} — ${project.subtitle} · A. T. Qumhiyeh`;
+  const title = `${exhibitTitle(project)} · A. T. Qumhiyeh`;
   const description = project.meta;
   return {
     title,
@@ -96,18 +96,29 @@ export default async function ProjectPage({
                 <span className="font-mono text-[11px] text-faded">{project.date}</span>
               </div>
               <p className="mt-3 font-mono text-[12px] uppercase tracking-[0.28em] text-faded">
-                Clipping · Exhibit · {project.subtitle}
+                Clipping · Exhibit · {project.date}
               </p>
             </header>
 
             <div className="sheet-fade px-6 py-10">
               <section aria-labelledby="exhibit-title">
-                <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-faded">
-                  Pasted from the desk
-                </p>
-                <h1 id="exhibit-title" className="exhibit-title mt-2 font-display text-ink">
-                  {project.name} — {project.subtitle}
+                <h1 id="exhibit-title" className="exhibit-title font-display text-ink">
+                  {exhibitTitle(project)}
                 </h1>
+                <p
+                  data-testid="exhibit-lede"
+                  className="mt-3 max-w-[68ch] font-display text-[18px] leading-snug text-ink"
+                >
+                  {project.purpose}
+                </p>
+                {why ? (
+                  <p
+                    data-testid="exhibit-why"
+                    className="mt-3 max-w-[68ch] font-display text-[16px] leading-snug text-ink"
+                  >
+                    {why}
+                  </p>
+                ) : null}
                 <dl className="exhibit-rail mt-4" data-testid="exhibit-rail">
                   <div>
                     <dt>Filed</dt>
@@ -249,6 +260,13 @@ export default async function ProjectPage({
                 {inspectNote ? (
                   <p className="w-full font-mono text-[12px] leading-relaxed text-faded">{inspectNote}</p>
                 ) : null}
+                <p
+                  className="w-full font-mono text-[12px] leading-relaxed text-faded"
+                  data-testid="exhibit-host"
+                >
+                  {BROADSHEET.exhibitHost}
+                  {project.github ? ` ${BROADSHEET.exhibitGithub}` : null}
+                </p>
                 <Link
                   href="/#work"
                   className="exhibit-back border-2 border-ink px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-ink"

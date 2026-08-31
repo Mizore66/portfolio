@@ -1,4 +1,7 @@
+import { LAB_ARTICLE } from "@/content/learned-evaluator";
 import { resumeData } from "@/lib/data";
+import { filedYearMonth } from "@/lib/filed";
+import { exhibitTitle } from "@/lib/metrics";
 import { SITE_URL } from "@/lib/site";
 
 export const PERSON_NAME = "Anas Tarek Qumhiyeh";
@@ -42,9 +45,7 @@ export function websiteJsonLd() {
 }
 
 function projectDate(filed: string): string | undefined {
-  const t = Date.parse(`${filed} 1`);
-  if (Number.isNaN(t)) return undefined;
-  return new Date(t).toISOString().slice(0, 7);
+  return filedYearMonth(filed);
 }
 
 export function projectJsonLd(project: {
@@ -65,7 +66,7 @@ export function projectJsonLd(project: {
     return {
       "@context": "https://schema.org",
       "@type": "SoftwareSourceCode",
-      name: `${project.name} — ${project.subtitle}`,
+      name: exhibitTitle(project),
       description: project.meta,
       url: `${SITE_URL}/projects/${project.slug}`,
       codeRepository: project.github,
@@ -76,10 +77,26 @@ export function projectJsonLd(project: {
   return {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
-    name: `${project.name} — ${project.subtitle}`,
+    name: exhibitTitle(project),
     description: project.meta,
     url: `${SITE_URL}/projects/${project.slug}`,
     author,
     ...(dateCreated ? { dateCreated } : {}),
+  };
+}
+
+export function labArticleJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: LAB_ARTICLE.hed,
+    description: LAB_ARTICLE.meta,
+    datePublished: LAB_ARTICLE.datePublished,
+    url: `${SITE_URL}${LAB_ARTICLE.href}`,
+    author: {
+      "@type": "Person",
+      name: PERSON_NAME,
+      alternateName: PERSON_ALT_NAME,
+    },
   };
 }

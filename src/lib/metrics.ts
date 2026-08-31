@@ -220,3 +220,8 @@ export function projectPath(slug: string): WorkPath {
   if (slug === "circuitmindai" || slug === "mirrorfi") return "Product / backend";
   return "ML / data systems";
 }
+
+/** Survives a screenshot, a Slack unfurl, and a CSS-off document. */
+export function exhibitTitle(project: { name: string; subtitle: string }): string {
+  return `${project.name} — ${project.subtitle}`;
+}

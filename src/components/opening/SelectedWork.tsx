@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { EvidenceMeta } from "@/components/opening/EvidenceMeta";
 import { resumeData } from "@/lib/data";
-import { FEATURED_PROJECT_SLUGS, LAB_PROJECT_SLUGS, POSITIONING, projectOrigin, projectPath } from "@/lib/metrics";
+import { FEATURED_PROJECT_SLUGS, LAB_PROJECT_SLUGS, POSITIONING, exhibitTitle, projectOrigin, projectPath } from "@/lib/metrics";
 import type { EvidenceKind } from "@/lib/metrics";
 import { cn } from "@/lib/utils";
 
@@ -39,9 +39,8 @@ export function SelectedWork() {
               · {project.date} · {projectPath(project.slug)}
             </p>
             <h3 className="mt-2 font-display text-[22px] leading-tight text-ink sm:text-[24px]">
-              {project.name}
+              {exhibitTitle(project)}
             </h3>
-            <p className="mt-1 font-display text-[14px] leading-snug text-faded">{project.subtitle}</p>
             <p className="mt-2 font-display text-[16px] leading-snug text-ink">{project.purpose}</p>
             <p className="metric-row mt-3">{project.impact}</p>
             {"evidenceNote" in project && project.evidenceNote ? (
@@ -75,7 +74,7 @@ export function SelectedWork() {
             <span key={p.slug}>
               {i > 0 ? " · " : null}
               <Link href={`/projects/${p.slug}`} className="text-book-blue underline decoration-2 underline-offset-4">
-                {p.name} — {p.subtitle}
+                {exhibitTitle(p)}
               </Link>
             </span>
           ))}

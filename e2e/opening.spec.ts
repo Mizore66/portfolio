@@ -442,7 +442,9 @@ test.describe("Opening Preparation", () => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/projects/veridian");
     await expect(page.getByRole("heading", { level: 1, name: "Veridian" })).toBeVisible();
-    await expect(page.getByText("Pasted from the desk")).toBeVisible();
+    await expect(page.getByTestId("exhibit-lede")).toContainText(/Intercepts Terraform/);
+    await expect(page.getByTestId("exhibit-why")).toContainText(/MCP here means/);
+    await expect(page.getByTestId("exhibit-host")).toContainText(/no live host to sleep/);
     await expect(page.getByText("Clipping · Exhibit")).toBeVisible();
     await expect(page.getByTestId("halftone-plate")).toBeVisible();
     await expect(page.locator("[data-plate='/plates/plate-veridian.jpg']")).toBeVisible();
@@ -458,6 +460,7 @@ test.describe("Opening Preparation", () => {
 
     await page.goto("/projects/circuitmindai");
     await expect(page.getByRole("heading", { level: 1, name: "CircuitMindAI" })).toBeVisible();
+    await expect(page.getByTestId("exhibit-host")).toContainText(/GitHub is blocked/);
     await expect(page.locator("[data-plate='/plates/plate-circuitmind.jpg']")).toBeVisible();
     await expect(page.locator("[data-fig='7']")).toBeVisible();
     await expect(page.getByTestId("patent-legend")).toContainText(/LOUPE/);

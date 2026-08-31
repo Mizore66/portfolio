@@ -110,6 +110,9 @@ export const BROADSHEET = {
   correctionKicker: "Correction",
   correctionHed: "The page you requested was a misprint.",
   correctionDek: "It never made the plate. The game is still on the front page.",
+  exhibitHost: "There is no live host to sleep. The argument is on this page.",
+  exhibitGithub:
+    "If GitHub is blocked on this network, the apparatus and the line above are the argument.",
   homeLink: "Back to the game",
   searching: "going to press…",
   pressMark: "Set by hand. No template survived.",

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LAB_ARTICLE } from "@/content/learned-evaluator";
 import { resumeData } from "@/lib/data";
-import { LAB_PROJECT_SLUGS, METRICS } from "@/lib/metrics";
+import { LAB_PROJECT_SLUGS, METRICS, exhibitTitle } from "@/lib/metrics";
 
 export function LabTeaser() {
   return (
@@ -31,7 +31,7 @@ export function LabFilings() {
         <span key={p.slug}>
           {i > 0 ? " · " : null}
           <Link href={`/projects/${p.slug}`} className="text-book-blue underline decoration-2 underline-offset-4">
-            {p.name} — {p.subtitle}
+            {exhibitTitle(p)}
           </Link>
         </span>
       ))}

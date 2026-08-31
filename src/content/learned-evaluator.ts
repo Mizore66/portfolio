@@ -13,7 +13,8 @@ export const LAB_ARTICLE = {
   teaser: "Chess engine → learned evaluator lost −143 Elo. Here's why.",
   resultGlyph: "?!",
   resultJoke: "Result: Black was unconvinced.",
-  filed: "Against the 2026-08-29 net",
+  filed: "Filed against the 2026-08-29 net",
+  datePublished: "2026-08-29",
   meta: "Gate C: the playing 768×2×256 net lost −143.1 ±40.5 Elo to PeSTO at 50 000 nodes/move, 100 games. A loss at the spec cap is still a result.",
   hypothesisHed: "Hypothesis",
   hypothesis:

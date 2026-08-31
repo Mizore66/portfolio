@@ -57,9 +57,13 @@ export function ExperienceList() {
               <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-faded">{job.period}</p>
             </div>
             <p className="metric-row mt-2">{job.impact}</p>
-            <p className="mt-2 max-w-[68ch] font-display text-[16px] leading-relaxed text-ink">
-              {job.bullets[0]}
-            </p>
+            <ul className="mt-3 max-w-[68ch] space-y-2">
+              {job.bullets.map((bullet) => (
+                <li key={bullet} className="font-display text-[16px] leading-relaxed text-ink">
+                  {bullet}
+                </li>
+              ))}
+            </ul>
           </li>
         ))}
       </ol>

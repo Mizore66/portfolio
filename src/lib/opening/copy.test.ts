@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
-import { META_DESCRIPTION, personJsonLd, projectJsonLd, websiteJsonLd, PERSON_ALT_NAME, PERSON_NAME } from "@/lib/person";
+import { META_DESCRIPTION, personJsonLd, projectJsonLd, websiteJsonLd, labArticleJsonLd, PERSON_ALT_NAME, PERSON_NAME } from "@/lib/person";
 import sitemap from "@/app/sitemap";
 import robots from "@/app/robots";
 import { getNode } from "@/lib/opening/tree";
@@ -15,7 +15,7 @@ const BANNED =
 describe("exhibit register", () => {
   it("keeps exhibit copy in the annotator voice, without adjectives without receipts", () => {
     const blob = resumeData.projects
-      .map((p) => `${p.description}\n${p.bullets.join("\n")}\n${p.subtitle}`)
+      .map((p) => `${p.description}\n${p.bullets.join("\n")}\n${p.subtitle}\n${p.purpose}\n${"why" in p ? p.why : ""}`)
       .join("\n");
     expect(blob).not.toMatch(BANNED);
     expect(resumeData.projects.find((p) => p.slug === "circuitmindai")?.description).toMatch(
@@ -80,6 +80,15 @@ describe("SEO identity", () => {
     expect(work["@type"]).toBe("CreativeWork");
     expect(work).not.toHaveProperty("codeRepository");
     expect(work.name).toMatch(/Veridian —/);
+    expect("dateCreated" in work ? work.dateCreated : undefined).toBe("2026-04");
+  });
+
+  it("hands machines an Article node for the lab report", () => {
+    const article = labArticleJsonLd();
+    expect(article["@type"]).toBe("Article");
+    expect(article.headline).toMatch(/lost 143 Elo/);
+    expect(article.datePublished).toBe("2026-08-29");
+    expect(article.url).toMatch(/\/lab\/learned-evaluator$/);
   });
 
   it("writes a per-exhibit meta description, not a cloned dek", () => {
@@ -92,6 +101,10 @@ describe("SEO identity", () => {
     expect(resumeData.projects.find((p) => p.slug === "veridian")?.meta).toMatch(/carbon ledger/);
     const graphrag = resumeData.projects.find((p) => p.slug === "multi-agent-graphrag")!;
     expect("why" in graphrag && graphrag.why).toMatch(/walk the graph/);
+    expect(resumeData.projects.find((p) => p.slug === "veridian")?.why).toMatch(/Terraform change is read/);
+    expect(resumeData.projects.find((p) => p.slug === "slm-distillation-engine")?.why).toMatch(/QLoRA/);
+    expect(BROADSHEET.exhibitHost).toMatch(/no live host to sleep/);
+    expect(BROADSHEET.exhibitGithub).toMatch(/GitHub is blocked/);
   });
 
   it("points Repository only at a named source, never the bare profile", () => {
@@ -113,6 +126,12 @@ describe("SEO identity", () => {
     for (const p of resumeData.projects) {
       expect(urls.some((u) => u.endsWith(`/projects/${p.slug}`)), p.slug).toBe(true);
     }
+    const veridian = sitemap().find((e) => e.url.endsWith("/projects/veridian"));
+    expect(veridian?.lastModified instanceof Date && veridian.lastModified.toISOString().startsWith("2026-04")).toBe(
+      true,
+    );
+    const lab = sitemap().find((e) => e.url.endsWith("/lab/learned-evaluator"));
+    expect(lab?.lastModified instanceof Date && lab.lastModified.toISOString().startsWith("2026-08-29")).toBe(true);
   });
 });
 
@@ -134,6 +153,12 @@ describe("bfcache", () => {
   it("registers no unload listeners in the opening app", () => {
     const src = readFileSync(join(process.cwd(), "src/components/opening/OpeningApp.tsx"), "utf8");
     expect(src).not.toMatch(/onunload|beforeunload|addEventListener\(\s*["']unload/);
+  });
+
+  it("does not ship a custom cursor or disable selection on copyable text", () => {
+    const css = readFileSync(join(process.cwd(), "src/app/globals.css"), "utf8");
+    expect(css).not.toMatch(/cursor:\s*url\(/);
+    expect(css).not.toMatch(/user-select:\s*none/);
   });
 });
 

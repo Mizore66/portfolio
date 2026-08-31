@@ -4,6 +4,7 @@ import { EloCommitsChart } from "@/components/opening/EloCommitsChart";
 import { EvaluationsColumn } from "@/components/opening/EvaluationsColumn";
 import { BROADSHEET } from "@/content/opening";
 import { LAB_ARTICLE } from "@/content/learned-evaluator";
+import { labArticleJsonLd } from "@/lib/person";
 import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -30,6 +31,10 @@ export default function LearnedEvaluatorPage() {
         Skip to the article
       </a>
       <div className="relative z-[1] mx-auto max-w-2xl px-3 py-8 sm:px-5 sm:py-12">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(labArticleJsonLd()) }}
+        />
         <main id="article">
           <article className="sheet px-6 py-8 sm:px-8 sm:py-10" aria-labelledby="lab-title">
             <header className="border-b-2 border-ink pb-4">
@@ -59,7 +64,7 @@ export default function LearnedEvaluatorPage() {
               <p className="mt-4 font-display text-[18px] italic text-score-red">{LAB_ARTICLE.resultJoke}</p>
             </header>
 
-            <section className="mt-8" aria-labelledby="lab-hypothesis">
+            <section id="hypothesis" className="mt-8" aria-labelledby="lab-hypothesis">
               <h2 id="lab-hypothesis" className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
                 {LAB_ARTICLE.hypothesisHed}
               </h2>
@@ -68,7 +73,7 @@ export default function LearnedEvaluatorPage() {
               </p>
             </section>
 
-            <section className="mt-8" aria-labelledby="lab-experiment">
+            <section id="experiment" className="mt-8" aria-labelledby="lab-experiment">
               <h2 id="lab-experiment" className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
                 {LAB_ARTICLE.experimentHed}
               </h2>
@@ -77,14 +82,14 @@ export default function LearnedEvaluatorPage() {
               </p>
             </section>
 
-            <section className="mt-8" aria-labelledby="lab-result">
+            <section id="result" className="mt-8" aria-labelledby="lab-result">
               <h2 id="lab-result" className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
                 {LAB_ARTICLE.resultHed}
               </h2>
               <p className="mt-3 font-mono text-[14px] leading-relaxed text-ink">{LAB_ARTICLE.resultLine}</p>
             </section>
 
-            <section className="mt-8" aria-labelledby="lab-failed">
+            <section id="failed" className="mt-8" aria-labelledby="lab-failed">
               <h2 id="lab-failed" className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
                 {LAB_ARTICLE.failedHed}
               </h2>
@@ -93,7 +98,7 @@ export default function LearnedEvaluatorPage() {
               </p>
             </section>
 
-            <section className="mt-8" aria-labelledby="lab-learned">
+            <section id="learned" className="mt-8" aria-labelledby="lab-learned">
               <h2 id="lab-learned" className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
                 {LAB_ARTICLE.learnedHed}
               </h2>
