@@ -21,6 +21,12 @@ test.describe("axe", () => {
     await expectNoAxeViolations(page);
   });
 
+  test("the lab article has no violations", async ({ page }) => {
+    await page.goto("/lab/learned-evaluator");
+    await expect(page.getByRole("heading", { level: 1, name: /learned evaluator lost 143 Elo/i })).toBeVisible();
+    await expectNoAxeViolations(page);
+  });
+
   test("the 404 has no violations", async ({ page }) => {
     const response = await page.goto("/page-that-never-made-the-plate");
     expect(response?.status()).toBe(404);

@@ -63,10 +63,10 @@ export default async function ProjectPage({
             <header className="border-b-2 border-ink px-6 py-4">
               <div className="flex items-center justify-between gap-3">
                 <Link
-                  href="/"
+                  href="/#work"
                   className="exhibit-back font-mono text-[11px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4"
                 >
-                  ← Opening Preparation
+                  ← {BROADSHEET.backToWork}
                 </Link>
                 <span className="font-mono text-[11px] text-faded">{project.date}</span>
               </div>
@@ -83,7 +83,11 @@ export default async function ProjectPage({
                 <h1 id="exhibit-title" className="exhibit-title mt-2 font-display text-ink">
                   {project.name}
                 </h1>
+                <p className="mt-2 font-display text-[16px] leading-snug text-faded">{project.subtitle}</p>
                 <p className="metric-row mt-4">{project.impact}</p>
+                {"evidenceNote" in project && project.evidenceNote ? (
+                  <p className="mt-1 font-mono text-[12px] text-faded">{project.evidenceNote}</p>
+                ) : null}
                 <p className="mt-4 max-w-[68ch] font-display text-[16px] leading-[1.65] text-ink">
                   {project.purpose}
                 </p>
@@ -161,10 +165,10 @@ export default async function ProjectPage({
                   </a>
                 ) : null}
                 <Link
-                  href="/"
+                  href="/#work"
                   className="exhibit-back border-2 border-ink px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-ink"
                 >
-                  ← Opening Preparation
+                  ← {BROADSHEET.backToWork}
                 </Link>
               </nav>
             </div>

@@ -67,6 +67,8 @@
   --space-12: 48px;
   --space-16: 64px;
   --space-24: 96px;
+  --page-max: 1180px;
+  --prose-max: 68ch;
 }
 
 @layer base {
@@ -187,6 +189,10 @@
   color: var(--ink);
   border: 1px solid var(--ink);
   box-shadow: 0 16px 40px rgba(28, 14, 8, 0.48);
+}
+.sheet-page {
+  width: 100%;
+  max-width: var(--page-max);
 }
 @media (min-width: 980px) {
   .sheet {
@@ -1095,8 +1101,8 @@
 .masthead-kicker {
   margin: 0;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 12px;
-  letter-spacing: 0.28em;
+  font-size: 10px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--faded);
 }
@@ -1104,9 +1110,9 @@
 .masthead-title {
   margin: 0;
   font-family: Palatino, "Palatino Linotype", "Times New Roman", Times, serif;
-  font-size: clamp(2.15rem, 6.4vw, 4.5rem);
-  line-height: 0.95;
-  letter-spacing: -0.02em;
+  font-size: clamp(2.6rem, 7.5vw, 5.25rem);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
   color: var(--ink);
 }
 
@@ -1145,6 +1151,33 @@
 .masthead-chip:focus-visible {
   background: color-mix(in srgb, var(--book-blue) 12%, var(--paper));
   color: var(--book-blue);
+}
+
+.masthead-quiet {
+  margin: 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faded);
+}
+.masthead-quiet a {
+  color: var(--book-blue);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.lab-teaser {
+  background: var(--paper);
+}
+.lab-teaser:hover,
+.lab-teaser:focus-visible {
+  background: color-mix(in srgb, var(--book-blue) 8%, var(--paper));
+}
+
+.game-band {
+  padding-top: var(--space-8);
+  padding-bottom: var(--space-4);
 }
 
 .recruiter-nav {

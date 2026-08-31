@@ -1,3 +1,4 @@
+import { CopyEmail } from "@/components/opening/CopyEmail";
 import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
 import { POSITIONING } from "@/lib/metrics";
@@ -10,17 +11,21 @@ export function ContactBand() {
       className="recruiter-band"
       aria-labelledby="contact-heading"
     >
-      <p className="band-kicker">Contact</p>
+      <p className="band-kicker">Correspondence</p>
       <h2 id="contact-heading" className="band-title">
-        {POSITIONING.availability}
+        {POSITIONING.contactHed}
       </h2>
-      <p className="mt-2 font-display text-[16px] italic text-faded">{POSITIONING.graduateNote}</p>
-      <p className="mt-4 max-w-[68ch] font-lora text-[16px] leading-[1.7] text-ink">{POSITIONING.closer}</p>
+      <p className="mt-4 font-mono text-[14px] text-ink" data-testid="contact-email">
+        {resumeData.email}
+      </p>
       <ul className="masthead-contacts mt-6 list-none p-0">
         <li>
           <a className="masthead-chip" href={`mailto:${resumeData.email}`}>
             Email
           </a>
+        </li>
+        <li>
+          <CopyEmail email={resumeData.email} />
         </li>
         <li>
           <a
@@ -30,16 +35,6 @@ export function ContactBand() {
             rel="me noopener noreferrer"
           >
             LinkedIn
-          </a>
-        </li>
-        <li>
-          <a
-            className="masthead-chip external-mark"
-            href={`https://${resumeData.github}`}
-            target="_blank"
-            rel="me noopener noreferrer"
-          >
-            GitHub
           </a>
         </li>
         <li>

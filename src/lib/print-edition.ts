@@ -78,17 +78,17 @@ export function buildPrintEditionPdf(): Uint8Array {
   txt("F3", 9, PAGE_W - M - 22, PAGE_H - 52, "C50");
   txt("F2", 20, M, PAGE_H - 76, d.name);
   let headY = PAGE_H - 90;
+  for (const line of wrap(d.headline, 92)) {
+    txt("F1", 9, M, headY, line);
+    headY -= 11;
+  }
   for (const line of wrap(POSITIONING.tagline, 92)) {
     txt("F3", 8, M, headY, line);
     headY -= 11;
   }
-  for (const line of wrap(d.headline, 92)) {
-    txt("F1", 8, M, headY, line);
-    headY -= 11;
-  }
   txt("F1", 8, M, headY, `${d.email}  |  ${d.github}  |  ${d.linkedin}`);
   headY -= 12;
-  for (const line of wrap(`${POSITIONING.availability} ${POSITIONING.graduateNote}`, 92)) {
+  for (const line of wrap(POSITIONING.availability, 92)) {
     txt("F3", 8, M, headY, line);
     headY -= 11;
   }

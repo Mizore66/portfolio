@@ -9,6 +9,7 @@ import { BroadsheetFiller } from "@/components/opening/BroadsheetFiller";
 import { Closer } from "@/components/opening/Closer";
 import { Colophon } from "@/components/opening/Colophon";
 import { ContactBand } from "@/components/opening/ContactBand";
+import { LabTeaser } from "@/components/opening/LabTeaser";
 import { GlassEngine, useEngineSearch, useNnueWeights } from "@/components/opening/GlassEngine";
 import { IssueIndex } from "@/components/opening/IssueIndex";
 import { NewspaperColumn } from "@/components/opening/NewspaperColumn";
@@ -484,7 +485,24 @@ export function OpeningApp({
     <>
       <main>
           {children}
-          <div id="the-game">
+          <section id="the-game" aria-labelledby="game-heading">
+          <header className="game-band px-4 sm:px-6">
+            <p className="band-kicker">{BROADSHEET.gameKicker} — C50</p>
+            <h2 id="game-heading" className="band-title">
+              {BROADSHEET.gameKicker}
+            </h2>
+            <p data-testid="how-to-read" className="mt-2 max-w-[68ch] font-display text-[16px] italic text-faded">
+              {BROADSHEET.howToRead}
+            </p>
+            <p className="mt-1 max-w-[68ch] font-display text-[16px] italic text-faded">
+              {BROADSHEET.gameDek}
+            </p>
+            <p className="mt-3 font-mono text-[12px] uppercase tracking-[0.14em]">
+              <a href="#lab" className="text-book-blue underline decoration-2 underline-offset-4">
+                {BROADSHEET.skipBoard}
+              </a>
+            </p>
+          </header>
           <p className="read-hint-desktop hidden px-4 font-mono text-[12px] text-faded min-[980px]:block sm:px-6">
             {BROADSHEET.readHintDesktop}
           </p>
@@ -568,7 +586,7 @@ export function OpeningApp({
                     )}
                   >
                     <span aria-hidden>{playing ? "❚❚" : "▶"}</span>
-                    {playing ? "Pause" : "Read the game"}
+                    {playing ? BROADSHEET.pauseGame : BROADSHEET.exploreCareer}
                   </button>
                   <button
                     type="button"
@@ -583,6 +601,13 @@ export function OpeningApp({
                     {BROADSHEET.playInvite}
                   </button>
                 </div>
+                <p data-testid="board-keys" className="font-mono text-[12px] text-faded">
+                  {playing
+                    ? BROADSHEET.boardAutoplay
+                    : playHint
+                      ? BROADSHEET.boardPlayable
+                      : BROADSHEET.boardKeys}
+                </p>
                 {playHint ? (
                   <p className="font-display text-[16px] italic text-ink">{BROADSHEET.playHint}</p>
                 ) : null}
@@ -608,12 +633,13 @@ export function OpeningApp({
               />
             </section>
           </div>
-          </div>
+          </section>
           <section id="lab" data-testid="lab-band" className="recruiter-band" aria-labelledby="lab-heading">
             <p className="band-kicker">{BROADSHEET.labKicker}</p>
             <h2 id="lab-heading" className="band-title">
               {BROADSHEET.labDek}
             </h2>
+            <LabTeaser />
             <div className="mt-6 max-w-xl">
               <TodaysPuzzle selectedId={selectedId} onSelect={userSelect} />
             </div>

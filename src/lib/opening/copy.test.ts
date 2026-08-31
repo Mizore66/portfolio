@@ -57,6 +57,7 @@ describe("SEO identity", () => {
     expect(ld.sameAs).toContain("https://linkedin.com/in/anasqumhiyeh");
     expect(META_DESCRIPTION.length).toBeLessThanOrEqual(160);
     expect(META_DESCRIPTION).toMatch(/annotated career of Anas T\. Qumhiyeh/);
+    expect(META_DESCRIPTION).toMatch(/data-intensive systems/);
   });
 
   it("writes a per-exhibit meta description, not a cloned dek", () => {

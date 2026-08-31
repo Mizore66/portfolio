@@ -12,8 +12,8 @@ export const metadata: Metadata = {
   description: META_DESCRIPTION,
   keywords: [
     "Software Engineer",
-    "MLOps",
-    "Full-Stack",
+    "ML infrastructure",
+    "data-intensive systems",
     "Anas Qumhiyeh",
     "Opening Preparation",
     "chess",

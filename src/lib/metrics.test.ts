@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { PROJECT_FIGURES } from "@/content/project-figures";
 import { resumeData } from "@/lib/data";
-import { FEATURED_PROJECT_SLUGS, METRICS } from "@/lib/metrics";
+import { FEATURED_PROJECT_SLUGS, HERO_DESKS, HERO_PROOF, METRICS } from "@/lib/metrics";
 import { getNode } from "@/lib/opening/tree";
 
 describe("measured claims have one owner each", () => {
@@ -36,5 +36,11 @@ describe("measured claims have one owner each", () => {
 
   it("features three flagship exhibits", () => {
     expect(FEATURED_PROJECT_SLUGS).toEqual(["veridian", "circuitmindai", "multi-agent-graphrag"]);
+  });
+
+  it("keeps the hero to three proof points and named desks", () => {
+    expect(HERO_PROOF).toHaveLength(3);
+    expect(HERO_PROOF.map((p) => p.label).join(" ")).not.toMatch(/12×/);
+    expect(HERO_DESKS).toEqual(["Setel", "Western Digital", "Petronas"]);
   });
 });

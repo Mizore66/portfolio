@@ -10,6 +10,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 1,
     },
+    {
+      url: `${SITE_URL}/lab/learned-evaluator`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
     ...resumeData.projects.map((project) => ({
       url: `${SITE_URL}/projects/${project.slug}`,
       lastModified: new Date(),

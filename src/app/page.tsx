@@ -28,7 +28,7 @@ export default function Home() {
         {BROADSHEET.skipLink}
       </a>
       <div className="relative z-[1] flex justify-center px-2 py-3 sm:px-3">
-        <div data-testid="newspaper-spread" className="sheet w-full max-w-[1180px]">
+        <div data-testid="newspaper-spread" className="sheet sheet-page">
           <Masthead />
           <OpeningApp staticBoard={<StickyBoardStatic />}>
             <SelectedWork />

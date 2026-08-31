@@ -4,18 +4,20 @@ The paper can ship the UI. These surfaces are still yours. Paste them as written
 
 ## LinkedIn
 
-**Headline** (the pipe-separated line is dead on the site; kill it here):
+**Headline** (identity first; the clever line lives in About):
 
 ```
-I build ML and software systems that have to survive measurement.
+Software engineer focused on ML infrastructure and data-intensive systems.
 ```
 
 **About** (quotes the paper, does not contradict it):
 
 ```
-I build ML and software systems that have to survive measurement.
+Software engineer focused on ML infrastructure and data-intensive systems.
 
-Software engineer building ML infrastructure, data systems, and full-stack products. The annotated career of Anas T. Qumhiyeh — a chess-opening portfolio with a live engine, patent drawings, and measured claims.
+I like systems that have to survive measurement.
+
+The annotated career of Anas T. Qumhiyeh — a chess-opening portfolio with a live engine, patent drawings, and measured claims.
 
 Opening Preparation: https://anasqumhiyeh.dev
 
@@ -23,9 +25,9 @@ Moves are facts. Annotations are voice. Chess is the content, never the lock.
 
 Monash University, Bachelor of Engineering (Honours), software. First Class. Graduated May 2026. WAM 82.1, CGPA 3.82.
 
-LEARNED is the masthead eval. Gate C at 50 000 nodes printed −143.1 ±40.5 Elo, 100 games, LLR −2.33. A loss at the spec cap is still a result.
+LEARNED is the masthead eval. Gate C at 50 000 nodes printed −143.1 ±40.5 Elo, 100 games, LLR −2.33. A loss at the spec cap is still a result. The match report lives at https://anasqumhiyeh.dev/lab/learned-evaluator
 
-Open to early-career software engineering roles in fintech and AI infrastructure. Graduate and junior opportunities welcome.
+Open to early-career software engineering roles in fintech and AI infrastructure.
 ```
 
 Recruiters will see the site and LinkedIn within five minutes of each other. The About has to quote the paper, not a second biography.
@@ -34,7 +36,7 @@ Recruiters will see the site and LinkedIn within five minutes of each other. The
 
 ```
 Anas Tarek Qumhiyeh
-I build ML and software systems that have to survive measurement.
+Software engineer focused on ML infrastructure and data-intensive systems.
 https://anasqumhiyeh.dev
 anasqumhiyeh@gmail.com
 ```

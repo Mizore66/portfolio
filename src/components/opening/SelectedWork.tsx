@@ -24,8 +24,12 @@ export function SelectedWork() {
             <h3 className="mt-2 font-display text-[22px] leading-tight text-ink sm:text-[24px]">
               {project.name}
             </h3>
+            <p className="mt-1 font-display text-[14px] leading-snug text-faded">{project.subtitle}</p>
             <p className="mt-2 font-display text-[16px] leading-snug text-ink">{project.purpose}</p>
             <p className="metric-row mt-3">{project.impact}</p>
+            {"evidenceNote" in project && project.evidenceNote ? (
+              <p className="mt-1 font-mono text-[12px] text-faded">{project.evidenceNote}</p>
+            ) : null}
             <ul className="mt-3 flex flex-wrap gap-2">
               {project.tech.slice(0, 5).map((t) => (
                 <li key={t} className="border border-ink px-2 py-0.5 font-mono text-[11px] text-book-blue">
@@ -58,7 +62,7 @@ export function SelectedWork() {
             <span key={p.slug}>
               {i > 0 ? " · " : null}
               <Link href={`/projects/${p.slug}`} className="text-book-blue underline decoration-2 underline-offset-4">
-                {p.name}
+                {p.name} — {p.subtitle}
               </Link>
             </span>
           ))}

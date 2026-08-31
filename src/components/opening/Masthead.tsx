@@ -1,7 +1,7 @@
 import { RecruiterNav } from "@/components/opening/RecruiterNav";
 import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
-import { HERO_PROOF } from "@/lib/metrics";
+import { HERO_DESKS, HERO_PROOF } from "@/lib/metrics";
 import { SITE_HOST } from "@/lib/site";
 
 export function Masthead() {
@@ -18,19 +18,22 @@ export function Masthead() {
       <div className="border-b-2 border-ink px-4 py-5 sm:px-6">
         <div className="min-w-0">
           <h1 className="masthead-title">Anas T. Qumhiyeh</h1>
-          <p data-testid="masthead-tagline" className="mt-3 max-w-[68ch] font-display text-[18px] leading-snug text-ink">
-            {BROADSHEET.tagline}
-          </p>
-          <p data-testid="masthead-role" className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug text-book-blue">
+          <p data-testid="masthead-role" className="mt-4 max-w-[68ch] font-display text-[20px] leading-snug text-ink">
             {BROADSHEET.dek}
           </p>
-          <p data-testid="masthead-proof" className="metric-row mt-4">
+          <p data-testid="masthead-tagline" className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug italic text-faded">
+            {BROADSHEET.tagline}
+          </p>
+          <p data-testid="masthead-desks" className="mt-4 font-display text-[16px] leading-snug text-ink">
+            {HERO_DESKS.join(" · ")}
+          </p>
+          <p data-testid="masthead-proof" className="metric-row mt-3">
             {HERO_PROOF.map((item) => item.label).join(" · ")}
           </p>
-          <p className="mt-4 font-display text-[16px] italic text-faded">
+          <p data-testid="masthead-availability" className="mt-4 font-mono text-[12px] uppercase tracking-[0.12em] text-faded">
             {BROADSHEET.availability}
           </p>
-          <div className="masthead-contacts mt-4" data-testid="masthead-contacts">
+          <div className="masthead-contacts mt-5" data-testid="masthead-contacts">
             <a className="masthead-chip" href="#work">
               Selected work
             </a>
@@ -40,30 +43,29 @@ export function Masthead() {
                 {BROADSHEET.printEdition}
               </span>
             </a>
-            <a className="masthead-chip" href={`mailto:${resumeData.email}`}>
-              Email
+            <a className="masthead-chip" href="#contact">
+              Contact
             </a>
+          </div>
+          <p className="masthead-quiet mt-3">
             <a
-              className="masthead-chip external-mark"
+              className="external-mark"
               href={`https://${resumeData.github}`}
               target="_blank"
               rel="me noopener noreferrer"
             >
               GitHub
             </a>
+            <span aria-hidden="true"> · </span>
             <a
-              className="masthead-chip external-mark"
+              className="external-mark"
               href={`https://${resumeData.linkedin}`}
               target="_blank"
               rel="me noopener noreferrer"
             >
               LinkedIn
             </a>
-          </div>
-          <p className="mt-5 font-display text-xl italic text-faded sm:text-2xl">
-            {BROADSHEET.gameKicker} — C50
           </p>
-          <p className="mt-1 font-display text-[16px] italic text-faded">{BROADSHEET.gameDek}</p>
         </div>
       </div>
     </header>

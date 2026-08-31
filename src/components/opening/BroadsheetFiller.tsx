@@ -1,11 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { EvaluationsColumn } from "@/components/opening/EvaluationsColumn";
-import { EloCommitsChart } from "@/components/opening/EloCommitsChart";
 import { SituationsWanted } from "@/components/opening/SituationsWanted";
 import { BROADSHEET } from "@/content/opening";
-import { PHASE2_EXHIBITS } from "@/lib/chess/phase2";
 
 export function BroadsheetFiller() {
   const [weather, setWeather] = useState(0);
@@ -29,12 +26,6 @@ export function BroadsheetFiller() {
         </div>
         <SituationsWanted />
       </div>
-      {PHASE2_EXHIBITS ? (
-        <>
-          <EvaluationsColumn />
-          <EloCommitsChart />
-        </>
-      ) : null}
       <div className="flex items-end justify-between gap-4">
         <button
           type="button"

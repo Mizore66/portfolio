@@ -25,7 +25,7 @@ test.describe("Opening Preparation", () => {
     await expect(
       page.locator('[data-testid="notation-view"] [data-node-id="d4"]'),
     ).toHaveAttribute("aria-current", "true");
-    await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 3, name: "The Central Break" })).toBeVisible();
     await expect(page.getByText("The line so far").first()).toBeVisible();
     await expect(page.getByText("1. e4! e5 2. Nf3 Nc6 3. Bc4 Bc5 4. O-O! Nf6! 5. d4!!").first()).toBeVisible();
   });
@@ -41,7 +41,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("tree-caption")).toHaveCount(0);
     await expect(page.getByText(/LEAD · FLAGSHIP/i)).toHaveCount(0);
     await expect(page.getByTestId("lead-headline")).toHaveCount(0);
-    await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 3, name: "The Central Break" })).toBeVisible();
     await expect(page.getByText(/^\d+ alts?$/i)).toHaveCount(0);
     await expect(page.getByTestId("inline-diagram")).toHaveCount(3);
     await expect(page.getByTestId("halftone-plate")).toHaveCount(7);
@@ -284,7 +284,7 @@ test.describe("Opening Preparation", () => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/?move=d4");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
-    await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 3, name: "The Central Break" })).toBeVisible();
 
     await page.goto("/?move=not-a-node");
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="d4"]')).toHaveAttribute(
@@ -293,7 +293,7 @@ test.describe("Opening Preparation", () => {
     );
 
     await page.goto("/?move=d4");
-    await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 3, name: "The Central Break" })).toBeVisible();
     await page.getByRole("link", { name: "Veridian" }).first().evaluate((el: HTMLAnchorElement) => {
       el.click();
     });
@@ -301,7 +301,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("halftone-plate")).toBeVisible();
     await page.goBack();
     await expect(page).toHaveURL(/move=d4/);
-    await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 3, name: "The Central Break" })).toBeVisible();
   });
 
   test("the e-pawn glides on 1.e4 instead of teleporting", async ({ page }) => {
@@ -402,7 +402,7 @@ test.describe("Opening Preparation", () => {
       { timeout: 4000 },
     );
     await page.locator('[data-testid="tree-view"] [data-node-id="e5"]').click();
-    await expect(page.getByTestId("read-the-game")).toContainText("Read the game");
+    await expect(page.getByTestId("read-the-game")).toContainText("Explore career story");
   });
 
   test("hover tints a sideline square; the life lane is gone", async ({
@@ -703,15 +703,15 @@ test.describe("Opening Preparation", () => {
     await expect(skip).toHaveCount(1);
     await skip.focus();
     await expect(skip).toBeVisible();
-    await expect(page.locator("#chapter-e4 h2 button")).toHaveAttribute(
+    await expect(page.locator("#chapter-e4 h3 button")).toHaveAttribute(
       "aria-label",
       /1\. e4.*University Opening/,
     );
-    await expect(page.locator("#chapter-d4 h2 button")).toHaveAttribute(
+    await expect(page.locator("#chapter-d4 h3 button")).toHaveAttribute(
       "aria-label",
       /5\. d4.*Central Break/,
     );
-    await expect(page.locator("#chapter-e4 h2 button [aria-hidden='true']").first()).toBeVisible();
+    await expect(page.locator("#chapter-e4 h3 button [aria-hidden='true']").first()).toBeVisible();
   });
 
   test("ArrowRight from the flagship updates the URL without snapping to the top", async ({
@@ -749,12 +749,17 @@ test.describe("Opening Preparation", () => {
     expect(role!.y).toBeGreaterThanOrEqual(0);
     expect(role!.y + role!.height).toBeLessThan(900);
     await expect(page.getByTestId("masthead-role")).toHaveText(/Software engineer/i);
+    await expect(page.getByTestId("masthead-desks")).toContainText(/Setel/);
+    await expect(page.getByTestId("masthead-desks")).toContainText(/Western Digital/);
     await expect(page.locator("header")).toContainText(/anasqumhiyeh\.dev/i);
     await expect(page.locator("#chapter-e4")).toContainText(/Graduated May 2026/);
     await expect(page.locator("#chapter-e4")).toContainText(/First Class Honours/);
     await expect(page.getByTestId("masthead-proof")).toBeVisible();
     await expect(page.getByTestId("masthead-proof")).toContainText(/100M events\/day/);
     await expect(page.getByTestId("masthead-proof")).toContainText(/\+45% retrieval \(Monash\)/);
+    await expect(page.getByTestId("masthead-proof")).not.toContainText(/12×/);
+    await expect(page.getByTestId("board-keys")).toBeVisible();
+    await expect(page.getByTestId("how-to-read")).toContainText(/résumé is literal/i);
     await expect(page.getByTestId("selected-work")).toBeVisible();
     await expect(page.getByTestId("recruiter-nav")).toContainText(/Work/);
   });
@@ -767,7 +772,7 @@ test.describe("Opening Preparation", () => {
     const sizes = [];
     for (const id of ids) {
       sizes.push(
-        await page.locator(`#chapter-${id} h2`).evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
+        await page.locator(`#chapter-${id} h3`).evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
       );
     }
     expect(Math.max(...sizes) - Math.min(...sizes)).toBeLessThan(0.5);
@@ -953,12 +958,8 @@ test.describe("Opening Preparation", () => {
     expect(badgeFits).toBe(true);
     await expect(page.getByTestId("eval-toggle")).toBeVisible();
     await expect(page.getByTestId("engine-readout")).toBeVisible();
-    await expect(page.getByTestId("evaluations-column")).toBeVisible();
-    await expect(page.getByTestId("evaluations-column")).toContainText(/50 000 nodes|50000 nodes|fixed-N/i);
-    await expect(page.getByTestId("evaluations-net")).toContainText(/768x2x256/);
-    await expect(page.getByTestId("evaluations-net")).toContainText(/2026-08-29/);
-    await expect(page.getByTestId("evaluations-column")).not.toContainText(/sprt:/i);
-    await expect(page.getByTestId("elo-commits")).toBeVisible();
+    await expect(page.getByTestId("lab-teaser")).toContainText(/learned evaluator lost/i);
+    await expect(page.getByTestId("evaluations-column")).toHaveCount(0);
     await expect(page.getByText(/^Assessment$/i)).toHaveCount(0);
     await expect(page.getByTestId("eval-bar")).toHaveAttribute("aria-label", "Engine evaluation");
     await expect(page.getByTestId("eval-bar")).toHaveAttribute("title", "Engine evaluation");
@@ -982,7 +983,15 @@ test.describe("Opening Preparation", () => {
     const board = (await page.getByTestId("board-diagram").boundingBox())!;
     expect(Math.abs(board.x - engine.x)).toBeLessThanOrEqual(2);
 
+    await page.goto("/lab/learned-evaluator");
+    await expect(page.getByRole("heading", { level: 1, name: /learned evaluator lost 143 Elo/i })).toBeVisible();
+    await expect(page.getByTestId("evaluations-column")).toBeVisible();
+    await expect(page.getByTestId("evaluations-column")).toContainText(/50 000 nodes|50000 nodes|fixed-N/i);
+    await expect(page.getByTestId("evaluations-net")).toContainText(/768x2x256/);
+    await expect(page.getByTestId("evaluations-net")).toContainText(/2026-08-29/);
+    await expect(page.getByTestId("evaluations-column")).not.toContainText(/sprt:/i);
     const chart = page.getByTestId("elo-commits");
+    await expect(chart).toBeVisible();
     await chart.scrollIntoViewIfNeeded();
     const svg = chart.locator("svg");
     const svgBox = (await svg.boundingBox())!;
@@ -993,6 +1002,9 @@ test.describe("Opening Preparation", () => {
       expect(t.x).toBeGreaterThanOrEqual(svgBox.x - 1);
       expect(t.x + t.width).toBeLessThanOrEqual(svgBox.x + svgBox.width + 1);
     }
+
+    await page.goto("/");
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByTestId("engine-lampshade")).toContainText(/disagreed since 1997/);
 
     await page.setViewportSize({ width: 900, height: 800 });
@@ -1073,24 +1085,24 @@ test.describe("Opening Preparation", () => {
       "aria-current",
       "true",
     );
-    await expect(page.locator("#chapter-e4 h2 [data-node-id='e4']")).not.toHaveAttribute(
+    await expect(page.locator("#chapter-e4 h3 [data-node-id='e4']")).not.toHaveAttribute(
       "data-flagship-mark",
     );
 
     await page.goto("/?move=d4");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
-    await expect(page.locator("#chapter-d4 h2 [data-node-id='d4']")).toHaveAttribute(
+    await expect(page.locator("#chapter-d4 h3 [data-node-id='d4']")).toHaveAttribute(
       "data-flagship-mark",
       "true",
     );
 
     await page.goto("/?move=e4");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
-    await expect(page.locator("#chapter-d4 h2 [data-node-id='d4']")).toHaveAttribute(
+    await expect(page.locator("#chapter-d4 h3 [data-node-id='d4']")).toHaveAttribute(
       "data-flagship-mark",
       "true",
     );
-    await expect(page.locator("#chapter-e4 h2 [data-node-id='e4']")).not.toHaveAttribute(
+    await expect(page.locator("#chapter-e4 h3 [data-node-id='e4']")).not.toHaveAttribute(
       "data-flagship-mark",
     );
 
@@ -1226,7 +1238,7 @@ test.describe("Opening Preparation", () => {
     expect(ld.name).toBe("Anas Tarek Qumhiyeh");
     expect(ld.alternateName).toBe("Anas T. Qumhiyeh");
     expect(ld.alumniOf.name).toBe("Monash University");
-    await expect(page.locator("[data-testid='masthead-contacts'] a[href*='github']")).toHaveAttribute(
+    await expect(page.locator("header a[href*='github']")).toHaveAttribute(
       "rel",
       /me/,
     );

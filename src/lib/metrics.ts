@@ -14,6 +14,7 @@ export const METRICS = {
     strip: "+45% retrieval",
     display: "+45% retrieval vs vector-only",
     impact: "+45% retrieval accuracy",
+    note: "vs vector-only RAG · university regulations",
   },
   graphragRetrieval: {
     value: "+35%",
@@ -26,6 +27,7 @@ export const METRICS = {
     display: "+35% retrieval vs vector-only",
     impact: "+35% retrieval accuracy",
     gauge: "+35% retrieval vs vector-only (project · policy corpus)",
+    note: "vs vector-only · university policy corpus",
   },
   setelCoverage: {
     value: "92.5%",
@@ -33,12 +35,14 @@ export const METRICS = {
     owner: "Setel",
     scope: "checkout and capture",
     display: "92.5% unit-test coverage",
+    note: "unit tests · checkout and capture",
   },
   setelDefects: {
     value: "−40%",
     unit: "production defects",
     owner: "Setel",
     display: "−40% production defects",
+    note: "production",
   },
   wdOversight: {
     value: "−40%",
@@ -65,6 +69,7 @@ export const METRICS = {
     unit: "events/day",
     owner: "Distributed Lead Scorer",
     display: "100M events/day",
+    note: "PySpark pipeline",
   },
   slmInference: {
     value: "12×",
@@ -93,6 +98,7 @@ export const METRICS = {
     owner: "Gate C",
     condition: "50 000 nodes/move, 100 games",
     display: "−143 Elo @ 50k nodes",
+    note: "100 games · 50 000 nodes/move · fixed-N",
   },
 } as const;
 
@@ -106,22 +112,25 @@ export const HERO_PROOF = [
   { label: METRICS.leadThroughput.display, owner: METRICS.leadThroughput.owner },
   { label: METRICS.setelDefects.display, owner: METRICS.setelDefects.owner },
   { label: `${METRICS.monashRetrieval.strip} (Monash)`, owner: METRICS.monashRetrieval.owner },
-  { label: METRICS.slmInference.display, owner: METRICS.slmInference.owner },
 ] as const;
 
+/** Desks a recruiter should be able to name after five seconds. */
+export const HERO_DESKS = ["Setel", "Western Digital", "Petronas"] as const;
+
 export const POSITIONING = {
-  tagline: "I build ML and software systems that have to survive measurement.",
-  dek: "Software engineer building ML infrastructure, data systems, and full-stack products.",
+  tagline: "I like systems that have to survive measurement.",
+  dek: "Software engineer focused on ML infrastructure and data-intensive systems.",
   identity:
-    "Early-career software engineer focused on ML infrastructure, data systems and full-stack products.",
+    "Early-career software engineer focused on ML infrastructure and data-intensive systems.",
   availability:
     "Open to early-career software engineering roles in fintech and AI infrastructure.",
   graduateNote: "Graduate and junior opportunities welcome.",
+  contactHed: "Interested in building measured, reliable systems?",
   closer:
     "I'm interested in teams building reliable ML and data systems in fintech or infrastructure-heavy products.",
   about: [
-    "I'm a software engineer interested in systems where machine learning meets production infrastructure: retrieval systems, data pipelines, deployment, reliability, and the product surfaces around them.",
-    "I've worked across payment engineering at Setel, lab systems at Western Digital, engineering tooling at Petronas, and ML projects ranging from GraphRAG and model distillation to large-scale data processing. I like work that can be measured — latency, reliability, retrieval quality, test coverage, throughput — rather than demonstrated only through a polished demo.",
-    "Chess has been part of my life since I was a teenager, which is why this portfolio is structured as a game. The moves are the work; the annotations are my interpretation of it.",
+    "I'm a software engineer focused on ML infrastructure and data-intensive systems: retrieval, data pipelines, deployment, reliability, and the product surfaces around them.",
+    "I've worked across payment engineering at Setel, lab systems at Western Digital, engineering tooling at Petronas, and a GraphRAG contract at Monash University. ML projects range from model distillation to large-scale data processing. I like work that can be measured — latency, reliability, retrieval quality, test coverage, throughput — rather than demonstrated only through a polished demo.",
+    "Outside software, I've played chess since I was a teenager, which is why this portfolio is structured as a game. The moves are the work; the annotations are my interpretation of it.",
   ],
 } as const;

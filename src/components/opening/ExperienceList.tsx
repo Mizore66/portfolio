@@ -1,3 +1,4 @@
+import { companyAnchor } from "@/lib/anchors";
 import { resumeData } from "@/lib/data";
 
 export function ExperienceList() {
@@ -14,7 +15,11 @@ export function ExperienceList() {
       </h2>
       <ol className="mt-6">
         {resumeData.experience.map((job) => (
-          <li key={`${job.company}-${job.period}`} className="experience-row">
+          <li
+            key={`${job.company}-${job.period}`}
+            id={companyAnchor(job.company)}
+            className="experience-row"
+          >
             <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
               <h3 className="font-display text-[18px] leading-snug text-ink">
                 {job.company} — {job.title}

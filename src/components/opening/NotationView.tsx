@@ -94,7 +94,7 @@ function Chapter({
         <p className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
           {node.kind}
         </p>
-        <h2 className="mt-2 font-display text-[clamp(1.5rem,2.5vw,1.85rem)] leading-tight text-ink">
+        <h3 className="mt-2 font-display text-[clamp(1.5rem,2.5vw,1.85rem)] leading-tight text-ink">
           <ChapterButton
             node={node}
             selected={selected}
@@ -103,7 +103,7 @@ function Chapter({
             onPreview={onPreview}
             stamp={selected && Boolean(node.sym)}
           />
-        </h2>
+        </h3>
       </div>
 
       <div className="chapter-copy">
