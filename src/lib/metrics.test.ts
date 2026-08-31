@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { PROJECT_FIGURES } from "@/content/project-figures";
 import { resumeData } from "@/lib/data";
-import { FEATURED_PROJECT_SLUGS, HERO_DESKS, HERO_PROOF, METRICS, POSITIONING, projectOrigin } from "@/lib/metrics";
+import { FEATURED_PROJECT_SLUGS, HERO_DESKS, HERO_PROOF, METRICS, POSITIONING, projectOrigin, projectPath } from "@/lib/metrics";
 import { getNode } from "@/lib/opening/tree";
 
 describe("measured claims have one owner each", () => {
@@ -83,6 +83,13 @@ describe("measured claims have one owner each", () => {
     expect(projectOrigin(mirror)).toBe("Hackathon");
     expect(projectOrigin(slm)).toBe("Laboratory");
     expect(projectOrigin(veridian)).toBe("Independent");
+    expect(projectPath("veridian")).toBe("ML / data systems");
+    expect(projectPath("multi-agent-graphrag")).toBe("ML / data systems");
+    expect(projectPath("circuitmindai")).toBe("Product / backend");
+    expect(projectPath("mirrorfi")).toBe("Product / backend");
+    expect(POSITIONING.deskNote).toMatch(/internal screenshots stay off the paper/);
+    expect(POSITIONING.nameNote).toMatch(/Anas Tarek Qumhiyeh on the résumé/);
+    expect(POSITIONING.availability).not.toMatch(/visa|relocat|work authorization/i);
     for (const p of resumeData.projects) {
       expect(projectOrigin(p)).not.toBe("Production");
       expect(`${p.purpose} ${p.description} ${"judgment" in p ? p.judgment : ""}`).not.toMatch(

@@ -19,12 +19,24 @@ export default function NotFound() {
             <p className="mt-4 font-lora text-[16px] italic leading-relaxed text-ink">
               {BROADSHEET.correctionDek}
             </p>
-            <p className="mt-8">
+            <p className="mt-8 flex flex-wrap gap-4">
               <Link
                 href="/"
                 className="font-mono text-[11px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4 exhibit-back"
               >
                 ← {BROADSHEET.homeLink}
+              </Link>
+              <Link
+                href={BROADSHEET.printHref}
+                className="font-mono text-[11px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4"
+              >
+                {BROADSHEET.resumeLabel}
+              </Link>
+              <Link
+                href="/#contact"
+                className="font-mono text-[11px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4"
+              >
+                Contact
               </Link>
             </p>
           </article>

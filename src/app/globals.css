@@ -1505,6 +1505,19 @@
 [data-chapter] {
   scroll-margin-top: calc(var(--sticky-stack, 0px) + 12px);
 }
+.recruiter-band,
+.experience-row,
+.project-card,
+#the-game,
+#apparatus,
+#line,
+#decisions,
+#measurement,
+#problem,
+#decision,
+#article {
+  scroll-margin-top: calc(var(--sticky-stack, 0px) + 12px);
+}
 
 [data-chapter][data-arrive] {
   animation: arrive-wash 1.2s ease;

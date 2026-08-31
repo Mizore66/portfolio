@@ -5,6 +5,8 @@ import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
 import { META_DESCRIPTION, personJsonLd, projectJsonLd, websiteJsonLd, PERSON_ALT_NAME, PERSON_NAME } from "@/lib/person";
+import sitemap from "@/app/sitemap";
+import robots from "@/app/robots";
 import { getNode } from "@/lib/opening/tree";
 
 const BANNED =
@@ -88,6 +90,8 @@ describe("SEO identity", () => {
       expect(p.meta, p.slug).not.toMatch(BANNED);
     }
     expect(resumeData.projects.find((p) => p.slug === "veridian")?.meta).toMatch(/carbon ledger/);
+    const graphrag = resumeData.projects.find((p) => p.slug === "multi-agent-graphrag")!;
+    expect("why" in graphrag && graphrag.why).toMatch(/walk the graph/);
   });
 
   it("points Repository only at a named source, never the bare profile", () => {
@@ -99,6 +103,15 @@ describe("SEO identity", () => {
     );
     for (const p of resumeData.projects) {
       expect(p.github, p.slug).not.toMatch(/github\.com\/Mizore66\/?$/);
+    }
+  });
+
+  it("lists the lab and every exhibit on the sitemap", () => {
+    const urls = sitemap().map((e) => e.url);
+    expect(robots().sitemap).toMatch(/sitemap\.xml/);
+    expect(urls.some((u) => u.endsWith("/lab/learned-evaluator"))).toBe(true);
+    for (const p of resumeData.projects) {
+      expect(urls.some((u) => u.endsWith(`/projects/${p.slug}`)), p.slug).toBe(true);
     }
   });
 });

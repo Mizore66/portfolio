@@ -190,6 +190,9 @@ export const POSITIONING = {
   next: "The next line I want to play: measured systems in fintech infrastructure.",
   professionalDek: "Intern and contract desks in production systems.",
   independentDek: "Independent systems. Professional desks are under Experience.",
+  deskNote:
+    "Professional desks are named and measured here; internal screenshots stay off the paper.",
+  nameNote: "Anas T. Qumhiyeh on the masthead; Anas Tarek Qumhiyeh on the résumé.",
   trajectory:
     "The desks compound. Petronas was converting a licensed MATLAB back-end to Python, then presenting usability findings to department leadership. Western Digital put full-stack work behind roles for 50+ staff, with a WebSocket to the lab's deep-learning model. Setel was payments in production: authorization, capture, and tests on that path. Monash was retrieval over a graph of university regulations. The through-line is systems that have to keep working after they ship.",
   about: [
@@ -200,6 +203,7 @@ export const POSITIONING = {
 } as const;
 
 export type ProjectOrigin = "Hackathon" | "Laboratory" | "Independent";
+export type WorkPath = "ML / data systems" | "Product / backend";
 
 /** Origin is derived from filings we already have. Do not invent team size or duration. */
 export function projectOrigin(project: {
@@ -209,4 +213,10 @@ export function projectOrigin(project: {
   if ((LAB_PROJECT_SLUGS as readonly string[]).includes(project.slug)) return "Laboratory";
   if (project.contextLabel && /hackathon|megahack/i.test(project.contextLabel)) return "Hackathon";
   return "Independent";
+}
+
+/** Two recruiter paths. Not a persona mode. */
+export function projectPath(slug: string): WorkPath {
+  if (slug === "circuitmindai" || slug === "mirrorfi") return "Product / backend";
+  return "ML / data systems";
 }

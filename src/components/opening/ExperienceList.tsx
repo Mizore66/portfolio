@@ -25,6 +25,9 @@ export function ExperienceList() {
       <p className="mt-2 max-w-[68ch] font-display text-[16px] italic text-faded">
         {POSITIONING.professionalDek}
       </p>
+      <p className="mt-2 max-w-[68ch] font-mono text-[12px] leading-relaxed text-faded">
+        {POSITIONING.deskNote}
+      </p>
       <ol className="year-index" data-testid="year-index">
         {YEAR_INDEX.map((row) => (
           <li key={row.year}>

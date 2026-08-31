@@ -50,6 +50,7 @@ export default function LearnedEvaluatorPage() {
               <p className="mt-3 font-mono text-[12px] uppercase tracking-[0.28em] text-faded">
                 {LAB_ARTICLE.kicker} · Gate C · {LAB_ARTICLE.resultGlyph}
               </p>
+              <p className="mt-2 font-mono text-[12px] text-faded">{LAB_ARTICLE.filed}</p>
               <h1 id="lab-title" className="exhibit-title mt-2 font-display text-ink">
                 {LAB_ARTICLE.hed}
               </h1>

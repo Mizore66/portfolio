@@ -62,6 +62,7 @@ export default async function ProjectPage({
   const judgment = "judgment" in project ? project.judgment : undefined;
   const contextLabel = "contextLabel" in project ? project.contextLabel : undefined;
   const inspectNote = "inspectNote" in project ? project.inspectNote : undefined;
+  const why = "why" in project ? project.why : undefined;
   const origin = projectOrigin({
     slug: project.slug,
     contextLabel,
@@ -127,7 +128,7 @@ export default async function ProjectPage({
                     <dd>{project.github ? "Public repository" : "On this domain"}</dd>
                   </div>
                 </dl>
-                <section className="mt-6" aria-labelledby="exhibit-measurement">
+                <section id="measurement" className="mt-6" aria-labelledby="exhibit-measurement">
                   <h2
                     id="exhibit-measurement"
                     className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded"
@@ -137,7 +138,7 @@ export default async function ProjectPage({
                   <p className="metric-row mt-2">{project.impact}</p>
                   <EvidenceMeta note={evidenceNote} kind={evidenceKind} />
                 </section>
-                <section className="mt-6" aria-labelledby="exhibit-problem">
+                <section id="problem" className="mt-6" aria-labelledby="exhibit-problem">
                   <h2
                     id="exhibit-problem"
                     className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded"
@@ -147,9 +148,12 @@ export default async function ProjectPage({
                   <p className="mt-2 max-w-[68ch] font-display text-[16px] leading-[1.65] text-ink">
                     {project.purpose}
                   </p>
+                  {why ? (
+                    <p className="mt-3 max-w-[68ch] font-display text-[16px] leading-snug text-ink">{why}</p>
+                  ) : null}
                 </section>
                 {judgment ? (
-                  <section className="mt-6" aria-labelledby="exhibit-decision">
+                  <section id="decision" className="mt-6" aria-labelledby="exhibit-decision">
                     <h2
                       id="exhibit-decision"
                       className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded"

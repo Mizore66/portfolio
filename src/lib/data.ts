@@ -221,6 +221,7 @@ export const resumeData = {
         "LangGraph asks Neo4j for the university's policy corpus, then a vector store when the graph is silent. Agents write Cypher, check it, and try again.",
       judgment:
         "The graph is the structured path for prerequisites and policy; the vector store is the fallback when the graph is silent.",
+      why: "A question about prerequisites has to walk the graph, not only the nearest paragraph.",
       meta: `LangGraph over the university's policy corpus: agents write Cypher, check it, and fall back to a vector store. ${METRICS.graphragRetrieval.strip}.`,
       patent: VERIDIAN_EXCHANGE satisfies ApparatusSpec,
       apparatus: {

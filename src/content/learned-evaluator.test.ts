@@ -14,5 +14,7 @@ describe("learned evaluator lab article", () => {
     expect(LAB_ARTICLE.resultJoke).toMatch(/Black was unconvinced/);
     expect(LAB_ARTICLE.failed).not.toMatch(/RESULT: REJECTED/);
     expect(LAB_ARTICLE.href).toBe("/lab/learned-evaluator");
+    expect(LAB_ARTICLE.filed).toContain("2026-08-29");
+    expect(LAB_ARTICLE.filed).not.toMatch(/Published March/i);
   });
 });
