@@ -32,7 +32,10 @@ export function Masthead() {
             {HERO_PROOF.map((item) => (
               <li key={item.label}>
                 <p className="metric-row">{item.label}</p>
-                <EvidenceMeta note={item.note} kind={item.kind} />
+                <EvidenceMeta
+                  note={item.kind === "production" ? item.owner : `${item.owner} · ${item.note}`}
+                  kind={item.kind}
+                />
               </li>
             ))}
           </ul>
@@ -40,7 +43,7 @@ export function Masthead() {
             {BROADSHEET.availability}
           </p>
           <div className="masthead-contacts mt-5" data-testid="masthead-contacts">
-            <a className="masthead-chip" href="#work">
+            <a className="masthead-chip masthead-chip-primary" href="#work">
               Selected work
             </a>
             <a className="masthead-chip" href={BROADSHEET.printHref}>

@@ -191,7 +191,7 @@ export const POSITIONING = {
   professionalDek: "Intern and contract desks in production systems.",
   independentDek: "Independent systems. Professional desks are under Experience.",
   trajectory:
-    "The desks compound: Petronas was converting a licensed MATLAB back-end to Python. Western Digital was a lab dashboard for 50+ staff. Setel was payments in production. Monash was retrieval over a graph of regulations.",
+    "The desks compound. Petronas was converting a licensed MATLAB back-end to Python, then presenting usability findings to department leadership. Western Digital put full-stack work behind roles for 50+ staff, with a WebSocket to the lab's deep-learning model. Setel was payments in production: authorization, capture, and tests on that path. Monash was retrieval over a graph of university regulations. The through-line is systems that have to keep working after they ship.",
   about: [
     "I'm a software engineer focused on ML infrastructure and data-intensive systems: retrieval, data pipelines, deployment, reliability, and the product surfaces around them.",
     "I've worked across payment engineering at Setel, lab systems at Western Digital, engineering tooling at Petronas, and a GraphRAG contract at Monash University. ML projects range from model distillation to large-scale data processing. I like work that can be measured — latency, reliability, retrieval quality, test coverage, throughput — rather than demonstrated only through a polished demo.",

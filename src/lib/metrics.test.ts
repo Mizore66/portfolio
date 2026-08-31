@@ -43,8 +43,14 @@ describe("measured claims have one owner each", () => {
     expect(HERO_PROOF[0]?.label).toBe(METRICS.setelDefects.display);
     expect(HERO_PROOF[0]?.kind).toBe("production");
     expect(HERO_PROOF[2]?.kind).toBe("pipeline");
+    expect(HERO_PROOF[2]?.note).not.toMatch(/production volume/i);
     expect(HERO_PROOF.map((p) => p.label).join(" ")).not.toMatch(/12×/);
     expect(HERO_DESKS).toEqual(["Setel", "Western Digital", "Petronas"]);
+    expect(HERO_PROOF[2]?.note).not.toMatch(/production/i);
+    const adopted = `${resumeData.projects.map((p) => `${p.name} ${p.subtitle} ${p.purpose} ${p.impact}`).join(" ")} ${POSITIONING.dek}`;
+    expect(adopted).not.toMatch(/80% faster/);
+    expect(adopted).not.toMatch(/Setel Data Platform/);
+    expect(adopted).not.toMatch(/Engineering Chronicle/);
   });
 
   it("does not let pipeline throughput masquerade as production", () => {
@@ -63,6 +69,8 @@ describe("measured claims have one owner each", () => {
 
   it("states the career as compounding desks, not a pile of unrelated wins", () => {
     expect(POSITIONING.trajectory).toMatch(/Petronas.*Western Digital.*Setel.*Monash/s);
+    expect(POSITIONING.trajectory).toMatch(/through-line/);
+    expect(POSITIONING.trajectory).toMatch(/department leadership/);
     expect(POSITIONING.independentDek).toMatch(/Independent/);
     expect(POSITIONING.professionalDek).toMatch(/Intern and contract/);
     expect(POSITIONING.next).toMatch(/fintech infrastructure/);

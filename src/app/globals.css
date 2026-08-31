@@ -1165,6 +1165,17 @@
   background: color-mix(in srgb, var(--book-blue) 12%, var(--paper));
   color: var(--book-blue);
 }
+.masthead-chip-primary {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.masthead-chip-primary:hover,
+.masthead-chip-primary:focus-visible {
+  background: var(--book-blue);
+  color: var(--paper);
+  border-color: var(--book-blue);
+}
 
 .masthead-quiet {
   margin: 0;
@@ -1182,10 +1193,12 @@
 
 .lab-teaser {
   background: var(--paper);
+  border: var(--rule-emphasis) solid var(--ink);
+  box-shadow: inset 8px 0 0 var(--score-red);
 }
 .lab-teaser:hover,
 .lab-teaser:focus-visible {
-  background: color-mix(in srgb, var(--book-blue) 8%, var(--paper));
+  background: color-mix(in srgb, var(--score-red) 6%, var(--paper));
 }
 
 .game-band {
@@ -1316,12 +1329,27 @@
 
 .hero-proof {
   margin: var(--space-4) 0 0;
-  padding: 0;
+  padding: var(--space-4) 0 0;
   list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  max-width: var(--prose-max);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+  border-top: var(--rule-hairline) solid var(--ink);
+  max-width: none;
+}
+@media (min-width: 640px) {
+  .hero-proof {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    border: var(--rule-section) solid var(--ink);
+    padding: 0;
+  }
+  .hero-proof li {
+    padding: var(--space-4);
+  }
+  .hero-proof li + li {
+    border-left: var(--rule-hairline) solid var(--ink);
+  }
 }
 
 .year-index {
@@ -1343,6 +1371,26 @@
   width: 4.5rem;
   flex-shrink: 0;
   color: var(--score-red);
+}
+@media (min-width: 640px) {
+  .year-index {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-4);
+    border-top: var(--rule-hairline) solid var(--ink);
+    border-bottom: var(--rule-hairline) solid var(--ink);
+    padding: var(--space-4) 0;
+  }
+  .year-index li {
+    display: block;
+    padding: 0;
+  }
+  .year-index-year {
+    display: block;
+    width: auto;
+    margin-bottom: var(--space-2);
+    font-size: 14px;
+  }
 }
 
 .exhibit-rail {
@@ -1738,6 +1786,10 @@
   }
   .masthead-chip:hover {
     background: color-mix(in srgb, var(--book-blue) 10%, var(--paper));
+  }
+  .masthead-chip-primary:hover {
+    background: var(--book-blue);
+    color: var(--paper);
   }
   .recruiter-nav-link:hover,
   .recruiter-nav-stamp:hover {

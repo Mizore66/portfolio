@@ -8,7 +8,7 @@ export function LabTeaser() {
     <Link
       href={LAB_ARTICLE.href}
       data-testid="lab-teaser"
-      className="lab-teaser mt-8 block border-2 border-ink p-4 text-ink no-underline"
+      className="lab-teaser mt-8 block p-6 text-ink no-underline sm:p-8"
     >
       <p className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
         {LAB_ARTICLE.kicker}

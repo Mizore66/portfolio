@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { EvidenceMeta } from "@/components/opening/EvidenceMeta";
 import { resumeData } from "@/lib/data";
-import { FEATURED_PROJECT_SLUGS, LAB_PROJECT_SLUGS, POSITIONING } from "@/lib/metrics";
+import { FEATURED_PROJECT_SLUGS, LAB_PROJECT_SLUGS, POSITIONING, projectOrigin } from "@/lib/metrics";
 import type { EvidenceKind } from "@/lib/metrics";
 import { cn } from "@/lib/utils";
 
@@ -28,7 +28,11 @@ export function SelectedWork() {
         {featured.map((project, i) => (
           <li key={project.slug} className={cn("project-card", i === 0 && "project-card-flagship")}>
             <p className="font-mono text-[12px] uppercase tracking-[0.18em] text-faded">
-              {project.date}
+              {projectOrigin({
+                slug: project.slug,
+                contextLabel: "contextLabel" in project ? project.contextLabel : undefined,
+              })}{" "}
+              · {project.date}
             </p>
             <h3 className="mt-2 font-display text-[22px] leading-tight text-ink sm:text-[24px]">
               {project.name}

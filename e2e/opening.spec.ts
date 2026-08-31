@@ -765,8 +765,11 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("how-to-read")).toContainText(/résumé is literal/i);
     await expect(page.getByTestId("selected-work")).toBeVisible();
     await expect(page.getByTestId("selected-work")).toContainText(/Independent systems/);
+    await expect(page.getByTestId("selected-work")).toContainText(/Independent ·/);
     await expect(page.getByTestId("career-trajectory")).toContainText(/The desks compound/);
+    await expect(page.getByTestId("career-trajectory")).toContainText(/through-line/);
     await expect(page.getByTestId("recruiter-nav")).toContainText(/Work/);
+    await expect(page.getByTestId("recruiter-nav")).toContainText(/Lab/);
   });
 
   test("chapter titles share one type size", async ({ page }) => {

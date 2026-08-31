@@ -19,7 +19,7 @@ I like systems that have to survive measurement.
 
 The annotated career of Anas T. Qumhiyeh — a chess-opening portfolio with a live engine, patent drawings, and measured claims.
 
-The desks compound: Petronas was converting a licensed MATLAB back-end to Python. Western Digital was a lab dashboard for 50+ staff. Setel was payments in production. Monash was retrieval over a graph of regulations.
+The desks compound. Petronas was converting a licensed MATLAB back-end to Python, then presenting usability findings to department leadership. Western Digital put full-stack work behind roles for 50+ staff, with a WebSocket to the lab's deep-learning model. Setel was payments in production: authorization, capture, and tests on that path. Monash was retrieval over a graph of university regulations. The through-line is systems that have to keep working after they ship.
 
 Opening Preparation: https://anasqumhiyeh.dev
 

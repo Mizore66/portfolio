@@ -3,6 +3,7 @@ import { BROADSHEET } from "@/content/opening";
 const LINKS = [
   { href: "#work", label: "Work" },
   { href: "#experience", label: "Experience" },
+  { href: "#lab", label: "Lab" },
   { href: "#about", label: "About" },
   { href: BROADSHEET.printHref, label: BROADSHEET.resumeLabel },
   { href: "#contact", label: "Contact" },
