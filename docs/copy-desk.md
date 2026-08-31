@@ -7,13 +7,15 @@ The paper can ship the UI. These surfaces are still yours. Paste them as written
 **Headline** (the pipe-separated line is dead on the site; kill it here):
 
 ```
-Software engineer — MLOps and full-stack. Data pipelines and infrastructure.
+I build ML and software systems that have to survive measurement.
 ```
 
 **About** (quotes the paper, does not contradict it):
 
 ```
-The annotated career of Anas T. Qumhiyeh, software engineer — a chess-opening portfolio with a live engine, patent drawings, and measured claims.
+I build ML and software systems that have to survive measurement.
+
+Software engineer building ML infrastructure, data systems, and full-stack products. The annotated career of Anas T. Qumhiyeh — a chess-opening portfolio with a live engine, patent drawings, and measured claims.
 
 Opening Preparation: https://anasqumhiyeh.dev
 
@@ -23,7 +25,7 @@ Monash University, Bachelor of Engineering (Honours), software. First Class. Gra
 
 LEARNED is the masthead eval. Gate C at 50 000 nodes printed −143.1 ±40.5 Elo, 100 games, LLR −2.33. A loss at the spec cap is still a result.
 
-Seeking graduate/junior engineering roles in fintech or AI infrastructure. Replies within two days (MYT).
+Open to early-career software engineering roles in fintech and AI infrastructure. Graduate and junior opportunities welcome.
 ```
 
 Recruiters will see the site and LinkedIn within five minutes of each other. The About has to quote the paper, not a second biography.
@@ -32,7 +34,7 @@ Recruiters will see the site and LinkedIn within five minutes of each other. The
 
 ```
 Anas Tarek Qumhiyeh
-Software engineer — MLOps and full-stack. Data pipelines and infrastructure.
+I build ML and software systems that have to survive measurement.
 https://anasqumhiyeh.dev
 anasqumhiyeh@gmail.com
 ```
@@ -63,7 +65,7 @@ This agent cannot write other repositories (the GitHub CLI here is read-only).
 | `docs/github/CircuitMindAI.md` | `Mizore66/CircuitMindAI` |
 | `docs/github/MirrorFi.md` | `Mizore66/MirrorFi` |
 
-Veridian, GraphRAG, the risk mill, the lead scorer, and the still have no public source. The paper no longer links **Repository** on those exhibits — a recruiter will not be sent to the bare profile. When a repo exists, put the exhibit `description` in the first paragraph and add build/run receipts, then fill `github` in `src/lib/data.ts`.
+Veridian, GraphRAG, the risk mill, the lead scorer, and the still have no public source. The paper no longer links a bare GitHub profile on exhibits that have no public source. When a repo exists, the exhibit CTA is **View {name} source**. Put the exhibit `description` in the first paragraph and add build/run receipts, then fill `github` in `src/lib/data.ts`.
 
 The current profile README still says you bake brownies and has a `gmail.con` typo. That is the snap in the evidence chain.
 

@@ -18,16 +18,19 @@ describe("informant glyphs", () => {
 describe("biography register", () => {
   it("treats May 2026 as graduated, not upcoming", () => {
     expect(resumeData.education.graduation).toBe("May 2026");
-    expect(BROADSHEET.dek).toMatch(/Software engineer — MLOps and full-stack/);
-    expect(resumeData.targetRoles).toMatch(/graduate\/junior engineering roles/);
+    expect(BROADSHEET.dek).toMatch(/Software engineer building ML infrastructure/);
+    expect(resumeData.targetRoles).toMatch(/early-career software engineering roles/);
     expect(OPENING_NODES.find((n) => n.id === "e4")?.fact).toMatch(/Graduated May 2026/);
     expect(OPENING_NODES.find((n) => n.id === "e4")?.fact).toMatch(/First Class Honours/);
     expect(OPENING_NODES.find((n) => n.id === "start")?.fact).not.toMatch(/Graduating/i);
+    expect(OPENING_NODES.find((n) => n.id === "start")?.fact).not.toMatch(/Seeking/i);
     expect(BROADSHEET.closer).toMatch(/next move writes/);
     expect(BROADSHEET.closer).toMatch(/measured systems in fintech infrastructure/);
     expect(SITE_URL).toBe("https://anasqumhiyeh.dev");
     expect(SITE_HOST).toBe("anasqumhiyeh.dev");
-    expect(BROADSHEET.availability).toMatch(/MYT/);
+    expect(BROADSHEET.availability).toMatch(/Open to early-career/);
+    expect(BROADSHEET.availability).not.toMatch(/MYT/);
+    expect(BROADSHEET.graduateNote).toMatch(/Graduate and junior/);
     expect(BROADSHEET.engineDown).toMatch(/Refresh, or trust the annotator/);
     expect(BROADSHEET.colophon).toMatch(/LEARNED as the masthead eval/);
     expect(BROADSHEET.colophon).not.toMatch(/in training/i);

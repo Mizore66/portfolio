@@ -3,14 +3,15 @@
 import dynamic from "next/dynamic";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { AboutBand } from "@/components/opening/AboutBand";
 import { BoardDiagram } from "@/components/opening/BoardDiagram";
 import { BroadsheetFiller } from "@/components/opening/BroadsheetFiller";
 import { Closer } from "@/components/opening/Closer";
 import { Colophon } from "@/components/opening/Colophon";
+import { ContactBand } from "@/components/opening/ContactBand";
 import { GlassEngine, useEngineSearch, useNnueWeights } from "@/components/opening/GlassEngine";
 import { IssueIndex } from "@/components/opening/IssueIndex";
 import { NewspaperColumn } from "@/components/opening/NewspaperColumn";
-import { SituationsWanted } from "@/components/opening/SituationsWanted";
 import { TodaysPuzzle } from "@/components/opening/TodaysPuzzle";
 import { WayfindIndex } from "@/components/opening/WayfindIndex";
 import { BROADSHEET } from "@/content/opening";
@@ -59,8 +60,10 @@ function reducedMotion(): boolean {
 
 export function OpeningApp({
   staticBoard,
+  children,
 }: {
   staticBoard?: ReactNode;
+  children?: ReactNode;
 } = {}) {
   const selection = useSyncExternalStore(
     subscribeSelection,
@@ -479,7 +482,15 @@ export function OpeningApp({
 
   return (
     <>
-      <main id="the-game">
+      <main>
+          {children}
+          <div id="the-game">
+          <p className="read-hint-desktop hidden px-4 font-mono text-[12px] text-faded min-[980px]:block sm:px-6">
+            {BROADSHEET.readHintDesktop}
+          </p>
+          <p className="read-hint-touch px-4 font-mono text-[12px] text-faded min-[980px]:hidden sm:px-6">
+            {BROADSHEET.readHintTouch}
+          </p>
           <div
             data-opening-spread=""
             className="flex flex-col min-[700px]:flex-row min-[980px]:flex-row-reverse min-[980px]:items-stretch"
@@ -576,12 +587,6 @@ export function OpeningApp({
                   <p className="font-display text-[16px] italic text-ink">{BROADSHEET.playHint}</p>
                 ) : null}
                 <IssueIndex selectedId={selectedId} onSelect={userSelect} />
-                <div className="max-[979px]:hidden">
-                  <TodaysPuzzle selectedId={selectedId} onSelect={userSelect} />
-                  <div className="mt-3">
-                    <SituationsWanted />
-                  </div>
-                </div>
               </div>
             </aside>
             <NewspaperColumn />
@@ -596,17 +601,26 @@ export function OpeningApp({
                   onPreview={onPreview}
                 />
               </div>
-              <div className="mb-4 min-[980px]:hidden print:hidden">
-                <SituationsWanted />
-              </div>
               <NotationView
                 selectedId={selectedId}
                 onSelect={userSelect}
                 onPreview={onPreview}
               />
-              <BroadsheetFiller />
             </section>
           </div>
+          </div>
+          <section id="lab" data-testid="lab-band" className="recruiter-band" aria-labelledby="lab-heading">
+            <p className="band-kicker">{BROADSHEET.labKicker}</p>
+            <h2 id="lab-heading" className="band-title">
+              {BROADSHEET.labDek}
+            </h2>
+            <div className="mt-6 max-w-xl">
+              <TodaysPuzzle selectedId={selectedId} onSelect={userSelect} />
+            </div>
+            <BroadsheetFiller />
+          </section>
+          <AboutBand />
+          <ContactBand />
           </main>
       <footer data-testid="paper-footer" className="paper-footer">
         <Closer />

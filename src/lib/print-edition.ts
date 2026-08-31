@@ -1,5 +1,6 @@
 import { FLAGSHIP_ID } from "@/content/opening";
 import { resumeData } from "@/lib/data";
+import { FEATURED_PROJECT_SLUGS, HERO_PROOF, POSITIONING } from "@/lib/metrics";
 import { occupancy, positionAfter, squareFile, squareRank } from "@/lib/chess/replay";
 import { collectPlies } from "@/lib/opening/tree";
 
@@ -73,17 +74,32 @@ export function buildPrintEditionPdf(): Uint8Array {
 
   rule(PAGE_H - 32, 1.8);
   rule(PAGE_H - 36, 0.5);
-  txt("F2", 9, M, PAGE_H - 52, "OPENING PREPARATION  |  Print edition");
+  txt("F2", 9, M, PAGE_H - 52, "OPENING PREPARATION  |  Resume  |  Print edition");
   txt("F3", 9, PAGE_W - M - 22, PAGE_H - 52, "C50");
   txt("F2", 20, M, PAGE_H - 76, d.name);
-  txt("F1", 9, M, PAGE_H - 90, d.headline);
-  txt("F1", 8, M, PAGE_H - 102, `${d.email}  |  ${d.github}  |  ${d.linkedin}`);
-  txt("F3", 8, M, PAGE_H - 114, `Seeking ${d.targetRoles}`);
-  rule(PAGE_H - 122, 0.5);
-  rule(PAGE_H - 126, 1.4);
+  let headY = PAGE_H - 90;
+  for (const line of wrap(POSITIONING.tagline, 92)) {
+    txt("F3", 8, M, headY, line);
+    headY -= 11;
+  }
+  for (const line of wrap(d.headline, 92)) {
+    txt("F1", 8, M, headY, line);
+    headY -= 11;
+  }
+  txt("F1", 8, M, headY, `${d.email}  |  ${d.github}  |  ${d.linkedin}`);
+  headY -= 12;
+  for (const line of wrap(`${POSITIONING.availability} ${POSITIONING.graduateNote}`, 92)) {
+    txt("F3", 8, M, headY, line);
+    headY -= 11;
+  }
+  txt("F2", 8, M, headY, ascii(HERO_PROOF.map((item) => item.label).join("  |  ")));
+  headY -= 10;
+  rule(headY, 0.5);
+  rule(headY - 4, 1.4);
+  const headerBottom = headY - 4;
 
   const boardX = PAGE_W - M - BOARD;
-  const boardY = PAGE_H - 126 - 18 - BOARD;
+  const boardY = headerBottom - 18 - BOARD;
   ops.push("0.91 0.86 0.77 rg", `${n(boardX)} ${n(boardY)} ${BOARD} ${BOARD} re`, "f");
   for (let rank = 0; rank < 8; rank++) {
     for (let file = 0; file < 8; file++) {
@@ -132,7 +148,17 @@ export function buildPrintEditionPdf(): Uint8Array {
   }
   txt("F3", 8, boardX, boardY - 24, "5. d4 - the Italian break");
 
-  let y = PAGE_H - 148;
+  const headingRight = (y: number, t: string) => {
+    txt("F2", 8, boardX, y, t.toUpperCase());
+    ops.push(
+      `${INK} RG`,
+      "0.5 w",
+      `${n(boardX)} ${n(y - 3)} m ${n(boardX + BOARD)} ${n(y - 3)} l S`,
+    );
+    return y - 14;
+  };
+
+  let y = headerBottom - 22;
   y = heading(y, "Education");
   txt("F2", 9, M, y, d.education.degree);
   y -= 12;
@@ -154,21 +180,7 @@ export function buildPrintEditionPdf(): Uint8Array {
     y -= 16;
   }
 
-  y -= 2;
-  y = heading(y, "Selected work");
-  for (const p of d.projects) {
-    const extra =
-      p.slug === "veridian"
-        ? " 3-sheet filing: economized plant, retrieval of regulations, distillation of reasoning."
-        : "";
-    for (const line of wrap(`${p.name} - ${p.subtitle}. ${p.impact}.${extra}`, 58)) {
-      txt("F1", 8, M, y, line);
-      y -= 11;
-    }
-    y -= 3;
-  }
-
-  y -= 6;
+  y -= 8;
   y = heading(y, "Skills");
   const skillLines = [
     `Languages: ${d.skills.languages.join(", ")}`,
@@ -182,6 +194,31 @@ export function buildPrintEditionPdf(): Uint8Array {
       txt("F1", 8, M, y, line);
       y -= 11;
     }
+  }
+
+  const featuredSet = new Set<string>(FEATURED_PROJECT_SLUGS);
+  let ry = boardY - 40;
+  ry = headingRight(ry, "Selected work");
+  for (const p of d.projects.filter((proj) => featuredSet.has(proj.slug))) {
+    const extra =
+      p.slug === "veridian"
+        ? " 3-sheet filing: economized plant / policy retrieval / distillation."
+        : "";
+    txt("F2", 8, boardX, ry, ascii(p.name));
+    ry -= 10;
+    for (const line of wrap(`${p.subtitle}. ${p.impact}.${extra}`, 32)) {
+      txt("F1", 7, boardX, ry, line);
+      ry -= 9;
+    }
+    ry -= 3;
+  }
+  txt("F1", 7, boardX, ry, "Also:");
+  ry -= 9;
+  for (const p of d.projects.filter((proj) => !featuredSet.has(proj.slug))) {
+    txt("F1", 7, boardX, ry, ascii(p.name));
+    ry -= 9;
+    txt("F1", 7, boardX, ry, ascii(p.impact));
+    ry -= 11;
   }
 
   txt("F3", 7, M, 36, "C50  |  Italian Game  |  a game played since I was a teenager.");

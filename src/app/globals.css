@@ -57,6 +57,16 @@
   --motion-fast: 150ms;
   --motion-standard: 300ms;
   --motion-deliberate: 450ms;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
 }
 
 @layer base {
@@ -393,6 +403,9 @@
 
 .chapter-copy {
   display: flow-root;
+  max-width: 68ch;
+}
+.chapter-fact {
   max-width: 68ch;
 }
 .chapter-copy > p,
@@ -1118,7 +1131,7 @@
   display: inline-flex;
   align-items: center;
   box-sizing: border-box;
-  min-height: 24px;
+  min-height: 44px;
   padding: 4px 8px;
   border: 1px solid color-mix(in srgb, var(--ink) 35%, var(--paper));
   color: var(--book-blue);
@@ -1132,6 +1145,141 @@
 .masthead-chip:focus-visible {
   background: color-mix(in srgb, var(--book-blue) 12%, var(--paper));
   color: var(--book-blue);
+}
+
+.recruiter-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  border-bottom: 2px solid var(--ink);
+  padding: var(--space-2) var(--space-4);
+}
+@media (min-width: 640px) {
+  .recruiter-nav {
+    padding-inline: var(--space-6);
+  }
+}
+.recruiter-nav-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.recruiter-nav-link,
+.recruiter-nav-stamp {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: var(--space-2) var(--space-2);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink);
+}
+.recruiter-nav-stamp {
+  color: var(--score-red);
+  font-weight: 600;
+}
+.recruiter-nav-link:hover,
+.recruiter-nav-stamp:hover {
+  color: var(--book-blue);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.recruiter-nav-link:focus-visible,
+.recruiter-nav-stamp:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.recruiter-band {
+  border-bottom: 2px solid var(--ink);
+  padding: var(--space-16) var(--space-4) var(--space-12);
+}
+@media (min-width: 640px) {
+  .recruiter-band {
+    padding-inline: var(--space-6);
+  }
+}
+.band-kicker {
+  margin: 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--faded);
+}
+.band-title {
+  margin-top: var(--space-2);
+  font-family: var(--font-display), "Libre Baskerville", serif;
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.project-card-grid {
+  display: grid;
+  gap: var(--space-6);
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 800px) {
+  .project-card-grid {
+    grid-template-columns: 1.2fr 1fr 1fr;
+    align-items: stretch;
+  }
+}
+.project-card {
+  border: 2px solid var(--ink);
+  padding: var(--space-4);
+}
+.project-card-flagship {
+  padding: var(--space-8) var(--space-6);
+}
+.experience-row {
+  border-top: 1px solid var(--ink);
+  padding: var(--space-6) 0;
+}
+.experience-row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.metric-row {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  line-height: 1.45;
+  color: var(--score-red);
+}
+
+.scan-title {
+  max-width: 68ch;
+}
+
+.annotation-summary {
+  cursor: pointer;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--faded);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.annotation-summary:hover,
+.annotation-summary:focus-visible {
+  color: var(--book-blue);
+}
+.annotation[open] .annotation-summary {
+  color: var(--ink);
 }
 
 .hover-tint {
@@ -1430,6 +1578,10 @@
     color: var(--paper);
   }
   .masthead-chip:hover {
+    background: color-mix(in srgb, var(--book-blue) 10%, var(--paper));
+  }
+  .recruiter-nav-link:hover,
+  .recruiter-nav-stamp:hover {
     background: color-mix(in srgb, var(--book-blue) 12%, var(--paper));
     color: var(--book-blue);
   }

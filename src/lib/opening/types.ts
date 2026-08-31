@@ -133,6 +133,8 @@ export type OpeningNode = {
   label: string;
   kind: string;
   title: string;
+  /** Recruiter-legible heading shown before the chess title. */
+  scanTitle?: string;
   /** The move — career/life fact. */
   fact: string;
   /** The annotation — voice. */

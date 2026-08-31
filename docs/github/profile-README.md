@@ -1,10 +1,10 @@
 # Anas Tarek Qumhiyeh
 
-The annotated career of Anas T. Qumhiyeh, software engineer — a chess-opening portfolio with a live engine, patent drawings, and measured claims.
+I build ML and software systems that have to survive measurement.
 
 **[Opening Preparation](https://anasqumhiyeh.dev)** is the paper. Moves are facts. Annotations are voice. Chess is the content, never the lock.
 
-Software engineer — MLOps and full-stack. Data pipelines and infrastructure. Seeking graduate/junior engineering roles in fintech or AI infrastructure. Replies within two days (MYT).
+Software engineer building ML infrastructure, data systems, and full-stack products. Open to early-career software engineering roles in fintech and AI infrastructure. Graduate and junior opportunities welcome.
 
 ## The line
 

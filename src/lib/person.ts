@@ -6,7 +6,7 @@ export const PERSON_ALT_NAME = "Anas T. Qumhiyeh";
 
 /** Handwritten. The sentence Google shows recruiters. */
 export const META_DESCRIPTION =
-  "The annotated career of Anas T. Qumhiyeh, software engineer — a chess-opening portfolio with a live engine, patent drawings, and measured claims.";
+  "The annotated career of Anas T. Qumhiyeh. Software engineer building ML infrastructure, data systems and full-stack products.";
 
 export function personJsonLd() {
   return {

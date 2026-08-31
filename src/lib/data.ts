@@ -1,14 +1,18 @@
 import type { Apparatus, ApparatusSpec } from "@/lib/opening/types";
 import { CIRCUITMIND_LINE, MIRRORFI_VAULT, RISK_ENGINE, LEADS_HALL, VERIDIAN_PLANT, VERIDIAN_STILL, VERIDIAN_EXCHANGE } from "@/content/project-figures";
+import { METRICS, POSITIONING } from "@/lib/metrics";
 
-export function repoArtifacts(github: string): { label: string; href: string }[] {
-  return github ? [{ label: "Repository", href: github }] : [];
+export function repoArtifacts(github: string, name?: string): { label: string; href: string }[] {
+  if (!github) return [];
+  return [{ label: name ? `View ${name} source` : "GitHub repository", href: github }];
 }
 
 export const resumeData = {
   name: "Anas Tarek Qumhiyeh",
-  headline: "Software engineer — MLOps and full-stack. Data pipelines and infrastructure.",
-  targetRoles: "graduate/junior engineering roles in fintech or AI infrastructure.",
+  tagline: POSITIONING.tagline,
+  headline: POSITIONING.dek,
+  targetRoles: "early-career software engineering roles in fintech or AI infrastructure.",
+  graduateNote: POSITIONING.graduateNote,
   email: "anasqumhiyeh@gmail.com",
   linkedin: "linkedin.com/in/anasqumhiyeh/",
   github: "github.com/Mizore66",
@@ -30,25 +34,26 @@ export const resumeData = {
   },
   experience: [
     {
-      title: "Fullstack AI Engineer",
+      title: "Full-stack AI Engineer",
       type: "Contract",
+      company: "Monash University",
       period: "Nov 2025 – Feb 2026",
       tech: ["LangGraph", "Neo4j", "FastAPI"],
       bullets: [
-        "+45% retrieval accuracy — self-correcting Text-to-Cypher over a Neo4j graph of university regulations.",
+        `${METRICS.monashRetrieval.impact} — self-correcting Text-to-Cypher over a Neo4j graph of ${METRICS.monashRetrieval.corpus}.`,
         "Hybrid retrieval: embeddings plus multi-hop graph walks for prerequisites and credit-transfer.",
-        "A graph-logic SLM distilled from that reasoning: −50% inference latency, contradictions surfaced for administrators.",
+        `A graph-logic SLM distilled from that reasoning: ${METRICS.slmLatency.display}, contradictions surfaced for administrators.`,
       ],
-      impact: "+45% retrieval accuracy",
+      impact: METRICS.monashRetrieval.impact,
     },
     {
-      title: "Full Stack Engineer",
+      title: "Full-stack Engineer",
       type: "Contract Employee",
       company: "Western Digital",
       period: "Feb 2025 – Dec 2025",
       tech: ["Next.js", "ASP.NET", "PostgreSQL", "Docker"],
       bullets: [
-        "−40% manual oversight — lab dashboard with role-based access for 50+ staff.",
+        `${METRICS.wdOversight.display} — lab dashboard with role-based access for 50+ staff.`,
         "CRUD and analytics behind those roles.",
         "WebSocket to the lab's deep-learning model; shortest path between stations in under 100 ms.",
       ],
@@ -62,9 +67,9 @@ export const resumeData = {
       bullets: [
         "Payment engine: authorization and capture of user payment methods.",
         "Checkout and capture documented so a new developer could follow the path without a walkthrough.",
-        "92.5% unit-test coverage on checkout and capture; −40% production defects.",
+        `${METRICS.setelCoverage.display} on checkout and capture; ${METRICS.setelDefects.display}.`,
       ],
-      impact: "92.5% code coverage",
+      impact: METRICS.setelCoverage.display,
     },
     {
       title: "Project Engineer Intern",
@@ -84,10 +89,11 @@ export const resumeData = {
       name: "Veridian",
       slug: "veridian",
       subtitle: "MLOps Tradeoff Engine",
+      purpose: "Intercepts Terraform and Kubernetes and names a lower-carbon box before the spike.",
       date: "Apr 2026",
       tech: ["Python", "Terraform", "BigQuery", "GCP Vertex AI", "GitLab Duo", "MCP"],
       bullets: [
-        "99.9% uptime on Cloud Run, with −15% cloud emissions from scheduling that runs before the spike.",
+        `${METRICS.veridianUptime.display} on Cloud Run, with ${METRICS.veridianEmissions.display} from scheduling that runs before the spike.`,
         "GitLab Duo + MCP intercept Terraform and Kubernetes as they change.",
         "Vertex AI names a quantized, lower-carbon box for the model on the desk.",
         "BigQuery holds the ESG ledger; it is not on the request.",
@@ -118,6 +124,7 @@ export const resumeData = {
       name: "CircuitMindAI",
       slug: "circuitmindai",
       subtitle: "PCB Inspection",
+      purpose: "Inspects circuit boards: vision on the copper, voice for the operator.",
       date: "Mar 2026",
       tech: ["Next.js", "AWS Bedrock", "Express", "Amazon OSS", "GitHub Actions"],
       bullets: [
@@ -153,6 +160,7 @@ export const resumeData = {
       name: "MirrorFi",
       slug: "mirrorfi",
       subtitle: "Solana Vault Strategy Platform",
+      purpose: "A desk for drawing, sharing, and firing Solana vault lines.",
       date: "May 2025",
       tech: ["Next.js", "Node.js", "MongoDB", "Solana", "ShadCN"],
       bullets: [
@@ -186,22 +194,23 @@ export const resumeData = {
       name: "Multi-Agent GraphRAG",
       slug: "multi-agent-graphrag",
       subtitle: "Policy-corpus retrieval",
+      purpose: "LangGraph over the university's policy corpus, with a vector fallback.",
       date: "Oct 2025",
       tech: ["LangGraph", "Neo4j", "Vector DB", "Knowledge Graphs", "RAG"],
       bullets: [
-        "+35% retrieval accuracy — LangGraph over Neo4j plus a vector store.",
+        `${METRICS.graphragRetrieval.impact} — ${METRICS.graphragRetrieval.method}.`,
         "Cypher written by the agent, then checked, on the university's policy corpus.",
         "Global-to-local retrieval when the question spans the handbook.",
         "Ambiguous questions fall back to a broader semantic search.",
       ],
-      impact: "+35% retrieval accuracy",
+      impact: METRICS.graphragRetrieval.impact,
       github: "",
       plate: "/plates/plate-graphrag.jpg",
       plateCaption: "GraphRAG at the card catalog — file photo.",
       plateAlt: "Halftone photograph: wooden card-catalog drawers, one drawer open on a labelled card.",
       description:
         "LangGraph asks Neo4j for the university's policy corpus, then a vector store when the graph is silent. Agents write Cypher, check it, and try again.",
-      meta: "LangGraph over the university's policy corpus: agents write Cypher, check it, and fall back to a vector store. +35% retrieval.",
+      meta: `LangGraph over the university's policy corpus: agents write Cypher, check it, and fall back to a vector store. ${METRICS.graphragRetrieval.strip}.`,
       patent: VERIDIAN_EXCHANGE satisfies ApparatusSpec,
       apparatus: {
         name: "Multi-Agent GraphRAG",
@@ -216,10 +225,11 @@ export const resumeData = {
       name: "Financial Risk Predictor",
       slug: "financial-risk-predictor",
       subtitle: "ML Risk Assessment",
+      purpose: "Daily credit-risk scores that have to be interpreted, served, and retrained.",
       date: "Jul 2025",
       tech: ["TensorFlow", "XGBoost", "LightGBM", "BentoML", "SHAP"],
       bullets: [
-        "0.87 AUC-ROC — 15% over the baseline, LightGBM and XGBoost.",
+        `${METRICS.riskAuc.display} — ${METRICS.riskAuc.vs}, LightGBM and XGBoost.`,
         "SHAP names the drivers on the score.",
         "−30% inference latency on the BentoML hatch.",
         "Daily retrain from Kafka so the score is this morning's tape.",
@@ -247,10 +257,11 @@ export const resumeData = {
       name: "Distributed Lead Scorer",
       slug: "distributed-lead-scorer",
       subtitle: "Large-Scale Data Mining Pipeline",
+      purpose: "Scores conversion on a hundred million events a day without losing the tape.",
       date: "May 2025",
       tech: ["PyTorch DDP", "PySpark", "Deep Interest Network", "Distributed Computing"],
       bullets: [
-        "100M events/day on PySpark — hours of latency cut to minutes.",
+        `${METRICS.leadThroughput.display} on PySpark — hours of latency cut to minutes.`,
         "Deep Interest Network on PyTorch DDP across the GPU cluster.",
         "Automated evaluation so a bad net does not ship.",
         "Checkpoints: zero tape lost on a multi-hour run.",
@@ -276,15 +287,16 @@ export const resumeData = {
       name: "SLM Distillation Engine",
       slug: "slm-distillation-engine",
       subtitle: "Knowledge Distillation & Fine-Tuning",
+      purpose: "A 70B teacher compressed into a 3B student that keeps the same job.",
       date: "Jul 2025",
       tech: ["PyTorch", "QLoRA", "DeepSpeed", "FlashAttention"],
       bullets: [
-        "12× inference — 70B teacher into a 3B student.",
+        `${METRICS.slmInference.display} — 70B teacher into a 3B student.`,
         "QLoRA on the domain set.",
         "−40% memory with DeepSpeed and FlashAttention.",
         "98% pass on the edge-case reward metric.",
       ],
-      impact: "12x inference speedup",
+      impact: METRICS.slmInference.impact,
       github: "",
       plate: "/plates/plate-slm.jpg",
       plateCaption: "SLM Distillation — teacher and student machines, file photo.",

@@ -19,7 +19,7 @@ describe("print edition", () => {
     expect(text).toContain("a game played since I was a teenager");
     expect(text).toContain("Photographs real and composed");
     expect(text).toContain("3-sheet filing");
-    expect(text).toContain("economized plant");
+    expect(text).toMatch(/economized/);
     expect(text).toMatch(/\(N\)|\(n\)|\(K\)|\(k\)/);
     expect(text).not.toContain("/Count 2");
   });
@@ -56,5 +56,8 @@ describe("print edition", () => {
     }
     expect(text).toContain("Zero-touch ML");
     expect(text).toContain("12x inference speedup");
+    expect(text).toContain("Monash University");
+    expect(text).toContain("Full-stack");
+    expect(text).not.toContain("Seeking");
   });
 });

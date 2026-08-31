@@ -477,6 +477,8 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Multi-Agent GraphRAG" })).toBeVisible();
     await expect(page.locator("[data-fig='12']")).toBeVisible();
     await expect(page.getByTestId("patent-legend")).toContainText(/WIRE WALL/);
+    await expect(page.getByTestId("patent-legend")).toContainText(/\+35%/);
+    await expect(page.getByTestId("patent-legend")).not.toContainText(/\+45%/);
     await expect(page.getByText("3 Sheets—Sheet 2.")).toBeVisible();
     await expect(page.getByTestId("architecture-figure")).toHaveCount(0);
   });
@@ -697,7 +699,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("header")).toHaveCount(1);
     await expect(page.locator("main")).toHaveCount(1);
     await expect(page.locator("footer")).toHaveCount(1);
-    const skip = page.getByRole("link", { name: /Skip to the game/i });
+    const skip = page.getByRole("link", { name: /Skip to selected work/i });
     await expect(skip).toHaveCount(1);
     await skip.focus();
     await expect(skip).toBeVisible();
@@ -750,7 +752,11 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("header")).toContainText(/anasqumhiyeh\.dev/i);
     await expect(page.locator("#chapter-e4")).toContainText(/Graduated May 2026/);
     await expect(page.locator("#chapter-e4")).toContainText(/First Class Honours/);
-    await expect(page.getByTestId("masthead-proof")).toHaveCount(0);
+    await expect(page.getByTestId("masthead-proof")).toBeVisible();
+    await expect(page.getByTestId("masthead-proof")).toContainText(/100M events\/day/);
+    await expect(page.getByTestId("masthead-proof")).toContainText(/\+45% retrieval \(Monash\)/);
+    await expect(page.getByTestId("selected-work")).toBeVisible();
+    await expect(page.getByTestId("recruiter-nav")).toContainText(/Work/);
   });
 
   test("chapter titles share one type size", async ({ page }) => {
@@ -801,7 +807,8 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("todays-puzzle")).toBeVisible();
     await expect(page.getByTestId("todays-puzzle")).toContainText(/find the break/i);
     await expect(page.getByTestId("situations-wanted").first()).toBeVisible();
-    await expect(page.getByTestId("situations-wanted").first()).toContainText(/Replies within two days/i);
+    await expect(page.getByTestId("situations-wanted").first()).toContainText(/Availability/);
+    await expect(page.getByTestId("situations-wanted").first()).toContainText(/Graduate and junior/);
     await expect(page.getByTestId("paper-footer")).toBeVisible();
     await expect(page.getByTestId("paper-footer").getByTestId("closer")).toBeVisible();
     await expect(page.getByTestId("paper-footer").getByTestId("colophon")).toBeVisible();

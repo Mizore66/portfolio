@@ -83,7 +83,11 @@ export default async function ProjectPage({
                 <h1 id="exhibit-title" className="exhibit-title mt-2 font-display text-ink">
                   {project.name}
                 </h1>
-                <p className="mt-4 drop-cap font-lora text-[16px] leading-relaxed italic text-ink">
+                <p className="metric-row mt-4">{project.impact}</p>
+                <p className="mt-4 max-w-[68ch] font-display text-[16px] leading-[1.65] text-ink">
+                  {project.purpose}
+                </p>
+                <p className="mt-4 drop-cap max-w-[68ch] font-lora text-[16px] leading-[1.7] italic text-faded">
                   {project.description}
                 </p>
               </section>
@@ -98,27 +102,13 @@ export default async function ProjectPage({
                 />
               </section>
 
-              <section className="mt-8" aria-label="Patent sheet">
-                <PatentFigure spec={project.patent} />
-              </section>
-
-              <section className="mt-10" aria-labelledby="exhibit-tech">
-                <h2
-                  id="exhibit-tech"
-                  className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded"
-                >
-                  Tech
+              <section className="mt-8" aria-label="Architecture">
+                <h2 className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
+                  Architecture
                 </h2>
-                <ul className="mt-3 flex flex-wrap gap-2">
-                  {project.tech.map((t) => (
-                    <li
-                      key={t}
-                      className="border-2 border-ink px-2 py-0.5 font-mono text-[11px] text-book-blue"
-                    >
-                      {t}
-                    </li>
-                  ))}
-                </ul>
+                <div className="mt-3">
+                  <PatentFigure spec={project.patent} />
+                </div>
               </section>
 
               <section className="mt-10" aria-labelledby="exhibit-line">
@@ -140,14 +130,23 @@ export default async function ProjectPage({
                 </ol>
               </section>
 
-              <section className="mt-10 border-2 border-ink p-4 newsprint-deep" aria-labelledby="exhibit-impact">
-                <p
-                  id="exhibit-impact"
+              <section className="mt-10" aria-labelledby="exhibit-tech">
+                <h2
+                  id="exhibit-tech"
                   className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded"
                 >
-                  Measurable impact
-                </p>
-                <p className="mt-1 font-display text-xl text-score-red">{project.impact}</p>
+                  Tech
+                </h2>
+                <ul className="mt-3 flex flex-wrap gap-2">
+                  {project.tech.map((t) => (
+                    <li
+                      key={t}
+                      className="border-2 border-ink px-2 py-0.5 font-mono text-[11px] text-book-blue"
+                    >
+                      {t}
+                    </li>
+                  ))}
+                </ul>
               </section>
 
               <nav className="mt-10 flex flex-wrap gap-4" aria-label="Exhibit links">
@@ -158,7 +157,7 @@ export default async function ProjectPage({
                     rel="noopener noreferrer"
                     className="external-mark exhibit-repo border-2 border-ink bg-book-blue px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-paper"
                   >
-                    Repository
+                    View {project.name} source
                   </a>
                 ) : null}
                 <Link

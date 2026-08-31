@@ -30,6 +30,15 @@ describe("exhibit register", () => {
     expect(resumeData.projects.find((p) => p.slug === "mirrorfi")?.description).not.toMatch(/intuitive/);
   });
 
+  it("does not print Monash +45% on the GraphRAG exhibit", () => {
+    const project = resumeData.projects.find((p) => p.slug === "multi-agent-graphrag")!;
+    const fig = `${project.patent.review.notes} ${project.patent.parts.map((p) => p.mapsTo).join(" ")}`;
+    expect(fig).toMatch(/\+35%/);
+    expect(fig).not.toMatch(/\+45%/);
+    expect(project.impact).toMatch(/^\+35%/);
+    expect(project.meta).not.toMatch(/\+45%/);
+  });
+
   it("names owners on the numbers that survive the demo", () => {
     expect(getNode("exd4").fact).toMatch(/Monash GraphRAG \+45%/);
     expect(getNode("exd4").fact).toMatch(/Veridian 99\.9%/);
