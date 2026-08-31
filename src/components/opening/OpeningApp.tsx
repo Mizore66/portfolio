@@ -487,7 +487,7 @@ export function OpeningApp({
       <main>
           {children}
           <section id="the-game" aria-labelledby="game-heading">
-          <header className="game-band px-4 sm:px-6">
+          <div className="game-band px-4 sm:px-6">
             <p className="band-kicker">{BROADSHEET.gameKicker} — C50</p>
             <h2 id="game-heading" className="band-title">
               {BROADSHEET.gameKicker}
@@ -503,7 +503,7 @@ export function OpeningApp({
                 {BROADSHEET.skipBoard}
               </a>
             </p>
-          </header>
+          </div>
           <p className="read-hint-desktop hidden px-4 font-mono text-[12px] text-faded min-[980px]:block sm:px-6">
             {BROADSHEET.readHintDesktop}
           </p>

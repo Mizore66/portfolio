@@ -8,10 +8,23 @@ export function CopyEmail({ email }: { email: string }) {
 
   async function onCopy() {
     try {
-      await navigator.clipboard.writeText(email);
-      setCopied(true);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(email);
+        setCopied(true);
+        return;
+      }
+      throw new Error("no clipboard");
     } catch {
-      setCopied(false);
+      const field = document.createElement("textarea");
+      field.value = email;
+      field.setAttribute("readonly", "");
+      field.style.position = "fixed";
+      field.style.left = "-9999px";
+      document.body.appendChild(field);
+      field.select();
+      const ok = document.execCommand("copy");
+      field.remove();
+      setCopied(ok);
     }
   }
 

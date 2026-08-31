@@ -83,7 +83,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="club"]')).toHaveCount(0);
     await expect(page.getByText("High Ground")).toHaveCount(0);
     await expect(page.getByText("Club Years")).toHaveCount(0);
-    await expect(page.getByText(/game I've played since I was a teenager/)).toBeVisible();
+    await expect(page.getByTestId("about-band")).toContainText(/played chess since I was a teenager/);
     await expect(page.locator("#chapter-e5 [data-testid='halftone-plate']")).toHaveCount(0);
     await expect(page.locator("#chapter-exd4 [data-testid='halftone-plate']")).toHaveCount(0);
     await expect(page.locator("#chapter-re1 [data-testid='inline-diagram']")).toHaveCount(0);
@@ -780,7 +780,7 @@ test.describe("Opening Preparation", () => {
     const sizes = [];
     for (const id of ids) {
       sizes.push(
-        await page.locator(`#chapter-${id} h3`).evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
+        await page.locator(`#chapter-${id} > .mb-3 > h3`).evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
       );
     }
     expect(Math.max(...sizes) - Math.min(...sizes)).toBeLessThan(0.5);
@@ -1313,7 +1313,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByRole("heading", { level: 1, name: "CircuitMindAI" })).toBeVisible();
     await expect(page.locator("body")).toContainText(/Nova Pro reads the copper/);
     await expect(page.locator("body")).not.toContainText(/GenAI-powered/);
-    await expect(page).toHaveTitle(/CircuitMindAI — Exhibit/);
+    await expect(page).toHaveTitle(/CircuitMindAI — PCB Inspection/);
     await expect(page.locator('meta[name="description"]')).toHaveAttribute(
       "content",
       /Nova Pro reads the copper/,
