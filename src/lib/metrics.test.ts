@@ -40,7 +40,24 @@ describe("measured claims have one owner each", () => {
 
   it("keeps the hero to three proof points and named desks", () => {
     expect(HERO_PROOF).toHaveLength(3);
+    expect(HERO_PROOF[0]?.label).toBe(METRICS.setelDefects.display);
+    expect(HERO_PROOF[0]?.kind).toBe("production");
+    expect(HERO_PROOF[2]?.kind).toBe("pipeline");
     expect(HERO_PROOF.map((p) => p.label).join(" ")).not.toMatch(/12×/);
     expect(HERO_DESKS).toEqual(["Setel", "Western Digital", "Petronas"]);
+  });
+
+  it("does not let pipeline throughput masquerade as production", () => {
+    expect(METRICS.leadThroughput.kind).toBe("pipeline");
+    expect(METRICS.setelDefects.kind).toBe("production");
+    expect(METRICS.gateC.kind).toBe("benchmark");
+    expect(METRICS.monashRetrieval.kind).toBe("evaluation");
+    expect(METRICS.graphragRetrieval.kind).toBe("evaluation");
+  });
+
+  it("keeps Setel's headline as production defects, coverage as supporting", () => {
+    const job = resumeData.experience.find((e) => e.company === "Setel");
+    expect(job?.impact).toBe(METRICS.setelDefects.display);
+    expect(job?.bullets.join(" ")).toMatch(/92\.5%/);
   });
 });

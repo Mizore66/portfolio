@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Anas T. Qumhiyeh — Opening Preparation, an annotated Italian Game";
+export const alt = "Anas T. Qumhiyeh — software engineer, ML infrastructure and data-intensive systems";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -70,15 +70,17 @@ export default function Image() {
               <div style={{ display: "flex", fontSize: 64, lineHeight: 0.95, color: INK, fontWeight: 700 }}>
                 Anas T. Qumhiyeh
               </div>
-              <div style={{ display: "flex", marginTop: 14, fontSize: 32, fontStyle: "italic", color: FADED }}>
-                Opening Preparation
+              <div style={{ display: "flex", marginTop: 16, fontSize: 28, color: INK }}>
+                Software engineer
               </div>
-              <div style={{ display: "flex", marginTop: 28, fontSize: 28, color: BLUE, fontWeight: 700 }}>
-                5. d4!!
+              <div style={{ display: "flex", marginTop: 8, fontSize: 22, color: BLUE }}>
+                ML infrastructure · Data systems
               </div>
-              <div style={{ display: "flex", marginTop: 8, fontSize: 24, color: RED }}>The Central Break</div>
-              <div style={{ display: "flex", marginTop: 22, fontSize: 18, color: FADED }}>
-                Jobs as moves. The rest of a life as annotations.
+              <div style={{ display: "flex", marginTop: 22, fontSize: 18, fontStyle: "italic", color: FADED }}>
+                Opening Preparation — C50
+              </div>
+              <div style={{ display: "flex", marginTop: 10, fontSize: 16, color: RED }}>
+                5. d4!! · The Central Break
               </div>
             </div>
             <div

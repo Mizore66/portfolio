@@ -94,7 +94,8 @@ export const BROADSHEET = {
   graduateNote: POSITIONING.graduateNote,
   puzzleKicker: "Today's puzzle",
   classifiedSticky: "Availability",
-  labKicker: "Laboratory",
+  labKicker: "Analysis board",
+  labHeading: "Laboratory",
   labDek: "Side lines: the puzzle, the engine trial, and the matches I published anyway.",
   colophonKicker: "How this paper was set",
   colophon:

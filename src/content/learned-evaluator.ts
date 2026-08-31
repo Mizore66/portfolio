@@ -12,6 +12,7 @@ export const LAB_ARTICLE = {
   hed: "The learned evaluator lost 143 Elo",
   teaser: "Chess engine → learned evaluator lost −143 Elo. Here's why.",
   resultGlyph: "?!",
+  resultJoke: "Result: Black was unconvinced.",
   meta: "Gate C: the playing 768×2×256 net lost −143.1 ±40.5 Elo to PeSTO at 50 000 nodes/move, 100 games. A loss at the spec cap is still a result.",
   hypothesisHed: "Hypothesis",
   hypothesis:

@@ -61,6 +61,7 @@ export const resumeData = {
     },
     {
       title: "Software Engineer Intern",
+      type: "Intern",
       company: "Setel",
       period: "Jul 2025 – Dec 2025",
       tech: ["Docker", "Kubernetes", "MERN Stack", "Swagger", "Nest.js"],
@@ -69,10 +70,11 @@ export const resumeData = {
         "Checkout and capture documented so a new developer could follow the path without a walkthrough.",
         `${METRICS.setelCoverage.display} on checkout and capture; ${METRICS.setelDefects.display}.`,
       ],
-      impact: METRICS.setelCoverage.display,
+      impact: METRICS.setelDefects.display,
     },
     {
       title: "Project Engineer Intern",
+      type: "Intern",
       company: "Petronas",
       period: "Nov 2024 – Feb 2025",
       tech: ["MATLAB", "Python", "MathCAD"],
@@ -105,6 +107,7 @@ export const resumeData = {
       plateAlt: "Halftone photograph: an engineer at a drafting table, an infrastructure drawing unrolled before him.",
       description:
         "GitLab Duo intercepts the Terraform change; an MCP server on Cloud Run asks Vertex what the model needs; BigQuery keeps the carbon ledger off that request.",
+      judgment: "The carbon ledger sits beside the request, not on it.",
       meta: "GitLab Duo intercepts Terraform; Vertex names a lower-carbon box; BigQuery keeps the carbon ledger off the request.",
       patent: VERIDIAN_PLANT satisfies ApparatusSpec,
       apparatus: {
@@ -140,6 +143,7 @@ export const resumeData = {
       plateAlt: "Halftone photograph: a printed circuit board under a loupe, traces filling the frame.",
       description:
         "CircuitMindAI inspects circuit boards: Nova Pro reads the copper, Nova Sonic talks the operator through the fault. Next.js and Express sit on ECS Fargate; GitHub Actions stamps the image.",
+      judgment: "Edge cache holds the inspection when the network drops.",
       meta: "Nova Pro reads the copper; Nova Sonic talks the operator through the fault. Next.js and Express on ECS Fargate.",
       patent: CIRCUITMIND_LINE satisfies ApparatusSpec,
       apparatus: {
@@ -170,6 +174,7 @@ export const resumeData = {
         "A governor rebalances the pool when APY moves.",
       ],
       impact: "Grand Prize Winner",
+      contextLabel: "Grand Prize, Solana Megahack 2025",
       github: "https://github.com/Mizore66/MirrorFi",
       plate: "/plates/plate-mirrorfi.jpg",
       plateCaption: "MirrorFi at the vault wall — file photo.",
@@ -205,12 +210,15 @@ export const resumeData = {
       ],
       impact: METRICS.graphragRetrieval.impact,
       evidenceNote: METRICS.graphragRetrieval.note,
+      evidenceKind: METRICS.graphragRetrieval.kind,
       github: "",
       plate: "/plates/plate-graphrag.jpg",
       plateCaption: "GraphRAG at the card catalog — file photo.",
       plateAlt: "Halftone photograph: wooden card-catalog drawers, one drawer open on a labelled card.",
       description:
         "LangGraph asks Neo4j for the university's policy corpus, then a vector store when the graph is silent. Agents write Cypher, check it, and try again.",
+      judgment:
+        "The graph is the structured path for prerequisites and policy; the vector store is the fallback when the graph is silent.",
       meta: `LangGraph over the university's policy corpus: agents write Cypher, check it, and fall back to a vector store. ${METRICS.graphragRetrieval.strip}.`,
       patent: VERIDIAN_EXCHANGE satisfies ApparatusSpec,
       apparatus: {
@@ -269,6 +277,7 @@ export const resumeData = {
       ],
       impact: "100M events/day processed",
       evidenceNote: METRICS.leadThroughput.note,
+      evidenceKind: METRICS.leadThroughput.kind,
       github: "",
       plate: "/plates/plate-leads.jpg",
       plateCaption: "Distributed Lead Scorer — the sorting hall, file photo.",

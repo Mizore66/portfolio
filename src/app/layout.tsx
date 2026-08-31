@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { DeskCollage } from "@/components/opening/DeskCollage";
 import { FontLoader } from "@/components/opening/FontLoader";
-import { personJsonLd, META_DESCRIPTION } from "@/lib/person";
+import { personJsonLd, websiteJsonLd, META_DESCRIPTION } from "@/lib/person";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -50,6 +50,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd()) }}
         />
         <FontLoader />
         <DeskCollage />

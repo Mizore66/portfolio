@@ -69,6 +69,19 @@
   --space-24: 96px;
   --page-max: 1180px;
   --prose-max: 68ch;
+  --board-max: 520px;
+  --sidebar: 320px;
+  --type-display: Palatino, "Palatino Linotype", "Times New Roman", Times, serif;
+  --type-headline: var(--font-display), "Libre Baskerville", serif;
+  --type-section: var(--font-display), "Libre Baskerville", serif;
+  --type-body: var(--font-lora), Georgia, serif;
+  --type-caption: var(--font-display), Georgia, serif;
+  --type-label: var(--font-mono), ui-monospace, monospace;
+  --type-data: var(--font-mono), ui-monospace, monospace;
+  --type-notation: var(--font-display), Georgia, serif;
+  --rule-hairline: 1px;
+  --rule-section: 2px;
+  --rule-emphasis: 3px;
 }
 
 @layer base {
@@ -1285,11 +1298,124 @@
 }
 
 .metric-row {
-  font-family: var(--font-mono), ui-monospace, monospace;
+  font-family: var(--type-data);
   font-size: 12px;
   letter-spacing: 0.04em;
   line-height: 1.45;
   color: var(--score-red);
+}
+
+.evidence-meta {
+  margin: 2px 0 0;
+  font-family: var(--type-label);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  color: var(--faded);
+}
+
+.hero-proof {
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-width: var(--prose-max);
+}
+
+.year-index {
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--type-data);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.year-index li {
+  display: flex;
+  gap: var(--space-4);
+  padding: var(--space-1) 0;
+}
+.year-index-year {
+  width: 4.5rem;
+  flex-shrink: 0;
+  color: var(--score-red);
+}
+
+.exhibit-rail {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--space-3);
+  margin: var(--space-4) 0 0;
+  font-family: var(--type-label);
+  font-size: 12px;
+}
+.exhibit-rail dt {
+  margin: 0;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--faded);
+}
+.exhibit-rail dd {
+  margin: 2px 0 0;
+  font-family: var(--type-headline);
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.apparatus-schematic {
+  border: var(--rule-hairline) solid var(--ink);
+  padding: var(--space-4);
+  font-family: var(--type-label);
+  font-size: 12px;
+}
+.apparatus-schematic-runtime {
+  margin: 0 0 var(--space-2);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--faded);
+}
+.apparatus-schematic-path,
+.apparatus-schematic-forks,
+.apparatus-schematic-beside {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.apparatus-schematic-path li,
+.apparatus-schematic-forks li,
+.apparatus-schematic-beside li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+.apparatus-schematic-arrow {
+  width: 100%;
+  color: var(--faded);
+}
+.apparatus-schematic-role {
+  color: var(--faded);
+}
+.apparatus-schematic-name {
+  color: var(--ink);
+}
+.apparatus-schematic-forks {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: var(--rule-hairline) dashed var(--ink);
+}
+.apparatus-schematic-beside {
+  margin-top: var(--space-2);
+  color: var(--faded);
+}
+
+.footer-strip {
+  border: var(--rule-section) solid var(--ink);
+  padding: var(--space-4);
 }
 
 .scan-title {

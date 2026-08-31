@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
-import { META_DESCRIPTION, personJsonLd, PERSON_ALT_NAME, PERSON_NAME } from "@/lib/person";
+import { META_DESCRIPTION, personJsonLd, websiteJsonLd, PERSON_ALT_NAME, PERSON_NAME } from "@/lib/person";
 import { getNode } from "@/lib/opening/tree";
 
 const BANNED =
@@ -58,6 +58,13 @@ describe("SEO identity", () => {
     expect(META_DESCRIPTION.length).toBeLessThanOrEqual(160);
     expect(META_DESCRIPTION).toMatch(/annotated career of Anas T\. Qumhiyeh/);
     expect(META_DESCRIPTION).toMatch(/data-intensive systems/);
+  });
+
+  it("also hands machines a WebSite node", () => {
+    const site = websiteJsonLd();
+    expect(site["@type"]).toBe("WebSite");
+    expect(site.name).toBe("Opening Preparation");
+    expect(site.author.name).toBe(PERSON_NAME);
   });
 
   it("writes a per-exhibit meta description, not a cloned dek", () => {

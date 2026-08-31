@@ -25,3 +25,18 @@ export function personJsonLd() {
     sameAs: [`https://${resumeData.github}`, `https://${resumeData.linkedin.replace(/\/$/, "")}`],
   };
 }
+
+export function websiteJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Opening Preparation",
+    url: SITE_URL,
+    description: META_DESCRIPTION,
+    author: {
+      "@type": "Person",
+      name: PERSON_NAME,
+      alternateName: PERSON_ALT_NAME,
+    },
+  };
+}

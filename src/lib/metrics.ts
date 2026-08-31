@@ -1,8 +1,23 @@
 /**
- * One source of truth for measured claims.
- * Homepage, scoresheet, exhibits, patent legends, and the print edition
- * all read from here. Do not retcon owners: Monash regulations ≠ GraphRAG policy corpus.
+ * Claim ledger. Homepage, scoresheet, exhibits, patent legends, and the
+ * print edition all read from here. Do not retcon owners: Monash
+ * regulations ≠ GraphRAG policy corpus.
+ *
+ * `kind` is epistemic status, not importance:
+ *   production — observed in a running product
+ *   benchmark  — controlled experiment with a stated protocol
+ *   evaluation — offline / test / comparison set
+ *   pipeline   — architectural throughput; not claimed as sustained production volume
  */
+export const EVIDENCE_TIER = {
+  production: "Production",
+  benchmark: "Controlled benchmark",
+  evaluation: "Evaluation",
+  pipeline: "Pipeline / capacity",
+} as const;
+
+export type EvidenceKind = keyof typeof EVIDENCE_TIER;
+
 export const METRICS = {
   monashRetrieval: {
     value: "+45%",
@@ -15,6 +30,7 @@ export const METRICS = {
     display: "+45% retrieval vs vector-only",
     impact: "+45% retrieval accuracy",
     note: "vs vector-only RAG · university regulations",
+    kind: "evaluation" as const,
   },
   graphragRetrieval: {
     value: "+35%",
@@ -28,6 +44,7 @@ export const METRICS = {
     impact: "+35% retrieval accuracy",
     gauge: "+35% retrieval vs vector-only (project · policy corpus)",
     note: "vs vector-only · university policy corpus",
+    kind: "evaluation" as const,
   },
   setelCoverage: {
     value: "92.5%",
@@ -36,6 +53,7 @@ export const METRICS = {
     scope: "checkout and capture",
     display: "92.5% unit-test coverage",
     note: "unit tests · checkout and capture",
+    kind: "evaluation" as const,
   },
   setelDefects: {
     value: "−40%",
@@ -43,6 +61,7 @@ export const METRICS = {
     owner: "Setel",
     display: "−40% production defects",
     note: "production",
+    kind: "production" as const,
   },
   wdOversight: {
     value: "−40%",
@@ -50,6 +69,8 @@ export const METRICS = {
     owner: "Western Digital",
     context: "lab dashboard, 50+ staff",
     display: "−40% manual oversight",
+    note: "lab dashboard · 50+ staff",
+    kind: "evaluation" as const,
   },
   veridianUptime: {
     value: "99.9%",
@@ -57,12 +78,16 @@ export const METRICS = {
     owner: "Veridian",
     runtime: "Cloud Run",
     display: "99.9% uptime",
+    note: "Cloud Run",
+    kind: "evaluation" as const,
   },
   veridianEmissions: {
     value: "−15%",
     unit: "cloud emissions",
     owner: "Veridian",
     display: "−15% cloud emissions",
+    note: "Cloud Run scheduling",
+    kind: "evaluation" as const,
   },
   leadThroughput: {
     value: "100M",
@@ -70,6 +95,7 @@ export const METRICS = {
     owner: "Distributed Lead Scorer",
     display: "100M events/day",
     note: "PySpark pipeline",
+    kind: "pipeline" as const,
   },
   slmInference: {
     value: "12×",
@@ -78,6 +104,8 @@ export const METRICS = {
     path: "70B → 3B",
     display: "12× inference",
     impact: "12x inference speedup",
+    note: "70B → 3B student",
+    kind: "evaluation" as const,
   },
   riskAuc: {
     value: "0.87",
@@ -85,12 +113,15 @@ export const METRICS = {
     owner: "Financial Risk Predictor",
     vs: "15% over the baseline",
     display: "0.87 AUC-ROC",
+    note: "15% over the baseline",
+    kind: "evaluation" as const,
   },
   slmLatency: {
     value: "−50%",
     unit: "inference latency",
     owner: "Monash GraphRAG SLM / SLM Distillation",
     display: "−50% inference latency",
+    kind: "evaluation" as const,
   },
   gateC: {
     value: "−143",
@@ -99,6 +130,7 @@ export const METRICS = {
     condition: "50 000 nodes/move, 100 games",
     display: "−143 Elo @ 50k nodes",
     note: "100 games · 50 000 nodes/move · fixed-N",
+    kind: "benchmark" as const,
   },
 } as const;
 
@@ -108,20 +140,47 @@ export const FEATURED_PROJECT_SLUGS = [
   "multi-agent-graphrag",
 ] as const;
 
+/** Experiments and negative results — Lab, not the recruiter funnel. */
+export const LAB_PROJECT_SLUGS = ["slm-distillation-engine"] as const;
+
 export const HERO_PROOF = [
-  { label: METRICS.leadThroughput.display, owner: METRICS.leadThroughput.owner },
-  { label: METRICS.setelDefects.display, owner: METRICS.setelDefects.owner },
-  { label: `${METRICS.monashRetrieval.strip} (Monash)`, owner: METRICS.monashRetrieval.owner },
+  {
+    label: METRICS.setelDefects.display,
+    owner: METRICS.setelDefects.owner,
+    note: METRICS.setelDefects.note,
+    kind: METRICS.setelDefects.kind,
+  },
+  {
+    label: `${METRICS.monashRetrieval.strip} (Monash)`,
+    owner: METRICS.monashRetrieval.owner,
+    note: METRICS.monashRetrieval.note,
+    kind: METRICS.monashRetrieval.kind,
+  },
+  {
+    label: METRICS.leadThroughput.display,
+    owner: METRICS.leadThroughput.owner,
+    note: METRICS.leadThroughput.note,
+    kind: METRICS.leadThroughput.kind,
+  },
 ] as const;
 
 /** Desks a recruiter should be able to name after five seconds. */
 export const HERO_DESKS = ["Setel", "Western Digital", "Petronas"] as const;
+
+/** Year-first scan of professional desks. Derived from employment periods, not chess chronology. */
+export const YEAR_INDEX = [
+  { year: "2026", desks: ["Monash University"] },
+  { year: "2025", desks: ["Western Digital", "Setel"] },
+  { year: "2024", desks: ["Petronas"] },
+] as const;
 
 export const POSITIONING = {
   tagline: "I like systems that have to survive measurement.",
   dek: "Software engineer focused on ML infrastructure and data-intensive systems.",
   identity:
     "Early-career software engineer focused on ML infrastructure and data-intensive systems.",
+  seniority:
+    "Early-career. Intern and contract desks in production systems, plus independent experiments that include a published loss.",
   availability:
     "Open to early-career software engineering roles in fintech and AI infrastructure.",
   graduateNote: "Graduate and junior opportunities welcome.",

@@ -755,8 +755,11 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("#chapter-e4")).toContainText(/Graduated May 2026/);
     await expect(page.locator("#chapter-e4")).toContainText(/First Class Honours/);
     await expect(page.getByTestId("masthead-proof")).toBeVisible();
+    await expect(page.getByTestId("masthead-proof")).toContainText(/−40% production defects/);
     await expect(page.getByTestId("masthead-proof")).toContainText(/100M events\/day/);
     await expect(page.getByTestId("masthead-proof")).toContainText(/\+45% retrieval \(Monash\)/);
+    await expect(page.getByTestId("masthead-proof")).toContainText(/Production/);
+    await expect(page.getByTestId("masthead-proof")).toContainText(/PySpark pipeline/);
     await expect(page.getByTestId("masthead-proof")).not.toContainText(/12×/);
     await expect(page.getByTestId("board-keys")).toBeVisible();
     await expect(page.getByTestId("how-to-read")).toContainText(/résumé is literal/i);
@@ -1232,7 +1235,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page).toHaveTitle(/1\. e4! — The University Opening/);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /anasqumhiyeh\.dev\/?$/);
-    const json = await page.locator('script[type="application/ld+json"]').textContent();
+    const json = await page.locator('script[type="application/ld+json"]').first().textContent();
     expect(json).toBeTruthy();
     const ld = JSON.parse(json!);
     expect(ld.name).toBe("Anas Tarek Qumhiyeh");

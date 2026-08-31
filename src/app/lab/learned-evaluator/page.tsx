@@ -55,6 +55,7 @@ export default function LearnedEvaluatorPage() {
               </h1>
               <p className="metric-row mt-4">{LAB_ARTICLE.result}</p>
               <p className="mt-1 font-mono text-[12px] text-faded">{LAB_ARTICLE.resultNote}</p>
+              <p className="mt-4 font-display text-[18px] italic text-score-red">{LAB_ARTICLE.resultJoke}</p>
             </header>
 
             <section className="mt-8" aria-labelledby="lab-hypothesis">

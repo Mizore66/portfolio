@@ -13,8 +13,11 @@ export function ContactBand() {
     >
       <p className="band-kicker">Correspondence</p>
       <h2 id="contact-heading" className="band-title">
-        {POSITIONING.contactHed}
+        Contact
       </h2>
+      <p className="mt-2 max-w-[68ch] font-display text-[16px] italic text-faded">
+        {POSITIONING.contactHed}
+      </p>
       <p className="mt-4 font-mono text-[14px] text-ink" data-testid="contact-email">
         {resumeData.email}
       </p>

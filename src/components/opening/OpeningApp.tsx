@@ -9,7 +9,8 @@ import { BroadsheetFiller } from "@/components/opening/BroadsheetFiller";
 import { Closer } from "@/components/opening/Closer";
 import { Colophon } from "@/components/opening/Colophon";
 import { ContactBand } from "@/components/opening/ContactBand";
-import { LabTeaser } from "@/components/opening/LabTeaser";
+import { FooterStrip } from "@/components/opening/FooterStrip";
+import { LabFilings, LabTeaser } from "@/components/opening/LabTeaser";
 import { GlassEngine, useEngineSearch, useNnueWeights } from "@/components/opening/GlassEngine";
 import { IssueIndex } from "@/components/opening/IssueIndex";
 import { NewspaperColumn } from "@/components/opening/NewspaperColumn";
@@ -637,9 +638,13 @@ export function OpeningApp({
           <section id="lab" data-testid="lab-band" className="recruiter-band" aria-labelledby="lab-heading">
             <p className="band-kicker">{BROADSHEET.labKicker}</p>
             <h2 id="lab-heading" className="band-title">
-              {BROADSHEET.labDek}
+              {BROADSHEET.labHeading}
             </h2>
+            <p className="mt-2 max-w-[68ch] font-display text-[16px] italic text-faded">
+              {BROADSHEET.labDek}
+            </p>
             <LabTeaser />
+            <LabFilings />
             <div className="mt-6 max-w-xl">
               <TodaysPuzzle selectedId={selectedId} onSelect={userSelect} />
             </div>
@@ -649,6 +654,7 @@ export function OpeningApp({
           <ContactBand />
           </main>
       <footer data-testid="paper-footer" className="paper-footer">
+        <FooterStrip />
         <Closer />
         <Colophon />
       </footer>

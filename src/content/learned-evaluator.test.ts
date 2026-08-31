@@ -11,6 +11,8 @@ describe("learned evaluator lab article", () => {
     expect(blob).not.toMatch(/what I'd test next/i);
     expect(blob).not.toMatch(/should outperform/i);
     expect(LAB_ARTICLE.learned).toMatch(/A loss at the spec cap is still a result/);
+    expect(LAB_ARTICLE.resultJoke).toMatch(/Black was unconvinced/);
+    expect(LAB_ARTICLE.failed).not.toMatch(/RESULT: REJECTED/);
     expect(LAB_ARTICLE.href).toBe("/lab/learned-evaluator");
   });
 });

@@ -1,20 +1,29 @@
 import Link from "next/link";
+import { EvidenceMeta } from "@/components/opening/EvidenceMeta";
 import { resumeData } from "@/lib/data";
-import { FEATURED_PROJECT_SLUGS } from "@/lib/metrics";
+import { FEATURED_PROJECT_SLUGS, LAB_PROJECT_SLUGS } from "@/lib/metrics";
+import type { EvidenceKind } from "@/lib/metrics";
 import { cn } from "@/lib/utils";
+
+const LAB = new Set<string>(LAB_PROJECT_SLUGS);
 
 export function SelectedWork() {
   const featured = FEATURED_PROJECT_SLUGS.map(
     (slug) => resumeData.projects.find((p) => p.slug === slug)!,
   );
-  const rest = resumeData.projects.filter((p) => !FEATURED_PROJECT_SLUGS.includes(p.slug as (typeof FEATURED_PROJECT_SLUGS)[number]));
+  const archive = resumeData.projects.filter(
+    (p) => !FEATURED_PROJECT_SLUGS.includes(p.slug as (typeof FEATURED_PROJECT_SLUGS)[number]) && !LAB.has(p.slug),
+  );
 
   return (
     <section id="work" data-testid="selected-work" className="recruiter-band" aria-labelledby="work-heading">
-      <p className="band-kicker">Selected work</p>
+      <p className="band-kicker">Front page</p>
       <h2 id="work-heading" className="band-title">
-        Three systems that had to survive measurement
+        Selected work
       </h2>
+      <p className="mt-2 max-w-[68ch] font-display text-[16px] italic text-faded">
+        Three systems that had to survive measurement
+      </p>
       <ul className="project-card-grid">
         {featured.map((project, i) => (
           <li key={project.slug} className={cn("project-card", i === 0 && "project-card-flagship")}>
@@ -28,15 +37,14 @@ export function SelectedWork() {
             <p className="mt-2 font-display text-[16px] leading-snug text-ink">{project.purpose}</p>
             <p className="metric-row mt-3">{project.impact}</p>
             {"evidenceNote" in project && project.evidenceNote ? (
-              <p className="mt-1 font-mono text-[12px] text-faded">{project.evidenceNote}</p>
+              <EvidenceMeta
+                note={project.evidenceNote}
+                kind={"evidenceKind" in project ? (project.evidenceKind as EvidenceKind) : undefined}
+              />
             ) : null}
-            <ul className="mt-3 flex flex-wrap gap-2">
-              {project.tech.slice(0, 5).map((t) => (
-                <li key={t} className="border border-ink px-2 py-0.5 font-mono text-[11px] text-book-blue">
-                  {t}
-                </li>
-              ))}
-            </ul>
+            {"judgment" in project && project.judgment ? (
+              <p className="mt-3 max-w-[68ch] font-display text-[15px] leading-snug text-ink">{project.judgment}</p>
+            ) : null}
             <p className="mt-4 flex flex-wrap gap-x-4 gap-y-2 font-mono text-[12px] uppercase tracking-wider">
               <Link href={`/projects/${project.slug}`} className="artifact-link text-book-blue underline decoration-2 underline-offset-4">
                 Case study
@@ -55,10 +63,10 @@ export function SelectedWork() {
           </li>
         ))}
       </ul>
-      {rest.length > 0 ? (
-        <p className="mt-6 font-mono text-[12px] leading-relaxed text-faded">
-          Also on the scoresheet:{" "}
-          {rest.map((p, i) => (
+      {archive.length > 0 ? (
+        <p className="mt-8 font-mono text-[12px] leading-relaxed text-faded" data-testid="project-archive">
+          Archive:{" "}
+          {archive.map((p, i) => (
             <span key={p.slug}>
               {i > 0 ? " · " : null}
               <Link href={`/projects/${p.slug}`} className="text-book-blue underline decoration-2 underline-offset-4">

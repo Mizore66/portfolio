@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ApparatusSchematic } from "@/components/opening/ApparatusSchematic";
+import { EvidenceMeta } from "@/components/opening/EvidenceMeta";
 import { HalftonePlate } from "@/components/opening/HalftonePlate";
 import { PatentFigure } from "@/components/opening/PatentFigure";
 import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
+import type { EvidenceKind } from "@/lib/metrics";
 import { SITE_URL } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -20,7 +23,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const project = resumeData.projects.find((p) => p.slug === slug);
   if (!project) return { title: "Correction — A. T. Qumhiyeh" };
-  const title = `${project.name} — Exhibit · A. T. Qumhiyeh`;
+  const title = `${project.name} — ${project.subtitle} · A. T. Qumhiyeh`;
   const description = project.meta;
   return {
     title,
@@ -51,6 +54,17 @@ export default async function ProjectPage({
   if (!project) {
     notFound();
   }
+
+  const evidenceNote = "evidenceNote" in project ? project.evidenceNote : undefined;
+  const evidenceKind =
+    "evidenceKind" in project ? (project.evidenceKind as EvidenceKind) : undefined;
+  const judgment = "judgment" in project ? project.judgment : undefined;
+  const contextLabel = "contextLabel" in project ? project.contextLabel : undefined;
+  const decisions = [
+    ...project.apparatus.path,
+    ...(project.apparatus.forks ?? []),
+    ...(project.apparatus.beside ?? []),
+  ];
 
   return (
     <div className="min-h-screen text-ink">
@@ -84,33 +98,60 @@ export default async function ProjectPage({
                   {project.name}
                 </h1>
                 <p className="mt-2 font-display text-[16px] leading-snug text-faded">{project.subtitle}</p>
+                <dl className="exhibit-rail mt-4">
+                  <div>
+                    <dt>Filed</dt>
+                    <dd>{project.date}</dd>
+                  </div>
+                  {contextLabel ? (
+                    <div>
+                      <dt>Context</dt>
+                      <dd>{contextLabel}</dd>
+                    </div>
+                  ) : null}
+                  <div>
+                    <dt>Source</dt>
+                    <dd>{project.github ? "Public repository" : "On this domain"}</dd>
+                  </div>
+                </dl>
                 <p className="metric-row mt-4">{project.impact}</p>
-                {"evidenceNote" in project && project.evidenceNote ? (
-                  <p className="mt-1 font-mono text-[12px] text-faded">{project.evidenceNote}</p>
-                ) : null}
+                <EvidenceMeta note={evidenceNote} kind={evidenceKind} />
                 <p className="mt-4 max-w-[68ch] font-display text-[16px] leading-[1.65] text-ink">
                   {project.purpose}
                 </p>
                 <p className="mt-4 drop-cap max-w-[68ch] font-lora text-[16px] leading-[1.7] italic text-faded">
                   {project.description}
                 </p>
+                {judgment ? (
+                  <p className="mt-6 max-w-[68ch] font-display text-[16px] leading-snug text-ink">
+                    {judgment}
+                  </p>
+                ) : null}
               </section>
 
               <section className="mt-8" aria-label="File photo">
-                <HalftonePlate
-                  src={project.plate}
-                  caption={project.plateCaption}
-                  alt={project.plateAlt}
-                  sizes={IMAGE_SIZES.exhibitPlate}
-                  priority
-                />
+                <p className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
+                  Decoration · file photo
+                </p>
+                <div className="mt-3">
+                  <HalftonePlate
+                    src={project.plate}
+                    caption={project.plateCaption}
+                    alt={project.plateAlt}
+                    sizes={IMAGE_SIZES.exhibitPlate}
+                    priority
+                  />
+                </div>
               </section>
 
               <section className="mt-8" aria-label="Architecture">
                 <h2 className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
-                  Architecture
+                  Proof · apparatus
                 </h2>
                 <div className="mt-3">
+                  <ApparatusSchematic apparatus={project.apparatus} />
+                </div>
+                <div className="mt-4">
                   <PatentFigure spec={project.patent} />
                 </div>
               </section>
@@ -139,15 +180,12 @@ export default async function ProjectPage({
                   id="exhibit-tech"
                   className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded"
                 >
-                  Tech
+                  Decisions
                 </h2>
-                <ul className="mt-3 flex flex-wrap gap-2">
-                  {project.tech.map((t) => (
-                    <li
-                      key={t}
-                      className="border-2 border-ink px-2 py-0.5 font-mono text-[11px] text-book-blue"
-                    >
-                      {t}
+                <ul className="mt-3 space-y-2">
+                  {decisions.map((layer) => (
+                    <li key={`${layer.role}-${layer.name}`} className="font-display text-[16px] leading-snug">
+                      <span className="text-faded">{layer.role}:</span> {layer.name}
                     </li>
                   ))}
                 </ul>

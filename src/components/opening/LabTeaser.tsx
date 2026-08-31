@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { LAB_ARTICLE } from "@/content/learned-evaluator";
-import { METRICS } from "@/lib/metrics";
+import { resumeData } from "@/lib/data";
+import { LAB_PROJECT_SLUGS, METRICS } from "@/lib/metrics";
 
 export function LabTeaser() {
   return (
@@ -16,6 +17,24 @@ export function LabTeaser() {
       <p className="mt-2 font-display text-[22px] leading-tight text-ink">{LAB_ARTICLE.teaser}</p>
       <p className="metric-row mt-3">{METRICS.gateC.display}</p>
       <p className="mt-1 font-mono text-[12px] text-faded">{METRICS.gateC.note}</p>
+      <p className="mt-3 font-display text-[16px] italic text-score-red">{LAB_ARTICLE.resultJoke}</p>
     </Link>
+  );
+}
+
+export function LabFilings() {
+  const filings = LAB_PROJECT_SLUGS.map((slug) => resumeData.projects.find((p) => p.slug === slug)!);
+  return (
+    <p className="mt-6 font-mono text-[12px] leading-relaxed text-faded" data-testid="lab-filings">
+      Also on the analysis board:{" "}
+      {filings.map((p, i) => (
+        <span key={p.slug}>
+          {i > 0 ? " · " : null}
+          <Link href={`/projects/${p.slug}`} className="text-book-blue underline decoration-2 underline-offset-4">
+            {p.name} — {p.subtitle}
+          </Link>
+        </span>
+      ))}
+    </p>
   );
 }

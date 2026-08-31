@@ -1,3 +1,4 @@
+import { EvidenceMeta } from "@/components/opening/EvidenceMeta";
 import { RecruiterNav } from "@/components/opening/RecruiterNav";
 import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
@@ -11,7 +12,7 @@ export function Masthead() {
     <header>
       <div className="border-b-2 border-ink px-4 py-2 sm:px-6">
         <p className="masthead-kicker">
-          C50 · Italian Game · Vol. {year} · {SITE_HOST} · Moves are facts · Annotations are voice
+          Edition {year} · C50 · Italian Game · {SITE_HOST} · Moves are facts · Annotations are voice
         </p>
       </div>
       <RecruiterNav />
@@ -25,11 +26,16 @@ export function Masthead() {
             {BROADSHEET.tagline}
           </p>
           <p data-testid="masthead-desks" className="mt-4 font-display text-[16px] leading-snug text-ink">
-            {HERO_DESKS.join(" · ")}
+            Previously engineering at {HERO_DESKS.slice(0, -1).join(", ")}, and {HERO_DESKS[HERO_DESKS.length - 1]}.
           </p>
-          <p data-testid="masthead-proof" className="metric-row mt-3">
-            {HERO_PROOF.map((item) => item.label).join(" · ")}
-          </p>
+          <ul data-testid="masthead-proof" className="hero-proof mt-4">
+            {HERO_PROOF.map((item) => (
+              <li key={item.label}>
+                <p className="metric-row">{item.label}</p>
+                <EvidenceMeta note={item.note} kind={item.kind} />
+              </li>
+            ))}
+          </ul>
           <p data-testid="masthead-availability" className="mt-4 font-mono text-[12px] uppercase tracking-[0.12em] text-faded">
             {BROADSHEET.availability}
           </p>
