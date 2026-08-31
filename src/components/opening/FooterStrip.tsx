@@ -19,6 +19,8 @@ export function FooterStrip() {
         </a>
         <span aria-hidden="true"> · </span>
         <a href={BROADSHEET.paperHref}>C50</a>
+        <span aria-hidden="true"> · </span>
+        <a href={BROADSHEET.colophonHref}>{BROADSHEET.colophonKicker}</a>
       </p>
       <p className="mt-6 font-display text-[18px] italic text-score-red">1–0</p>
     </section>

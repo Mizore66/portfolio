@@ -45,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en-GB">
       <body className="relative z-[1] min-h-screen bg-transparent font-lora text-ink antialiased">
         <script
           type="application/ld+json"

@@ -126,6 +126,7 @@ describe("SEO identity", () => {
     expect(robots().sitemap).toMatch(/sitemap\.xml/);
     expect(urls.some((u) => u.endsWith("/lab/learned-evaluator"))).toBe(true);
     expect(urls.some((u) => u.endsWith("/opening-preparation"))).toBe(true);
+    expect(urls.some((u) => u.endsWith("/colophon"))).toBe(true);
     for (const p of resumeData.projects) {
       expect(urls.some((u) => u.endsWith(`/projects/${p.slug}`)), p.slug).toBe(true);
     }

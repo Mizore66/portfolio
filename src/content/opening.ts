@@ -32,7 +32,7 @@ export const BROADSHEET = {
   errata: "None reported. Corrections to the address above.",
   classifiedKicker: "Situations Wanted",
   classified:
-    "Early-career software engineer. Fintech or AI infrastructure. The next line is still to be played.",
+    "Early-career software engineer. Fintech or AI infrastructure. Correspondence on the front page.",
   weatherKicker: "Weather",
   weather: "Outlook: shipping",
   stamp: "C50",
@@ -63,13 +63,14 @@ export const BROADSHEET = {
   closerKicker: "Adjourned",
   closerHed: "The scoresheet stands.",
   closer:
-    "The line is the work. The measurement is on the glass. What the next move writes is still to be played. The next line I want to play: measured systems in fintech infrastructure.",
+    "The line is the work. The measurement is on the glass. What the next move writes is still to be played.",
   closerSign: "Anas Tarek Qumhiyeh",
   eloCommits: [
     { commit: "gate-a-50k", label: "A · 50k", elo: 0, games: 100 },
     { commit: "gate-c-50k", label: "C · 256", elo: -143, games: 100 },
   ] as { commit: string; label: string; elo: number; games: number }[],
   paperHref: "/opening-preparation",
+  colophonHref: "/colophon",
   paperLink: "Read Opening Preparation",
   teaserLine: "1. e4 e5  2. Nf3 Nc6  3. Bc4 Bc5  4. O-O Nf6  5. d4",
   teaserDek: "The portfolio told as a chess game. The full scoresheet lives on its own plate.",
@@ -147,7 +148,7 @@ export const OPENING_NODES: OpeningNode[] = [
     kind: "Start",
     title: "Opening Preparation",
     scanTitle: `${resumeData.name} — ${POSITIONING.identity}`,
-    fact: `${resumeData.name}. ${POSITIONING.dek} ${POSITIONING.tagline} ${edu.school}, graduated ${edu.graduation}.`,
+    fact: `${resumeData.name}. ${POSITIONING.dek} ${edu.school}, graduated ${edu.graduation}.`,
     commentary:
       "The board is set before the first pawn moves. What follows is not a puzzle. It is the line I actually played, in a game I've played since I was a teenager — jobs as moves, annotations as voice. Chess is the content, never the lock.",
     eval: 0.2,
@@ -233,7 +234,7 @@ export const OPENING_NODES: OpeningNode[] = [
     kind: "Identity",
     title: "Meeting e4 with e5",
     scanTitle: POSITIONING.identity,
-    fact: `${resumeData.name}. ${POSITIONING.dek} ${POSITIONING.tagline}`,
+    fact: `${resumeData.name}. ${POSITIONING.dek}`,
     commentary:
       "The classical answer. I did not decline into a closed system. Product engineering on one wing, the data path on the other.",
     eval: 0.3,
@@ -624,10 +625,10 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "The Open File",
     kind: "Outlook",
     title: "The Open File",
-    scanTitle: "Next: measured systems in fintech infrastructure",
-    fact: `${resumeData.name}. The next line I want to play: measured systems in fintech infrastructure.`,
+    scanTitle: "The open file",
+    fact: `${resumeData.name}. The scoresheet stands. What the next move writes is still to be played.`,
     commentary:
-      "I want the next line to be measured systems in fintech infrastructure — on the open file. Rooks belong where the work already points.",
+      "Rooks belong on the open file. The work already points there; the next move is still to be written.",
     eval: 0.8,
     evalText: "+0.80",
     artifacts: [

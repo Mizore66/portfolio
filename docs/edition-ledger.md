@@ -34,6 +34,8 @@ Monash +45% and GraphRAG +35% are different corpora. Do not retcon them.
 | URL | Filed | Notes |
 | --- | --- | --- |
 | `/` | — | Masthead, selected work, desks, lab teaser |
+| `/opening-preparation` | — | Full scoresheet, engine, puzzle |
+| `/colophon` | — | How this paper was set |
 | `/projects/{slug}` | project `date` | Independent exhibit; argument lives here |
 | `/lab/learned-evaluator` | 2026-08-29 | Against the playing net id, not an invented “Published March” |
 | `/print-edition` | — | `Anas-Qumhiyeh-Resume.pdf` |

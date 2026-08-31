@@ -21,6 +21,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${SITE_URL}/colophon`,
+      lastModified: LAB_FILED,
+      changeFrequency: "monthly",
+      priority: 0.3,
+    },
+    {
       url: `${SITE_URL}/lab/learned-evaluator`,
       lastModified: LAB_FILED,
       changeFrequency: "monthly",

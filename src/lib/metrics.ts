@@ -259,4 +259,78 @@ export function projectSourceLabel(github: string): string {
   return github ? "Public repository" : "No public repository";
 }
 
+export function exhibitKicker(origin: ProjectOrigin): string {
+  if (origin === "Hackathon") return "Prize clipping";
+  if (origin === "Laboratory") return "Laboratory note";
+  return "Clipping · Exhibit";
+}
+
+export type EvidenceCard = {
+  result: string;
+  capability?: string;
+  baseline?: string;
+  environment?: string;
+  sample?: string;
+};
+
+/** Rows a recruiter can audit. Sample sizes and percentiles stay blank unless filed. */
+export function projectEvidence(project: {
+  slug: string;
+  impact: string;
+  apparatus: { runtime?: string };
+}): EvidenceCard {
+  switch (project.slug) {
+    case "veridian":
+      return {
+        result: `${METRICS.veridianUptime.display} · ${METRICS.veridianEmissions.display}`,
+        capability: project.impact,
+        baseline: "Emissions vs the unscheduled box. Uptime is an evaluation, not a named SLO.",
+        environment: METRICS.veridianUptime.runtime,
+        sample: "Sample size not filed.",
+      };
+    case "multi-agent-graphrag":
+      return {
+        result: METRICS.graphragRetrieval.display,
+        baseline: `Vector-only retrieval on the ${METRICS.graphragRetrieval.corpus}`,
+        environment: METRICS.graphragRetrieval.method,
+        sample: "Sample size and Recall@k were not filed.",
+      };
+    case "financial-risk-predictor":
+      return {
+        result: METRICS.riskAuc.display,
+        baseline: "15% over the baseline; the baseline model was not named.",
+        sample: "Sample size not filed.",
+      };
+    case "distributed-lead-scorer":
+      return {
+        result: METRICS.leadThroughput.display,
+        environment: "PySpark pipeline",
+        sample: "Pipeline / capacity. Not claimed as sustained production volume.",
+      };
+    case "slm-distillation-engine":
+      return {
+        result: METRICS.slmInference.display,
+        baseline: METRICS.slmInference.path,
+        environment: project.apparatus.runtime,
+        sample: "Tokens/second, hardware, and batch size were not filed.",
+      };
+    case "circuitmindai":
+      return {
+        result: project.impact,
+        environment: project.apparatus.runtime,
+      };
+    case "mirrorfi":
+      return {
+        result: project.impact,
+        environment: "Hackathon desk. No live host.",
+      };
+    default:
+      return {
+        result: project.impact,
+        environment: project.apparatus.runtime,
+      };
+  }
+}
+
 export const PAPER_HREF = "/opening-preparation";
+export const COLOPHON_HREF = "/colophon";

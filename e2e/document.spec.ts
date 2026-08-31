@@ -40,6 +40,8 @@ test.describe("document mode", () => {
     await expect(page.getByTestId("career-trajectory")).not.toContainText(/The desks compound/);
     await expect(page.getByTestId("about-band")).toContainText(/played chess since I was a teenager/);
     await expect(page.getByTestId("retrieval-split")).toContainText(/different corpus/);
+    await expect(page.getByTestId("masthead-availability")).toContainText(/Open to early-career/);
+    await expect(page.getByTestId("contact-band")).not.toContainText(/Open to early-career/);
     await expect(page.getByTestId("path-filter")).toContainText(/ML \/ data systems/);
     await expect(page.getByRole("link", { name: /Skip to selected work/i })).toHaveCount(1);
     await expect(page.getByTestId("lab-teaser")).toContainText(/learned evaluator lost/i);
@@ -145,6 +147,7 @@ test.describe("plates", () => {
       "/opening-preparation",
       "/projects/veridian",
       "/lab/learned-evaluator",
+      "/colophon",
       "/print-edition",
     ]) {
       const res = await request.get(path);
@@ -160,6 +163,8 @@ test.describe("exhibit evidence", () => {
     await page.goto("/projects/multi-agent-graphrag");
     await expect(page.getByTestId("retrieval-split")).toContainText(/different corpus/);
     await expect(page.getByTestId("evidence-card")).toContainText(/\+35%/);
+    await expect(page.getByTestId("evidence-card")).toContainText(/Vector-only/);
+    await expect(page.getByTestId("evidence-card")).toContainText(/Sample size/);
     await expect(page.getByTestId("exhibit-rail")).toContainText(/Sole builder/);
     await expect(page.getByTestId("exhibit-rail")).toContainText(/No public repository/);
     await expect(page.locator("#limitations")).toBeVisible();

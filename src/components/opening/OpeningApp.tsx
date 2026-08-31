@@ -6,7 +6,6 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 import { BoardDiagram } from "@/components/opening/BoardDiagram";
 import { BroadsheetFiller } from "@/components/opening/BroadsheetFiller";
 import { Closer } from "@/components/opening/Closer";
-import { Colophon } from "@/components/opening/Colophon";
 import { GlassEngine, useEngineSearch, useNnueWeights } from "@/components/opening/GlassEngine";
 import { IssueIndex } from "@/components/opening/IssueIndex";
 import { NewspaperColumn } from "@/components/opening/NewspaperColumn";
@@ -650,7 +649,15 @@ export function OpeningApp({
           </main>
       <footer data-testid="paper-footer" className="paper-footer">
         <Closer />
-        <Colophon />
+        <p className="mt-2 font-mono text-[12px] uppercase tracking-widest">
+          <a
+            href={BROADSHEET.colophonHref}
+            data-testid="colophon-link"
+            className="text-book-blue underline decoration-2 underline-offset-4"
+          >
+            {BROADSHEET.colophonKicker}
+          </a>
+        </p>
       </footer>
       <WayfindIndex selectedId={selectedId} onSelect={userSelect} />
     </>

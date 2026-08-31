@@ -814,18 +814,25 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("selected-work")).toBeVisible();
   });
 
-  test("the colophon, puzzle, and situations-wanted box are on the paper", async ({ page }) => {
+  test("the puzzle and situations-wanted box are on the paper; the colophon is its own plate", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByTestId("todays-puzzle")).toBeVisible();
     await expect(page.getByTestId("todays-puzzle")).toContainText(/find the break/i);
     await expect(page.getByTestId("situations-wanted").first()).toBeVisible();
-    await expect(page.getByTestId("situations-wanted").first()).toContainText(/Availability/);
-    await expect(page.getByTestId("situations-wanted").first()).toContainText(/Graduate and junior/);
+    await expect(page.getByTestId("situations-wanted").first()).toContainText(/Early-career/);
+    await expect(page.getByTestId("situations-wanted").first()).not.toContainText(/Graduate and junior/);
     await expect(page.getByTestId("paper-footer")).toBeVisible();
     await expect(page.getByTestId("paper-footer").getByTestId("closer")).toBeVisible();
-    await expect(page.getByTestId("paper-footer").getByTestId("colophon")).toBeVisible();
+    await expect(page.getByTestId("paper-footer").getByTestId("colophon-link")).toBeVisible();
+    await expect(page.getByTestId("paper-footer").getByTestId("colophon")).toHaveCount(0);
+    await expect(page.getByTestId("closer")).toContainText(/The scoresheet stands/i);
+    await expect(page.getByTestId("closer")).not.toContainText(/next line I want to play/i);
+    await page.getByTestId("colophon-link").click();
+    await expect(page).toHaveURL(/\/colophon/);
+    await expect(page).toHaveTitle(/How this paper was set/);
+    await expect(page.getByTestId("colophon")).toBeVisible();
     await expect(page.getByTestId("colophon")).toContainText("8902");
     await expect(page.getByTestId("colophon")).toContainText("How this paper was set");
     await expect(page.getByTestId("colophon")).toContainText("Three registers");
@@ -834,12 +841,9 @@ test.describe("Opening Preparation", () => {
     );
     await expect(page.getByTestId("colophon")).toContainText("The witnesses");
     await expect(page.getByTestId("colophon")).toContainText("Vitest signs the parts list");
-    await expect(page.getByTestId("closer")).toBeVisible();
-    await expect(page.getByTestId("closer")).toContainText(/The scoresheet stands/i);
-    const closerY = (await page.getByTestId("closer").boundingBox())!.y;
-    const coloY = (await page.getByTestId("colophon").boundingBox())!.y;
-    expect(coloY).toBeGreaterThan(closerY);
     await expect(page.getByTestId("inventor-plate")).toBeVisible();
+    await page.goto(PAPER);
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await page.getByTestId("weather-cycle").click();
     await expect(page.getByTestId("weather-cycle")).toContainText(/Fog on the e-file|High pressure/);
     await page.getByTestId("press-stamp").click();
@@ -1239,7 +1243,10 @@ test.describe("Opening Preparation", () => {
     await page.goto(`${PAPER}?move=e4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page).toHaveTitle(/1\. e4! — The University Opening/);
-    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /anasqumhiyeh\.dev\/?$/);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      "href",
+      /anasqumhiyeh\.dev\/opening-preparation\/?$/,
+    );
     const json = await page.locator('script[type="application/ld+json"]').first().textContent();
     expect(json).toBeTruthy();
     const ld = JSON.parse(json!);
@@ -1250,7 +1257,7 @@ test.describe("Opening Preparation", () => {
       "rel",
       /me/,
     );
-    await expect(page.locator("html")).toHaveAttribute("lang", "en");
+    await expect(page.locator("html")).toHaveAttribute("lang", "en-GB");
   });
 
   test("role plates do not advertise a 3840-wide candidate", async ({ page }) => {

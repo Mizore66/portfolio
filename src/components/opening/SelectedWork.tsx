@@ -61,9 +61,12 @@ export function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }) {
             id={project.slug}
             className={cn("project-card", i === 0 && path === "all" && "project-card-flagship")}
           >
-            <Link href={`/projects/${project.slug}`} className="project-card-hit">
-              <span className="sr-only">Read the {exhibitTitle(project)} case study</span>
-            </Link>
+            <Link
+              href={`/projects/${project.slug}`}
+              className="project-card-hit"
+              aria-hidden="true"
+              tabIndex={-1}
+            />
             <p className="font-mono text-[12px] uppercase tracking-[0.18em] text-faded">
               {projectOrigin({
                 slug: project.slug,

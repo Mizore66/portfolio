@@ -2,28 +2,39 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import sitemap from "@/app/sitemap";
-import { BROADSHEET } from "@/content/opening";
+import { BROADSHEET, OPENING_NODES } from "@/content/opening";
 import { resumeData } from "@/lib/data";
 import {
+  COLOPHON_HREF,
   PAPER_HREF,
   RETRIEVAL_SPLIT,
+  projectEvidence,
   projectRole,
   projectSourceLabel,
 } from "@/lib/metrics";
+import { getNode } from "@/lib/opening/tree";
 import { META_DESCRIPTION } from "@/lib/person";
 
 describe("document integrity", () => {
   it("lists the paper plate on the sitemap", () => {
     const urls = sitemap().map((e) => e.url);
     expect(urls.some((u) => u.endsWith("/opening-preparation"))).toBe(true);
+    expect(urls.some((u) => u.endsWith("/colophon"))).toBe(true);
     expect(PAPER_HREF).toBe("/opening-preparation");
     expect(BROADSHEET.paperHref).toBe("/opening-preparation");
+    expect(COLOPHON_HREF).toBe("/colophon");
   });
 
   it("gives the 404 a title that is not the homepage brand", () => {
     const src = readFileSync(join(process.cwd(), "src/app/not-found.tsx"), "utf8");
     expect(src).toMatch(/title: "Correction — A\. T\. Qumhiyeh"/);
     expect(src).toMatch(/description: "The page you requested was a misprint/);
+    expect(src).not.toMatch(/Anas T\. Qumhiyeh — Opening Preparation/);
+  });
+
+  it("gives the colophon a title that is not the homepage brand", () => {
+    const src = readFileSync(join(process.cwd(), "src/app/colophon/page.tsx"), "utf8");
+    expect(src).toMatch(/title: "How this paper was set — A\. T\. Qumhiyeh"/);
     expect(src).not.toMatch(/Anas T\. Qumhiyeh — Opening Preparation/);
   });
 
@@ -35,6 +46,9 @@ describe("document integrity", () => {
     const graphrag = resumeData.projects.find((p) => p.slug === "multi-agent-graphrag")!;
     expect(graphrag.impact).toMatch(/^\+35%/);
     expect("split" in graphrag && graphrag.split).toBe(RETRIEVAL_SPLIT);
+    const card = projectEvidence(graphrag);
+    expect(card.baseline).toMatch(/Vector-only/);
+    expect(card.sample).toMatch(/not filed/);
   });
 
   it("labels source and role from filings, never a team size", () => {
@@ -73,5 +87,48 @@ describe("document integrity", () => {
   it("keeps the homepage meta description handwritten", () => {
     expect(META_DESCRIPTION).toMatch(/annotated career/);
     expect(META_DESCRIPTION.length).toBeLessThanOrEqual(160);
+  });
+
+  it("gives every exhibit a unique title, meta, and date", () => {
+    const titles = resumeData.projects.map((p) => `${p.name} — ${p.subtitle}`);
+    const metas = resumeData.projects.map((p) => p.meta);
+    expect(new Set(titles).size).toBe(titles.length);
+    expect(new Set(metas).size).toBe(metas.length);
+    for (const p of resumeData.projects) {
+      expect(p.date, p.slug).toMatch(/20\d{2}/);
+      expect(p.meta.length, p.slug).toBeGreaterThan(40);
+    }
+  });
+
+  it("keeps the measurement tagline on the masthead, not the scoresheet identity nodes", () => {
+    expect(BROADSHEET.tagline).toMatch(/survive measurement/);
+    expect(getNode("start").fact).not.toMatch(/survive measurement/);
+    expect(getNode("e5").fact).not.toMatch(/survive measurement/);
+    expect(BROADSHEET.closer).not.toMatch(/next line I want to play/);
+  });
+
+  it("resolves scoresheet artifact hrefs to known routes or public URLs", () => {
+    const known = new Set([
+      "/",
+      "/opening-preparation",
+      "/print-edition",
+      "/colophon",
+      "/lab/learned-evaluator",
+      ...resumeData.projects.map((p) => `/projects/${p.slug}`),
+    ]);
+    for (const node of OPENING_NODES) {
+      for (const artifact of node.artifacts ?? []) {
+        const href = artifact.href;
+        if (href.startsWith("mailto:") || href.startsWith("https://")) continue;
+        const path = href.split("?")[0]?.split("#")[0] ?? href;
+        expect(known.has(path), `${node.id} → ${href}`).toBe(true);
+      }
+    }
+  });
+
+  it("does not repeat the hero availability line in Contact", () => {
+    const src = readFileSync(join(process.cwd(), "src/components/opening/ContactBand.tsx"), "utf8");
+    expect(src).toMatch(/contactHed/);
+    expect(src).not.toMatch(/POSITIONING\.availability/);
   });
 });

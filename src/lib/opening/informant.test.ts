@@ -25,7 +25,7 @@ describe("biography register", () => {
     expect(OPENING_NODES.find((n) => n.id === "start")?.fact).not.toMatch(/Graduating/i);
     expect(OPENING_NODES.find((n) => n.id === "start")?.fact).not.toMatch(/Seeking/i);
     expect(BROADSHEET.closer).toMatch(/next move writes/);
-    expect(BROADSHEET.closer).toMatch(/measured systems in fintech infrastructure/);
+    expect(BROADSHEET.closer).not.toMatch(/next line I want to play/);
     expect(SITE_URL).toBe("https://anasqumhiyeh.dev");
     expect(SITE_HOST).toBe("anasqumhiyeh.dev");
     expect(BROADSHEET.availability).toMatch(/Open to early-career/);

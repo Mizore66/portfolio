@@ -60,7 +60,7 @@ export const resumeData = {
       bullets: [
         `${METRICS.wdOversight.display} — lab dashboard with role-based access for 50+ staff.`,
         "CRUD and analytics behind those roles.",
-        "WebSocket to the lab's deep-learning model; shortest path between stations in under 100 ms on that dashboard path.",
+        "WebSocket to the lab's deep-learning model; shortest path between stations in under 100 ms on that dashboard path — percentile not filed.",
       ],
       impact: "-40% manual oversight",
     },

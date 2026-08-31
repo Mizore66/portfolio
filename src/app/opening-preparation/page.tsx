@@ -5,6 +5,16 @@ import { OpeningApp } from "@/components/opening/OpeningApp";
 import { StickyBoardStatic } from "@/components/opening/StickyBoardStatic";
 import { BROADSHEET } from "@/content/opening";
 import { BRAND_TITLE, getNode, isOpeningId, selectionTitle } from "@/lib/opening/tree";
+import { SITE_URL } from "@/lib/site";
+
+const PAPER_META = {
+  alternates: { canonical: BROADSHEET.paperHref },
+  description:
+    "The Opening Preparation scoresheet: jobs as moves, annotations as voice. The front page still holds the work.",
+  openGraph: {
+    url: `${SITE_URL}${BROADSHEET.paperHref}`,
+  },
+} as const;
 
 export async function generateMetadata({
   searchParams,
@@ -13,9 +23,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const q = await searchParams;
   if (!q.move || !isOpeningId(q.move)) {
-    return { title: BRAND_TITLE };
+    return { title: BRAND_TITLE, ...PAPER_META };
   }
-  return { title: selectionTitle(getNode(q.move)) };
+  return { title: selectionTitle(getNode(q.move)), ...PAPER_META };
 }
 
 export default function OpeningPreparationPage() {

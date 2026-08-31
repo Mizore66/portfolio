@@ -12,7 +12,9 @@ import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
 import {
+  exhibitKicker,
   exhibitTitle,
+  projectEvidence,
   projectOrigin,
   projectRole,
   projectSourceLabel,
@@ -83,11 +85,8 @@ export default async function ProjectPage({
     slug: project.slug,
     contextLabel,
   });
-  const decisions = [
-    ...project.apparatus.path,
-    ...(project.apparatus.forks ?? []),
-    ...(project.apparatus.beside ?? []),
-  ];
+  const evidence = projectEvidence(project);
+  const kicker = exhibitKicker(origin);
 
   return (
     <div className="min-h-screen text-ink">
@@ -115,7 +114,7 @@ export default async function ProjectPage({
                 <span className="font-mono text-[12px] text-faded">{project.date}</span>
               </div>
               <p className="mt-3 font-mono text-[12px] uppercase tracking-[0.28em] text-faded">
-                Clipping · Exhibit · {project.date}
+                {kicker} · {project.date}
               </p>
             </header>
 
@@ -130,14 +129,6 @@ export default async function ProjectPage({
                 >
                   {project.purpose}
                 </p>
-                {why ? (
-                  <p
-                    data-testid="exhibit-why"
-                    className="mt-3 max-w-[68ch] font-display text-[16px] leading-snug text-ink"
-                  >
-                    {why}
-                  </p>
-                ) : null}
                 <dl className="exhibit-rail mt-4" data-testid="exhibit-rail">
                   <div>
                     <dt>Filed</dt>
@@ -162,11 +153,18 @@ export default async function ProjectPage({
                     <dd>{projectSourceLabel(project.github)}</dd>
                   </div>
                 </dl>
+                <ExhibitSection id="measurement" title="Evidence">
                 <dl className="exhibit-rail mt-3" data-testid="evidence-card">
                   <div>
                     <dt>Result</dt>
-                    <dd>{project.impact}</dd>
+                    <dd>{evidence.result}</dd>
                   </div>
+                  {evidence.capability ? (
+                    <div>
+                      <dt>Capability</dt>
+                      <dd>{evidence.capability}</dd>
+                    </div>
+                  ) : null}
                   {evidenceKind ? (
                     <div>
                       <dt>Kind</dt>
@@ -180,30 +178,45 @@ export default async function ProjectPage({
                       <dd>Capability as filed — not a numbered experiment</dd>
                     </div>
                   )}
-                  {project.apparatus.runtime ? (
+                  {evidence.baseline ? (
                     <div>
-                      <dt>Runtime</dt>
-                      <dd>{project.apparatus.runtime}</dd>
+                      <dt>Baseline</dt>
+                      <dd>{evidence.baseline}</dd>
                     </div>
                   ) : null}
+                  {evidence.environment ? (
+                    <div>
+                      <dt>Environment</dt>
+                      <dd>{evidence.environment}</dd>
+                    </div>
+                  ) : null}
+                  {evidence.sample ? (
+                    <div>
+                      <dt>Sample</dt>
+                      <dd>{evidence.sample}</dd>
+                    </div>
+                  ) : null}
+                  <div>
+                    <dt>Date</dt>
+                    <dd>{project.date}</dd>
+                  </div>
                 </dl>
+                </ExhibitSection>
                 {split ? (
                   <p className="mt-4 max-w-[68ch] font-mono text-[12px] leading-relaxed text-faded" data-testid="retrieval-split">
                     {split}
                   </p>
                 ) : null}
-                <ExhibitSection id="measurement" title="The measurement">
-                  <p className="metric-row mt-2">{project.impact}</p>
-                  <EvidenceMeta note={evidenceNote} kind={evidenceKind} />
-                </ExhibitSection>
-                <ExhibitSection id="problem" title="The problem">
-                  <p className="mt-2 max-w-[68ch] font-display text-[16px] leading-[1.65] text-ink">
-                    {project.purpose}
-                  </p>
-                  {why ? (
-                    <p className="mt-3 max-w-[68ch] font-display text-[16px] leading-snug text-ink">{why}</p>
-                  ) : null}
-                </ExhibitSection>
+                {why ? (
+                  <ExhibitSection id="problem" title="The problem">
+                    <p
+                      data-testid="exhibit-why"
+                      className="mt-2 max-w-[68ch] font-display text-[16px] leading-[1.65] text-ink"
+                    >
+                      {why}
+                    </p>
+                  </ExhibitSection>
+                ) : null}
                 {judgment ? (
                   <ExhibitSection id="decision" title="The decision">
                     <p className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug text-ink">
@@ -256,16 +269,6 @@ export default async function ProjectPage({
                     </li>
                   ))}
                 </ol>
-              </ExhibitSection>
-
-              <ExhibitSection id="decisions" title="Decisions">
-                <ul className="mt-3 space-y-2">
-                  {decisions.map((layer) => (
-                    <li key={`${layer.role}-${layer.name}`} className="font-display text-[16px] leading-snug">
-                      <span className="text-faded">{layer.role}:</span> {layer.name}
-                    </li>
-                  ))}
-                </ul>
               </ExhibitSection>
 
               {limitation ? (
