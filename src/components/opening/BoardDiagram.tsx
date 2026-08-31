@@ -8,6 +8,7 @@ import { PvArrow } from "@/components/opening/PvArrow";
 import {
   animationPlan,
   FILES,
+  occupancyFen,
   positionAfter,
   snapInnerEdge,
   squareBox,
@@ -249,6 +250,9 @@ export const BoardDiagram = memo(function BoardDiagram({
 
   return (
     <figure>
+      <p className="sr-only" data-testid="board-position">
+        Occupancy {occupancyFen(pieces)}.
+      </p>
       {puzzlePrompt ? (
         <p
           data-testid="find-the-break"

@@ -3,6 +3,7 @@ import { resumeData } from "@/lib/data";
 import { FEATURED_PROJECT_SLUGS, HERO_PROOF, POSITIONING } from "@/lib/metrics";
 import { occupancy, positionAfter, squareFile, squareRank } from "@/lib/chess/replay";
 import { collectPlies } from "@/lib/opening/tree";
+import { SITE_HOST, SITE_URL } from "@/lib/site";
 
 const PAGE_W = 612;
 const PAGE_H = 792;
@@ -48,10 +49,16 @@ function n(v: number): string {
   return Number.isInteger(v) ? String(v) : v.toFixed(2);
 }
 
+function uriAnnot(x: number, y: number, width: number, uri: string): string {
+  return `<< /Type /Annot /Subtype /Link /Rect [${n(x)} ${n(y - 2)} ${n(x + width)} ${n(y + 8)}] /Border [0 0 0] /A << /S /URI /URI (${pdfEscape(uri)}) >> >>`;
+}
+
 export function buildPrintEditionPdf(): Uint8Array {
   const d = resumeData;
   const ops: string[] = [];
   const colW = 318;
+  const annots: string[] = [];
+  const CHAR_W = 4;
 
   const rule = (y: number, w: number) => {
     ops.push(`${INK} RG`, `${w} w`, `${M} ${n(y)} m ${PAGE_W - M} ${n(y)} l S`);
@@ -86,7 +93,29 @@ export function buildPrintEditionPdf(): Uint8Array {
     txt("F3", 8, M, headY, line);
     headY -= 11;
   }
-  txt("F1", 8, M, headY, `${d.email}  |  ${d.github}  |  ${d.linkedin}`);
+  const emailLine = `${d.email}  |  ${SITE_HOST}`;
+  txt("F1", 8, M, headY, emailLine);
+  annots.push(uriAnnot(M, headY, d.email.length * CHAR_W, `mailto:${d.email}`));
+  annots.push(
+    uriAnnot(
+      M + (d.email.length + 5) * CHAR_W,
+      headY,
+      SITE_HOST.length * CHAR_W,
+      SITE_URL,
+    ),
+  );
+  headY -= 11;
+  const social = `${d.github}  |  ${d.linkedin}`;
+  txt("F1", 8, M, headY, social);
+  annots.push(uriAnnot(M, headY, d.github.length * CHAR_W, `https://${d.github}`));
+  annots.push(
+    uriAnnot(
+      M + (d.github.length + 5) * CHAR_W,
+      headY,
+      d.linkedin.length * CHAR_W,
+      `https://${d.linkedin.replace(/\/$/, "")}`,
+    ),
+  );
   headY -= 12;
   for (const line of wrap(POSITIONING.availability, 92)) {
     txt("F3", 8, M, headY, line);
@@ -232,6 +261,12 @@ export function buildPrintEditionPdf(): Uint8Array {
   rule(48, 0.5);
 
   const content = ops.join("\n");
+  const annotObjs = annots;
+  const annotRefs = annotObjs.map((_, i) => `${8 + i} 0 R`).join(" ");
+  const pageDict = annotObjs.length
+    ? `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PAGE_W} ${PAGE_H}] /Contents 6 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Annots [${annotRefs}] >>`
+    : `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PAGE_W} ${PAGE_H}] /Contents 6 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> >>`;
+
   const objects: string[] = [
     "<< /Type /Catalog /Pages 2 0 R >>",
     "<< /Type /Pages /Kids [7 0 R] /Count 1 >>",
@@ -239,7 +274,8 @@ export function buildPrintEditionPdf(): Uint8Array {
     "<< /Type /Font /Subtype /Type1 /BaseFont /Times-Bold >>",
     "<< /Type /Font /Subtype /Type1 /BaseFont /Times-Italic >>",
     `<< /Length ${content.length} >>\nstream\n${content}\nendstream`,
-    `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PAGE_W} ${PAGE_H}] /Contents 6 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> >>`,
+    pageDict,
+    ...annotObjs,
   ];
 
   let out = "%PDF-1.4\n";

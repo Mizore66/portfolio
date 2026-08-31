@@ -40,3 +40,46 @@ export function websiteJsonLd() {
     },
   };
 }
+
+function projectDate(filed: string): string | undefined {
+  const t = Date.parse(`${filed} 1`);
+  if (Number.isNaN(t)) return undefined;
+  return new Date(t).toISOString().slice(0, 7);
+}
+
+export function projectJsonLd(project: {
+  name: string;
+  slug: string;
+  subtitle: string;
+  meta: string;
+  github: string;
+  date: string;
+}) {
+  const author = {
+    "@type": "Person" as const,
+    name: PERSON_NAME,
+    alternateName: PERSON_ALT_NAME,
+  };
+  const dateCreated = projectDate(project.date);
+  if (project.github) {
+    return {
+      "@context": "https://schema.org",
+      "@type": "SoftwareSourceCode",
+      name: `${project.name} — ${project.subtitle}`,
+      description: project.meta,
+      url: `${SITE_URL}/projects/${project.slug}`,
+      codeRepository: project.github,
+      author,
+      ...(dateCreated ? { dateCreated } : {}),
+    };
+  }
+  return {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    name: `${project.name} — ${project.subtitle}`,
+    description: project.meta,
+    url: `${SITE_URL}/projects/${project.slug}`,
+    author,
+    ...(dateCreated ? { dateCreated } : {}),
+  };
+}

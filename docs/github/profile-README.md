@@ -8,6 +8,8 @@ I like systems that have to survive measurement.
 
 Open to early-career software engineering roles in fintech and AI infrastructure.
 
+The desks compound: Petronas was converting a licensed MATLAB back-end to Python. Western Digital was a lab dashboard for 50+ staff. Setel was payments in production. Monash was retrieval over a graph of regulations.
+
 ## The line
 
 - Monash University, Bachelor of Engineering (Honours), software. First Class. Graduated May 2026. WAM 82.1, CGPA 3.82.

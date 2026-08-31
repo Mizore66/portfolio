@@ -8,7 +8,8 @@ import { PatentFigure } from "@/components/opening/PatentFigure";
 import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
-import type { EvidenceKind } from "@/lib/metrics";
+import { projectOrigin, type EvidenceKind } from "@/lib/metrics";
+import { projectJsonLd } from "@/lib/person";
 import { SITE_URL } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -60,6 +61,11 @@ export default async function ProjectPage({
     "evidenceKind" in project ? (project.evidenceKind as EvidenceKind) : undefined;
   const judgment = "judgment" in project ? project.judgment : undefined;
   const contextLabel = "contextLabel" in project ? project.contextLabel : undefined;
+  const inspectNote = "inspectNote" in project ? project.inspectNote : undefined;
+  const origin = projectOrigin({
+    slug: project.slug,
+    contextLabel,
+  });
   const decisions = [
     ...project.apparatus.path,
     ...(project.apparatus.forks ?? []),
@@ -68,6 +74,10 @@ export default async function ProjectPage({
 
   return (
     <div className="min-h-screen text-ink">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(projectJsonLd(project)) }}
+      />
       <a href="#exhibit" className="skip-link">
         {BROADSHEET.skipExhibit}
       </a>
@@ -95,13 +105,16 @@ export default async function ProjectPage({
                   Pasted from the desk
                 </p>
                 <h1 id="exhibit-title" className="exhibit-title mt-2 font-display text-ink">
-                  {project.name}
+                  {project.name} — {project.subtitle}
                 </h1>
-                <p className="mt-2 font-display text-[16px] leading-snug text-faded">{project.subtitle}</p>
-                <dl className="exhibit-rail mt-4">
+                <dl className="exhibit-rail mt-4" data-testid="exhibit-rail">
                   <div>
                     <dt>Filed</dt>
                     <dd>{project.date}</dd>
+                  </div>
+                  <div>
+                    <dt>Origin</dt>
+                    <dd>{origin}</dd>
                   </div>
                   {contextLabel ? (
                     <div>
@@ -114,19 +127,43 @@ export default async function ProjectPage({
                     <dd>{project.github ? "Public repository" : "On this domain"}</dd>
                   </div>
                 </dl>
-                <p className="metric-row mt-4">{project.impact}</p>
-                <EvidenceMeta note={evidenceNote} kind={evidenceKind} />
-                <p className="mt-4 max-w-[68ch] font-display text-[16px] leading-[1.65] text-ink">
-                  {project.purpose}
-                </p>
+                <section className="mt-6" aria-labelledby="exhibit-measurement">
+                  <h2
+                    id="exhibit-measurement"
+                    className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded"
+                  >
+                    The measurement
+                  </h2>
+                  <p className="metric-row mt-2">{project.impact}</p>
+                  <EvidenceMeta note={evidenceNote} kind={evidenceKind} />
+                </section>
+                <section className="mt-6" aria-labelledby="exhibit-problem">
+                  <h2
+                    id="exhibit-problem"
+                    className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded"
+                  >
+                    The problem
+                  </h2>
+                  <p className="mt-2 max-w-[68ch] font-display text-[16px] leading-[1.65] text-ink">
+                    {project.purpose}
+                  </p>
+                </section>
+                {judgment ? (
+                  <section className="mt-6" aria-labelledby="exhibit-decision">
+                    <h2
+                      id="exhibit-decision"
+                      className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded"
+                    >
+                      The decision
+                    </h2>
+                    <p className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug text-ink">
+                      {judgment}
+                    </p>
+                  </section>
+                ) : null}
                 <p className="mt-4 drop-cap max-w-[68ch] font-lora text-[16px] leading-[1.7] italic text-faded">
                   {project.description}
                 </p>
-                {judgment ? (
-                  <p className="mt-6 max-w-[68ch] font-display text-[16px] leading-snug text-ink">
-                    {judgment}
-                  </p>
-                ) : null}
               </section>
 
               <section className="mt-8" aria-label="File photo">
@@ -144,8 +181,11 @@ export default async function ProjectPage({
                 </div>
               </section>
 
-              <section className="mt-8" aria-label="Architecture">
-                <h2 className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
+              <section id="apparatus" className="mt-8" aria-labelledby="exhibit-apparatus">
+                <h2
+                  id="exhibit-apparatus"
+                  className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded"
+                >
                   Proof · apparatus
                 </h2>
                 <div className="mt-3">
@@ -156,7 +196,7 @@ export default async function ProjectPage({
                 </div>
               </section>
 
-              <section className="mt-10" aria-labelledby="exhibit-line">
+              <section id="line" className="mt-10" aria-labelledby="exhibit-line">
                 <h2
                   id="exhibit-line"
                   className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded"
@@ -175,7 +215,7 @@ export default async function ProjectPage({
                 </ol>
               </section>
 
-              <section className="mt-10" aria-labelledby="exhibit-tech">
+              <section id="decisions" className="mt-10" aria-labelledby="exhibit-tech">
                 <h2
                   id="exhibit-tech"
                   className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded"
@@ -201,6 +241,9 @@ export default async function ProjectPage({
                   >
                     View {project.name} source
                   </a>
+                ) : null}
+                {inspectNote ? (
+                  <p className="w-full font-mono text-[12px] leading-relaxed text-faded">{inspectNote}</p>
                 ) : null}
                 <Link
                   href="/#work"

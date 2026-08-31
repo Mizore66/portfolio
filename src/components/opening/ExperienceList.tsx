@@ -1,6 +1,6 @@
 import { companyAnchor } from "@/lib/anchors";
 import { resumeData } from "@/lib/data";
-import { YEAR_INDEX } from "@/lib/metrics";
+import { POSITIONING, YEAR_INDEX } from "@/lib/metrics";
 
 function yearsOf(period: string): string {
   const years = [...period.matchAll(/20\d{2}/g)].map((m) => m[0]);
@@ -22,6 +22,9 @@ export function ExperienceList() {
       <h2 id="experience-heading" className="band-title">
         Experience
       </h2>
+      <p className="mt-2 max-w-[68ch] font-display text-[16px] italic text-faded">
+        {POSITIONING.professionalDek}
+      </p>
       <ol className="year-index" data-testid="year-index">
         {YEAR_INDEX.map((row) => (
           <li key={row.year}>
@@ -30,6 +33,9 @@ export function ExperienceList() {
           </li>
         ))}
       </ol>
+      <p data-testid="career-trajectory" className="mt-6 max-w-[68ch] font-display text-[16px] leading-snug text-ink">
+        {POSITIONING.trajectory}
+      </p>
       <ol className="mt-8">
         {resumeData.experience.map((job) => (
           <li

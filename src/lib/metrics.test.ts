@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { PROJECT_FIGURES } from "@/content/project-figures";
 import { resumeData } from "@/lib/data";
-import { FEATURED_PROJECT_SLUGS, HERO_DESKS, HERO_PROOF, METRICS } from "@/lib/metrics";
+import { FEATURED_PROJECT_SLUGS, HERO_DESKS, HERO_PROOF, METRICS, POSITIONING, projectOrigin } from "@/lib/metrics";
 import { getNode } from "@/lib/opening/tree";
 
 describe("measured claims have one owner each", () => {
@@ -59,5 +59,27 @@ describe("measured claims have one owner each", () => {
     const job = resumeData.experience.find((e) => e.company === "Setel");
     expect(job?.impact).toBe(METRICS.setelDefects.display);
     expect(job?.bullets.join(" ")).toMatch(/92\.5%/);
+  });
+
+  it("states the career as compounding desks, not a pile of unrelated wins", () => {
+    expect(POSITIONING.trajectory).toMatch(/Petronas.*Western Digital.*Setel.*Monash/s);
+    expect(POSITIONING.independentDek).toMatch(/Independent/);
+    expect(POSITIONING.professionalDek).toMatch(/Intern and contract/);
+    expect(POSITIONING.next).toMatch(/fintech infrastructure/);
+  });
+
+  it("labels projects by known origin and never invents a team size", () => {
+    const mirror = resumeData.projects.find((p) => p.slug === "mirrorfi")!;
+    const slm = resumeData.projects.find((p) => p.slug === "slm-distillation-engine")!;
+    const veridian = resumeData.projects.find((p) => p.slug === "veridian")!;
+    expect(projectOrigin(mirror)).toBe("Hackathon");
+    expect(projectOrigin(slm)).toBe("Laboratory");
+    expect(projectOrigin(veridian)).toBe("Independent");
+    for (const p of resumeData.projects) {
+      expect(projectOrigin(p)).not.toBe("Production");
+      expect(`${p.purpose} ${p.description} ${"judgment" in p ? p.judgment : ""}`).not.toMatch(
+        /Team of \d|4 months · Production/i,
+      );
+    }
   });
 });

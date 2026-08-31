@@ -137,6 +137,32 @@ export function occupancy(pieces: Piece[]): Record<string, string> {
   return o;
 }
 
+/** Piece-placement FEN only. Castling rights and clocks are not tracked. */
+export function occupancyFen(pieces: Piece[]): string {
+  const occ = occupancy(pieces);
+  const ranks: string[] = [];
+  for (let r = 8; r >= 1; r--) {
+    let row = "";
+    let empty = 0;
+    for (const f of FILES) {
+      const code = occ[`${f}${r}`];
+      if (!code) {
+        empty += 1;
+        continue;
+      }
+      if (empty) {
+        row += String(empty);
+        empty = 0;
+      }
+      const letter = code[1];
+      row += code[0] === "w" ? letter : letter.toLowerCase();
+    }
+    if (empty) row += String(empty);
+    ranks.push(row);
+  }
+  return ranks.join("/");
+}
+
 function samePly(a: Ply, b: Ply): boolean {
   return a.from === b.from && a.to === b.to;
 }

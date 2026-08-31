@@ -94,7 +94,7 @@ export const METRICS = {
     unit: "events/day",
     owner: "Distributed Lead Scorer",
     display: "100M events/day",
-    note: "PySpark pipeline",
+    note: "PySpark pipeline · hours cut to minutes",
     kind: "pipeline" as const,
   },
   slmInference: {
@@ -187,9 +187,26 @@ export const POSITIONING = {
   contactHed: "Interested in building measured, reliable systems?",
   closer:
     "I'm interested in teams building reliable ML and data systems in fintech or infrastructure-heavy products.",
+  next: "The next line I want to play: measured systems in fintech infrastructure.",
+  professionalDek: "Intern and contract desks in production systems.",
+  independentDek: "Independent systems. Professional desks are under Experience.",
+  trajectory:
+    "The desks compound: Petronas was converting a licensed MATLAB back-end to Python. Western Digital was a lab dashboard for 50+ staff. Setel was payments in production. Monash was retrieval over a graph of regulations.",
   about: [
     "I'm a software engineer focused on ML infrastructure and data-intensive systems: retrieval, data pipelines, deployment, reliability, and the product surfaces around them.",
     "I've worked across payment engineering at Setel, lab systems at Western Digital, engineering tooling at Petronas, and a GraphRAG contract at Monash University. ML projects range from model distillation to large-scale data processing. I like work that can be measured — latency, reliability, retrieval quality, test coverage, throughput — rather than demonstrated only through a polished demo.",
     "Outside software, I've played chess since I was a teenager, which is why this portfolio is structured as a game. The moves are the work; the annotations are my interpretation of it.",
   ],
 } as const;
+
+export type ProjectOrigin = "Hackathon" | "Laboratory" | "Independent";
+
+/** Origin is derived from filings we already have. Do not invent team size or duration. */
+export function projectOrigin(project: {
+  slug: string;
+  contextLabel?: string;
+}): ProjectOrigin {
+  if ((LAB_PROJECT_SLUGS as readonly string[]).includes(project.slug)) return "Laboratory";
+  if (project.contextLabel && /hackathon|megahack/i.test(project.contextLabel)) return "Hackathon";
+  return "Independent";
+}

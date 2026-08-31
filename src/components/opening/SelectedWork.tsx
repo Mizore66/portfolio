@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { EvidenceMeta } from "@/components/opening/EvidenceMeta";
 import { resumeData } from "@/lib/data";
-import { FEATURED_PROJECT_SLUGS, LAB_PROJECT_SLUGS } from "@/lib/metrics";
+import { FEATURED_PROJECT_SLUGS, LAB_PROJECT_SLUGS, POSITIONING } from "@/lib/metrics";
 import type { EvidenceKind } from "@/lib/metrics";
 import { cn } from "@/lib/utils";
 
@@ -22,7 +22,7 @@ export function SelectedWork() {
         Selected work
       </h2>
       <p className="mt-2 max-w-[68ch] font-display text-[16px] italic text-faded">
-        Three systems that had to survive measurement
+        {POSITIONING.independentDek}
       </p>
       <ul className="project-card-grid">
         {featured.map((project, i) => (
@@ -41,9 +41,6 @@ export function SelectedWork() {
                 note={project.evidenceNote}
                 kind={"evidenceKind" in project ? (project.evidenceKind as EvidenceKind) : undefined}
               />
-            ) : null}
-            {"judgment" in project && project.judgment ? (
-              <p className="mt-3 max-w-[68ch] font-display text-[15px] leading-snug text-ink">{project.judgment}</p>
             ) : null}
             <p className="mt-4 flex flex-wrap gap-x-4 gap-y-2 font-mono text-[12px] uppercase tracking-wider">
               <Link href={`/projects/${project.slug}`} className="artifact-link text-book-blue underline decoration-2 underline-offset-4">

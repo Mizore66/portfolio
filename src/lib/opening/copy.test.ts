@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
-import { META_DESCRIPTION, personJsonLd, websiteJsonLd, PERSON_ALT_NAME, PERSON_NAME } from "@/lib/person";
+import { META_DESCRIPTION, personJsonLd, projectJsonLd, websiteJsonLd, PERSON_ALT_NAME, PERSON_NAME } from "@/lib/person";
 import { getNode } from "@/lib/opening/tree";
 
 const BANNED =
@@ -65,6 +65,19 @@ describe("SEO identity", () => {
     expect(site["@type"]).toBe("WebSite");
     expect(site.name).toBe("Opening Preparation");
     expect(site.author.name).toBe(PERSON_NAME);
+  });
+
+  it("hands machines a CreativeWork or source node per exhibit", () => {
+    const circuit = resumeData.projects.find((p) => p.slug === "circuitmindai")!;
+    const veridian = resumeData.projects.find((p) => p.slug === "veridian")!;
+    const src = projectJsonLd(circuit);
+    const work = projectJsonLd(veridian);
+    expect(src["@type"]).toBe("SoftwareSourceCode");
+    expect("codeRepository" in src ? src.codeRepository : undefined).toBe(circuit.github);
+    expect(src.name).toMatch(/CircuitMindAI —/);
+    expect(work["@type"]).toBe("CreativeWork");
+    expect(work).not.toHaveProperty("codeRepository");
+    expect(work.name).toMatch(/Veridian —/);
   });
 
   it("writes a per-exhibit meta description, not a cloned dek", () => {

@@ -17,6 +17,7 @@ export function AboutBand() {
             {para}
           </p>
         ))}
+        <p className="font-display text-[16px] leading-snug text-ink">{POSITIONING.next}</p>
       </div>
     </section>
   );

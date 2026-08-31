@@ -4,6 +4,7 @@ import { occupancy, positionAfter } from "./chess/replay";
 import { collectPlies } from "./opening/tree";
 import { buildPrintEditionPdf } from "./print-edition";
 import { resumeData } from "@/lib/data";
+import { SITE_HOST, SITE_URL } from "@/lib/site";
 
 describe("print edition", () => {
   it("is a PDF that carries the résumé name", () => {
@@ -59,5 +60,8 @@ describe("print edition", () => {
     expect(text).toContain("Monash University");
     expect(text).toContain("Full-stack");
     expect(text).not.toContain("Seeking");
+    expect(text).toContain(SITE_HOST);
+    expect(text).toContain(`/URI (mailto:${resumeData.email})`);
+    expect(text).toContain(`/URI (${SITE_URL})`);
   });
 });
