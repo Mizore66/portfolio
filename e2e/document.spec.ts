@@ -19,15 +19,28 @@ test.describe("document mode", () => {
     await expect(page.getByTestId("experience-list")).toBeVisible();
     await expect(page.locator("#setel")).toBeVisible();
     await expect(page.getByTestId("contact-email")).toContainText("anasqumhiyeh@gmail.com");
-    await expect(page.getByTestId("masthead-contacts").locator('a[href="/print-edition"]')).toBeVisible();
+    await expect(page.getByTestId("masthead-contacts").locator('a[href="/print-edition"]')).toHaveCount(0);
+    await expect(page.getByTestId("recruiter-nav").locator('a[href="/print-edition"]')).toBeVisible();
     await expect(page.locator("#veridian")).toContainText("Veridian — MLOps Tradeoff Engine");
     await expect(page.locator("#setel")).toContainText(/new developer/);
     await expect(page.locator("#petronas")).toContainText(/department leadership/);
-    await expect(page.locator('#veridian a[href="/projects/veridian"]')).toHaveAttribute(
+    await expect(page.getByRole("link", { name: "Read the Veridian case study" })).toHaveAttribute(
       "href",
       "/projects/veridian",
     );
-    await expect(page.getByTestId("recruiter-nav").locator('a[href="#work"]')).toHaveAttribute("href", "#work");
+    await expect(page.getByTestId("recruiter-nav").locator('a[href="/#work"]')).toHaveAttribute("href", "/#work");
+    await expect(page.getByTestId("game-teaser")).toBeVisible();
+    await expect(page.getByTestId("teaser-line")).toContainText("1. e4");
+    await expect(page.getByTestId("notation-view")).toHaveCount(0);
+    await expect(page.getByTestId("home-footer")).toBeVisible();
+    await expect(page.getByTestId("closer")).toHaveCount(0);
+    await expect(page.getByTestId("colophon")).toHaveCount(0);
+    await expect(page.getByTestId("career-trajectory")).toContainText(/Petronas/);
+    await expect(page.getByTestId("career-trajectory")).toContainText(/through-line/);
+    await expect(page.getByTestId("career-trajectory")).not.toContainText(/The desks compound/);
+    await expect(page.getByTestId("about-band")).toContainText(/played chess since I was a teenager/);
+    await expect(page.getByTestId("retrieval-split")).toContainText(/different corpus/);
+    await expect(page.getByTestId("path-filter")).toContainText(/ML \/ data systems/);
   });
 });
 
@@ -71,7 +84,7 @@ test.describe("copy email", () => {
 test.describe("browser behavior", () => {
   test("Back from a case study returns to the paper", async ({ page }) => {
     await page.goto("/");
-    await page.locator('#veridian a[href="/projects/veridian"]').click();
+    await page.getByRole("link", { name: "Read the Veridian case study" }).click();
     await expect(page).toHaveURL(/\/projects\/veridian/);
     await page.goBack();
     await expect(page).toHaveURL(/\/(?:$|\?)/);
@@ -92,5 +105,51 @@ test.describe("css off", () => {
     await expect(page.locator("#setel")).toContainText(/Setel/);
     await expect(page.locator("#veridian")).toContainText(/Veridian —/);
     await expect(page.getByTestId("contact-email")).toContainText("anasqumhiyeh@gmail.com");
+  });
+});
+
+test.describe("opening paper", () => {
+  test("/?move= redirects onto the scoresheet plate", async ({ page }) => {
+    await page.goto("/?move=e4");
+    await expect(page).toHaveURL(/\/opening-preparation/);
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.getByRole("heading", { level: 3, name: "The University Opening" })).toBeVisible();
+  });
+});
+
+test.describe("selected work paths", () => {
+  test("product path keeps CircuitMind and drops Veridian", async ({ page }) => {
+    await page.goto("/?path=product#work");
+    await expect(page.getByTestId("selected-work")).toBeVisible();
+    await expect(page.locator("#circuitmindai")).toBeVisible();
+    await expect(page.locator("#veridian")).toHaveCount(0);
+  });
+});
+
+test.describe("plates", () => {
+  test("internal routes and the print edition respond", async ({ request }) => {
+    for (const path of [
+      "/",
+      "/opening-preparation",
+      "/projects/veridian",
+      "/lab/learned-evaluator",
+      "/print-edition",
+    ]) {
+      const res = await request.get(path);
+      expect(res.ok(), path).toBe(true);
+    }
+    const missing = await request.get("/page-that-never-made-the-plate");
+    expect(missing.status()).toBe(404);
+  });
+});
+
+test.describe("exhibit evidence", () => {
+  test("GraphRAG names the +35/+45 split and a public-source state", async ({ page }) => {
+    await page.goto("/projects/multi-agent-graphrag");
+    await expect(page.getByTestId("retrieval-split")).toContainText(/different corpus/);
+    await expect(page.getByTestId("evidence-card")).toContainText(/\+35%/);
+    await expect(page.getByTestId("exhibit-rail")).toContainText(/Sole builder/);
+    await expect(page.getByTestId("exhibit-rail")).toContainText(/No public repository/);
+    await expect(page.locator("#limitations")).toBeVisible();
   });
 });

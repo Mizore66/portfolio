@@ -1,6 +1,6 @@
 import type { Apparatus, ApparatusSpec } from "@/lib/opening/types";
 import { CIRCUITMIND_LINE, MIRRORFI_VAULT, RISK_ENGINE, LEADS_HALL, VERIDIAN_PLANT, VERIDIAN_STILL, VERIDIAN_EXCHANGE } from "@/content/project-figures";
-import { METRICS, POSITIONING } from "@/lib/metrics";
+import { METRICS, POSITIONING, RETRIEVAL_SPLIT } from "@/lib/metrics";
 
 export function repoArtifacts(github: string, name?: string): { label: string; href: string }[] {
   if (!github) return [];
@@ -27,10 +27,15 @@ export const resumeData = {
   },
   skills: {
     languages: ["Java", "Python", "C/C++", "JavaScript", "TypeScript", "HTML/CSS", "MATLAB", "Flutter", "C#", "PHP", "Scala"],
-    frameworks: ["React", "Node.js", "Flask", "JQuery", "Next.js", "ASP.NET", "Laravel", "NestJS"],
+    frameworks: ["React", "Node.js", "Flask", "jQuery", "Next.js", "ASP.NET", "Laravel", "NestJS"],
     devTools: ["Git", "GitLab CI/CD", "Postman", "Swagger", "Grafana", "Loki", "Docker", "Kubernetes", "AWS", "ArgoCD"],
     libraries: ["pandas", "NumPy", "Matplotlib", "PyTorch", "TensorFlow", "NLTK", "spaCy", "FastAPI", "Kafka"],
-    databases: ["MySQL", "OracleSQL", "MongoDB", "Firebase", "PostgreSQL", "Neo4j"],
+    databases: ["MySQL", "Oracle Database", "MongoDB", "Firebase", "PostgreSQL", "Neo4j"],
+  },
+  skillsCore: {
+    languages: ["Python", "TypeScript", "Java", "C/C++"],
+    infrastructure: ["Docker", "Kubernetes", "PostgreSQL", "Neo4j", "Kafka", "AWS"],
+    ml: ["PyTorch", "LangGraph", "FastAPI", "PySpark"],
   },
   experience: [
     {
@@ -55,7 +60,7 @@ export const resumeData = {
       bullets: [
         `${METRICS.wdOversight.display} — lab dashboard with role-based access for 50+ staff.`,
         "CRUD and analytics behind those roles.",
-        "WebSocket to the lab's deep-learning model; shortest path between stations in under 100 ms.",
+        "WebSocket to the lab's deep-learning model; shortest path between stations in under 100 ms on that dashboard path.",
       ],
       impact: "-40% manual oversight",
     },
@@ -64,11 +69,12 @@ export const resumeData = {
       type: "Intern",
       company: "Setel",
       period: "Jul 2025 – Dec 2025",
-      tech: ["Docker", "Kubernetes", "MERN Stack", "Swagger", "Nest.js"],
+      tech: ["Docker", "Kubernetes", "MERN Stack", "Swagger", "NestJS"],
       bullets: [
-        "Payment engine: authorization and capture of user payment methods.",
+        "Authorization and capture of stored payment methods on the payment engine.",
         "Checkout and capture documented so a new developer could follow the path without a walkthrough.",
-        `${METRICS.setelCoverage.display} on checkout and capture; ${METRICS.setelDefects.display}.`,
+        `${METRICS.setelCoverage.display} on checkout and capture.`,
+        `${METRICS.setelDefects.display} on that path (separate observation, not claimed as the coverage's effect).`,
       ],
       impact: METRICS.setelDefects.display,
     },
@@ -83,7 +89,7 @@ export const resumeData = {
         "Wrote user test cases for features after they reached production.",
         "Presented usability findings to department leadership.",
       ],
-      impact: "Converted MATLAB licences to Python",
+      impact: "Migrated MATLAB back-end to Python, replacing paid licences",
     },
   ],
   projects: [
@@ -102,6 +108,10 @@ export const resumeData = {
       ],
       impact: "Zero-touch ML remediation",
       why: "MCP here means the Terraform change is read as it is written, before the box is already running.",
+      constraint: "The carbon ledger sits beside the request, not on it.",
+      limitation: "No public repository. 99.9% uptime and −15% emissions are evaluations on Cloud Run, not a named production SLO.",
+      evidenceNote: METRICS.veridianUptime.note,
+      evidenceKind: METRICS.veridianUptime.kind,
       github: "",
       plate: "/plates/plate-veridian.jpg",
       plateCaption: "Veridian intercepts the change — file photo.",
@@ -137,7 +147,7 @@ export const resumeData = {
         "Edge cache holds the inspection when the network drops.",
         "A REST API for the line, not a slogan about performance.",
       ],
-      impact: "Real-time PCB fault detection",
+      impact: "PCB fault detection",
       inspectNote: "Express API (backend-js/) and Next.js UI (frontend/).",
       github: "https://github.com/Mizore66/CircuitMindAI",
       plate: "/plates/plate-circuitmind.jpg",
@@ -146,6 +156,8 @@ export const resumeData = {
       description:
         "CircuitMindAI inspects circuit boards: Nova Pro reads the copper, Nova Sonic talks the operator through the fault. Next.js and Express sit on ECS Fargate; GitHub Actions stamps the image.",
       judgment: "Edge cache holds the inspection when the network drops.",
+      constraint: "The line has to keep the inspection when the network drops.",
+      limitation: "No live host. The argument is this exhibit and the public repository.",
       meta: "Nova Pro reads the copper; Nova Sonic talks the operator through the fault. Next.js and Express on ECS Fargate.",
       patent: CIRCUITMIND_LINE satisfies ApparatusSpec,
       apparatus: {
@@ -184,6 +196,8 @@ export const resumeData = {
       plateAlt: "Halftone photograph: a vault door and lock-work, lit like a bank interior.",
       description:
         "A Next.js desk draws the vault line; Node.js talks to Drift, Jupiter, and Meteora; MongoDB stores the copy so another desk can run it.",
+      constraint: "A hackathon desk: drawing, sharing, and firing vault lines in one schematic.",
+      limitation: "No live host. Source is the public Megahack repository.",
       meta: "A desk for drawing, sharing, and firing Solana vault lines. Drift, Jupiter and Meteora in one schematic. Grand Prize, Megahack 2025.",
       patent: MIRRORFI_VAULT satisfies ApparatusSpec,
       apparatus: {
@@ -223,6 +237,9 @@ export const resumeData = {
       judgment:
         "The graph is the structured path for prerequisites and policy; the vector store is the fallback when the graph is silent.",
       why: "A question about prerequisites has to walk the graph, not only the nearest paragraph.",
+      constraint: "Prerequisites and credit-transfer are edges, not another embedding dump.",
+      limitation: "Ambiguous questions fall back to a broader semantic search. Sample size and Recall@k were not filed.",
+      split: RETRIEVAL_SPLIT,
       meta: `LangGraph over the university's policy corpus: agents write Cypher, check it, and fall back to a vector store. ${METRICS.graphragRetrieval.strip}.`,
       patent: VERIDIAN_EXCHANGE satisfies ApparatusSpec,
       apparatus: {
@@ -250,6 +267,7 @@ export const resumeData = {
       impact: "0.87 AUC-ROC score",
       evidenceNote: METRICS.riskAuc.note,
       evidenceKind: METRICS.riskAuc.kind,
+      limitation: "15% over the baseline as filed; the baseline model was not named beyond that comparison.",
       github: "",
       plate: "/plates/plate-risk.jpg",
       plateCaption: "Financial Risk Predictor — the ledger, file photo.",
@@ -284,6 +302,8 @@ export const resumeData = {
       impact: "100M events/day processed",
       evidenceNote: METRICS.leadThroughput.note,
       evidenceKind: METRICS.leadThroughput.kind,
+      constraint: "Checkpoints so a dead job does not lose the tape.",
+      limitation: "Pipeline / capacity. Not claimed as sustained production volume.",
       github: "",
       plate: "/plates/plate-leads.jpg",
       plateCaption: "Distributed Lead Scorer — the sorting hall, file photo.",
@@ -314,7 +334,9 @@ export const resumeData = {
         "98% pass on the edge-case reward metric.",
       ],
       impact: METRICS.slmInference.impact,
-      why: "QLoRA is how a 70B teacher fits into a 3B student that keeps the same job.",
+      why: "I used QLoRA to distil traces from a 70B teacher into a deployable 3B student.",
+      constraint: "The student had to keep the same job on a smaller piece.",
+      limitation: "12x inference is an evaluation on the 70B to 3B path, not a production serving number.",
       evidenceNote: METRICS.slmInference.note,
       evidenceKind: METRICS.slmInference.kind,
       github: "",

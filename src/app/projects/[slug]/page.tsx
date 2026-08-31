@@ -3,12 +3,21 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ApparatusSchematic } from "@/components/opening/ApparatusSchematic";
 import { EvidenceMeta } from "@/components/opening/EvidenceMeta";
+import { ExhibitNav } from "@/components/opening/ExhibitNav";
+import { ExhibitSection } from "@/components/opening/ExhibitSection";
 import { HalftonePlate } from "@/components/opening/HalftonePlate";
 import { PatentFigure } from "@/components/opening/PatentFigure";
+import { RecruiterNav } from "@/components/opening/RecruiterNav";
 import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
-import { exhibitTitle, projectOrigin, type EvidenceKind } from "@/lib/metrics";
+import {
+  exhibitTitle,
+  projectOrigin,
+  projectRole,
+  projectSourceLabel,
+  type EvidenceKind,
+} from "@/lib/metrics";
 import { projectJsonLd } from "@/lib/person";
 import { SITE_URL } from "@/lib/site";
 
@@ -63,7 +72,14 @@ export default async function ProjectPage({
   const contextLabel = "contextLabel" in project ? project.contextLabel : undefined;
   const inspectNote = "inspectNote" in project ? project.inspectNote : undefined;
   const why = "why" in project ? project.why : undefined;
+  const constraint = "constraint" in project ? project.constraint : undefined;
+  const limitation = "limitation" in project ? project.limitation : undefined;
+  const split = "split" in project ? project.split : undefined;
   const origin = projectOrigin({
+    slug: project.slug,
+    contextLabel,
+  });
+  const role = projectRole({
     slug: project.slug,
     contextLabel,
   });
@@ -83,17 +99,20 @@ export default async function ProjectPage({
         {BROADSHEET.skipExhibit}
       </a>
       <div className="relative z-[1] mx-auto max-w-2xl px-3 py-8 sm:px-5 sm:py-12">
+        <div className="sheet mb-4">
+          <RecruiterNav />
+        </div>
         <main id="exhibit">
           <article className="exhibit-clip sheet" aria-labelledby="exhibit-title">
             <header className="border-b-2 border-ink px-6 py-4">
               <div className="flex items-center justify-between gap-3">
                 <Link
                   href="/#work"
-                  className="exhibit-back font-mono text-[11px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4"
+                  className="exhibit-back font-mono text-[12px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4"
                 >
                   ← {BROADSHEET.backToWork}
                 </Link>
-                <span className="font-mono text-[11px] text-faded">{project.date}</span>
+                <span className="font-mono text-[12px] text-faded">{project.date}</span>
               </div>
               <p className="mt-3 font-mono text-[12px] uppercase tracking-[0.28em] text-faded">
                 Clipping · Exhibit · {project.date}
@@ -125,6 +144,10 @@ export default async function ProjectPage({
                     <dd>{project.date}</dd>
                   </div>
                   <div>
+                    <dt>My role</dt>
+                    <dd>{role}</dd>
+                  </div>
+                  <div>
                     <dt>Origin</dt>
                     <dd>{origin}</dd>
                   </div>
@@ -136,47 +159,64 @@ export default async function ProjectPage({
                   ) : null}
                   <div>
                     <dt>Source</dt>
-                    <dd>{project.github ? "Public repository" : "On this domain"}</dd>
+                    <dd>{projectSourceLabel(project.github)}</dd>
                   </div>
                 </dl>
-                <section id="measurement" className="mt-6" aria-labelledby="exhibit-measurement">
-                  <h2
-                    id="exhibit-measurement"
-                    className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded"
-                  >
-                    The measurement
-                  </h2>
+                <dl className="exhibit-rail mt-3" data-testid="evidence-card">
+                  <div>
+                    <dt>Result</dt>
+                    <dd>{project.impact}</dd>
+                  </div>
+                  {evidenceKind ? (
+                    <div>
+                      <dt>Kind</dt>
+                      <dd>
+                        <EvidenceMeta note={evidenceNote} kind={evidenceKind} />
+                      </dd>
+                    </div>
+                  ) : (
+                    <div>
+                      <dt>Kind</dt>
+                      <dd>Capability as filed — not a numbered experiment</dd>
+                    </div>
+                  )}
+                  {project.apparatus.runtime ? (
+                    <div>
+                      <dt>Runtime</dt>
+                      <dd>{project.apparatus.runtime}</dd>
+                    </div>
+                  ) : null}
+                </dl>
+                {split ? (
+                  <p className="mt-4 max-w-[68ch] font-mono text-[12px] leading-relaxed text-faded" data-testid="retrieval-split">
+                    {split}
+                  </p>
+                ) : null}
+                <ExhibitSection id="measurement" title="The measurement">
                   <p className="metric-row mt-2">{project.impact}</p>
                   <EvidenceMeta note={evidenceNote} kind={evidenceKind} />
-                </section>
-                <section id="problem" className="mt-6" aria-labelledby="exhibit-problem">
-                  <h2
-                    id="exhibit-problem"
-                    className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded"
-                  >
-                    The problem
-                  </h2>
+                </ExhibitSection>
+                <ExhibitSection id="problem" title="The problem">
                   <p className="mt-2 max-w-[68ch] font-display text-[16px] leading-[1.65] text-ink">
                     {project.purpose}
                   </p>
                   {why ? (
                     <p className="mt-3 max-w-[68ch] font-display text-[16px] leading-snug text-ink">{why}</p>
                   ) : null}
-                </section>
+                </ExhibitSection>
                 {judgment ? (
-                  <section id="decision" className="mt-6" aria-labelledby="exhibit-decision">
-                    <h2
-                      id="exhibit-decision"
-                      className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded"
-                    >
-                      The decision
-                    </h2>
+                  <ExhibitSection id="decision" title="The decision">
                     <p className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug text-ink">
                       {judgment}
                     </p>
-                  </section>
+                  </ExhibitSection>
                 ) : null}
-                <p className="mt-4 drop-cap max-w-[68ch] font-lora text-[16px] leading-[1.7] italic text-faded">
+                {constraint ? (
+                  <ExhibitSection id="constraint" title="Constraint">
+                    <p className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug text-ink">{constraint}</p>
+                  </ExhibitSection>
+                ) : null}
+                <p className="mt-4 max-w-[68ch] font-lora text-[16px] leading-[1.7] italic text-faded">
                   {project.description}
                 </p>
               </section>
@@ -196,47 +236,29 @@ export default async function ProjectPage({
                 </div>
               </section>
 
-              <section id="apparatus" className="mt-8" aria-labelledby="exhibit-apparatus">
-                <h2
-                  id="exhibit-apparatus"
-                  className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded"
-                >
-                  Proof · apparatus
-                </h2>
+              <ExhibitSection id="apparatus" title="Proof · apparatus">
                 <div className="mt-3">
                   <ApparatusSchematic apparatus={project.apparatus} />
                 </div>
                 <div className="mt-4">
                   <PatentFigure spec={project.patent} />
                 </div>
-              </section>
+              </ExhibitSection>
 
-              <section id="line" className="mt-10" aria-labelledby="exhibit-line">
-                <h2
-                  id="exhibit-line"
-                  className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded"
-                >
-                  The line
-                </h2>
+              <ExhibitSection id="line" title="The line">
                 <ol className="mt-3 space-y-3">
                   {project.bullets.map((bullet, i) => (
                     <li key={i} className="flex gap-3">
-                      <span className="font-mono text-[11px] text-score-red">
+                      <span className="font-mono text-[12px] text-score-red">
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <p className="font-display text-[16px] leading-relaxed">{bullet}</p>
                     </li>
                   ))}
                 </ol>
-              </section>
+              </ExhibitSection>
 
-              <section id="decisions" className="mt-10" aria-labelledby="exhibit-tech">
-                <h2
-                  id="exhibit-tech"
-                  className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded"
-                >
-                  Decisions
-                </h2>
+              <ExhibitSection id="decisions" title="Decisions">
                 <ul className="mt-3 space-y-2">
                   {decisions.map((layer) => (
                     <li key={`${layer.role}-${layer.name}`} className="font-display text-[16px] leading-snug">
@@ -244,7 +266,13 @@ export default async function ProjectPage({
                     </li>
                   ))}
                 </ul>
-              </section>
+              </ExhibitSection>
+
+              {limitation ? (
+                <ExhibitSection id="limitations" title="Limitations">
+                  <p className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug text-ink">{limitation}</p>
+                </ExhibitSection>
+              ) : null}
 
               <nav className="mt-10 flex flex-wrap gap-4" aria-label="Exhibit links">
                 {project.github ? (
@@ -252,7 +280,7 @@ export default async function ProjectPage({
                     href={project.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="external-mark exhibit-repo border-2 border-ink bg-book-blue px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-paper"
+                    className="external-mark exhibit-repo border-2 border-ink bg-book-blue px-4 py-2 font-mono text-[12px] uppercase tracking-widest text-paper"
                   >
                     View {project.name} source
                   </a>
@@ -269,11 +297,14 @@ export default async function ProjectPage({
                 </p>
                 <Link
                   href="/#work"
-                  className="exhibit-back border-2 border-ink px-4 py-2 font-mono text-[11px] uppercase tracking-widest text-ink"
+                  className="exhibit-back border-2 border-ink px-4 py-2 font-mono text-[12px] uppercase tracking-widest text-ink"
                 >
                   ← {BROADSHEET.backToWork}
                 </Link>
               </nav>
+              <div className="mt-8 border-t border-ink pt-6">
+                <ExhibitNav slug={project.slug} />
+              </div>
             </div>
           </article>
         </main>

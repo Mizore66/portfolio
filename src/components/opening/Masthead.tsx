@@ -2,7 +2,7 @@ import { EvidenceMeta } from "@/components/opening/EvidenceMeta";
 import { RecruiterNav } from "@/components/opening/RecruiterNav";
 import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
-import { HERO_DESKS, HERO_PROOF } from "@/lib/metrics";
+import { HERO_PROOF, POSITIONING } from "@/lib/metrics";
 import { SITE_HOST } from "@/lib/site";
 
 export function Masthead() {
@@ -26,7 +26,7 @@ export function Masthead() {
             {BROADSHEET.tagline}
           </p>
           <p data-testid="masthead-desks" className="mt-4 font-display text-[16px] leading-snug text-ink">
-            Previously engineering at {HERO_DESKS.slice(0, -1).join(", ")}, and {HERO_DESKS[HERO_DESKS.length - 1]}.
+            {POSITIONING.desksLine}
           </p>
           <ul data-testid="masthead-proof" className="hero-proof mt-4">
             {HERO_PROOF.map((item) => (
@@ -42,17 +42,11 @@ export function Masthead() {
           <p data-testid="masthead-availability" className="mt-4 font-mono text-[12px] uppercase tracking-[0.12em] text-faded">
             {BROADSHEET.availability}
           </p>
-          <div className="masthead-contacts mt-5" data-testid="masthead-contacts">
-            <a className="masthead-chip masthead-chip-primary" href="#work">
+          <div className="masthead-contacts hero-cta mt-5" data-testid="masthead-contacts">
+            <a className="masthead-chip masthead-chip-primary" href="/#work">
               Selected work
             </a>
-            <a className="masthead-chip" href={BROADSHEET.printHref}>
-              {BROADSHEET.resumeLabel}
-              <span className="ml-2 font-normal normal-case tracking-normal text-faded">
-                {BROADSHEET.printEdition}
-              </span>
-            </a>
-            <a className="masthead-chip" href="#contact">
+            <a className="masthead-chip" href="/#contact">
               Contact
             </a>
           </div>

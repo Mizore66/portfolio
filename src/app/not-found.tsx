@@ -1,13 +1,23 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { RecruiterNav } from "@/components/opening/RecruiterNav";
 import { BROADSHEET } from "@/content/opening";
+
+export const metadata: Metadata = {
+  title: "Correction — A. T. Qumhiyeh",
+  description: "The page you requested was a misprint. The front page still holds the work.",
+};
 
 export default function NotFound() {
   return (
     <div className="min-h-screen text-ink">
       <div className="relative z-[1] mx-auto max-w-xl px-3 py-16 sm:px-5">
+        <div className="sheet mb-4">
+          <RecruiterNav />
+        </div>
         <main>
           <article className="sheet px-6 py-10" data-testid="correction" aria-labelledby="correction-hed">
-            <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-faded">
+            <p className="font-mono text-[12px] uppercase tracking-[0.28em] text-faded">
               {BROADSHEET.correctionKicker}
             </p>
             <h1
@@ -22,19 +32,19 @@ export default function NotFound() {
             <p className="mt-8 flex flex-wrap gap-4">
               <Link
                 href="/"
-                className="font-mono text-[11px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4 exhibit-back"
+                className="font-mono text-[12px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4 exhibit-back"
               >
                 ← {BROADSHEET.homeLink}
               </Link>
               <Link
                 href={BROADSHEET.printHref}
-                className="font-mono text-[11px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4"
+                className="font-mono text-[12px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4"
               >
                 {BROADSHEET.resumeLabel}
               </Link>
               <Link
                 href="/#contact"
-                className="font-mono text-[11px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4"
+                className="font-mono text-[12px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4"
               >
                 Contact
               </Link>

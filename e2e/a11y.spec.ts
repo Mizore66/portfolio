@@ -10,7 +10,7 @@ test.describe("axe", () => {
   test("home has no violations", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/");
-    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.getByTestId("masthead-role")).toBeVisible();
     await expectNoAxeViolations(page);
   });
 
@@ -31,6 +31,8 @@ test.describe("axe", () => {
     const response = await page.goto("/page-that-never-made-the-plate");
     expect(response?.status()).toBe(404);
     await expect(page.getByTestId("correction")).toBeVisible();
+    await expect(page).toHaveTitle(/Correction/);
+    await expect(page).not.toHaveTitle(/Opening Preparation/);
     await expect(page.locator("main")).toBeVisible();
     await expectNoAxeViolations(page);
   });

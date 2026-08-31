@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { EloCommitsChart } from "@/components/opening/EloCommitsChart";
 import { EvaluationsColumn } from "@/components/opening/EvaluationsColumn";
+import { RecruiterNav } from "@/components/opening/RecruiterNav";
 import { BROADSHEET } from "@/content/opening";
 import { LAB_ARTICLE } from "@/content/learned-evaluator";
 import { labArticleJsonLd } from "@/lib/person";
@@ -35,19 +36,22 @@ export default function LearnedEvaluatorPage() {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(labArticleJsonLd()) }}
         />
+        <div className="sheet mb-4">
+          <RecruiterNav />
+        </div>
         <main id="article">
           <article className="sheet px-6 py-8 sm:px-8 sm:py-10" aria-labelledby="lab-title">
             <header className="border-b-2 border-ink pb-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <Link
                   href="/#work"
-                  className="exhibit-back font-mono text-[11px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4"
+                  className="exhibit-back font-mono text-[12px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4"
                 >
                   ← {BROADSHEET.backToWork}
                 </Link>
                 <Link
                   href="/#lab"
-                  className="font-mono text-[11px] uppercase tracking-widest text-faded underline decoration-2 underline-offset-4"
+                  className="font-mono text-[12px] uppercase tracking-widest text-faded underline decoration-2 underline-offset-4"
                 >
                   {LAB_ARTICLE.kicker}
                 </Link>

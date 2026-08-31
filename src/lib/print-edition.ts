@@ -1,16 +1,12 @@
-import { FLAGSHIP_ID } from "@/content/opening";
+import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
 import { FEATURED_PROJECT_SLUGS, HERO_PROOF, POSITIONING } from "@/lib/metrics";
-import { occupancy, positionAfter, squareFile, squareRank } from "@/lib/chess/replay";
-import { collectPlies } from "@/lib/opening/tree";
 import { SITE_HOST, SITE_URL } from "@/lib/site";
 
 const PAGE_W = 612;
 const PAGE_H = 792;
 const M = 40;
 const INK = "0.102 0.071 0.047";
-const SQ = 22;
-const BOARD = 8 * SQ;
 
 function ascii(s: string): string {
   return s
@@ -53,15 +49,27 @@ function uriAnnot(x: number, y: number, width: number, uri: string): string {
   return `<< /Type /Annot /Subtype /Link /Rect [${n(x)} ${n(y - 2)} ${n(x + width)} ${n(y + 8)}] /Border [0 0 0] /A << /S /URI /URI (${pdfEscape(uri)}) >> >>`;
 }
 
+type Mark = { role: "H1" | "H2" | "P" | "Link"; mcid: number };
+
+/**
+ * One-page tagged résumé. Single column, no chessboard: ATS and screen
+ * readers should not meet the Italian Game before Education.
+ */
 export function buildPrintEditionPdf(): Uint8Array {
   const d = resumeData;
   const ops: string[] = [];
-  const colW = 318;
   const annots: string[] = [];
+  const marks: Mark[] = [];
   const CHAR_W = 4;
+  let mcid = 0;
 
-  const rule = (y: number, w: number) => {
-    ops.push(`${INK} RG`, `${w} w`, `${M} ${n(y)} m ${PAGE_W - M} ${n(y)} l S`);
+  const begin = (role: Mark["role"]) => {
+    const id = mcid++;
+    ops.push(`/${role} << /MCID ${id} >> BDC`);
+    marks.push({ role, mcid: id });
+  };
+  const end = () => {
+    ops.push("EMC");
   };
   const txt = (font: "F1" | "F2" | "F3", size: number, x: number, y: number, s: string) => {
     ops.push(
@@ -73,202 +81,176 @@ export function buildPrintEditionPdf(): Uint8Array {
       "ET",
     );
   };
-  const heading = (y: number, t: string) => {
-    txt("F2", 8.5, M, y, t.toUpperCase());
-    ops.push(`${INK} RG`, "0.5 w", `${M} ${n(y - 3)} m ${M + colW} ${n(y - 3)} l S`);
-    return y - 16;
+  const marked = (role: Mark["role"], write: () => void) => {
+    begin(role);
+    write();
+    end();
+  };
+  const rule = (y: number, w: number) => {
+    ops.push(`${INK} RG`, `${w} w`, `${M} ${n(y)} m ${PAGE_W - M} ${n(y)} l S`);
   };
 
   rule(PAGE_H - 32, 1.8);
   rule(PAGE_H - 36, 0.5);
-  txt("F2", 9, M, PAGE_H - 52, "OPENING PREPARATION  |  Resume  |  Print edition");
-  txt("F3", 9, PAGE_W - M - 22, PAGE_H - 52, "C50");
-  txt("F2", 20, M, PAGE_H - 76, d.name);
-  let headY = PAGE_H - 90;
+  marked("P", () => txt("F2", 9, M, PAGE_H - 52, "OPENING PREPARATION  |  Resume  |  Print edition"));
+  marked("H1", () => txt("F2", 20, M, PAGE_H - 76, d.name));
+  let y = PAGE_H - 90;
   for (const line of wrap(d.headline, 92)) {
-    txt("F1", 9, M, headY, line);
-    headY -= 11;
-  }
-  for (const line of wrap(POSITIONING.tagline, 92)) {
-    txt("F3", 8, M, headY, line);
-    headY -= 11;
+    marked("P", () => txt("F1", 9, M, y, line));
+    y -= 11;
   }
   const emailLine = `${d.email}  |  ${SITE_HOST}`;
-  txt("F1", 8, M, headY, emailLine);
-  annots.push(uriAnnot(M, headY, d.email.length * CHAR_W, `mailto:${d.email}`));
+  marked("Link", () => txt("F1", 8, M, y, emailLine));
+  annots.push(uriAnnot(M, y, d.email.length * CHAR_W, `mailto:${d.email}`));
   annots.push(
-    uriAnnot(
-      M + (d.email.length + 5) * CHAR_W,
-      headY,
-      SITE_HOST.length * CHAR_W,
-      SITE_URL,
-    ),
+    uriAnnot(M + (d.email.length + 5) * CHAR_W, y, SITE_HOST.length * CHAR_W, SITE_URL),
   );
-  headY -= 11;
+  y -= 11;
   const social = `${d.github}  |  ${d.linkedin}`;
-  txt("F1", 8, M, headY, social);
-  annots.push(uriAnnot(M, headY, d.github.length * CHAR_W, `https://${d.github}`));
+  marked("Link", () => txt("F1", 8, M, y, social));
+  annots.push(uriAnnot(M, y, d.github.length * CHAR_W, `https://${d.github}`));
   annots.push(
     uriAnnot(
       M + (d.github.length + 5) * CHAR_W,
-      headY,
+      y,
       d.linkedin.length * CHAR_W,
       `https://${d.linkedin.replace(/\/$/, "")}`,
     ),
   );
-  headY -= 12;
+  y -= 12;
   for (const line of wrap(POSITIONING.availability, 92)) {
-    txt("F3", 8, M, headY, line);
-    headY -= 11;
+    marked("P", () => txt("F3", 8, M, y, line));
+    y -= 11;
   }
-  txt("F2", 8, M, headY, ascii(HERO_PROOF.map((item) => item.label).join("  |  ")));
-  headY -= 10;
-  rule(headY, 0.5);
-  rule(headY - 4, 1.4);
-  const headerBottom = headY - 4;
+  marked("P", () => txt("F2", 8, M, y, ascii(HERO_PROOF.map((item) => item.label).join("  |  "))));
+  y -= 10;
+  rule(y, 0.5);
+  rule(y - 4, 1.4);
+  y -= 22;
 
-  const boardX = PAGE_W - M - BOARD;
-  const boardY = headerBottom - 18 - BOARD;
-  ops.push("0.91 0.86 0.77 rg", `${n(boardX)} ${n(boardY)} ${BOARD} ${BOARD} re`, "f");
-  for (let rank = 0; rank < 8; rank++) {
-    for (let file = 0; file < 8; file++) {
-      if ((file + rank) % 2 !== 0) continue;
-      const x = boardX + file * SQ;
-      const y = boardY + rank * SQ;
-      ops.push("0.56 0.52 0.45 rg", `${n(x)} ${n(y)} ${SQ} ${SQ} re`, "f");
-    }
-  }
-  ops.push(`${INK} RG`, "1.2 w", `${n(boardX)} ${n(boardY)} ${BOARD} ${BOARD} re`, "S");
-
-  const flagshipPlies = collectPlies(FLAGSHIP_ID);
-  const pieces = positionAfter(flagshipPlies).filter((p) => !p.captured);
-  const occ = occupancy(pieces);
-  const last = flagshipPlies[flagshipPlies.length - 1];
-  ops.push(`% fen-occ ${Object.entries(occ).sort(([a], [b]) => a.localeCompare(b)).map(([sq, p]) => `${sq}=${p}`).join(" ")}`);
-
-  if (last) {
-    for (const sq of [last.from, last.to]) {
-      const file = squareFile(sq);
-      const rank = squareRank(sq);
-      ops.push(
-        "0.82 0.55 0.48 rg",
-        `${n(boardX + file * SQ)} ${n(boardY + rank * SQ)} ${SQ} ${SQ} re`,
-        "f",
-      );
-    }
-    ops.push(`${INK} RG`, "1.2 w", `${n(boardX)} ${n(boardY)} ${BOARD} ${BOARD} re`, "S");
-  }
-
-  for (const piece of pieces) {
-    const file = squareFile(piece.square);
-    const rank = squareRank(piece.square);
-    const glyph = piece.color === "w" ? piece.type : piece.type.toLowerCase();
-    const font = piece.color === "w" ? "F2" : "F3";
-    const size = 13;
-    const x = boardX + file * SQ + 6.2;
-    const y = boardY + rank * SQ + 6.4;
-    ops.push(`% occ ${piece.square} ${piece.color}${piece.type}`);
-    txt(font, size, x, y, glyph);
-  }
-
-  for (let i = 0; i < 8; i++) {
-    txt("F1", 7, boardX + i * SQ + 8, boardY - 11, "abcdefgh"[i]);
-    txt("F1", 7, boardX - 10, boardY + i * SQ + 7, String(i + 1));
-  }
-  txt("F3", 8, boardX, boardY - 24, "5. d4 - the Italian break");
-
-  const headingRight = (y: number, t: string) => {
-    txt("F2", 8, boardX, y, t.toUpperCase());
-    ops.push(
-      `${INK} RG`,
-      "0.5 w",
-      `${n(boardX)} ${n(y - 3)} m ${n(boardX + BOARD)} ${n(y - 3)} l S`,
-    );
-    return y - 14;
+  const heading = (t: string) => {
+    marked("H2", () => txt("F2", 8.5, M, y, t.toUpperCase()));
+    ops.push(`${INK} RG`, "0.5 w", `${M} ${n(y - 3)} m ${PAGE_W - M} ${n(y - 3)} l S`);
+    y -= 16;
   };
 
-  let y = headerBottom - 22;
-  y = heading(y, "Education");
-  txt("F2", 9, M, y, d.education.degree);
-  y -= 12;
-  for (const line of wrap(
-    `${d.education.school}, ${d.education.location}. ${d.education.honours}. Graduated ${d.education.graduation}. WAM ${d.education.wam}  |  CGPA ${d.education.cgpa}.`,
-    58,
-  )) {
-    txt("F1", 8, M, y, line);
-    y -= 11;
-  }
+  heading("Education");
+  marked("P", () => txt("F2", 9, M, y, d.education.degree));
+  y -= 11;
+  marked("P", () =>
+    txt("F1", 8, M, y, ascii(`${d.education.school}, ${d.education.location}. ${d.education.honours}.`)),
+  );
+  y -= 10;
+  marked("P", () =>
+    txt("F1", 8, M, y, ascii(`Graduated ${d.education.graduation}. WAM ${d.education.wam}  |  CGPA ${d.education.cgpa}.`)),
+  );
+  y -= 14;
 
-  y -= 8;
-  y = heading(y, "Experience");
+  heading("Experience");
   for (const job of d.experience) {
     const who = job.company ? `${job.title}, ${job.company}` : job.title;
-    txt("F2", 9, M, y, ascii(who));
-    y -= 11;
-    txt("F3", 8, M, y, ascii(`${job.period}  |  ${job.tech.join(", ")}  |  ${job.impact}`));
-    y -= 16;
-  }
-
-  y -= 8;
-  y = heading(y, "Skills");
-  const skillLines = [
-    `Languages: ${d.skills.languages.join(", ")}`,
-    `Frameworks: ${d.skills.frameworks.join(", ")}`,
-    `Tools: ${d.skills.devTools.join(", ")}`,
-    `Libraries: ${d.skills.libraries.join(", ")}`,
-    `Databases: ${d.skills.databases.join(", ")}`,
-  ];
-  for (const block of skillLines) {
-    for (const line of wrap(block, 58)) {
-      txt("F1", 8, M, y, line);
-      y -= 11;
+    marked("P", () => txt("F2", 9, M, y, ascii(who)));
+    y -= 10;
+    marked("P", () => txt("F3", 8, M, y, ascii(`${job.period}  |  ${job.tech.join(", ")}`)));
+    y -= 10;
+    for (const bullet of job.bullets) {
+      for (const line of wrap(`- ${bullet}`, 96)) {
+        marked("P", () => txt("F1", 8, M, y, line));
+        y -= 9;
+      }
     }
+    y -= 4;
   }
 
+  heading("Selected work");
   const featuredSet = new Set<string>(FEATURED_PROJECT_SLUGS);
-  let ry = boardY - 40;
-  ry = headingRight(ry, "Selected work");
   for (const p of d.projects.filter((proj) => featuredSet.has(proj.slug))) {
     const extra =
       p.slug === "veridian"
         ? " 3-sheet filing: economized plant / policy retrieval / distillation."
         : "";
-    txt("F2", 8, boardX, ry, ascii(p.name));
-    ry -= 10;
-    for (const line of wrap(`${p.subtitle}. ${p.impact}.${extra}`, 32)) {
-      txt("F1", 7, boardX, ry, line);
-      ry -= 9;
+    marked("P", () => txt("F2", 9, M, y, ascii(`${p.name}  |  ${p.impact}`)));
+    y -= 10;
+    for (const line of wrap(`${p.subtitle}.${extra}`, 96)) {
+      marked("P", () => txt("F1", 8, M, y, line));
+      y -= 9;
     }
-    ry -= 3;
+    y -= 2;
   }
-  txt("F1", 7, boardX, ry, "Also:");
-  ry -= 9;
-  for (const p of d.projects.filter((proj) => !featuredSet.has(proj.slug))) {
-    txt("F1", 7, boardX, ry, ascii(p.name));
-    ry -= 9;
-    txt("F1", 7, boardX, ry, ascii(p.impact));
-    ry -= 11;
+  const also = d.projects
+    .filter((proj) => !featuredSet.has(proj.slug))
+    .map((p) => `${p.name} (${p.impact})`)
+    .join("  |  ");
+  for (const line of wrap(`Also: ${also}`, 96)) {
+    marked("P", () => txt("F1", 8, M, y, ascii(line)));
+    y -= 10;
   }
 
-  txt("F3", 7, M, 36, "C50  |  Italian Game  |  a game played since I was a teenager.");
-  txt(
-    "F3",
-    7,
-    M,
-    24,
-    "Photographs real and composed; impressions imagined; the subject is real throughout.",
+  y -= 4;
+  heading("Stack");
+  marked("P", () =>
+    txt(
+      "F1",
+      8,
+      M,
+      y,
+      ascii(
+        `Languages: ${d.skillsCore.languages.join(", ")}  |  Infrastructure: ${d.skillsCore.infrastructure.join(", ")}`,
+      ),
+    ),
   );
-  rule(48, 0.5);
+  y -= 10;
+  marked("P", () => txt("F1", 8, M, y, ascii(`ML: ${d.skillsCore.ml.join(", ")}`)));
+  y -= 12;
+
+  rule(y, 0.5);
+  y -= 12;
+  const paperUrl = `${SITE_URL}${BROADSHEET.paperHref}`;
+  const paperLine = `The chess opening is on ${SITE_HOST}${BROADSHEET.paperHref} - not on this page.`;
+  marked("Link", () => txt("F3", 7, M, y, ascii(paperLine)));
+  annots.push(uriAnnot(M, y, Math.min(paperLine.length * 3.2, PAGE_W - 2 * M), paperUrl));
+  y -= 10;
+  marked("P", () => txt("F3", 7, M, y, "C50  |  Italian Game  |  a game played since I was a teenager."));
+  y -= 10;
+  marked("P", () =>
+    txt(
+      "F3",
+      7,
+      M,
+      y,
+      "Photographs real and composed; impressions imagined; the subject is real throughout.",
+    ),
+  );
+  y -= 10;
+  marked("P", () => txt("F1", 7, M, y, "Anas-Qumhiyeh-Resume.pdf"));
 
   const content = ops.join("\n");
   const annotObjs = annots;
-  const annotRefs = annotObjs.map((_, i) => `${8 + i} 0 R`).join(" ");
+  const annotStart = 8;
+  const annotRefs = annotObjs.map((_, i) => `${annotStart + i} 0 R`).join(" ");
+  const structStart = annotStart + annotObjs.length;
+  const structElems = marks.map(
+    (mark, i) =>
+      `<< /Type /StructElem /S /${mark.role} /P ${structStart + marks.length} 0 R /Pg 7 0 R /K ${mark.mcid} >>`,
+  );
+  const documentObjNum = structStart + marks.length;
+  const rootObjNum = documentObjNum + 1;
+  const parentTreeObjNum = rootObjNum + 1;
+  const infoObjNum = parentTreeObjNum + 1;
+  const structKids = marks.map((_, i) => `${structStart + i} 0 R`).join(" ");
+  const parentKids = marks.map((_, i) => `${structStart + i} 0 R`).join(" ");
   const pageDict = annotObjs.length
-    ? `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PAGE_W} ${PAGE_H}] /Contents 6 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Annots [${annotRefs}] >>`
-    : `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PAGE_W} ${PAGE_H}] /Contents 6 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> >>`;
+    ? `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PAGE_W} ${PAGE_H}] /Contents 6 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Annots [${annotRefs}] /StructParents 0 >>`
+    : `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PAGE_W} ${PAGE_H}] /Contents 6 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /StructParents 0 >>`;
+
+  const catalog = `<< /Type /Catalog /Pages 2 0 R /Lang (en-GB) /MarkInfo << /Marked true >> /StructTreeRoot ${rootObjNum} 0 R /ViewerPreferences << /DisplayDocTitle true >> >>`;
+  const documentElem = `<< /Type /StructElem /S /Document /Lang (en-GB) /K [${structKids}] /P ${rootObjNum} 0 R >>`;
+  const structRoot = `<< /Type /StructTreeRoot /K [${documentObjNum} 0 R] /ParentTree ${parentTreeObjNum} 0 R /ParentTreeNextKey 1 >>`;
+  const parentTree = `<< /Nums [ 0 [${parentKids}] ] >>`;
+  const info = `<< /Title (${pdfEscape("Anas Tarek Qumhiyeh - Resume")}) /Author (${pdfEscape(d.name)}) /Subject (${pdfEscape(d.headline)}) /Lang (en-GB) >>`;
 
   const objects: string[] = [
-    "<< /Type /Catalog /Pages 2 0 R >>",
+    catalog,
     "<< /Type /Pages /Kids [7 0 R] /Count 1 >>",
     "<< /Type /Font /Subtype /Type1 /BaseFont /Times-Roman >>",
     "<< /Type /Font /Subtype /Type1 /BaseFont /Times-Bold >>",
@@ -276,6 +258,11 @@ export function buildPrintEditionPdf(): Uint8Array {
     `<< /Length ${content.length} >>\nstream\n${content}\nendstream`,
     pageDict,
     ...annotObjs,
+    ...structElems,
+    documentElem,
+    structRoot,
+    parentTree,
+    info,
   ];
 
   let out = "%PDF-1.4\n";
@@ -290,6 +277,6 @@ export function buildPrintEditionPdf(): Uint8Array {
   for (let i = 1; i < offsets.length; i++) {
     out += `${String(offsets[i]).padStart(10, "0")} 00000 n \n`;
   }
-  out += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+  out += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R /Info ${infoObjNum} 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
   return new TextEncoder().encode(out);
 }

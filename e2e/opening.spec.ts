@@ -2,12 +2,14 @@ import { expect, test } from "@playwright/test";
 import { OPENING_NODES } from "../src/content/opening";
 import { PHASE2_EXHIBITS } from "../src/lib/chess/phase2";
 
+const PAPER = "/opening-preparation";
+
 test.describe("Opening Preparation", () => {
   test("notation lists every node and stays in sync with the board", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await expect(page.getByTestId("notation-view")).toBeVisible();
@@ -34,7 +36,7 @@ test.describe("Opening Preparation", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByRole("heading", { level: 1, name: "Anas T. Qumhiyeh" })).toBeVisible();
     await expect(page.getByText("A. T. Qumhiyeh", { exact: true })).toHaveCount(0);
@@ -83,7 +85,6 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="club"]')).toHaveCount(0);
     await expect(page.getByText("High Ground")).toHaveCount(0);
     await expect(page.getByText("Club Years")).toHaveCount(0);
-    await expect(page.getByTestId("about-band")).toContainText(/played chess since I was a teenager/);
     await expect(page.locator("#chapter-e5 [data-testid='halftone-plate']")).toHaveCount(0);
     await expect(page.locator("#chapter-exd4 [data-testid='halftone-plate']")).toHaveCount(0);
     await expect(page.locator("#chapter-re1 [data-testid='inline-diagram']")).toHaveCount(0);
@@ -192,7 +193,7 @@ test.describe("Opening Preparation", () => {
 
   test("the engine eval stays inside the bar", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByTestId("engine-eval")).not.toHaveText("…", { timeout: 4000 });
 
@@ -222,7 +223,7 @@ test.describe("Opening Preparation", () => {
 
   test("arrow keys walk the mainline", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=start");
+    await page.goto(`${PAPER}?move=start`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="start"]')).toHaveAttribute(
@@ -251,7 +252,7 @@ test.describe("Opening Preparation", () => {
 
   test("tree and notation stay in sync", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=start");
+    await page.goto(`${PAPER}?move=start`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="start"]')).toHaveAttribute(
@@ -270,7 +271,7 @@ test.describe("Opening Preparation", () => {
 
   test("mobile viewport shows notation, not the tree", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await expect(page.getByTestId("notation-view")).toBeVisible();
@@ -282,17 +283,17 @@ test.describe("Opening Preparation", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=d4");
+    await page.goto(`${PAPER}?move=d4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByRole("heading", { level: 3, name: "The Central Break" })).toBeVisible();
 
-    await page.goto("/?move=not-a-node");
+    await page.goto(`${PAPER}?move=not-a-node`);
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="d4"]')).toHaveAttribute(
       "aria-current",
       "true",
     );
 
-    await page.goto("/?move=d4");
+    await page.goto(`${PAPER}?move=d4`);
     await expect(page.getByRole("heading", { level: 3, name: "The Central Break" })).toBeVisible();
     await page.getByRole("link", { name: "Veridian" }).first().evaluate((el: HTMLAnchorElement) => {
       el.click();
@@ -307,7 +308,7 @@ test.describe("Opening Preparation", () => {
   test("the e-pawn glides on 1.e4 instead of teleporting", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=start");
+    await page.goto(`${PAPER}?move=start`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: "Opening Preparation" })).toBeVisible();
 
@@ -343,7 +344,7 @@ test.describe("Opening Preparation", () => {
   }) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=start");
+    await page.goto(`${PAPER}?move=start`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await page.locator('[data-testid="tree-view"] [data-node-id="e4"]').click();
@@ -379,7 +380,7 @@ test.describe("Opening Preparation", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=start");
+    await page.goto(`${PAPER}?move=start`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await page.locator('[data-testid="tree-view"] [data-node-id="d4"]').click();
     await expect(page.getByTestId("glyph-stamp")).toHaveAttribute("data-stamp", "press");
@@ -388,7 +389,7 @@ test.describe("Opening Preparation", () => {
     await page.locator('[data-testid="tree-view"] [data-node-id="d4"]').click();
     await expect(page.getByTestId("glyph-stamp")).toHaveAttribute("data-stamp", "seen");
 
-    await page.goto("/?move=start");
+    await page.goto(`${PAPER}?move=start`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(
       page.locator('[data-testid="tree-view"] [data-node-id="start"]'),
@@ -409,7 +410,7 @@ test.describe("Opening Preparation", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await expect(page.locator('[data-life-clip="true"]')).toHaveCount(0);
@@ -418,7 +419,7 @@ test.describe("Opening Preparation", () => {
       timeout: 1000,
     });
 
-    await page.goto("/?tape=1");
+    await page.goto(`${PAPER}?tape=1`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.locator('[data-life-clip="true"]')).toHaveCount(0);
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="hike"]')).toHaveCount(0);
@@ -426,7 +427,7 @@ test.describe("Opening Preparation", () => {
 
   test("the engine prints a live PV", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect.poll(async () => page.getByTestId("engine-pv").innerText(), { timeout: 12000 }).not.toBe("…");
     await expect(page.getByTestId("engine-pv")).not.toHaveText(/^[a-h][1-8][a-h][1-8]/);
@@ -490,7 +491,7 @@ test.describe("Opening Preparation", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     const boardX = (await page.getByTestId("board-diagram").boundingBox())!.x;
@@ -509,7 +510,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("broadsheet-filler")).toContainText("Situations Wanted");
     await expect(page.getByTestId("broadsheet-filler")).toContainText("Errata");
     await expect(page.getByTestId("broadsheet-filler")).not.toContainText(/anasqumhiyeh@/i);
-    await expect(page.getByRole("link", { name: "Print edition" }).first()).toBeVisible();
+    await expect(page.getByTestId("recruiter-nav").locator('a[href="/print-edition"]')).toBeVisible();
     await expect(page.getByTestId("play-the-position")).toBeVisible();
     await expect(page.getByTestId("pv-arrow")).toBeVisible({ timeout: 5000 });
 
@@ -520,7 +521,7 @@ test.describe("Opening Preparation", () => {
 
   test("the diagram quiz and a legal play ply both work", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=nf6");
+    await page.goto(`${PAPER}?move=nf6`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByTestId("find-the-break")).toBeVisible();
     await page.locator('[data-sq="d2"]').click();
@@ -529,7 +530,7 @@ test.describe("Opening Preparation", () => {
       page.locator('[data-testid="notation-view"] [data-node-id="d4"]'),
     ).toHaveAttribute("aria-current", "true");
 
-    await page.goto("/?move=start");
+    await page.goto(`${PAPER}?move=start`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(
       page.locator('[data-testid="tree-view"] [data-node-id="start"]'),
@@ -557,7 +558,7 @@ test.describe("Opening Preparation", () => {
 
   test("reading the article does not yank the page back to the tree", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await page.locator("#chapter-e4").evaluate((el) => el.scrollIntoView({ block: "start" }));
@@ -570,7 +571,7 @@ test.describe("Opening Preparation", () => {
 
   test("a tree click scrolls the window to that chapter", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     const startY = await page.evaluate(() => window.scrollY);
     await page.locator('[data-testid="tree-view"] [data-node-id="re1"]').click();
@@ -585,7 +586,7 @@ test.describe("Opening Preparation", () => {
 
   test("the start-position PV is the repertoire ply, not a shallow Nc3", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=start");
+    await page.goto(`${PAPER}?move=start`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect
       .poll(async () => page.getByTestId("engine-pv").innerText(), { timeout: 12000 })
@@ -601,7 +602,7 @@ test.describe("Opening Preparation", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     const index = page.getByTestId("issue-index");
     await expect(index).toBeVisible();
@@ -619,7 +620,7 @@ test.describe("Opening Preparation", () => {
 
   test("right-file pieces stay inside the board at a 390px viewport", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/?move=start");
+    await page.goto(`${PAPER}?move=start`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     const plane = page.getByTestId("board-plane");
     await expect(plane).toBeVisible();
@@ -668,7 +669,7 @@ test.describe("Opening Preparation", () => {
 
   test("scroll-spy updates the URL without snapping the page to the top", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.locator('#chapter-e4 img[src*="clip-sunway"]')).toBeVisible();
     await expect(page.locator('#chapter-bc4 img[src*="clip-wd"]')).toBeVisible();
@@ -697,7 +698,7 @@ test.describe("Opening Preparation", () => {
 
   test("the page is one banner, one main, one footer, and a skip link", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.locator("header")).toHaveCount(1);
     await expect(page.locator("main")).toHaveCount(1);
@@ -721,7 +722,7 @@ test.describe("Opening Preparation", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await page.locator("#chapter-d4").evaluate((el) => el.scrollIntoView({ block: "start" }));
     const y0 = await page.evaluate(() => window.scrollY);
@@ -744,7 +745,7 @@ test.describe("Opening Preparation", () => {
 
   test("the first viewport carries name and role", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByRole("heading", { level: 1, name: "Anas T. Qumhiyeh" })).toBeVisible();
     const role = await page.getByTestId("masthead-role").boundingBox();
@@ -766,18 +767,13 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("masthead-proof")).not.toContainText(/12×/);
     await expect(page.getByTestId("board-keys")).toBeVisible();
     await expect(page.getByTestId("how-to-read")).toContainText(/résumé is literal/i);
-    await expect(page.getByTestId("selected-work")).toBeVisible();
-    await expect(page.getByTestId("selected-work")).toContainText(/Independent systems/);
-    await expect(page.getByTestId("selected-work")).toContainText(/Independent ·/);
-    await expect(page.getByTestId("career-trajectory")).toContainText(/The desks compound/);
-    await expect(page.getByTestId("career-trajectory")).toContainText(/through-line/);
     await expect(page.getByTestId("recruiter-nav")).toContainText(/Work/);
     await expect(page.getByTestId("recruiter-nav")).toContainText(/Lab/);
   });
 
   test("chapter titles share one type size", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     const ids = ["e4", "nf3", "bc4", "oo", "d4", "re1"];
     const sizes = [];
@@ -792,7 +788,7 @@ test.describe("Opening Preparation", () => {
   test("the engine depth climbs in view before the PV is honest", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     const seen: number[] = [];
     await expect
       .poll(
@@ -812,13 +808,14 @@ test.describe("Opening Preparation", () => {
     await page.goto("/this-plate-was-never-set");
     await expect(page.getByTestId("correction")).toBeVisible();
     await expect(page.getByRole("heading", { name: /misprint/i })).toBeVisible();
-    await page.getByRole("link", { name: /Back to the game/i }).click();
-    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await page.getByRole("link", { name: /Back to the front page/i }).click();
+    await expect(page.getByRole("heading", { level: 1, name: "Anas T. Qumhiyeh" })).toBeVisible();
+    await expect(page.getByTestId("selected-work")).toBeVisible();
   });
 
   test("the colophon, puzzle, and situations-wanted box are on the paper", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByTestId("todays-puzzle")).toBeVisible();
     await expect(page.getByTestId("todays-puzzle")).toContainText(/find the break/i);
@@ -850,7 +847,7 @@ test.describe("Opening Preparation", () => {
 
   test("the mobile board stays in view while reading", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     const idle = (await page.getByTestId("board-diagram").boundingBox())!;
     expect(idle.height).toBeLessThan(280);
@@ -884,7 +881,7 @@ test.describe("Opening Preparation", () => {
 
   test("compact widths reflow the board instead of shrinking it", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     const plane390 = (await page.getByTestId("board-plane").boundingBox())!;
@@ -933,7 +930,7 @@ test.describe("Opening Preparation", () => {
 
   test("the engine lampshade keeps controls from jumping", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByTestId("engine-lampshade")).toBeVisible();
     const gap = async () => {
@@ -960,7 +957,7 @@ test.describe("Opening Preparation", () => {
   test("phase-2 toggle, badge, and match column", async ({ page }) => {
     test.skip(!PHASE2_EXHIBITS, "exhibits stay dark until the SPRT is on the paper");
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByTestId("engine-badge")).toContainText(/2200-anchored/i);
     await expect(page.getByTestId("engine-badge")).toContainText(/50k-node/i);
@@ -1014,7 +1011,7 @@ test.describe("Opening Preparation", () => {
       expect(t.x + t.width).toBeLessThanOrEqual(svgBox.x + svgBox.width + 1);
     }
 
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByTestId("engine-lampshade")).toContainText(/disagreed since 1997/);
 
@@ -1043,7 +1040,7 @@ test.describe("Opening Preparation", () => {
   test("learned n/s holds a quarter of handcrafted at a 390 viewport", async ({ page }) => {
     test.skip(!PHASE2_EXHIBITS, "n/s budget is measured with the exhibit live");
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect.poll(async () => Number(await page.getByTestId("engine-depth").getAttribute("data-nps")), {
       timeout: 8000,
@@ -1071,7 +1068,7 @@ test.describe("Opening Preparation", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     const hand = (await page.getByTestId("eval-handcrafted").boundingBox())!;
@@ -1089,7 +1086,7 @@ test.describe("Opening Preparation", () => {
     const stampBorder = await stamp.evaluate((el) => getComputedStyle(el).borderTopWidth);
     expect(Number.parseFloat(stampBorder)).toBeGreaterThanOrEqual(2);
 
-    await page.goto("/?move=start");
+    await page.goto(`${PAPER}?move=start`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await page.getByTestId("board-step-next").click();
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="e4"]')).toHaveAttribute(
@@ -1100,14 +1097,14 @@ test.describe("Opening Preparation", () => {
       "data-flagship-mark",
     );
 
-    await page.goto("/?move=d4");
+    await page.goto(`${PAPER}?move=d4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.locator("#chapter-d4 h3 [data-node-id='d4']")).toHaveAttribute(
       "data-flagship-mark",
       "true",
     );
 
-    await page.goto("/?move=e4");
+    await page.goto(`${PAPER}?move=e4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.locator("#chapter-d4 h3 [data-node-id='d4']")).toHaveAttribute(
       "data-flagship-mark",
@@ -1156,7 +1153,7 @@ test.describe("Opening Preparation", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     const chip = (await page.locator(".masthead-chip").first().boundingBox())!;
@@ -1180,15 +1177,14 @@ test.describe("Opening Preparation", () => {
     await expect.poll(async () => page.getByTestId("wayfind-index").getAttribute("data-shown")).toBe(
       "true",
     );
-    const way = (await page.getByTestId("wayfind-toggle").boundingBox())!;
-    expect(way.height).toBeGreaterThanOrEqual(44);
+    await expect(page.getByTestId("wayfind-toggle")).toBeHidden();
   });
 
   test("the patent lightbox close target is 44px and a backdrop tap dismisses", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/?move=d4");
+    await page.goto(`${PAPER}?move=d4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await page.locator("#chapter-d4 [data-testid='patent-expand']").click();
     const lightbox = page.locator("#chapter-d4 [data-testid='patent-lightbox']");
@@ -1203,7 +1199,7 @@ test.describe("Opening Preparation", () => {
 
   test("the lightbox traps tab and restores the expand control", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/?move=d4");
+    await page.goto(`${PAPER}?move=d4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     const expand = page.locator("#chapter-d4 [data-testid='patent-expand']");
     await expand.click();
@@ -1225,7 +1221,7 @@ test.describe("Opening Preparation", () => {
 
   test("a shared deep link names the chapter and the informant glyphs", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/?move=bc4");
+    await page.goto(`${PAPER}?move=bc4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.locator("#chapter-bc4")).toHaveAttribute("data-arrive", "true");
     const margin = await page.locator("#chapter-bc4").evaluate((el) =>
@@ -1239,7 +1235,7 @@ test.describe("Opening Preparation", () => {
   });
 
   test("deep links print a unique title; the apex is the canonical host", async ({ page }) => {
-    await page.goto("/?move=e4");
+    await page.goto(`${PAPER}?move=e4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page).toHaveTitle(/1\. e4! — The University Opening/);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /anasqumhiyeh\.dev\/?$/);
@@ -1258,7 +1254,7 @@ test.describe("Opening Preparation", () => {
 
   test("role plates do not advertise a 3840-wide candidate", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=e4");
+    await page.goto(`${PAPER}?move=e4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     const img = page.locator('#chapter-e4 img[src*="clip-sunway"]').first();
     await expect(img).toBeVisible();
@@ -1273,7 +1269,7 @@ test.describe("Opening Preparation", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 320, height: 640 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     const html = await page.content();
     expect(html).not.toMatch(/fonts\.googleapis\.com/);
@@ -1285,7 +1281,7 @@ test.describe("Opening Preparation", () => {
 
   test("WCAG 1.4.12 text spacing does not clip the justified column", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=e4");
+    await page.goto(`${PAPER}?move=e4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await page.addStyleTag({
       content: `* { letter-spacing: 0.12em !important; word-spacing: 0.16em !important; line-height: 1.5 !important; } p { margin-bottom: 2em !important; }`,
@@ -1303,7 +1299,7 @@ test.describe("Opening Preparation", () => {
 
   test("200% zoom falls into the compact stack without a sideways scroll", async ({ page }) => {
     await page.setViewportSize({ width: 640, height: 720 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
@@ -1333,7 +1329,7 @@ test.describe("Opening Preparation", () => {
 
   test("a deep-link session writes distinct titles into history", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=e4");
+    await page.goto(`${PAPER}?move=e4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page).toHaveTitle(/1\. e4! — The University Opening/);
     await page.locator('[data-testid="notation-view"] [data-node-id="e5"]').click();
@@ -1347,7 +1343,7 @@ test.describe("Opening Preparation", () => {
   test("forced-colors keeps the board, eval bar, and selection", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.emulateMedia({ forcedColors: "active" });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect
       .poll(async () =>
@@ -1369,7 +1365,7 @@ test.describe("Opening Preparation", () => {
   test("a missing learned packet prints the editor's line on the glass", async ({ page }) => {
     await page.route("**/engine/*.bin", (route) => route.abort());
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByTestId("weights-pending")).toContainText(
       /learned packet did not arrive/i,
@@ -1379,7 +1375,7 @@ test.describe("Opening Preparation", () => {
 
   test("print media keeps figures together and shows the sheet mark", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=d4");
+    await page.goto(`${PAPER}?move=d4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await page.emulateMedia({ media: "print" });
     await expect

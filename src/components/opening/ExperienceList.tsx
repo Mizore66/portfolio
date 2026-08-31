@@ -1,6 +1,6 @@
 import { companyAnchor } from "@/lib/anchors";
 import { resumeData } from "@/lib/data";
-import { POSITIONING, YEAR_INDEX } from "@/lib/metrics";
+import { POSITIONING, RETRIEVAL_SPLIT, YEAR_INDEX } from "@/lib/metrics";
 
 function yearsOf(period: string): string {
   const years = [...period.matchAll(/20\d{2}/g)].map((m) => m[0]);
@@ -36,9 +36,21 @@ export function ExperienceList() {
           </li>
         ))}
       </ol>
-      <p data-testid="career-trajectory" className="mt-6 max-w-[68ch] font-display text-[16px] leading-snug text-ink">
-        {POSITIONING.trajectory}
-      </p>
+      <div data-testid="career-trajectory">
+        <ol className="desk-summaries mt-6">
+          {POSITIONING.deskSummaries.map((row) => (
+            <li key={row.desk}>
+              <span className="font-mono text-[12px] uppercase tracking-[0.14em] text-faded">
+                {row.desk}
+              </span>
+              <span className="mt-1 block max-w-[68ch] font-display text-[16px] leading-snug text-ink">
+                {row.line}
+              </span>
+            </li>
+          ))}
+        </ol>
+        <p className="mt-4 max-w-[68ch] font-display text-[16px] italic text-ink">{POSITIONING.throughLine}</p>
+      </div>
       <ol className="mt-8">
         {resumeData.experience.map((job) => (
           <li
@@ -64,6 +76,11 @@ export function ExperienceList() {
                 </li>
               ))}
             </ul>
+            {job.company === "Monash University" ? (
+              <p className="mt-3 max-w-[68ch] font-mono text-[12px] leading-relaxed text-faded" data-testid="retrieval-split">
+                {RETRIEVAL_SPLIT}
+              </p>
+            ) : null}
           </li>
         ))}
       </ol>

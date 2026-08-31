@@ -1,12 +1,13 @@
 import { BROADSHEET } from "@/content/opening";
 
 const LINKS = [
-  { href: "#work", label: "Work" },
-  { href: "#experience", label: "Experience" },
-  { href: "#lab", label: "Lab" },
-  { href: "#about", label: "About" },
+  { href: "/", label: "Home" },
+  { href: "/#work", label: "Work" },
+  { href: "/#experience", label: "Experience" },
+  { href: "/#lab", label: "Lab" },
+  { href: "/#about", label: "About" },
   { href: BROADSHEET.printHref, label: BROADSHEET.resumeLabel },
-  { href: "#contact", label: "Contact" },
+  { href: "/#contact", label: "Contact" },
 ] as const;
 
 export function RecruiterNav() {
@@ -21,7 +22,7 @@ export function RecruiterNav() {
           </li>
         ))}
       </ul>
-      <a href="#the-game" className="recruiter-nav-stamp">
+      <a href={BROADSHEET.paperHref} className="recruiter-nav-stamp">
         C50
       </a>
     </nav>

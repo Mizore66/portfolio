@@ -15,6 +15,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
+      url: `${SITE_URL}/opening-preparation`,
+      lastModified: LAB_FILED,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
       url: `${SITE_URL}/lab/learned-evaluator`,
       lastModified: LAB_FILED,
       changeFrequency: "monthly",

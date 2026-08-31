@@ -18,5 +18,7 @@ describe("selection URL", () => {
     expect(selectionHref("/", "oo", false)).toBe("/?move=oo");
     expect(selectionHref("/", "oo", true)).toBe("/?move=oo&tape=1");
     expect(selectionHref("/", FLAGSHIP_ID, true)).toBe("/?tape=1");
+    expect(selectionHref("/opening-preparation", FLAGSHIP_ID, false)).toBe("/opening-preparation");
+    expect(selectionHref("/opening-preparation", "oo", false)).toBe("/opening-preparation?move=oo");
   });
 });

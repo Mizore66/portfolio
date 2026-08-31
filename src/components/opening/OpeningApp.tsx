@@ -3,14 +3,10 @@
 import dynamic from "next/dynamic";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
-import { AboutBand } from "@/components/opening/AboutBand";
 import { BoardDiagram } from "@/components/opening/BoardDiagram";
 import { BroadsheetFiller } from "@/components/opening/BroadsheetFiller";
 import { Closer } from "@/components/opening/Closer";
 import { Colophon } from "@/components/opening/Colophon";
-import { ContactBand } from "@/components/opening/ContactBand";
-import { FooterStrip } from "@/components/opening/FooterStrip";
-import { LabFilings, LabTeaser } from "@/components/opening/LabTeaser";
 import { GlassEngine, useEngineSearch, useNnueWeights } from "@/components/opening/GlassEngine";
 import { IssueIndex } from "@/components/opening/IssueIndex";
 import { NewspaperColumn } from "@/components/opening/NewspaperColumn";
@@ -62,10 +58,8 @@ function reducedMotion(): boolean {
 
 export function OpeningApp({
   staticBoard,
-  children,
 }: {
   staticBoard?: ReactNode;
-  children?: ReactNode;
 } = {}) {
   const selection = useSyncExternalStore(
     subscribeSelection,
@@ -485,7 +479,11 @@ export function OpeningApp({
   return (
     <>
       <main>
-          {children}
+          <p className="px-4 pt-4 sm:px-6">
+            <a href="/" className="font-mono text-[12px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4">
+              ← {BROADSHEET.homeLink}
+            </a>
+          </p>
           <section id="the-game" aria-labelledby="game-heading">
           <div className="game-band px-4 sm:px-6">
             <p className="band-kicker">{BROADSHEET.gameKicker} — C50</p>
@@ -499,7 +497,7 @@ export function OpeningApp({
               {BROADSHEET.gameDek}
             </p>
             <p className="mt-3 font-mono text-[12px] uppercase tracking-[0.14em]">
-              <a href="#lab" className="text-book-blue underline decoration-2 underline-offset-4">
+              <a href="#scoresheet" className="text-book-blue underline decoration-2 underline-offset-4">
                 {BROADSHEET.skipBoard}
               </a>
             </p>
@@ -617,6 +615,7 @@ export function OpeningApp({
             </aside>
             <NewspaperColumn />
             <section
+              id="scoresheet"
               data-testid="tree-column"
               className="col-stack flex min-w-0 flex-1 flex-col"
             >
@@ -643,18 +642,13 @@ export function OpeningApp({
             <p className="mt-2 max-w-[68ch] font-display text-[16px] italic text-faded">
               {BROADSHEET.labDek}
             </p>
-            <LabTeaser />
-            <LabFilings />
             <div className="mt-6 max-w-xl">
               <TodaysPuzzle selectedId={selectedId} onSelect={userSelect} />
             </div>
             <BroadsheetFiller />
           </section>
-          <AboutBand />
-          <ContactBand />
           </main>
       <footer data-testid="paper-footer" className="paper-footer">
-        <FooterStrip />
         <Closer />
         <Colophon />
       </footer>

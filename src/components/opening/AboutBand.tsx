@@ -7,7 +7,6 @@ export function AboutBand() {
       <h2 id="about-heading" className="band-title">
         {POSITIONING.dek}
       </h2>
-      <p className="mt-3 max-w-[68ch] font-display text-[16px] italic text-faded">{POSITIONING.tagline}</p>
       <p className="mt-4 max-w-[68ch] font-mono text-[12px] uppercase tracking-[0.08em] text-faded">
         {POSITIONING.seniority}
       </p>
@@ -18,7 +17,6 @@ export function AboutBand() {
             {para}
           </p>
         ))}
-        <p className="font-display text-[16px] leading-snug text-ink">{POSITIONING.next}</p>
       </div>
     </section>
   );

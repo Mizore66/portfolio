@@ -78,7 +78,7 @@ export const METRICS = {
     owner: "Veridian",
     runtime: "Cloud Run",
     display: "99.9% uptime",
-    note: "Cloud Run",
+    note: "evaluation · Cloud Run — not a named production SLO",
     kind: "evaluation" as const,
   },
   veridianEmissions: {
@@ -86,14 +86,14 @@ export const METRICS = {
     unit: "cloud emissions",
     owner: "Veridian",
     display: "−15% cloud emissions",
-    note: "Cloud Run scheduling",
+    note: "evaluation · Cloud Run scheduling vs the unscheduled box",
     kind: "evaluation" as const,
   },
   leadThroughput: {
     value: "100M",
     unit: "events/day",
     owner: "Distributed Lead Scorer",
-    display: "100M events/day",
+    display: "100M events/day · hours cut to minutes",
     note: "PySpark pipeline · hours cut to minutes",
     kind: "pipeline" as const,
   },
@@ -133,6 +133,10 @@ export const METRICS = {
     kind: "benchmark" as const,
   },
 } as const;
+
+/** Two retrieval numbers. Same comparison; different corpus, different owner. Not a retcon. */
+export const RETRIEVAL_SPLIT =
+  "+45% is the Monash contract on university regulations (Text-to-Cypher). +35% is the independent GraphRAG project on a university policy corpus. Same comparison — vector-only — different corpus, different filing.";
 
 export const FEATURED_PROJECT_SLUGS = [
   "veridian",
@@ -193,11 +197,28 @@ export const POSITIONING = {
   deskNote:
     "Professional desks are named and measured here; internal screenshots stay off the paper.",
   nameNote: "Anas T. Qumhiyeh on the masthead; Anas Tarek Qumhiyeh on the résumé.",
-  trajectory:
-    "The desks compound. Petronas was converting a licensed MATLAB back-end to Python, then presenting usability findings to department leadership. Western Digital put full-stack work behind roles for 50+ staff, with a WebSocket to the lab's deep-learning model. Setel was payments in production: authorization, capture, and tests on that path. Monash was retrieval over a graph of university regulations. The through-line is systems that have to keep working after they ship.",
+  desksLine: "Built payment, lab, and engineering systems at Setel, Western Digital, and Petronas.",
+  throughLine: "The through-line is systems that have to keep working after they ship.",
+  deskSummaries: [
+    {
+      desk: "Petronas",
+      line: "MATLAB back-end to Python; usability findings to department leadership.",
+    },
+    {
+      desk: "Western Digital",
+      line: "Lab dashboard for 50+ staff; WebSocket to the lab model.",
+    },
+    {
+      desk: "Setel",
+      line: "Payments in production: authorization, capture, and tests.",
+    },
+    {
+      desk: "Monash University",
+      line: "Retrieval over a graph of university regulations.",
+    },
+  ],
   about: [
-    "I'm a software engineer focused on ML infrastructure and data-intensive systems: retrieval, data pipelines, deployment, reliability, and the product surfaces around them.",
-    "I've worked across payment engineering at Setel, lab systems at Western Digital, engineering tooling at Petronas, and a GraphRAG contract at Monash University. ML projects range from model distillation to large-scale data processing. I like work that can be measured — latency, reliability, retrieval quality, test coverage, throughput — rather than demonstrated only through a polished demo.",
+    "I've worked across payment engineering at Setel, lab systems at Western Digital, engineering tooling at Petronas, and a GraphRAG contract at Monash University.",
     "Outside software, I've played chess since I was a teenager, which is why this portfolio is structured as a game. The moves are the work; the annotations are my interpretation of it.",
   ],
 } as const;
@@ -225,3 +246,17 @@ export function projectPath(slug: string): WorkPath {
 export function exhibitTitle(project: { name: string; subtitle: string }): string {
   return `${project.name} — ${project.subtitle}`;
 }
+
+/** Role is derived from origin. Do not invent architect / team lead. */
+export function projectRole(project: { slug: string; contextLabel?: string }): string {
+  const origin = projectOrigin(project);
+  if (origin === "Hackathon") return "Hackathon builder";
+  if (origin === "Laboratory") return "Laboratory experiment";
+  return "Sole builder";
+}
+
+export function projectSourceLabel(github: string): string {
+  return github ? "Public repository" : "No public repository";
+}
+
+export const PAPER_HREF = "/opening-preparation";

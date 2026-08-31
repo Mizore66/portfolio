@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { PROJECT_FIGURES } from "@/content/project-figures";
 import { resumeData } from "@/lib/data";
-import { FEATURED_PROJECT_SLUGS, HERO_DESKS, HERO_PROOF, METRICS, POSITIONING, exhibitTitle, projectOrigin, projectPath } from "@/lib/metrics";
+import { FEATURED_PROJECT_SLUGS, HERO_DESKS, HERO_PROOF, METRICS, POSITIONING, RETRIEVAL_SPLIT, exhibitTitle, projectOrigin, projectPath } from "@/lib/metrics";
 import { getNode } from "@/lib/opening/tree";
 
 describe("measured claims have one owner each", () => {
@@ -68,12 +68,20 @@ describe("measured claims have one owner each", () => {
   });
 
   it("states the career as compounding desks, not a pile of unrelated wins", () => {
-    expect(POSITIONING.trajectory).toMatch(/Petronas.*Western Digital.*Setel.*Monash/s);
-    expect(POSITIONING.trajectory).toMatch(/through-line/);
-    expect(POSITIONING.trajectory).toMatch(/department leadership/);
+    expect(POSITIONING.deskSummaries.map((d) => d.desk).join(" ")).toMatch(/Petronas/);
+    expect(POSITIONING.deskSummaries.map((d) => d.desk).join(" ")).toMatch(/Western Digital/);
+    expect(POSITIONING.deskSummaries.map((d) => d.desk).join(" ")).toMatch(/Setel/);
+    expect(POSITIONING.deskSummaries.map((d) => d.desk).join(" ")).toMatch(/Monash/);
+    expect(POSITIONING.throughLine).toMatch(/through-line/);
+    expect(POSITIONING.deskSummaries[0]?.line).toMatch(/department leadership/);
+    expect(POSITIONING.desksLine).toMatch(/Built payment, lab, and engineering systems/);
     expect(POSITIONING.independentDek).toMatch(/Independent/);
     expect(POSITIONING.professionalDek).toMatch(/Intern and contract/);
     expect(POSITIONING.next).toMatch(/fintech infrastructure/);
+    expect(RETRIEVAL_SPLIT).toMatch(/\+45%/);
+    expect(RETRIEVAL_SPLIT).toMatch(/\+35%/);
+    expect(RETRIEVAL_SPLIT).toMatch(/different corpus/);
+    expect(RETRIEVAL_SPLIT).not.toMatch(/after the Monash contract iteration/i);
   });
 
   it("labels projects by known origin and never invents a team size", () => {

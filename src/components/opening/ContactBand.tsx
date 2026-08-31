@@ -18,6 +18,12 @@ export function ContactBand() {
       <p className="mt-2 max-w-[68ch] font-display text-[16px] italic text-faded">
         {POSITIONING.contactHed}
       </p>
+      <p className="mt-2 max-w-[68ch] font-mono text-[12px] uppercase tracking-[0.08em] text-faded">
+        {POSITIONING.availability}
+      </p>
+      <p className="mt-1 max-w-[68ch] font-mono text-[12px] uppercase tracking-[0.08em] text-faded">
+        {POSITIONING.graduateNote}
+      </p>
       <p className="mt-4 font-mono text-[14px] text-ink" data-testid="contact-email">
         {resumeData.email}
       </p>

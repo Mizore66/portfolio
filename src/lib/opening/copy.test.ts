@@ -102,7 +102,9 @@ describe("SEO identity", () => {
     const graphrag = resumeData.projects.find((p) => p.slug === "multi-agent-graphrag")!;
     expect("why" in graphrag && graphrag.why).toMatch(/walk the graph/);
     expect(resumeData.projects.find((p) => p.slug === "veridian")?.why).toMatch(/Terraform change is read/);
-    expect(resumeData.projects.find((p) => p.slug === "slm-distillation-engine")?.why).toMatch(/QLoRA/);
+    expect(resumeData.projects.find((p) => p.slug === "slm-distillation-engine")?.why).toMatch(
+      /I used QLoRA to distil traces from a 70B teacher into a deployable 3B student/,
+    );
     expect(BROADSHEET.exhibitHost).toMatch(/no live host to sleep/);
     expect(BROADSHEET.exhibitGithub).toMatch(/GitHub is blocked/);
   });
@@ -123,6 +125,7 @@ describe("SEO identity", () => {
     const urls = sitemap().map((e) => e.url);
     expect(robots().sitemap).toMatch(/sitemap\.xml/);
     expect(urls.some((u) => u.endsWith("/lab/learned-evaluator"))).toBe(true);
+    expect(urls.some((u) => u.endsWith("/opening-preparation"))).toBe(true);
     for (const p of resumeData.projects) {
       expect(urls.some((u) => u.endsWith(`/projects/${p.slug}`)), p.slug).toBe(true);
     }
