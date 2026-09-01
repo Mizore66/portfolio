@@ -824,7 +824,10 @@
 }
 
 .engine-lampshade {
-  min-height: 3.5em;
+  min-height: 5.5em;
+}
+.hero-glass .engine-lampshade {
+  min-height: 0;
 }
 
 .hit-target {

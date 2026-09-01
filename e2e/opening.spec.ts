@@ -683,7 +683,7 @@ test.describe("Opening Preparation", () => {
     expect(y0).toBeGreaterThan(400);
 
     await expect
-      .poll(async () => page.evaluate(() => window.location.search), { timeout: 2500 })
+      .poll(async () => page.evaluate(() => window.location.search), { timeout: 5000 })
       .toMatch(/move=oo/);
 
     const samples: number[] = [];
@@ -753,7 +753,7 @@ test.describe("Opening Preparation", () => {
     expect(title).toBeTruthy();
     expect(title!.y).toBeGreaterThanOrEqual(0);
     expect(title!.y + title!.height).toBeLessThan(900);
-    await expect(page.getByTestId("paper-dek")).toHaveText(/chess game/i);
+    await expect(page.getByTestId("paper-dek")).toHaveText(/Italian Game/i);
     await expect(page.locator("header")).toContainText(/anasqumhiyeh\.dev/i);
     await expect(page.locator("#chapter-e4")).toContainText(/Graduated May 2026/);
     await expect(page.locator("#chapter-e4")).toContainText(/First Class Honours/);

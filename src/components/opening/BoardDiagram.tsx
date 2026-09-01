@@ -300,9 +300,9 @@ export const BoardDiagram = memo(function BoardDiagram({
                 <div
                   ref={boardRef}
                   role={playable ? "application" : "img"}
-                  aria-label={
-                    playable ? `${caption}. ${BROADSHEET.boardPlayable} ${BROADSHEET.boardKeys}` : caption
-                  }
+                  aria-label={caption}
+                  aria-roledescription={playable ? "chessboard" : undefined}
+                  aria-describedby={`${planeId}-occ`}
                   data-testid="board-plane"
                   data-play-side={playSide}
                   data-from={fromSq ?? undefined}
