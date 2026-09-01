@@ -34,7 +34,6 @@ export const resumeData = {
   },
   skillsCore: {
     languages: ["Python", "TypeScript", "Java", "C/C++"],
-    infrastructure: ["Docker", "Kubernetes", "PostgreSQL", "Neo4j", "Kafka", "AWS"],
     infrastructure: ["Docker", "Kubernetes", "PostgreSQL", "Neo4j", "Kafka", "AWS", "FastAPI"],
     ml: ["PyTorch", "LangGraph", "PySpark"],
   },
