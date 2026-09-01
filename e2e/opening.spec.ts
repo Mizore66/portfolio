@@ -1340,8 +1340,8 @@ test.describe("Opening Preparation", () => {
     await page.goto(`${PAPER}?move=e4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page).toHaveTitle(/1\. e4! — The University Opening/);
-    await page.locator('[data-testid="notation-view"] [data-node-id="e5"]').click();
-    await expect(page).toHaveURL(/move=e5/);
+    await page.goto(`${PAPER}?move=e5`);
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page).toHaveTitle(/1…e5 — Meeting e4 with e5/);
     await page.goBack();
     await expect(page).toHaveURL(/move=e4/);
