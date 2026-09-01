@@ -1,12 +1,58 @@
 import { EvidenceMeta } from "@/components/opening/EvidenceMeta";
+import { HeroEngine } from "@/components/opening/HeroEngine";
 import { RecruiterNav } from "@/components/opening/RecruiterNav";
+import { StickyBoardStatic } from "@/components/opening/StickyBoardStatic";
 import { BROADSHEET } from "@/content/opening";
+import { getPublishedDocument } from "@/lib/cms/store";
+import { activeAvailability } from "@/lib/cms/ledger";
 import { resumeData } from "@/lib/data";
-import { HERO_PROOF, POSITIONING } from "@/lib/metrics";
+import { HERO_PROOF } from "@/lib/metrics";
 import { SITE_HOST } from "@/lib/site";
 
-export function Masthead() {
+function Contacts() {
+  return (
+    <>
+      <div className="masthead-contacts hero-cta" data-testid="masthead-contacts">
+        <a className="masthead-chip masthead-chip-primary" href="/#work">
+          Selected work
+        </a>
+        <a className="masthead-chip" href="/#contact">
+          Contact
+        </a>
+      </div>
+      <p className="masthead-quiet mt-3">
+        <a
+          className="external-mark"
+          href={`https://${resumeData.github}`}
+          target="_blank"
+          rel="me noopener noreferrer"
+        >
+          GitHub
+        </a>
+        <span aria-hidden="true"> · </span>
+        <a
+          className="external-mark"
+          href={`https://${resumeData.linkedin}`}
+          target="_blank"
+          rel="me noopener noreferrer"
+        >
+          LinkedIn
+        </a>
+      </p>
+    </>
+  );
+}
+
+export async function Masthead() {
   const year = new Date().getFullYear();
+  const site = await getPublishedDocument();
+  const lead = HERO_PROOF.slice(0, 2);
+  const rest = HERO_PROOF.slice(2);
+  const dek = site.profile.dek;
+  const tagline = site.profile.tagline;
+  const desksLine = site.profile.desksLine;
+  const howIWork = site.profile.howIWork;
+  const availability = activeAvailability(site);
 
   return (
     <header>
@@ -16,63 +62,63 @@ export function Masthead() {
         </p>
       </div>
       <RecruiterNav />
-      <div className="border-b-2 border-ink px-4 py-5 sm:px-6">
-        <div className="min-w-0">
-          <h1 className="masthead-title">Anas T. Qumhiyeh</h1>
-          <p data-testid="masthead-role" className="mt-4 max-w-[68ch] font-display text-[20px] leading-snug text-ink">
-            {BROADSHEET.dek}
-          </p>
-          <p data-testid="masthead-tagline" className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug italic text-faded">
-            {BROADSHEET.tagline}
-          </p>
-          <p data-testid="masthead-desks" className="mt-4 font-display text-[16px] leading-snug text-ink">
-            {POSITIONING.desksLine}
-          </p>
-          <p data-testid="masthead-how" className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug text-ink">
-            {POSITIONING.howIWork}
-          </p>
-          <ul data-testid="masthead-proof" className="hero-proof mt-4">
-            {HERO_PROOF.map((item) => (
-              <li key={item.label}>
-                <p className="metric-row">{item.label}</p>
-                <EvidenceMeta
-                  note={item.kind === "production" ? item.owner : `${item.owner} · ${item.note}`}
-                  kind={item.kind}
-                />
-              </li>
-            ))}
-          </ul>
-          <p data-testid="masthead-availability" className="mt-4 font-mono text-[12px] uppercase tracking-[0.12em] text-faded">
-            {BROADSHEET.availability}
-          </p>
-          <div className="masthead-contacts hero-cta mt-5" data-testid="masthead-contacts">
-            <a className="masthead-chip masthead-chip-primary" href="/#work">
-              Selected work
-            </a>
-            <a className="masthead-chip" href="/#contact">
-              Contact
-            </a>
+      <div className="hero-spread border-b-2 border-ink">
+        <div className="hero-left">
+          <div className="hero-identity px-4 pt-5 sm:px-6">
+            <h1 className="masthead-title">Anas T. Qumhiyeh</h1>
+            <p data-testid="masthead-role" className="mt-4 max-w-[68ch] font-display text-[20px] leading-snug text-ink">
+              {dek}
+            </p>
+            <p
+              data-testid="masthead-tagline"
+              className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug italic text-faded"
+            >
+              {tagline}
+            </p>
+            <p
+              data-testid="masthead-how"
+              className="mt-4 max-w-[68ch] font-display text-[16px] leading-snug text-ink"
+            >
+              <span data-testid="masthead-desks">{desksLine}</span> {howIWork}
+            </p>
           </div>
-          <p className="masthead-quiet mt-3">
-            <a
-              className="external-mark"
-              href={`https://${resumeData.github}`}
-              target="_blank"
-              rel="me noopener noreferrer"
-            >
-              GitHub
-            </a>
-            <span aria-hidden="true"> · </span>
-            <a
-              className="external-mark"
-              href={`https://${resumeData.linkedin}`}
-              target="_blank"
-              rel="me noopener noreferrer"
-            >
-              LinkedIn
-            </a>
-          </p>
+          <div data-testid="masthead-proof" className="hero-proof-wrap">
+            <ul className="hero-proof hero-proof-lead px-4 sm:px-6">
+              {lead.map((item) => (
+                <li key={item.label}>
+                  <p className="metric-row">{item.label}</p>
+                  <EvidenceMeta
+                    note={item.kind === "production" ? item.owner : `${item.owner} · ${item.note}`}
+                    kind={item.kind}
+                  />
+                </li>
+              ))}
+            </ul>
+            <div className="hero-cta-block px-4 sm:px-6">
+              <p
+                data-testid="masthead-availability"
+                className="mt-4 font-mono text-[12px] uppercase tracking-[0.12em] text-faded"
+              >
+                {availability}
+              </p>
+              <div className="mt-5">
+                <Contacts />
+              </div>
+            </div>
+            <ul className="hero-proof hero-proof-rest px-4 pb-5 sm:px-6" aria-label="Further proof">
+              {rest.map((item) => (
+                <li key={item.label}>
+                  <p className="metric-row">{item.label}</p>
+                  <EvidenceMeta
+                    note={item.kind === "production" ? item.owner : `${item.owner} · ${item.note}`}
+                    kind={item.kind}
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
+        <HeroEngine staticBoard={<StickyBoardStatic planeId="hero-board" />} />
       </div>
     </header>
   );

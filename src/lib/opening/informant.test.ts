@@ -18,8 +18,8 @@ describe("informant glyphs", () => {
 describe("biography register", () => {
   it("treats May 2026 as graduated, not upcoming", () => {
     expect(resumeData.education.graduation).toBe("May 2026");
-    expect(BROADSHEET.dek).toMatch(/Software engineer focused on ML infrastructure/);
-    expect(resumeData.targetRoles).toMatch(/early-career software engineering roles/);
+    expect(BROADSHEET.dek).toMatch(/Software engineer building ML infrastructure/);
+    expect(resumeData.targetRoles).toMatch(/fintech, ML infrastructure/);
     expect(OPENING_NODES.find((n) => n.id === "e4")?.fact).toMatch(/Graduated May 2026/);
     expect(OPENING_NODES.find((n) => n.id === "e4")?.fact).toMatch(/First Class Honours/);
     expect(OPENING_NODES.find((n) => n.id === "start")?.fact).not.toMatch(/Graduating/i);
@@ -28,7 +28,7 @@ describe("biography register", () => {
     expect(BROADSHEET.closer).not.toMatch(/next line I want to play/);
     expect(SITE_URL).toBe("https://anasqumhiyeh.dev");
     expect(SITE_HOST).toBe("anasqumhiyeh.dev");
-    expect(BROADSHEET.availability).toMatch(/Open to early-career/);
+    expect(BROADSHEET.availability).toMatch(/Seeking software engineering roles/);
     expect(BROADSHEET.availability).not.toMatch(/MYT/);
     expect(BROADSHEET.graduateNote).toMatch(/Graduate and junior/);
     expect(BROADSHEET.engineDown).toMatch(/Refresh, or trust the annotator/);

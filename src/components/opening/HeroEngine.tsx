@@ -1,0 +1,139 @@
+"use client";
+
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { BoardDiagram } from "@/components/opening/BoardDiagram";
+import { GlassEngine, useEngineSearch, useNnueWeights } from "@/components/opening/GlassEngine";
+import { BROADSHEET } from "@/content/opening";
+import type { EvalMode } from "@/lib/chess/engine";
+import { formatEvalCp } from "@/lib/chess/engine-view";
+import { PHASE2_DEFAULT_EVAL, PHASE2_EXHIBITS } from "@/lib/chess/phase2";
+import { emitDesk } from "@/lib/desk";
+import {
+  collectPlies,
+  FLAGSHIP_ID,
+  getNode,
+  nextMainlineBook,
+  sideToMove,
+  stepMainline,
+} from "@/lib/opening/tree";
+
+export function HeroEngine({ staticBoard }: { staticBoard: ReactNode }) {
+  const [ready, setReady] = useState(false);
+  const [id, setId] = useState(FLAGSHIP_ID);
+  const [evalMode, setEvalMode] = useState<EvalMode>(PHASE2_DEFAULT_EVAL);
+
+  useEffect(() => {
+    setReady(true);
+  }, []);
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT")) {
+        return;
+      }
+      e.preventDefault();
+      setId((current) => stepMainline(current, e.key === "ArrowRight" ? 1 : -1));
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  const node = getNode(id);
+  const plies = useMemo(() => collectPlies(id), [id]);
+  const side = sideToMove(id);
+  const book = nextMainlineBook(id);
+  const wantLearned = PHASE2_EXHIBITS && evalMode === "learned";
+  const { net, status: weightsStatus } = useNnueWeights(wantLearned);
+  const using: EvalMode = wantLearned && net ? "learned" : "handcrafted";
+  const { info, down } = useEngineSearch(plies, side, using, net);
+
+  const onPrev = useCallback(() => setId((current) => stepMainline(current, -1)), []);
+  const onNext = useCallback(() => setId((current) => stepMainline(current, 1)), []);
+
+  useEffect(() => {
+    emitDesk({
+      type: "board",
+      id,
+      san: node.san,
+      evalCp: info?.evalCp ?? Math.round(node.eval * 100),
+    });
+  }, [id, node.san, node.eval, info?.evalCp]);
+
+  const annotatorLabel = `${node.eval >= 0 ? "+" : ""}${node.eval.toFixed(2)}`;
+  const liveLabel = info ? formatEvalCp(info.evalCp) : annotatorLabel;
+  const moveNumber =
+    !node.color || node.moveNumber === 0 ? 1 : node.color === "w" ? node.moveNumber : node.moveNumber + 1;
+
+  return (
+    <aside className="hero-engine" id="the-game" data-testid="hero-engine">
+      <p className="band-kicker">Analysis board</p>
+      <p className="mt-1 font-mono text-[12px] uppercase tracking-[0.14em] text-faded">
+        {BROADSHEET.heroBoardKicker}
+      </p>
+      <div className="hero-engine-board mt-3">
+        {ready ? (
+          <BoardDiagram
+            planeId="hero-board"
+            plies={plies}
+            highlight={node.hl}
+            caption={node.cap}
+            evalCp={info ? info.evalCp / 100 : node.eval}
+            evalLabel={liveLabel}
+            arrow={book?.plies[0] ?? null}
+            playable={false}
+            onStepPrev={onPrev}
+            onStepNext={onNext}
+            canStepPrev={stepMainline(id, -1) !== id}
+            canStepNext={stepMainline(id, 1) !== id}
+          />
+        ) : (
+          staticBoard
+        )}
+      </div>
+      <p className="hero-engine-chip mt-3" data-testid="hero-engine-chip">
+        {BROADSHEET.heroResultChip}
+      </p>
+      {ready ? (
+        <div className="mt-3">
+          <GlassEngine
+            info={info}
+            book={book}
+            side={side}
+            moveNumber={moveNumber}
+            lampshade={BROADSHEET.heroFollowThrough}
+            evalMode={evalMode}
+            onEvalMode={setEvalMode}
+            weightsStatus={weightsStatus}
+            down={down}
+            compact
+          />
+        </div>
+      ) : (
+        <p className="mt-3 font-mono text-[12px] text-faded">{BROADSHEET.heroCaption}</p>
+      )}
+      <p
+        className="mt-3 max-w-[42ch] font-display text-[15px] leading-snug text-ink"
+        data-testid="hero-engine-caption"
+      >
+        {BROADSHEET.heroCaption}
+      </p>
+      <p className="mt-2 max-w-[42ch] font-display text-[14px] italic text-faded">
+        {BROADSHEET.heroFollowThrough}
+      </p>
+      <p className="mt-4 flex flex-wrap gap-x-4 gap-y-2">
+        <a
+          href="/lab/learned-evaluator"
+          className="masthead-chip masthead-chip-primary"
+          data-testid="hero-experiment"
+        >
+          Read the experiment
+        </a>
+        <a href={BROADSHEET.paperHref} className="masthead-chip" data-testid="read-the-paper">
+          {BROADSHEET.paperLink}
+        </a>
+      </p>
+    </aside>
+  );
+}

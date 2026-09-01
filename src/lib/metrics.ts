@@ -86,24 +86,24 @@ export const METRICS = {
     unit: "cloud emissions",
     owner: "Veridian",
     display: "−15% cloud emissions",
-    note: "Cloud Run scheduling vs the unscheduled box",
+    note: "Cloud Run scheduling vs the default unscheduled Cloud Run service",
     kind: "evaluation" as const,
   },
   leadThroughput: {
     value: "100M",
-    unit: "events/day",
+    unit: "events/day capacity",
     owner: "Distributed Lead Scorer",
-    display: "100M events/day",
-    note: "PySpark pipeline; hours cut to minutes. Capacity, not sustained traffic.",
+    display: "100M-event capacity benchmark",
+    note: "PySpark pipeline; hours cut to minutes as filed. Capacity, not sustained traffic.",
     kind: "pipeline" as const,
   },
   slmInference: {
     value: "12×",
-    unit: "inference",
+    unit: "inference (unit unfiled)",
     owner: "SLM Distillation Engine",
     path: "70B → 3B",
     display: "12× inference",
-    impact: "12x inference speedup",
+    impact: "70B → 3B student",
     note: "70B → 3B student. Tokens/second, hardware, and batch size were not filed.",
     kind: "evaluation" as const,
   },
@@ -180,26 +180,26 @@ export const YEAR_INDEX = [
 
 export const POSITIONING = {
   tagline: "I like systems that have to survive measurement.",
-  dek: "Software engineer focused on ML infrastructure and data-intensive systems.",
-  identity:
-    "Software engineer focused on ML infrastructure and data-intensive systems.",
+  dek: "Software engineer building ML infrastructure and data-intensive systems.",
+  identity: "Software engineer building ML infrastructure and data-intensive systems.",
   seniority:
     "Intern and contract desks in production systems, plus independent experiments that include a published loss.",
   howIWork:
-    "I own the path from the constraint to the measurement — architecture through evaluation — and I write the result so another desk can read it without a call.",
+    "I take systems from constraint to measurement and leave the decisions legible for the next engineer.",
   availability:
-    "Open to early-career software engineering roles in fintech and AI infrastructure.",
+    "Seeking software engineering roles in fintech, ML infrastructure, and data platforms.",
   graduateNote: "Graduate and junior opportunities welcome.",
   contactHed: "Interested in building measured, reliable systems?",
   closer:
     "I'm interested in teams building reliable ML and data systems in fintech or infrastructure-heavy products.",
   next: "The next line I want to play: measured systems in fintech infrastructure.",
   professionalDek: "Intern and contract desks in production systems.",
-  independentDek: "Independent systems. Professional desks are under Experience.",
+  independentDek: "Independent projects below; production and contract work under Experience.",
   deskNote:
     "Professional desks are named and measured here; internal screenshots stay off the paper.",
   nameNote: "Anas T. Qumhiyeh on the masthead; Anas Tarek Qumhiyeh on the résumé.",
-  desksLine: "Built payment, lab, and engineering systems at Setel, Western Digital, and Petronas.",
+  desksLine:
+    "Built and evaluated payment, laboratory, and retrieval systems at Setel, Western Digital, Petronas, and Monash University.",
   throughLine: "The through-line is systems that have to keep working after they ship.",
   deskSummaries: [
     {
@@ -219,9 +219,13 @@ export const POSITIONING = {
       line: "Retrieval over a graph of university regulations.",
     },
   ],
+  recruiterBio:
+    "Software engineer building ML infrastructure and data-intensive systems. Built and evaluated payment, laboratory, and retrieval systems at Setel, Western Digital, Petronas, and Monash University.",
+  followerBio:
+    "Built production payment, laboratory, and retrieval systems across Setel, Western Digital, Petronas, and Monash University. I take systems from constraint to measurement and leave the decisions legible for the next engineer. At Petronas that meant presenting usability findings to department leadership; at Western Digital the dashboard was for lab staff. Outside software, I've played chess since I was a teenager, which is why this portfolio is structured as a game.",
   about: [
     "Built production payment, laboratory, and retrieval systems across Setel, Western Digital, Petronas, and Monash University.",
-    "I own the path from the constraint to the measurement — architecture through evaluation — and I write the result so another desk can read it without a call.",
+    "I take systems from constraint to measurement and leave the decisions legible for the next engineer. At Petronas that meant presenting usability findings to department leadership; at Western Digital the dashboard was for lab staff.",
     "Outside software, I've played chess since I was a teenager, which is why this portfolio is structured as a game. The moves are the work; the annotations are my interpretation of it.",
   ],
 } as const;
@@ -313,8 +317,8 @@ export function projectEvidence(project: {
     case "veridian":
       return {
         result: project.impact,
-        method: "Cloud Run scheduling versus the unscheduled box. Carbon ledger off the request path.",
-        baseline: "Emissions versus the unscheduled box. Uptime is not a named production SLO.",
+        method: "Cloud Run scheduling versus the default unscheduled Cloud Run service. Carbon ledger off the request path.",
+        baseline: "Emissions versus the default unscheduled Cloud Run service. Uptime is not a named production SLO.",
         environment: METRICS.veridianUptime.runtime,
         alsoFiled: `${METRICS.veridianUptime.display} and ${METRICS.veridianEmissions.display} were recorded as Cloud Run evaluations. Evaluation period, sample size, and the emissions calculation source were not filed.`,
       };
@@ -323,7 +327,8 @@ export function projectEvidence(project: {
         result: `${METRICS.graphragRetrieval.display} (${METRICS.graphragRetrieval.unit})`,
         baseline: `Vector-only retrieval on the ${METRICS.graphragRetrieval.corpus}`,
         environment: METRICS.graphragRetrieval.method,
-        sample: "Sample size was not filed. The unit is the filed retrieval-accuracy comparison, not Recall@k.",
+        sample:
+          "The filed unit is a retrieval-accuracy comparison against vector-only on that handbook and policy archive. Query set, scoring rule, denominator, and Recall@k were not filed.",
         rows: [
           { label: "Vector-only retrieval", value: "Baseline" },
           { label: "Graph + vector, as filed", value: METRICS.graphragRetrieval.display },
@@ -344,7 +349,7 @@ export function projectEvidence(project: {
         environment: "PySpark pipeline",
         sample: "Capacity benchmark. Not claimed as sustained traffic.",
         alsoFiled:
-          "Checkpoints resume a failed hour from the last written slice. Cluster size and input distribution were not filed.",
+          "Checkpoints resume a failed hour from the last written slice. Cluster size, input distribution, checkpoint interval, and a failure-injection record were not filed.",
       };
     case "slm-distillation-engine":
       return {
@@ -358,7 +363,8 @@ export function projectEvidence(project: {
     case "circuitmindai":
       return {
         result: project.impact,
-        capability: "Vision on the copper and voice for the operator, including when the network drops.",
+        capability:
+          "Detects PCB faults from images and returns voice-guided inspection steps, with cached results for network loss. Detection quality was not filed.",
         environment: project.apparatus.runtime,
         sample: "Detection quality (precision, latency, confusion) was not filed. This is a capability, not a measured detector.",
       };

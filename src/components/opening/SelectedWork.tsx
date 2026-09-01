@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { DeskHover } from "@/components/opening/DeskHover";
 import { EvidenceMeta } from "@/components/opening/EvidenceMeta";
 import { resumeData } from "@/lib/data";
 import {
@@ -70,6 +71,7 @@ export function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }) {
             id={project.slug}
             className={cn("project-card", i === 0 && path === "all" && "project-card-flagship")}
           >
+            <DeskHover slug={project.slug}>
             <Link
               href={exhibitHref(project.slug, path)}
               className="project-card-hit"
@@ -112,6 +114,7 @@ export function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }) {
                 </a>
               ) : null}
             </p>
+            </DeskHover>
           </li>
         ))}
       </ul>

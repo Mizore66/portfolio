@@ -40,6 +40,7 @@ type BoardDiagramProps = {
   onStepNext?: () => void;
   canStepPrev?: boolean;
   canStepNext?: boolean;
+  planeId?: string;
 };
 
 function boardUnchanged(prev: BoardDiagramProps, next: BoardDiagramProps) {
@@ -61,7 +62,8 @@ function boardUnchanged(prev: BoardDiagramProps, next: BoardDiagramProps) {
     prev.onStepPrev === next.onStepPrev &&
     prev.onStepNext === next.onStepNext &&
     prev.canStepPrev === next.canStepPrev &&
-    prev.canStepNext === next.canStepNext
+    prev.canStepNext === next.canStepNext &&
+    prev.planeId === next.planeId
   );
 }
 
@@ -85,6 +87,7 @@ export const BoardDiagram = memo(function BoardDiagram({
   onStepNext,
   canStepPrev,
   canStepNext,
+  planeId = "play-board",
 }: BoardDiagramProps) {
   const prevPlies = useRef<Ply[] | null>(null);
   const boardRef = useRef<HTMLDivElement>(null);
@@ -249,9 +252,9 @@ export const BoardDiagram = memo(function BoardDiagram({
   }
 
   return (
-    <figure>
-      <p className="sr-only" data-testid="board-position">
-        Occupancy {occupancyFen(pieces)}.
+    <figure aria-describedby={`${planeId}-occ`}>
+      <p className="sr-only" id={`${planeId}-occ`} data-testid="board-position">
+        Occupancy {occupancyFen(pieces)}. {caption}.
       </p>
       {puzzlePrompt ? (
         <p
@@ -296,14 +299,16 @@ export const BoardDiagram = memo(function BoardDiagram({
               >
                 <div
                   ref={boardRef}
-                  role="img"
-                  aria-label={caption}
+                  role={playable ? "application" : "img"}
+                  aria-label={
+                    playable ? `${caption}. ${BROADSHEET.boardPlayable} ${BROADSHEET.boardKeys}` : caption
+                  }
                   data-testid="board-plane"
                   data-play-side={playSide}
                   data-from={fromSq ?? undefined}
                   className={cn("newspaper-board relative h-full w-full", playable && "cursor-pointer")}
                   tabIndex={playable ? 0 : undefined}
-                  id="play-board"
+                  id={planeId}
                   onPointerDown={onBoardPointerDown}
                   onPointerUp={onBoardPointerUp}
                 >

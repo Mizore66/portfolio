@@ -26,7 +26,7 @@ describe("claim registry", () => {
   });
 
   it("keeps hours-cut only in the lead note, not the hero label", () => {
-    expect(HERO_PROOF[2]?.label).toBe("100M events/day");
+    expect(HERO_PROOF[2]?.label).toBe("100M-event capacity benchmark");
     expect(HERO_PROOF[2]?.label).not.toMatch(/hours cut/i);
     expect(HERO_PROOF[2]?.note).toMatch(/hours cut to minutes/);
     expect(HERO_PROOF[2]?.note).not.toMatch(/production/i);

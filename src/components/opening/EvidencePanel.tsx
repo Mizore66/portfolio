@@ -57,13 +57,13 @@ export function EvidencePanel({
       ) : null}
       {evidence.sample ? (
         <div className="evidence-limitation">
-          <dt>Sample</dt>
+          <dt>Evidence gap</dt>
           <dd>{evidence.sample}</dd>
         </div>
       ) : null}
       {evidence.alsoFiled ? (
         <div className="evidence-limitation">
-          <dt>Also filed</dt>
+          <dt>Evidence gap</dt>
           <dd>{evidence.alsoFiled}</dd>
         </div>
       ) : null}

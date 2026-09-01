@@ -67,17 +67,17 @@ describe("print edition", () => {
       expect(text).toContain(p.name);
     }
     expect(FEATURED_PROJECT_SLUGS).toContain("veridian");
-    expect(text).toContain("Zero-touch ML");
-    expect(text).toContain("12x inference");
-    expect(text).toContain("speedup");
+    expect(text).toContain("Automatic lower-carbon");
+    expect(text).toContain("70B -> 3B");
+    expect(text).not.toContain("12x inference speedup");
     expect(text).toContain("Monash University");
     expect(text).toContain("Full-stack");
-    expect(text).not.toContain("Seeking");
+    expect(text).toContain("Seeking");
     expect(text).toContain(SITE_HOST);
     expect(text).toContain(`/URI (mailto:${resumeData.email})`);
     expect(text).toContain(`/URI (${SITE_URL})`);
     expect(text).toContain(`/URI (${SITE_URL}/opening-preparation)`);
     expect(HERO_PROOF).toHaveLength(3);
-    expect(POSITIONING.availability).toMatch(/Open to/);
+    expect(POSITIONING.availability).toMatch(/Seeking/);
   });
 });

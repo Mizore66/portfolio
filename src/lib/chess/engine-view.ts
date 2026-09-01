@@ -13,6 +13,10 @@ export type VisibleLine = {
   settling: boolean;
 };
 
+export function formatEvalCp(cp: number): string {
+  return `${cp >= 0 ? "+" : ""}${(cp / 100).toFixed(2)}`;
+}
+
 export function visibleEngineLine(
   book: BookLine | null,
   info: SearchInfo | null,

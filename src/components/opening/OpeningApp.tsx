@@ -40,6 +40,7 @@ import {
   subscribeSelection,
 } from "@/lib/opening/selection";
 import type { Ply } from "@/lib/opening/types";
+import { emitDesk } from "@/lib/desk";
 import { cn } from "@/lib/utils";
 
 const NotationView = dynamic(() =>
@@ -114,6 +115,15 @@ export function OpeningApp({
   const { net, status: weightsStatus } = useNnueWeights(wantLearned);
   const using: EvalMode = wantLearned && net ? "learned" : "handcrafted";
   const { info: engine, down: engineDown } = useEngineSearch(displayPlies, side, using, net);
+
+  useEffect(() => {
+    emitDesk({
+      type: "board",
+      id: selectedId,
+      san: node.san,
+      evalCp: engine?.evalCp ?? Math.round(node.eval * 100),
+    });
+  }, [selectedId, node.san, node.eval, engine?.evalCp]);
   const book = extra.length === 0 ? nextMainlineBook(selectedId) : null;
   const engineLine = visibleEngineLine(book, engine);
   const atEnd = stepMainline(selectedId, 1) === selectedId;
