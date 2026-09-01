@@ -87,6 +87,7 @@ export function OpeningApp({
   const hoverTimer = useRef<number>(0);
   const skipSpy = useRef(false);
   const skipSpyTimer = useRef<number>(0);
+  const pickRef = useRef<() => void>(() => {});
   const [engineApi, setEngineApi] = useState<EngineApi | null>(null);
   const engineApiRef = useRef(engineApi);
   engineApiRef.current = engineApi;
@@ -169,6 +170,7 @@ export function OpeningApp({
     const release = () => {
       skipSpy.current = false;
       window.removeEventListener("scrollend", release);
+      pickRef.current();
     };
     window.addEventListener("scrollend", release, { once: true });
     skipSpyTimer.current = window.setTimeout(release, reduced ? 80 : 1000);
@@ -358,17 +360,22 @@ export function OpeningApp({
       }
       if (best && best.id !== selectedRef.current) onSelect(best.id);
     };
-    const io = new IntersectionObserver(
-      () => {
-        if (skipSpy.current) return;
-        if (!frame) frame = window.requestAnimationFrame(pick);
-      },
-      { rootMargin: "-8% 0px -45% 0px", threshold: [0, 0.1, 0.25, 0.5] },
-    );
+    pickRef.current = pick;
+    const schedule = () => {
+      if (skipSpy.current) return;
+      if (!frame) frame = window.requestAnimationFrame(pick);
+    };
+    const io = new IntersectionObserver(schedule, {
+      rootMargin: "-8% 0px -45% 0px",
+      threshold: [0, 0.1, 0.25, 0.5],
+    });
     for (const el of chapters) io.observe(el);
+    window.addEventListener("scroll", schedule, { passive: true });
     return () => {
       io.disconnect();
+      window.removeEventListener("scroll", schedule);
       if (frame) window.cancelAnimationFrame(frame);
+      pickRef.current = () => {};
     };
   }, [onSelect]);
 
