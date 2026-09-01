@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { resumeData } from "@/lib/data";
-import { exhibitTitle } from "@/lib/metrics";
+import { exhibitHref, exhibitTitle, workHomeHref, type WorkPath } from "@/lib/metrics";
 
-export function ExhibitNav({ slug }: { slug: string }) {
+export function ExhibitNav({ slug, path = "all" }: { slug: string; path?: WorkPath | "all" }) {
   const projects = resumeData.projects;
   const i = projects.findIndex((p) => p.slug === slug);
   const prev = i > 0 ? projects[i - 1] : undefined;
@@ -14,7 +14,7 @@ export function ExhibitNav({ slug }: { slug: string }) {
         <Link href="/" className="text-book-blue underline decoration-2 underline-offset-4">
           Home
         </Link>
-        <Link href="/#work" className="text-book-blue underline decoration-2 underline-offset-4">
+        <Link href={workHomeHref(path)} className="text-book-blue underline decoration-2 underline-offset-4">
           Work
         </Link>
         <Link href="/#experience" className="text-book-blue underline decoration-2 underline-offset-4">
@@ -27,18 +27,22 @@ export function ExhibitNav({ slug }: { slug: string }) {
       <p className="mt-3 flex flex-wrap gap-x-4 gap-y-2 font-mono text-[12px] uppercase tracking-widest">
         {prev ? (
           <Link
-            href={`/projects/${prev.slug}`}
-            className="text-book-blue underline decoration-2 underline-offset-4"
+            href={exhibitHref(prev.slug, path)}
+            className="exhibit-next text-book-blue underline decoration-2 underline-offset-4"
+            aria-label={`Previous: ${exhibitTitle(prev)}`}
           >
-            ← {exhibitTitle(prev)}
+            ← <span className="exhibit-next-short">{prev.name}</span>
+            <span className="exhibit-next-full"> {exhibitTitle(prev)}</span>
           </Link>
         ) : null}
         {next ? (
           <Link
-            href={`/projects/${next.slug}`}
-            className="text-book-blue underline decoration-2 underline-offset-4"
+            href={exhibitHref(next.slug, path)}
+            className="exhibit-next text-book-blue underline decoration-2 underline-offset-4"
+            aria-label={`Next: ${exhibitTitle(next)}`}
           >
-            {exhibitTitle(next)} →
+            <span className="exhibit-next-short">{next.name}</span>
+            <span className="exhibit-next-full">{exhibitTitle(next)}</span> →
           </Link>
         ) : null}
       </p>

@@ -1,10 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BROADSHEET } from "@/content/opening";
 
 export function CopyLink({ href, label }: { href: string; label?: string }) {
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!copied) return;
+    const timer = window.setTimeout(() => setCopied(false), 2000);
+    return () => window.clearTimeout(timer);
+  }, [copied]);
 
   async function onCopy() {
     const url = href.startsWith("#")
@@ -40,6 +46,7 @@ export function CopyLink({ href, label }: { href: string; label?: string }) {
       onClick={() => void onCopy()}
       data-testid="copy-link"
       aria-label={label ?? BROADSHEET.copyLink}
+      aria-live="polite"
     >
       {copied ? BROADSHEET.copiedLink : BROADSHEET.copyLink}
     </button>

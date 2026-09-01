@@ -39,12 +39,18 @@ test.describe("document mode", () => {
     await expect(page.getByTestId("career-trajectory")).toContainText(/through-line/);
     await expect(page.getByTestId("career-trajectory")).not.toContainText(/The desks compound/);
     await expect(page.getByTestId("about-band")).toContainText(/played chess since I was a teenager/);
+    await expect(page.getByTestId("about-band")).toContainText(/Built production payment/);
     await expect(page.getByTestId("retrieval-split")).toContainText(/different corpus/);
     await expect(page.getByTestId("masthead-availability")).toContainText(/Open to early-career/);
     await expect(page.getByTestId("contact-band")).not.toContainText(/Open to early-career/);
     await expect(page.getByTestId("path-filter")).toContainText(/ML \/ data systems/);
+    await expect(page.getByTestId("path-filter")).toContainText(/Product \/ backend/);
     await expect(page.getByRole("link", { name: /Skip to selected work/i })).toHaveCount(1);
     await expect(page.getByTestId("lab-teaser")).toContainText(/learned evaluator lost/i);
+    await expect(page.getByTestId("masthead-proof")).toContainText(/−40% production defects/);
+    await expect(page.getByTestId("masthead-proof")).toContainText(/100M events\/day/);
+    await expect(page.getByTestId("masthead-proof").locator(".metric-row").nth(2)).toHaveText("100M events/day");
+    await expect(page.getByTestId("masthead-how")).toContainText(/constraint to the measurement/);
   });
 });
 
@@ -166,7 +172,22 @@ test.describe("exhibit evidence", () => {
     await expect(page.getByTestId("evidence-card")).toContainText(/Vector-only/);
     await expect(page.getByTestId("evidence-card")).toContainText(/Sample size/);
     await expect(page.getByTestId("exhibit-rail")).toContainText(/Sole builder/);
-    await expect(page.getByTestId("exhibit-rail")).toContainText(/No public repository/);
+    await expect(page.getByTestId("exhibit-rail")).toContainText(/Private project archive/);
     await expect(page.locator("#limitations")).toBeVisible();
+    await expect(page.getByTestId("illustration-date")).toContainText(/later illustration/);
+    await expect(page.getByTestId("exhibit-dates")).toContainText(/Published Oct 2025/);
+    await expect(page.getByTestId("evidence-card")).not.toContainText(/Evaluation · evaluation/i);
+  });
+});
+
+test.describe("work filters", () => {
+  test("the ML path survives a trip through Veridian", async ({ page }) => {
+    await page.goto("/?path=ml#work");
+    await expect(page.getByTestId("path-filter").locator(".path-chip-current")).toContainText(/ML \/ data systems/);
+    await page.getByRole("link", { name: "Read the Veridian case study" }).click();
+    await expect(page).toHaveURL(/path=ml/);
+    await page.getByRole("link", { name: "Back to selected work" }).first().click();
+    await expect(page).toHaveURL(/path=ml/);
+    await expect(page.getByTestId("path-filter").locator(".path-chip-current")).toContainText(/ML \/ data systems/);
   });
 });

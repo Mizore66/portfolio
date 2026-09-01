@@ -87,6 +87,8 @@ export type ApparatusSpec = {
   /** "APPARATUS FOR …" — the function, not the employer. */
   function: string;
   filed: string;
+  /** Later illustration of a different project's filing. Default is the project's own file date. */
+  dateKind?: "filed" | "illustration";
   viewBox: { w: number; h: number };
   layout: "elevation" | "isometric";
   /** Directional flow of the machine, by legend numeral. */

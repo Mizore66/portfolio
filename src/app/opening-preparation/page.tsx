@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Masthead } from "@/components/opening/Masthead";
+import { PaperMasthead } from "@/components/opening/Masthead";
 import { NewspaperPieceSprite } from "@/components/opening/NewspaperPiece";
 import { OpeningApp } from "@/components/opening/OpeningApp";
 import { StickyBoardStatic } from "@/components/opening/StickyBoardStatic";
@@ -37,7 +37,7 @@ export default function OpeningPreparationPage() {
       </a>
       <div className="relative z-[1] flex justify-center px-2 py-3 sm:px-3">
         <div data-testid="newspaper-spread" className="sheet sheet-page">
-          <Masthead />
+          <PaperMasthead />
           <OpeningApp staticBoard={<StickyBoardStatic />} />
         </div>
       </div>

@@ -154,12 +154,14 @@ export function buildPrintEditionPdf(): Uint8Array {
     marked("P", () => txt("F3", 8, M, y, ascii(`${job.period}  |  ${job.tech.join(", ")}`)));
     y -= 10;
     for (const bullet of job.bullets) {
-      for (const line of wrap(`- ${bullet}`, 96)) {
-        marked("P", () => txt("F1", 8, M, y, line));
-        y -= 9;
+      const lines = wrap(ascii(bullet), 96);
+      for (let i = 0; i < lines.length; i++) {
+        const prefix = i === 0 ? "* " : "  ";
+        marked("P", () => txt("F1", 8, M, y, `${prefix}${lines[i]}`));
+        y -= 10;
       }
     }
-    y -= 4;
+    y -= 6;
   }
 
   heading("Selected work");
@@ -167,7 +169,7 @@ export function buildPrintEditionPdf(): Uint8Array {
   for (const p of d.projects.filter((proj) => featuredSet.has(proj.slug))) {
     const extra =
       p.slug === "veridian"
-        ? " 3-sheet filing: economized plant / policy retrieval / distillation."
+        ? " Intercepts Terraform before the spike; recommends a lower-carbon compute configuration."
         : "";
     marked("P", () => txt("F2", 9, M, y, ascii(`${p.name}  |  ${p.impact}`)));
     y -= 10;
@@ -204,25 +206,11 @@ export function buildPrintEditionPdf(): Uint8Array {
   y -= 12;
 
   rule(y, 0.5);
-  y -= 12;
+  y -= 14;
   const paperUrl = `${SITE_URL}${BROADSHEET.paperHref}`;
-  const paperLine = `The chess opening is on ${SITE_HOST}${BROADSHEET.paperHref} - not on this page.`;
-  marked("Link", () => txt("F3", 7, M, y, ascii(paperLine)));
+  const paperLine = `${SITE_HOST}${BROADSHEET.paperHref}`;
+  marked("Link", () => txt("F3", 8, M, y, ascii(paperLine)));
   annots.push(uriAnnot(M, y, Math.min(paperLine.length * 3.2, PAGE_W - 2 * M), paperUrl));
-  y -= 10;
-  marked("P", () => txt("F3", 7, M, y, "C50  |  Italian Game  |  a game played since I was a teenager."));
-  y -= 10;
-  marked("P", () =>
-    txt(
-      "F3",
-      7,
-      M,
-      y,
-      "Photographs real and composed; impressions imagined; the subject is real throughout.",
-    ),
-  );
-  y -= 10;
-  marked("P", () => txt("F1", 7, M, y, "Anas-Qumhiyeh-Resume.pdf"));
 
   const content = ops.join("\n");
   const annotObjs = annots;

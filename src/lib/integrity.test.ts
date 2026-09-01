@@ -55,12 +55,14 @@ describe("document integrity", () => {
     const circuit = resumeData.projects.find((p) => p.slug === "circuitmindai")!;
     const veridian = resumeData.projects.find((p) => p.slug === "veridian")!;
     expect(projectSourceLabel(circuit.github)).toBe("Public repository");
-    expect(projectSourceLabel(veridian.github)).toBe("No public repository");
-    expect(projectRole(circuit)).toBe("Sole builder");
+    expect(projectSourceLabel(veridian.github)).toBe("Private project archive");
+    expect(projectRole(circuit)).toBe("Sole builder — architecture, implementation, and evaluation.");
     expect(projectRole({ slug: "mirrorfi", contextLabel: "Grand Prize, Solana Megahack 2025" })).toBe(
-      "Hackathon builder",
+      "Hackathon builder — architecture, implementation, and demo.",
     );
-    expect(projectRole({ slug: "slm-distillation-engine" })).toBe("Laboratory experiment");
+    expect(projectRole({ slug: "slm-distillation-engine" })).toBe(
+      "Laboratory experiment — design, training, and evaluation.",
+    );
   });
 
   it("does not ship JQuery, OracleSQL, or A-prefixed framework drop-caps", () => {
@@ -104,6 +106,9 @@ describe("document integrity", () => {
     expect(BROADSHEET.tagline).toMatch(/survive measurement/);
     expect(getNode("start").fact).not.toMatch(/survive measurement/);
     expect(getNode("e5").fact).not.toMatch(/survive measurement/);
+    expect(getNode("start").fact).not.toMatch(/Software engineer focused on ML/);
+    expect(getNode("e5").fact).not.toMatch(/Software engineer focused on ML/);
+    expect(BROADSHEET.classified).not.toMatch(/Open to early-career/);
     expect(BROADSHEET.closer).not.toMatch(/next line I want to play/);
   });
 

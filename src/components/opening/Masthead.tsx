@@ -28,6 +28,9 @@ export function Masthead() {
           <p data-testid="masthead-desks" className="mt-4 font-display text-[16px] leading-snug text-ink">
             {POSITIONING.desksLine}
           </p>
+          <p data-testid="masthead-how" className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug text-ink">
+            {POSITIONING.howIWork}
+          </p>
           <ul data-testid="masthead-proof" className="hero-proof mt-4">
             {HERO_PROOF.map((item) => (
               <li key={item.label}>
@@ -70,6 +73,42 @@ export function Masthead() {
             </a>
           </p>
         </div>
+      </div>
+    </header>
+  );
+}
+
+export function PaperMasthead() {
+  const year = new Date().getFullYear();
+
+  return (
+    <header data-testid="paper-masthead">
+      <div className="border-b-2 border-ink px-4 py-2 sm:px-6">
+        <p className="masthead-kicker">
+          Edition {year} · C50 · Italian Game · {SITE_HOST} · Moves are facts · Annotations are voice
+        </p>
+      </div>
+      <RecruiterNav />
+      <div className="border-b-2 border-ink px-4 py-4 sm:px-6">
+        <p className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">Scoresheet</p>
+        <h1 id="paper-title" data-testid="paper-title" className="masthead-title">
+          Opening Preparation
+        </h1>
+        <p data-testid="paper-dek" className="mt-3 max-w-[68ch] font-display text-[18px] leading-snug text-ink">
+          {BROADSHEET.gameDek}
+        </p>
+        <p data-testid="how-to-read" className="mt-2 max-w-[68ch] font-display text-[16px] italic text-faded">
+          {BROADSHEET.howToRead}
+        </p>
+        <p className="mt-2 font-mono text-[12px] uppercase tracking-[0.12em] text-faded">Anas T. Qumhiyeh</p>
+        <p className="mt-4">
+          <a
+            href="/"
+            className="font-mono text-[12px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4"
+          >
+            ← {BROADSHEET.homeLink}
+          </a>
+        </p>
       </div>
     </header>
   );

@@ -60,6 +60,9 @@ export default function LearnedEvaluatorPage() {
                 {LAB_ARTICLE.kicker} · Gate C · {LAB_ARTICLE.resultGlyph}
               </p>
               <p className="mt-2 font-mono text-[12px] text-faded">{LAB_ARTICLE.filed}</p>
+              <p className="mt-1 font-mono text-[12px] text-faded" data-testid="lab-dates">
+                Published {LAB_ARTICLE.datePublished}
+              </p>
               <h1 id="lab-title" className="exhibit-title mt-2 font-display text-ink">
                 {LAB_ARTICLE.hed}
               </h1>

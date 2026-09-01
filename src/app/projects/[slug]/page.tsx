@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ApparatusSchematic } from "@/components/opening/ApparatusSchematic";
-import { EvidenceMeta } from "@/components/opening/EvidenceMeta";
+import { EvidencePanel } from "@/components/opening/EvidencePanel";
 import { ExhibitNav } from "@/components/opening/ExhibitNav";
 import { ExhibitSection } from "@/components/opening/ExhibitSection";
 import { HalftonePlate } from "@/components/opening/HalftonePlate";
@@ -18,6 +18,8 @@ import {
   projectOrigin,
   projectRole,
   projectSourceLabel,
+  workHomeHref,
+  workPathFromQuery,
   type EvidenceKind,
 } from "@/lib/metrics";
 import { projectJsonLd } from "@/lib/person";
@@ -57,10 +59,15 @@ export async function generateMetadata({
 
 export default async function ProjectPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ path?: string }>;
 }) {
   const { slug } = await params;
+  const q = await searchParams;
+  const path = workPathFromQuery(q.path);
+  const workHref = workHomeHref(path);
   const project = resumeData.projects.find((p) => p.slug === slug);
 
   if (!project) {
@@ -77,6 +84,7 @@ export default async function ProjectPage({
   const constraint = "constraint" in project ? project.constraint : undefined;
   const limitation = "limitation" in project ? project.limitation : undefined;
   const split = "split" in project ? project.split : undefined;
+  const example = "example" in project ? project.example : undefined;
   const origin = projectOrigin({
     slug: project.slug,
     contextLabel,
@@ -87,6 +95,10 @@ export default async function ProjectPage({
   });
   const evidence = projectEvidence(project);
   const kicker = exhibitKicker(origin);
+  const illustration =
+    project.patent.dateKind === "illustration"
+      ? `The patent sheet is a later illustration (${project.patent.filed}), not this project's filing date.`
+      : null;
 
   return (
     <div className="min-h-screen text-ink">
@@ -106,7 +118,7 @@ export default async function ProjectPage({
             <header className="border-b-2 border-ink px-6 py-4">
               <div className="flex items-center justify-between gap-3">
                 <Link
-                  href="/#work"
+                  href={workHref}
                   className="exhibit-back font-mono text-[12px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4"
                 >
                   ← {BROADSHEET.backToWork}
@@ -115,6 +127,9 @@ export default async function ProjectPage({
               </div>
               <p className="mt-3 font-mono text-[12px] uppercase tracking-[0.28em] text-faded">
                 {kicker} · {project.date}
+              </p>
+              <p className="mt-2 font-mono text-[12px] text-faded" data-testid="exhibit-dates">
+                Published {project.date}
               </p>
             </header>
 
@@ -154,53 +169,12 @@ export default async function ProjectPage({
                   </div>
                 </dl>
                 <ExhibitSection id="measurement" title="Evidence">
-                <dl className="exhibit-rail mt-3" data-testid="evidence-card">
-                  <div>
-                    <dt>Result</dt>
-                    <dd>{evidence.result}</dd>
-                  </div>
-                  {evidence.capability ? (
-                    <div>
-                      <dt>Capability</dt>
-                      <dd>{evidence.capability}</dd>
-                    </div>
-                  ) : null}
-                  {evidenceKind ? (
-                    <div>
-                      <dt>Kind</dt>
-                      <dd>
-                        <EvidenceMeta note={evidenceNote} kind={evidenceKind} />
-                      </dd>
-                    </div>
-                  ) : (
-                    <div>
-                      <dt>Kind</dt>
-                      <dd>Capability as filed — not a numbered experiment</dd>
-                    </div>
-                  )}
-                  {evidence.baseline ? (
-                    <div>
-                      <dt>Baseline</dt>
-                      <dd>{evidence.baseline}</dd>
-                    </div>
-                  ) : null}
-                  {evidence.environment ? (
-                    <div>
-                      <dt>Environment</dt>
-                      <dd>{evidence.environment}</dd>
-                    </div>
-                  ) : null}
-                  {evidence.sample ? (
-                    <div>
-                      <dt>Sample</dt>
-                      <dd>{evidence.sample}</dd>
-                    </div>
-                  ) : null}
-                  <div>
-                    <dt>Date</dt>
-                    <dd>{project.date}</dd>
-                  </div>
-                </dl>
+                  <EvidencePanel
+                    evidence={evidence}
+                    kind={evidenceKind}
+                    note={evidenceNote}
+                    date={project.date}
+                  />
                 </ExhibitSection>
                 {split ? (
                   <p className="mt-4 max-w-[68ch] font-mono text-[12px] leading-relaxed text-faded" data-testid="retrieval-split">
@@ -229,6 +203,11 @@ export default async function ProjectPage({
                     <p className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug text-ink">{constraint}</p>
                   </ExhibitSection>
                 ) : null}
+                {example ? (
+                  <ExhibitSection id="example" title="Example">
+                    <p className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug text-ink">{example}</p>
+                  </ExhibitSection>
+                ) : null}
                 <p className="mt-4 max-w-[68ch] font-lora text-[16px] leading-[1.7] italic text-faded">
                   {project.description}
                 </p>
@@ -250,6 +229,11 @@ export default async function ProjectPage({
               </section>
 
               <ExhibitSection id="apparatus" title="Proof · apparatus">
+                {illustration ? (
+                  <p className="mt-2 max-w-[68ch] font-mono text-[12px] leading-relaxed text-faded" data-testid="illustration-date">
+                    {illustration}
+                  </p>
+                ) : null}
                 <div className="mt-3">
                   <ApparatusSchematic apparatus={project.apparatus} />
                 </div>
@@ -299,14 +283,14 @@ export default async function ProjectPage({
                   {project.github ? ` ${BROADSHEET.exhibitGithub}` : null}
                 </p>
                 <Link
-                  href="/#work"
+                  href={workHref}
                   className="exhibit-back border-2 border-ink px-4 py-2 font-mono text-[12px] uppercase tracking-widest text-ink"
                 >
                   ← {BROADSHEET.backToWork}
                 </Link>
               </nav>
               <div className="mt-8 border-t border-ink pt-6">
-                <ExhibitNav slug={project.slug} />
+                <ExhibitNav slug={project.slug} path={path} />
               </div>
             </div>
           </article>

@@ -32,7 +32,7 @@ export const BROADSHEET = {
   errata: "None reported. Corrections to the address above.",
   classifiedKicker: "Situations Wanted",
   classified:
-    "Early-career software engineer. Fintech or AI infrastructure. Correspondence on the front page.",
+    "Correspondence belongs on the front page. This plate is the scoresheet.",
   weatherKicker: "Weather",
   weather: "Outlook: shipping",
   stamp: "C50",
@@ -147,8 +147,8 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "Starting position",
     kind: "Start",
     title: "Opening Preparation",
-    scanTitle: `${resumeData.name} — ${POSITIONING.identity}`,
-    fact: `${resumeData.name}. ${POSITIONING.dek} ${edu.school}, graduated ${edu.graduation}.`,
+    scanTitle: `${resumeData.name} — Opening Preparation`,
+    fact: "The Italian Game, C50. Jobs as moves; annotations as voice. The front page still holds the work.",
     commentary:
       "The board is set before the first pawn moves. What follows is not a puzzle. It is the line I actually played, in a game I've played since I was a teenager — jobs as moves, annotations as voice. Chess is the content, never the lock.",
     eval: 0.2,
@@ -233,8 +233,8 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "Meeting e4 with e5",
     kind: "Identity",
     title: "Meeting e4 with e5",
-    scanTitle: POSITIONING.identity,
-    fact: `${resumeData.name}. ${POSITIONING.dek}`,
+    scanTitle: "Meeting e4 with e5",
+    fact: "The classical answer: product engineering on one wing, the data path on the other.",
     commentary:
       "The classical answer. I did not decline into a closed system. Product engineering on one wing, the data path on the other.",
     eval: 0.3,
@@ -543,7 +543,7 @@ export const OPENING_NODES: OpeningNode[] = [
     kind: "Project",
     title: "The Closed Centre",
     scanTitle: "Multi-Agent GraphRAG — policy-corpus retrieval",
-    fact: `${graphrag.name} — ${graphrag.subtitle}. ${METRICS.graphragRetrieval.method} on the university's policy corpus. ${METRICS.graphragRetrieval.display}.`,
+    fact: `${graphrag.name} — ${graphrag.subtitle}. ${METRICS.graphragRetrieval.method} on an independent handbook and policy archive. ${METRICS.graphragRetrieval.display}.`,
     commentary:
       "Prerequisites and credit-transfer live as edges, not another embedding dump. Black can refuse the capture and keep the centre closed — the graph is that kind of patience.",
     eval: 0.55,

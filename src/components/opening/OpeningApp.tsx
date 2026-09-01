@@ -10,6 +10,7 @@ import { GlassEngine, useEngineSearch, useNnueWeights } from "@/components/openi
 import { IssueIndex } from "@/components/opening/IssueIndex";
 import { NewspaperColumn } from "@/components/opening/NewspaperColumn";
 import { TodaysPuzzle } from "@/components/opening/TodaysPuzzle";
+import { PaperToc } from "@/components/opening/PaperToc";
 import { WayfindIndex } from "@/components/opening/WayfindIndex";
 import { BROADSHEET } from "@/content/opening";
 import type { EvalMode } from "@/lib/chess/engine";
@@ -478,23 +479,9 @@ export function OpeningApp({
   return (
     <>
       <main>
-          <p className="px-4 pt-4 sm:px-6">
-            <a href="/" className="font-mono text-[12px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4">
-              ← {BROADSHEET.homeLink}
-            </a>
-          </p>
-          <section id="the-game" aria-labelledby="game-heading">
+          <section id="the-game" aria-labelledby="paper-title">
           <div className="game-band px-4 sm:px-6">
-            <p className="band-kicker">{BROADSHEET.gameKicker} — C50</p>
-            <h2 id="game-heading" className="band-title">
-              {BROADSHEET.gameKicker}
-            </h2>
-            <p data-testid="how-to-read" className="mt-2 max-w-[68ch] font-display text-[16px] italic text-faded">
-              {BROADSHEET.howToRead}
-            </p>
-            <p className="mt-1 max-w-[68ch] font-display text-[16px] italic text-faded">
-              {BROADSHEET.gameDek}
-            </p>
+            <PaperToc selectedId={selectedId} onSelect={userSelect} />
             <p className="mt-3 font-mono text-[12px] uppercase tracking-[0.14em]">
               <a href="#scoresheet" className="text-book-blue underline decoration-2 underline-offset-4">
                 {BROADSHEET.skipBoard}

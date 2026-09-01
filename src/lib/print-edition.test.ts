@@ -24,11 +24,12 @@ describe("print edition", () => {
     expect(text).toContain("/S /H1");
     expect(text).toContain("/S /H2");
     expect(text).toContain("/Title (Anas Tarek Qumhiyeh - Resume)");
-    expect(text).toContain("a game played since I was a teenager");
-    expect(text).toContain("Photographs real and composed");
-    expect(text).toContain("3-sheet filing");
-    expect(text).toMatch(/economized/);
+    expect(text).not.toContain("- -40%");
+    expect(text).not.toContain("3-sheet filing");
+    expect(text).not.toContain("Photographs real and composed");
+    expect(text).not.toContain("a game played since I was a teenager");
     expect(text).toContain("opening-preparation");
+    expect(text).toContain("lower-carbon compute");
   });
 
   it("does not put the chessboard in the reading order", () => {

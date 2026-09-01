@@ -38,7 +38,7 @@ test.describe("Opening Preparation", () => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
-    await expect(page.getByRole("heading", { level: 1, name: "Anas T. Qumhiyeh" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Opening Preparation" })).toBeVisible();
     await expect(page.getByText("A. T. Qumhiyeh", { exact: true })).toHaveCount(0);
     await expect(page.getByTestId("tree-caption")).toHaveCount(0);
     await expect(page.getByText(/LEAD · FLAGSHIP/i)).toHaveCount(0);
@@ -748,24 +748,17 @@ test.describe("Opening Preparation", () => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
-    await expect(page.getByRole("heading", { level: 1, name: "Anas T. Qumhiyeh" })).toBeVisible();
-    const role = await page.getByTestId("masthead-role").boundingBox();
-    expect(role).toBeTruthy();
-    expect(role!.y).toBeGreaterThanOrEqual(0);
-    expect(role!.y + role!.height).toBeLessThan(900);
-    await expect(page.getByTestId("masthead-role")).toHaveText(/Software engineer/i);
-    await expect(page.getByTestId("masthead-desks")).toContainText(/Setel/);
-    await expect(page.getByTestId("masthead-desks")).toContainText(/Western Digital/);
+    await expect(page.getByRole("heading", { level: 1, name: "Opening Preparation" })).toBeVisible();
+    const title = await page.getByTestId("paper-title").boundingBox();
+    expect(title).toBeTruthy();
+    expect(title!.y).toBeGreaterThanOrEqual(0);
+    expect(title!.y + title!.height).toBeLessThan(900);
+    await expect(page.getByTestId("paper-dek")).toHaveText(/chess game/i);
     await expect(page.locator("header")).toContainText(/anasqumhiyeh\.dev/i);
     await expect(page.locator("#chapter-e4")).toContainText(/Graduated May 2026/);
     await expect(page.locator("#chapter-e4")).toContainText(/First Class Honours/);
-    await expect(page.getByTestId("masthead-proof")).toBeVisible();
-    await expect(page.getByTestId("masthead-proof")).toContainText(/−40% production defects/);
-    await expect(page.getByTestId("masthead-proof")).toContainText(/100M events\/day/);
-    await expect(page.getByTestId("masthead-proof")).toContainText(/\+45% retrieval \(Monash\)/);
-    await expect(page.getByTestId("masthead-proof")).toContainText(/Production/);
-    await expect(page.getByTestId("masthead-proof")).toContainText(/PySpark pipeline/);
-    await expect(page.getByTestId("masthead-proof")).not.toContainText(/12×/);
+    await expect(page.getByTestId("masthead-proof")).toHaveCount(0);
+    await expect(page.getByTestId("masthead-availability")).toHaveCount(0);
     await expect(page.getByTestId("board-keys")).toBeVisible();
     await expect(page.getByTestId("how-to-read")).toContainText(/résumé is literal/i);
     await expect(page.getByTestId("recruiter-nav")).toContainText(/Work/);
@@ -821,7 +814,8 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("todays-puzzle")).toBeVisible();
     await expect(page.getByTestId("todays-puzzle")).toContainText(/find the break/i);
     await expect(page.getByTestId("situations-wanted").first()).toBeVisible();
-    await expect(page.getByTestId("situations-wanted").first()).toContainText(/Early-career/);
+    await expect(page.getByTestId("situations-wanted").first()).toContainText(/front page/);
+    await expect(page.getByTestId("situations-wanted").first()).not.toContainText(/Open to early-career/);
     await expect(page.getByTestId("situations-wanted").first()).not.toContainText(/Graduate and junior/);
     await expect(page.getByTestId("paper-footer")).toBeVisible();
     await expect(page.getByTestId("paper-footer").getByTestId("closer")).toBeVisible();
@@ -1161,7 +1155,7 @@ test.describe("Opening Preparation", () => {
     await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
-    const chip = (await page.locator(".masthead-chip").first().boundingBox())!;
+    const chip = (await page.locator(".paper-control").first().boundingBox())!;
     expect(chip.height).toBeGreaterThanOrEqual(44);
 
     const step = (await page.getByTestId("board-step-next").boundingBox())!;
@@ -1183,6 +1177,7 @@ test.describe("Opening Preparation", () => {
       "true",
     );
     await expect(page.getByTestId("wayfind-toggle")).toBeHidden();
+    await expect(page.getByTestId("paper-toc")).toBeVisible();
   });
 
   test("the patent lightbox close target is 44px and a backdrop tap dismisses", async ({

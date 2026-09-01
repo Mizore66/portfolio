@@ -5,6 +5,7 @@ import {
   FEATURED_PROJECT_SLUGS,
   LAB_PROJECT_SLUGS,
   POSITIONING,
+  exhibitHref,
   exhibitTitle,
   projectOrigin,
   projectPath,
@@ -14,6 +15,12 @@ import {
 import { cn } from "@/lib/utils";
 
 const LAB = new Set<string>(LAB_PROJECT_SLUGS);
+
+function visibleProjects(path: WorkPath | "all") {
+  return resumeData.projects.filter(
+    (p) => !LAB.has(p.slug) && (path === "all" || projectPath(p.slug) === path),
+  );
+}
 
 export function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }) {
   const featured = FEATURED_PROJECT_SLUGS.map(
@@ -25,6 +32,8 @@ export function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }) {
       !LAB.has(p.slug) &&
       (path === "all" || projectPath(p.slug) === path),
   );
+  const mlCount = visibleProjects("ML / data systems").length;
+  const productCount = visibleProjects("Product / backend").length;
 
   return (
     <section id="work" data-testid="selected-work" className="recruiter-band" aria-labelledby="work-heading">
@@ -44,14 +53,14 @@ export function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }) {
           className={cn("path-chip", path === "ML / data systems" && "path-chip-current")}
           aria-current={path === "ML / data systems" ? "page" : undefined}
         >
-          ML / data systems
+          ML / data systems ({mlCount})
         </a>
         <a
           href="/?path=product#work"
           className={cn("path-chip", path === "Product / backend" && "path-chip-current")}
           aria-current={path === "Product / backend" ? "page" : undefined}
         >
-          Product / backend
+          Product / backend ({productCount})
         </a>
       </p>
       <ul className="project-card-grid">
@@ -62,7 +71,7 @@ export function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }) {
             className={cn("project-card", i === 0 && path === "all" && "project-card-flagship")}
           >
             <Link
-              href={`/projects/${project.slug}`}
+              href={exhibitHref(project.slug, path)}
               className="project-card-hit"
               aria-hidden="true"
               tabIndex={-1}
@@ -87,7 +96,7 @@ export function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }) {
             ) : null}
             <p className="mt-4 flex flex-wrap gap-x-4 gap-y-2 font-mono text-[12px] uppercase tracking-wider">
               <Link
-                href={`/projects/${project.slug}`}
+                href={exhibitHref(project.slug, path)}
                 className="artifact-link relative z-[1] text-book-blue underline decoration-2 underline-offset-4"
               >
                 Read the {project.name} case study
@@ -110,7 +119,7 @@ export function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }) {
         <ul className="project-archive mt-8" data-testid="project-archive">
           {archive.map((p) => (
             <li key={p.slug}>
-              <Link href={`/projects/${p.slug}`} className="archive-row">
+              <Link href={exhibitHref(p.slug, path)} className="archive-row">
                 {exhibitTitle(p)}
               </Link>
             </li>

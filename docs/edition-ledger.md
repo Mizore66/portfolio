@@ -21,7 +21,7 @@ Errata on the paper currently reads: none reported.
 | +45% retrieval | Monash contract | evaluation | `METRICS.monashRetrieval` (university regulations) |
 | +35% retrieval | GraphRAG project | evaluation | `METRICS.graphragRetrieval` (policy corpus) |
 | −40% manual oversight | Western Digital | evaluation | `METRICS.wdOversight` |
-| 99.9% uptime / −15% emissions | Veridian | evaluation | `METRICS.veridianUptime` / `veridianEmissions` |
+| 99.9% uptime / −15% emissions | Veridian | evaluation | `METRICS.veridianUptime` / `veridianEmissions` — Cloud Run evaluations; period and sample not filed; demoted from the exhibit Result |
 | 100M events/day | Lead Scorer | pipeline | `METRICS.leadThroughput` — not production volume |
 | 12× inference | SLM Distillation | evaluation | `METRICS.slmInference` |
 | 0.87 AUC-ROC | Financial Risk Predictor | evaluation | `METRICS.riskAuc` |
@@ -52,6 +52,14 @@ No retired pages.
 - Live demo hosts (there are none to sleep)
 - Empty Writing / blog section
 - Vanity counters or Lighthouse badges
+
+## Corrections (1 September 2026)
+
+- Veridian 99.9% uptime and −15% emissions stay Cloud Run evaluations; they are no longer the exhibit Result. Period, sample, and emissions source remain unfiled.
+- Financial Risk Predictor −30% latency and SLM −40% memory / 98% pass moved to Also filed / Limitations.
+- Lead Scorer “zero tape lost” replaced with checkpoint-resume wording. 100M events/day remains capacity.
+- GraphRAG and SLM patent sheets labelled `Illustration Apr. 2026` against project dates Oct 2025 and Jul 2025.
+- Duplicate `Evaluation · evaluation` and hero “hours cut to minutes” label removed.
 
 ## External URLs
 

@@ -1,7 +1,6 @@
 "use client";
 
 import { BROADSHEET } from "@/content/opening";
-import { resumeData } from "@/lib/data";
 
 export function SituationsWanted() {
   return (
@@ -10,9 +9,6 @@ export function SituationsWanted() {
         {BROADSHEET.classifiedKicker}
       </p>
       <p className="mt-2 font-display text-[16px] leading-snug italic text-ink">{BROADSHEET.classified}</p>
-      <a href={`mailto:${resumeData.email}`} className="masthead-chip mt-4 inline-flex">
-        Email
-      </a>
     </div>
   );
 }

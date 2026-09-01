@@ -1,19 +1,19 @@
 /**
  * Claim ledger. Homepage, scoresheet, exhibits, patent legends, and the
  * print edition all read from here. Do not retcon owners: Monash
- * regulations ≠ GraphRAG policy corpus.
+ * regulations ≠ GraphRAG handbook / policy archive.
  *
  * `kind` is epistemic status, not importance:
  *   production — observed in a running product
  *   benchmark  — controlled experiment with a stated protocol
  *   evaluation — offline / test / comparison set
- *   pipeline   — architectural throughput; not claimed as sustained production volume
+ *   pipeline   — architectural throughput; not claimed as sustained traffic
  */
 export const EVIDENCE_TIER = {
   production: "Production",
   benchmark: "Controlled benchmark",
-  evaluation: "Evaluation",
-  pipeline: "Pipeline / capacity",
+  evaluation: "Controlled evaluation",
+  pipeline: "Capacity benchmark",
 } as const;
 
 export type EvidenceKind = keyof typeof EVIDENCE_TIER;
@@ -34,16 +34,16 @@ export const METRICS = {
   },
   graphragRetrieval: {
     value: "+35%",
-    unit: "retrieval accuracy",
+    unit: "retrieval accuracy as filed (not Recall@k)",
     vs: "vector-only",
     owner: "Multi-Agent GraphRAG (project)",
-    corpus: "university policy corpus",
+    corpus: "independent university handbook and policy archive",
     method: "LangGraph over Neo4j plus a vector store",
     strip: "+35% retrieval",
     display: "+35% retrieval vs vector-only",
     impact: "+35% retrieval accuracy",
-    gauge: "+35% retrieval vs vector-only (project · policy corpus)",
-    note: "vs vector-only · university policy corpus",
+    gauge: "+35% retrieval vs vector-only (project · handbook / policy archive)",
+    note: "vs vector-only · independent handbook / policy archive, not Monash regulations",
     kind: "evaluation" as const,
   },
   setelCoverage: {
@@ -78,7 +78,7 @@ export const METRICS = {
     owner: "Veridian",
     runtime: "Cloud Run",
     display: "99.9% uptime",
-    note: "evaluation · Cloud Run — not a named production SLO",
+    note: "Cloud Run — not a named production SLO",
     kind: "evaluation" as const,
   },
   veridianEmissions: {
@@ -86,15 +86,15 @@ export const METRICS = {
     unit: "cloud emissions",
     owner: "Veridian",
     display: "−15% cloud emissions",
-    note: "evaluation · Cloud Run scheduling vs the unscheduled box",
+    note: "Cloud Run scheduling vs the unscheduled box",
     kind: "evaluation" as const,
   },
   leadThroughput: {
     value: "100M",
     unit: "events/day",
     owner: "Distributed Lead Scorer",
-    display: "100M events/day · hours cut to minutes",
-    note: "PySpark pipeline · hours cut to minutes",
+    display: "100M events/day",
+    note: "PySpark pipeline; hours cut to minutes. Capacity, not sustained traffic.",
     kind: "pipeline" as const,
   },
   slmInference: {
@@ -104,16 +104,16 @@ export const METRICS = {
     path: "70B → 3B",
     display: "12× inference",
     impact: "12x inference speedup",
-    note: "70B → 3B student",
+    note: "70B → 3B student. Tokens/second, hardware, and batch size were not filed.",
     kind: "evaluation" as const,
   },
   riskAuc: {
     value: "0.87",
     unit: "AUC-ROC",
     owner: "Financial Risk Predictor",
-    vs: "15% over the baseline",
+    vs: "15% over an unnamed baseline",
     display: "0.87 AUC-ROC",
-    note: "15% over the baseline",
+    note: "The 15% lift names an unnamed baseline; that comparison is not independently interpretable.",
     kind: "evaluation" as const,
   },
   slmLatency: {
@@ -136,7 +136,7 @@ export const METRICS = {
 
 /** Two retrieval numbers. Same comparison; different corpus, different owner. Not a retcon. */
 export const RETRIEVAL_SPLIT =
-  "+45% is the Monash contract on university regulations (Text-to-Cypher). +35% is the independent GraphRAG project on a university policy corpus. Same comparison — vector-only — different corpus, different filing.";
+  "+45% is the Monash contract on university regulations (Text-to-Cypher). +35% is the independent GraphRAG project on a separate university handbook and policy archive. Same comparison — vector-only — different corpus, different filing.";
 
 export const FEATURED_PROJECT_SLUGS = [
   "veridian",
@@ -182,9 +182,11 @@ export const POSITIONING = {
   tagline: "I like systems that have to survive measurement.",
   dek: "Software engineer focused on ML infrastructure and data-intensive systems.",
   identity:
-    "Early-career software engineer focused on ML infrastructure and data-intensive systems.",
+    "Software engineer focused on ML infrastructure and data-intensive systems.",
   seniority:
-    "Early-career. Intern and contract desks in production systems, plus independent experiments that include a published loss.",
+    "Intern and contract desks in production systems, plus independent experiments that include a published loss.",
+  howIWork:
+    "I own the path from the constraint to the measurement — architecture through evaluation — and I write the result so another desk can read it without a call.",
   availability:
     "Open to early-career software engineering roles in fintech and AI infrastructure.",
   graduateNote: "Graduate and junior opportunities welcome.",
@@ -218,7 +220,8 @@ export const POSITIONING = {
     },
   ],
   about: [
-    "I've worked across payment engineering at Setel, lab systems at Western Digital, engineering tooling at Petronas, and a GraphRAG contract at Monash University.",
+    "Built production payment, laboratory, and retrieval systems across Setel, Western Digital, Petronas, and Monash University.",
+    "I own the path from the constraint to the measurement — architecture through evaluation — and I write the result so another desk can read it without a call.",
     "Outside software, I've played chess since I was a teenager, which is why this portfolio is structured as a game. The moves are the work; the annotations are my interpretation of it.",
   ],
 } as const;
@@ -242,6 +245,28 @@ export function projectPath(slug: string): WorkPath {
   return "ML / data systems";
 }
 
+export function workPathFromQuery(path?: string): WorkPath | "all" {
+  if (path === "product") return "Product / backend";
+  if (path === "ml") return "ML / data systems";
+  return "all";
+}
+
+export function workPathParam(path: WorkPath | "all"): string | undefined {
+  if (path === "ML / data systems") return "ml";
+  if (path === "Product / backend") return "product";
+  return undefined;
+}
+
+export function workHomeHref(path: WorkPath | "all" = "all"): string {
+  const param = workPathParam(path);
+  return param ? `/?path=${param}#work` : "/#work";
+}
+
+export function exhibitHref(slug: string, path: WorkPath | "all" = "all"): string {
+  const param = workPathParam(path);
+  return param ? `/projects/${slug}?path=${param}` : `/projects/${slug}`;
+}
+
 /** Survives a screenshot, a Slack unfurl, and a CSS-off document. */
 export function exhibitTitle(project: { name: string; subtitle: string }): string {
   return `${project.name} — ${project.subtitle}`;
@@ -250,13 +275,13 @@ export function exhibitTitle(project: { name: string; subtitle: string }): strin
 /** Role is derived from origin. Do not invent architect / team lead. */
 export function projectRole(project: { slug: string; contextLabel?: string }): string {
   const origin = projectOrigin(project);
-  if (origin === "Hackathon") return "Hackathon builder";
-  if (origin === "Laboratory") return "Laboratory experiment";
-  return "Sole builder";
+  if (origin === "Hackathon") return "Hackathon builder — architecture, implementation, and demo.";
+  if (origin === "Laboratory") return "Laboratory experiment — design, training, and evaluation.";
+  return "Sole builder — architecture, implementation, and evaluation.";
 }
 
 export function projectSourceLabel(github: string): string {
-  return github ? "Public repository" : "No public repository";
+  return github ? "Public repository" : "Private project archive";
 }
 
 export function exhibitKicker(origin: ProjectOrigin): string {
@@ -265,12 +290,17 @@ export function exhibitKicker(origin: ProjectOrigin): string {
   return "Clipping · Exhibit";
 }
 
+export type EvidenceRow = { label: string; value: string };
+
 export type EvidenceCard = {
   result: string;
   capability?: string;
+  method?: string;
   baseline?: string;
   environment?: string;
   sample?: string;
+  alsoFiled?: string;
+  rows?: EvidenceRow[];
 };
 
 /** Rows a recruiter can audit. Sample sizes and percentiles stay blank unless filed. */
@@ -282,30 +312,39 @@ export function projectEvidence(project: {
   switch (project.slug) {
     case "veridian":
       return {
-        result: `${METRICS.veridianUptime.display} · ${METRICS.veridianEmissions.display}`,
-        capability: project.impact,
-        baseline: "Emissions vs the unscheduled box. Uptime is an evaluation, not a named SLO.",
+        result: project.impact,
+        method: "Cloud Run scheduling versus the unscheduled box. Carbon ledger off the request path.",
+        baseline: "Emissions versus the unscheduled box. Uptime is not a named production SLO.",
         environment: METRICS.veridianUptime.runtime,
-        sample: "Sample size not filed.",
+        alsoFiled: `${METRICS.veridianUptime.display} and ${METRICS.veridianEmissions.display} were recorded as Cloud Run evaluations. Evaluation period, sample size, and the emissions calculation source were not filed.`,
       };
     case "multi-agent-graphrag":
       return {
-        result: METRICS.graphragRetrieval.display,
+        result: `${METRICS.graphragRetrieval.display} (${METRICS.graphragRetrieval.unit})`,
         baseline: `Vector-only retrieval on the ${METRICS.graphragRetrieval.corpus}`,
         environment: METRICS.graphragRetrieval.method,
-        sample: "Sample size and Recall@k were not filed.",
+        sample: "Sample size was not filed. The unit is the filed retrieval-accuracy comparison, not Recall@k.",
+        rows: [
+          { label: "Vector-only retrieval", value: "Baseline" },
+          { label: "Graph + vector, as filed", value: METRICS.graphragRetrieval.display },
+        ],
       };
     case "financial-risk-predictor":
       return {
         result: METRICS.riskAuc.display,
-        baseline: "15% over the baseline; the baseline model was not named.",
+        baseline: METRICS.riskAuc.note,
         sample: "Sample size not filed.",
+        alsoFiled:
+          "A −30% inference latency on the BentoML hatch was also noted; hardware and percentile were not filed.",
       };
     case "distributed-lead-scorer":
       return {
         result: METRICS.leadThroughput.display,
+        method: "PySpark pipeline. Hours of latency cut to minutes.",
         environment: "PySpark pipeline",
-        sample: "Pipeline / capacity. Not claimed as sustained production volume.",
+        sample: "Capacity benchmark. Not claimed as sustained traffic.",
+        alsoFiled:
+          "Checkpoints resume a failed hour from the last written slice. Cluster size and input distribution were not filed.",
       };
     case "slm-distillation-engine":
       return {
@@ -313,16 +352,21 @@ export function projectEvidence(project: {
         baseline: METRICS.slmInference.path,
         environment: project.apparatus.runtime,
         sample: "Tokens/second, hardware, and batch size were not filed.",
+        alsoFiled:
+          "−40% memory and 98% pass were also noted; hardware, batch size, and a named evaluation for quality parity were not filed.",
       };
     case "circuitmindai":
       return {
         result: project.impact,
+        capability: "Vision on the copper and voice for the operator, including when the network drops.",
         environment: project.apparatus.runtime,
+        sample: "Detection quality (precision, latency, confusion) was not filed. This is a capability, not a measured detector.",
       };
     case "mirrorfi":
       return {
         result: project.impact,
         environment: "Hackathon desk. No live host.",
+        sample: "Prize clipping. No production traffic was filed.",
       };
     default:
       return {

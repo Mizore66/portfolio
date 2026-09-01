@@ -11,17 +11,11 @@ import { Masthead } from "@/components/opening/Masthead";
 import { SelectedWork } from "@/components/opening/SelectedWork";
 import { BROADSHEET } from "@/content/opening";
 import { isOpeningId } from "@/lib/opening/tree";
-import type { WorkPath } from "@/lib/metrics";
+import { workPathFromQuery } from "@/lib/metrics";
 
 export const metadata: Metadata = {
   title: "Anas T. Qumhiyeh — Opening Preparation",
 };
-
-function pathFromQuery(path?: string): WorkPath | "all" {
-  if (path === "product") return "Product / backend";
-  if (path === "ml") return "ML / data systems";
-  return "all";
-}
 
 export default async function Home({
   searchParams,
@@ -46,7 +40,7 @@ export default async function Home({
         <div data-testid="newspaper-spread" className="sheet sheet-page">
           <Masthead />
           <main>
-            <SelectedWork path={pathFromQuery(q.path)} />
+            <SelectedWork path={workPathFromQuery(q.path)} />
             <ExperienceList />
             <EducationBand />
             <GameTeaser />

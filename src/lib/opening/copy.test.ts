@@ -22,7 +22,7 @@ describe("exhibit register", () => {
       /Nova Pro reads the copper/,
     );
     expect(resumeData.projects.find((p) => p.slug === "multi-agent-graphrag")?.description).toMatch(
-      /university's policy corpus/,
+      /handbook and policy archive/,
     );
     expect(resumeData.projects.find((p) => p.slug === "circuitmindai")?.tech[0]).toBe("Next.js");
     expect(resumeData.projects.find((p) => p.slug === "veridian")?.tech[0]).toBe("Python");

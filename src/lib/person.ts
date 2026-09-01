@@ -71,7 +71,7 @@ export function projectJsonLd(project: {
       url: `${SITE_URL}/projects/${project.slug}`,
       codeRepository: project.github,
       author,
-      ...(dateCreated ? { dateCreated } : {}),
+      ...(dateCreated ? { dateCreated, datePublished: dateCreated } : {}),
     };
   }
   return {
@@ -81,7 +81,7 @@ export function projectJsonLd(project: {
     description: project.meta,
     url: `${SITE_URL}/projects/${project.slug}`,
     author,
-    ...(dateCreated ? { dateCreated } : {}),
+    ...(dateCreated ? { dateCreated, datePublished: dateCreated } : {}),
   };
 }
 
