@@ -310,7 +310,7 @@ test.describe("Opening Preparation", () => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto(`${PAPER}?move=start`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
-    await expect(page.getByRole("heading", { level: 2, name: "Opening Preparation" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Opening Preparation" })).toBeVisible();
 
     const pawn = page.locator('[data-piece-id="wPe2"]');
     const yAt = () => pawn.evaluate((el) => el.getBoundingClientRect().y);
@@ -444,7 +444,7 @@ test.describe("Opening Preparation", () => {
     await page.goto("/projects/veridian");
     await expect(page.getByRole("heading", { level: 1, name: "Veridian" })).toBeVisible();
     await expect(page.getByTestId("exhibit-lede")).toContainText(/Intercepts Terraform/);
-    await expect(page.getByTestId("exhibit-why")).toContainText(/MCP here means/);
+    await expect(page.getByTestId("exhibit-why")).toContainText(/\(MCP\) here means/);
     await expect(page.getByTestId("exhibit-host")).toContainText(/no live host to sleep/);
     await expect(page.getByText("Clipping · Exhibit")).toBeVisible();
     await expect(page.getByTestId("halftone-plate")).toBeVisible();

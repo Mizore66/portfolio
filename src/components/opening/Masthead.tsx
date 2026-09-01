@@ -101,6 +101,25 @@ export function PaperMasthead() {
           {BROADSHEET.howToRead}
         </p>
         <p className="mt-2 font-mono text-[12px] uppercase tracking-[0.12em] text-faded">Anas T. Qumhiyeh</p>
+        <p className="masthead-quiet mt-3">
+          <a
+            className="external-mark"
+            href={`https://${resumeData.github}`}
+            target="_blank"
+            rel="me noopener noreferrer"
+          >
+            GitHub
+          </a>
+          <span aria-hidden="true"> · </span>
+          <a
+            className="external-mark"
+            href={`https://${resumeData.linkedin}`}
+            target="_blank"
+            rel="me noopener noreferrer"
+          >
+            LinkedIn
+          </a>
+        </p>
         <p className="mt-4">
           <a
             href="/"
