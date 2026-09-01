@@ -195,6 +195,19 @@ test.describe("exhibit evidence", () => {
   });
 });
 
+test.describe("narrow exhibits", () => {
+  test("Veridian and the homepage do not scroll sideways at 320px", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 });
+    for (const path of ["/", "/projects/veridian"]) {
+      await page.goto(path);
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+      );
+      expect(overflow, path).toBe(false);
+    }
+  });
+});
+
 test.describe("work filters", () => {
   test("the ML path survives a trip through Veridian", async ({ page }) => {
     await page.goto("/?path=ml#work");

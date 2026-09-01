@@ -29,7 +29,13 @@ export function CopyEmail({ email }: { email: string }) {
   }
 
   return (
-    <button type="button" className="masthead-chip" onClick={() => void onCopy()} data-testid="copy-email">
+    <button
+      type="button"
+      className="masthead-chip"
+      onClick={() => void onCopy()}
+      data-testid="copy-email"
+      aria-live="polite"
+    >
       {copied ? BROADSHEET.copiedEmail : BROADSHEET.copyEmail}
     </button>
   );

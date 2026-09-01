@@ -8,7 +8,7 @@ export function CopyLink({ href, label }: { href: string; label?: string }) {
 
   useEffect(() => {
     if (!copied) return;
-    const timer = window.setTimeout(() => setCopied(false), 2000);
+    const timer = window.setTimeout(() => setCopied(false), 4000);
     return () => window.clearTimeout(timer);
   }, [copied]);
 

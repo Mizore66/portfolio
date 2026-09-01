@@ -826,7 +826,11 @@
 .engine-lampshade {
   min-height: 5.5em;
 }
-.hero-glass .engine-lampshade {
+.engine-aux {
+  min-height: 2.75em;
+}
+.hero-glass .engine-lampshade,
+.hero-glass .engine-aux {
   min-height: 0;
 }
 
@@ -1414,7 +1418,7 @@
 
 .exhibit-rail {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(10rem, 100%), 1fr));
   gap: var(--space-3);
   margin: var(--space-4) 0 0;
   font-family: var(--type-label);

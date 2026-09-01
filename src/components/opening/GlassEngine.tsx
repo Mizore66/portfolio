@@ -364,9 +364,17 @@ export const GlassEngine = memo(function GlassEngine({
           {BROADSHEET.engineDown}
         </p>
       ) : null}
-      {PHASE2_EXHIBITS && mode === "learned" && weightsStatus !== "ready" ? (
-        <p className="mt-2 font-mono text-[12px] text-score-red" data-testid="weights-pending">
-          {weightsStatus === "error" ? BROADSHEET.weightsError : BROADSHEET.weightsPending}
+      {PHASE2_EXHIBITS && mode === "learned" ? (
+        <p
+          className="engine-aux mt-2 font-mono text-[12px] leading-snug text-score-red"
+          data-testid="weights-pending"
+          aria-hidden={weightsStatus === "ready" ? true : undefined}
+        >
+          {weightsStatus === "error"
+            ? BROADSHEET.weightsError
+            : weightsStatus === "ready"
+              ? "\u00a0"
+              : BROADSHEET.weightsPending}
         </p>
       ) : null}
       <p
