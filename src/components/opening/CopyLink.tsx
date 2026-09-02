@@ -39,16 +39,20 @@ export function CopyLink({ href, label }: { href: string; label?: string }) {
     }
   }
 
+  const name = label ?? BROADSHEET.copyLink;
+
   return (
     <button
       type="button"
       className="copy-link"
       onClick={() => void onCopy()}
       data-testid="copy-link"
-      aria-label={label ?? BROADSHEET.copyLink}
-      aria-live="polite"
+      aria-label={copied ? BROADSHEET.copiedLink : name}
     >
-      {copied ? BROADSHEET.copiedLink : BROADSHEET.copyLink}
+      <span aria-hidden="true">#</span>
+      <span className="sr-only" aria-live="polite">
+        {copied ? BROADSHEET.copiedLink : name}
+      </span>
     </button>
   );
 }

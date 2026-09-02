@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AdminFrame } from "@/app/admin/layout";
+import { enablePreviewAction } from "@/lib/cms/actions";
 import { getCmsState } from "@/lib/cms/store";
 import { claimHeroReady } from "@/lib/cms/validate";
 
@@ -45,9 +46,20 @@ export default async function AdminHome({
         sets <code>POSTGRES_URL</code> — that is the database, not <code>SUPABASE_URL</code>. Set
         BLOB_READ_WRITE_TOKEN for media.
       </p>
-      <p className="mt-4">
+      <p className="mt-4 flex flex-wrap gap-3">
         <Link href="/admin/profile" className="masthead-chip masthead-chip-primary">
           Edit profile
+        </Link>
+        <form action={enablePreviewAction}>
+          <button type="submit" className="masthead-chip">
+            Preview draft on the real site
+          </button>
+        </form>
+        <Link href="/admin/diff" className="masthead-chip">
+          Diff
+        </Link>
+        <Link href="/admin/history" className="masthead-chip">
+          History
         </Link>
       </p>
       {state.audit[0] ? (

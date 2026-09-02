@@ -70,6 +70,27 @@ export function EloCommitsChart() {
         </text>
       </svg>
       <figcaption className="mt-4 font-display text-[12px] italic text-faded">{BROADSHEET.eloChartCaption}</figcaption>
+      <table className="elo-table mt-4 w-full font-mono text-[12px] text-ink" data-testid="elo-commits-table">
+        <caption className="sr-only">Elo at each filed match</caption>
+        <thead>
+          <tr className="text-left text-faded">
+            <th className="font-normal">Match</th>
+            <th className="font-normal">Elo</th>
+            <th className="font-normal">Games</th>
+          </tr>
+        </thead>
+        <tbody>
+          {points.map((p) => (
+            <tr key={p.commit}>
+              <th scope="row" className="font-normal">
+                {p.label}
+              </th>
+              <td>{p.elo}</td>
+              <td>{p.games}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </figure>
   );
 }

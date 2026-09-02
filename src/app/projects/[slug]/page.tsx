@@ -85,6 +85,8 @@ export default async function ProjectPage({
   const limitation = "limitation" in project ? project.limitation : undefined;
   const split = "split" in project ? project.split : undefined;
   const example = "example" in project ? project.example : undefined;
+  const rejected = "rejected" in project ? project.rejected : undefined;
+  const retrospective = "retrospective" in project ? project.retrospective : undefined;
   const origin = projectOrigin({
     slug: project.slug,
     contextLabel,
@@ -109,7 +111,7 @@ export default async function ProjectPage({
       <a href="#exhibit" className="skip-link">
         {BROADSHEET.skipExhibit}
       </a>
-      <div className="relative z-[1] mx-auto max-w-2xl min-w-0 overflow-x-clip px-3 py-8 sm:px-5 sm:py-12">
+      <div className="relative z-[1] mx-auto max-w-4xl min-w-0 overflow-x-clip px-3 py-8 sm:px-5 sm:py-12">
         <div className="sheet mb-4">
           <RecruiterNav />
         </div>
@@ -208,12 +210,32 @@ export default async function ProjectPage({
                     <p className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug text-ink">{example}</p>
                   </ExhibitSection>
                 ) : null}
+                {rejected ? (
+                  <ExhibitSection id="rejected" title="Considered / rejected">
+                    <p
+                      data-testid="exhibit-rejected"
+                      className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug text-ink"
+                    >
+                      {rejected}
+                    </p>
+                  </ExhibitSection>
+                ) : null}
+                {retrospective ? (
+                  <ExhibitSection id="retrospective" title="What I would change now">
+                    <p
+                      data-testid="exhibit-retrospective"
+                      className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug text-ink"
+                    >
+                      {retrospective}
+                    </p>
+                  </ExhibitSection>
+                ) : null}
                 <p className="mt-4 max-w-[68ch] font-lora text-[16px] leading-[1.7] italic text-faded">
                   {project.description}
                 </p>
               </section>
 
-              <section className="mt-8" aria-label="Halftone plate">
+              <section className="decoration-plate mt-8" aria-label="Halftone plate">
                 <p className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
                   Decoration · illustrative plate
                 </p>
@@ -228,6 +250,7 @@ export default async function ProjectPage({
                 </div>
               </section>
 
+              <div className="proof-plate">
               <ExhibitSection id="apparatus" title="Proof · apparatus">
                 {illustration ? (
                   <p className="mt-2 max-w-[68ch] font-mono text-[12px] leading-relaxed text-faded" data-testid="illustration-date">
@@ -241,6 +264,7 @@ export default async function ProjectPage({
                   <PatentFigure spec={project.patent} />
                 </div>
               </ExhibitSection>
+              </div>
 
               <ExhibitSection id="line" title="The line">
                 <ol className="mt-3 space-y-3">

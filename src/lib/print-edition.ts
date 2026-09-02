@@ -58,8 +58,10 @@ type Mark = { role: "H1" | "H2" | "P" | "Link"; mcid: number };
  * One-page tagged résumé. Single column, no chessboard: ATS and screen
  * readers should not meet the Italian Game before Education.
  */
-export function buildPrintEditionPdf(): Uint8Array {
+export function buildPrintEditionPdf(overlay?: { dek?: string; availability?: string }): Uint8Array {
   const d = resumeData;
+  const headline = overlay?.dek ?? d.headline;
+  const availability = overlay?.availability ?? POSITIONING.availability;
   const ops: string[] = [];
   const annots: string[] = [];
   const marks: Mark[] = [];
@@ -98,7 +100,7 @@ export function buildPrintEditionPdf(): Uint8Array {
   marked("P", () => txt("F2", 9, M, PAGE_H - 52, "OPENING PREPARATION  |  Resume  |  Bandar Sunway, Malaysia"));
   marked("H1", () => txt("F2", 20, M, PAGE_H - 76, d.name));
   let y = PAGE_H - 90;
-  for (const line of wrap(d.headline, 92)) {
+  for (const line of wrap(headline, 92)) {
     marked("P", () => txt("F1", 9, M, y, line));
     y -= 11;
   }
@@ -121,7 +123,7 @@ export function buildPrintEditionPdf(): Uint8Array {
     ),
   );
   y -= 12;
-  for (const line of wrap(POSITIONING.availability, 92)) {
+  for (const line of wrap(availability, 92)) {
     marked("P", () => txt("F3", 8, M, y, line));
     y -= 11;
   }
@@ -240,7 +242,7 @@ export function buildPrintEditionPdf(): Uint8Array {
   const documentElem = `<< /Type /StructElem /S /Document /Lang (en-GB) /K [${structKids}] /P ${rootObjNum} 0 R >>`;
   const structRoot = `<< /Type /StructTreeRoot /K [${documentObjNum} 0 R] /ParentTree ${parentTreeObjNum} 0 R /ParentTreeNextKey 1 >>`;
   const parentTree = `<< /Nums [ 0 [${parentKids}] ] >>`;
-  const info = `<< /Title (${pdfEscape("Anas Tarek Qumhiyeh - Resume")}) /Author (${pdfEscape(d.name)}) /Subject (${pdfEscape(d.headline)}) /Lang (en-GB) >>`;
+  const info = `<< /Title (${pdfEscape("Anas Tarek Qumhiyeh - Resume")}) /Author (${pdfEscape(d.name)}) /Subject (${pdfEscape(headline)}) /Lang (en-GB) >>`;
 
   const objects: string[] = [
     catalog,

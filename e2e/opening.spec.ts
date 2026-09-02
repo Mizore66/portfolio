@@ -231,6 +231,7 @@ test.describe("Opening Preparation", () => {
       "true",
     );
 
+    await page.getByTestId("board-plane").focus();
     await page.keyboard.press("ArrowRight");
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="e4"]')).toHaveAttribute(
       "aria-current",
@@ -735,6 +736,7 @@ test.describe("Opening Preparation", () => {
     const y0 = await page.evaluate(() => window.scrollY);
     expect(y0).toBeGreaterThan(400);
 
+    await page.getByTestId("board-plane").focus();
     await page.keyboard.press("ArrowRight");
     await expect
       .poll(async () => page.evaluate(() => window.location.search), { timeout: 2500 })

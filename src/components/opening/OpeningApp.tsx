@@ -13,6 +13,7 @@ import { TodaysPuzzle } from "@/components/opening/TodaysPuzzle";
 import { PaperToc } from "@/components/opening/PaperToc";
 import { WayfindIndex } from "@/components/opening/WayfindIndex";
 import { BROADSHEET } from "@/content/opening";
+import { isChessKeyTarget } from "@/lib/chess/keys";
 import type { EvalMode } from "@/lib/chess/engine";
 import { PHASE2_DEFAULT_EVAL, PHASE2_EXHIBITS } from "@/lib/chess/phase2";
 import { expandPlayLine, sideAfter } from "@/lib/chess/play";
@@ -274,8 +275,7 @@ export function OpeningApp({
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
-      const target = e.target as HTMLElement | null;
-      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return;
+      if (!isChessKeyTarget(e.target)) return;
       e.preventDefault();
       const next = stepMainline(selectedId, e.key === "ArrowRight" ? 1 : -1);
       userSelect(next);

@@ -207,7 +207,7 @@ export const FIGURES = {
     review: {
       status: "validated",
       notes:
-        "Reliability chapter mapped onto a Watt governor. The three proofs are résumé-public: 92.5% coverage, role-based access, 99.9% uptime.",
+        "Reliability chapter mapped onto a Watt governor. The three proofs are résumé-public: 92.5% coverage, role-based access, 99.9% observed uptime.",
     },
     parts: [
       { n: 1, glyph: "governor", label: "GOVERNOR", mapsTo: "king safety", confidence: "presumed" },
@@ -216,7 +216,7 @@ export const FIGURES = {
       { n: 4, glyph: "valve", label: "VALVE", mapsTo: "throttle before the break", confidence: "presumed" },
       { n: 5, glyph: "gauge", label: "GAUGE", mapsTo: "92.5% coverage", confidence: "confirmed" },
       { n: 6, glyph: "key", label: "KEY", mapsTo: "role-based access", confidence: "confirmed" },
-      { n: 7, glyph: "gauge", label: "GAUGE", mapsTo: "99.9% uptime", confidence: "confirmed" },
+      { n: 7, glyph: "gauge", label: "GAUGE", mapsTo: "99.9% observed uptime", confidence: "confirmed" },
       { n: 8, glyph: "ledger", label: "LEDGER", mapsTo: "the reliability proofs", confidence: "confirmed" },
     ],
     numerals: [
@@ -257,7 +257,7 @@ export const VERIDIAN_PRESS: ApparatusSpec = {
   review: {
     status: "validated",
     notes:
-      "Veridian exhibit. Paper stock = infrastructure plans; composing room = graph retrieval; stereotype = distilled model; edition = recommendations. 99.9% uptime is résumé-public.",
+      "Veridian exhibit. Paper stock = infrastructure plans; composing room = graph retrieval; stereotype = distilled model; edition = recommendations. 99.9% observed uptime is résumé-public.",
   },
   parts: [
     { n: 1, glyph: "hopper", label: "HOPPER", mapsTo: "paper stock — infrastructure plans", confidence: "confirmed" },
@@ -267,7 +267,7 @@ export const VERIDIAN_PRESS: ApparatusSpec = {
     { n: 5, glyph: "roller", label: "ROLLER", mapsTo: "the press", confidence: "presumed" },
     { n: 6, glyph: "belt", label: "BELT", mapsTo: "the run", confidence: "presumed" },
     { n: 7, glyph: "ledger", label: "EDITION", mapsTo: "the morning recommendations", confidence: "confirmed" },
-    { n: 8, glyph: "gauge", label: "GAUGE", mapsTo: "99.9% uptime", confidence: "confirmed" },
+    { n: 8, glyph: "gauge", label: "GAUGE", mapsTo: "99.9% observed uptime", confidence: "confirmed" },
   ],
   numerals: [
     { mark: "1", x: 7.0, y: 16.0, fromX: 17.6, fromY: 16.0, glyph: "hopper" },

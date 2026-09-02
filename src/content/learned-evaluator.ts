@@ -31,5 +31,5 @@ export const LAB_ARTICLE = {
     "LEARNED scored 1 win, 59 draws, 40 losses. LLR −2.33 against bounds ±2.94 is inconclusive; SPRT unterminated. Gate A at the same cap was 0.0 Elo (17–66–17, every pair 1–1), so the −143 is not a colour or adjudication artefact.",
   learnedHed: "What I learned",
   learned:
-    "Honest Elo: the deltas are rigorous, the anchor is declared. A loss at the spec cap is still a result. The earlier −100 at 1 000 nodes was the v1 128; do not compare the two caps. The 2200 on the glass is a club-strength anchor, not a CCRL listing.",
+    "A loss at the spec cap is still a result. Do not compare Gate C at 50 000 nodes with the earlier −100 at 1 000 nodes — that was the v1 128. The 2200 on the glass is a club-strength anchor, not a CCRL listing.",
 } as const;

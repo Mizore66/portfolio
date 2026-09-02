@@ -42,8 +42,8 @@ test.describe("document mode", () => {
     await expect(page.getByTestId("about-band")).toContainText(/played chess since I was a teenager/);
     await expect(page.getByTestId("about-band")).toContainText(/Built production payment/);
     await expect(page.getByTestId("retrieval-split")).toContainText(/different corpus/);
-    await expect(page.getByTestId("masthead-availability")).toContainText(/Seeking software engineering roles/);
-    await expect(page.getByTestId("contact-band")).not.toContainText(/Seeking software engineering roles/);
+    await expect(page.getByTestId("masthead-availability")).toContainText(/Open to software engineering roles/);
+    await expect(page.getByTestId("contact-band")).not.toContainText(/Open to software engineering roles/);
     await expect(page.getByTestId("path-filter")).toContainText(/ML \/ data systems/);
     await expect(page.getByTestId("path-filter")).toContainText(/Product \/ backend/);
     await expect(page.getByRole("link", { name: /Skip to selected work/i })).toHaveCount(1);
@@ -53,7 +53,7 @@ test.describe("document mode", () => {
     await expect(page.getByTestId("masthead-proof").locator(".metric-row").nth(2)).toHaveText(
       "100M-event capacity benchmark",
     );
-    await expect(page.getByTestId("masthead-how")).toContainText(/constraint to measurement/);
+    await expect(page.getByTestId("masthead-how")).toContainText(/constraints through implementation/);
   });
 });
 

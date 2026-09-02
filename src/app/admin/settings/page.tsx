@@ -16,6 +16,14 @@ export default async function SettingsEditor() {
           <dd className="mt-1 font-display text-[18px]">{published.revisionId}</dd>
         </div>
         <div>
+          <dt className="font-mono text-[12px] uppercase tracking-[0.14em] text-faded">Backup</dt>
+          <dd className="mt-1 font-display text-[16px]">
+            <a href="/admin/export" className="text-book-blue underline decoration-2 underline-offset-4">
+              Export JSON
+            </a>
+          </dd>
+        </div>
+        <div>
           <dt className="font-mono text-[12px] uppercase tracking-[0.14em] text-faded">Media</dt>
           <dd className="mt-1 font-display text-[16px]">
             {process.env.BLOB_READ_WRITE_TOKEN

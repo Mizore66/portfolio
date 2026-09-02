@@ -1,6 +1,6 @@
 import { CIRCUITMIND_LINE, MIRRORFI_VAULT, RISK_ENGINE, LEADS_HALL, VERIDIAN_PLANT } from "@/content/project-figures";
 import { repoArtifacts, resumeData } from "@/lib/data";
-import { METRICS, POSITIONING } from "@/lib/metrics";
+import { classifiedShort, METRICS, POSITIONING } from "@/lib/metrics";
 import type { OpeningNode } from "@/lib/opening/types";
 
 export const ROOT_ID = "start";
@@ -52,7 +52,7 @@ export const BROADSHEET = {
   evaluationsKicker: "The evaluations meet",
   evaluationsHed: "LEARNED FALLS −143 ELO AT 50 000 NODES",
   evaluationsDek:
-    "Two evals, one search. Handcrafted PeSTO against the playing 768×2×256 net (nnue-lichess-cc0-768x2x256-32-1-2026-08-29) trained on 20 million quiet CC0 Lichess cloud evals — depth-12 labels, three epochs, hold-out r vs Stockfish 0.64, r vs PeSTO 0.70. LEARNED is the masthead eval; PeSTO remains a comparison toggle and the Gate C opponent. This column is a fixed-N match at 50 000 nodes a move, 100 games, colours swapped on the fifty-opening suite — not a terminated SPRT. 1 win, 59 draws, 40 losses. LLR −2.33 against bounds ±2.94 is inconclusive; the ±40.5 Elo bar is the 95% interval on that fixed sample. Gate A at the same cap was 0.0 Elo (17–66–17, every pair 1–1), so the −143 is not a colour or adjudication artefact. The earlier −100 at 1 000 nodes was the v1 128; do not compare the two caps. The 2200 on the glass is a club-strength anchor, not a CCRL listing.",
+    "Two evals, one search. LEARNED is the masthead; PeSTO remains the opponent and a comparison toggle. A loss at the spec cap is still a result — not a terminated SPRT.",
   evaluationsSprt:
     "fixed-N: −143.1 ±40.5 Elo @ 50 000 nodes, 100 games, LLR −2.33 (inconclusive; SPRT unterminated)",
   evaluationsHonesty:
@@ -91,7 +91,7 @@ export const BROADSHEET = {
   exploreCareer: "Explore career story",
   pauseGame: "Pause",
   howToRead: "The résumé is literal; the chess is annotation.",
-  boardKeys: "Arrow keys step the scoresheet. Chevrons under the diagram do the same.",
+  boardKeys: "When the board has focus, arrow keys step the scoresheet. Chevrons under the diagram do the same.",
   boardPlayable: "The board is waiting for a move.",
   boardAutoplay: "Playing the mainline. Pause to stop.",
   backToWork: "Back to selected work",
@@ -206,7 +206,7 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "The ML Defence",
     kind: "Project",
     title: "The ML Defence",
-    fact: `${risk.name} — ${risk.subtitle}. LightGBM / XGBoost, ${METRICS.riskAuc.display} (${METRICS.riskAuc.vs}). SHAP for the why. BentoML to a REST API. Daily retrain on Kafka.`,
+    fact: `${risk.name} — ${risk.subtitle}. LightGBM / XGBoost, ${METRICS.riskAuc.display}. SHAP for the why. BentoML to a REST API. Daily retrain on Kafka.`,
     commentary:
       "I built models that had to be interpreted, deployed, and retrained every morning — not fitted once for a screenshot. The knight invites the centre forward: the ML line rather than the systems line.",
     eval: 0.25,
@@ -261,7 +261,7 @@ export const OPENING_NODES: OpeningNode[] = [
     kind: "Internship",
     title: "First Developed Piece",
     scanTitle: "Petronas — Project Engineer Intern",
-    fact: "Petronas — Project Engineer Intern, Nov 2024 – Feb 2025. Converted paid MATLAB licences into free Python packages, then wrote the tests that proved it. Presented usability findings to department leadership.",
+    fact: "Petronas — Project Engineer Intern, Nov 2024 – Feb 2025. Replaced MATLAB-dependent back-end functionality with Python packages, removing paid runtime dependencies, then wrote post-release acceptance cases. Presented usability findings to department leadership.",
     commentary:
       "Knights before bishops, they say. Petronas was the first industry square — converting paid MATLAB licences into free Python packages, then writing the tests that proved it.",
     eval: 0.4,
@@ -449,7 +449,7 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "Castling",
     kind: "Practice",
     title: "Castling",
-    fact: `Reliability before the break: Setel ${METRICS.setelCoverage.value} coverage; WD role-based access; Veridian ${METRICS.veridianUptime.display}.`,
+    fact: `Reliability before the break: Setel ${METRICS.setelCoverage.value} coverage; WD role-based access; ${METRICS.veridianUptime.opening}.`,
     commentary:
       "Castling is not a retreat. It is the move that says king safety before the central break. I ship the same way — tests and access control before the spectacular sacrifice.",
     eval: 0.55,
@@ -513,7 +513,7 @@ export const OPENING_NODES: OpeningNode[] = [
     kind: "Flagship",
     title: "The Central Break",
     scanTitle: "Veridian — MLOps Tradeoff Engine",
-    fact: `${veridian.name} — ${veridian.subtitle}: intercepts Terraform and Kubernetes and recommends lower-carbon hardware. At Monash: GraphRAG over university regulations, self-correcting Text-to-Cypher, ${METRICS.monashRetrieval.display}; an SLM distilled from that reasoning, ${METRICS.slmLatency.value} latency.`,
+    fact: `${veridian.name} — ${veridian.subtitle}: intercepts Terraform and Kubernetes and recommends lower-carbon hardware. ${METRICS.veridianUptime.opening}. Separate engagement — Monash University: GraphRAG over university regulations, self-correcting Text-to-Cypher, ${METRICS.monashRetrieval.display}; an SLM distilled from that reasoning, ${METRICS.slmLatency.value} latency.`,
     commentary:
       "You castle, then you break the centre. d4 is the move this scoresheet hangs on: agents that intercept infrastructure, a graph that actually understands prerequisites, measurements instead of demos. The double-exclaim is Informant’s, not mine — but I played it.",
     eval: 1.6,
@@ -549,7 +549,7 @@ export const OPENING_NODES: OpeningNode[] = [
     scanTitle: "Multi-Agent GraphRAG — policy-corpus retrieval",
     fact: `${graphrag.name} — ${graphrag.subtitle}. ${METRICS.graphragRetrieval.method} on an independent handbook and policy archive. ${METRICS.graphragRetrieval.display}.`,
     commentary:
-      "Prerequisites and credit-transfer live as edges, not another embedding dump. Black can refuse the capture and keep the centre closed — the graph is that kind of patience.",
+      "Prerequisites and credit-transfer live as edges, not another vector-only retrieval. Black can refuse the capture and keep the centre closed — the graph is that kind of patience.",
     eval: 0.55,
     evalText: "+0.55",
     artifacts: [
@@ -577,7 +577,7 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "Tucking the Bishop",
     kind: "Project",
     title: "Tucking the Bishop",
-    fact: `${slm.name} — ${slm.subtitle}. 70B teacher into a 3B student via QLoRA; DeepSpeed and FlashAttention so the distillation fit; ${METRICS.slmLatency.display}, ${METRICS.slmInference.display}.`,
+    fact: `${slm.name} — ${slm.subtitle}. The goal was to preserve task behavior in a 3B student while reducing serving cost and latency. Quality parity was not supported by a named filed evaluation. 70B teacher via QLoRA; DeepSpeed and FlashAttention so the distillation fit; ${METRICS.slmLatency.display}, ${classifiedShort(METRICS.slmInference)}.`,
     commentary:
       "Distillation keeps the same job on a smaller piece, cheaper to keep on the board. The Italian bishop steps back to b6 and still looks at the same diagonal.",
     eval: 0.5,
@@ -607,7 +607,7 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "Taking on d4",
     kind: "Method",
     title: "Taking on d4",
-    fact: `Named results that had to survive the demo: Veridian ${METRICS.veridianUptime.display} (${METRICS.veridianEmissions.display}); Monash GraphRAG ${METRICS.monashRetrieval.display}; Western Digital ${METRICS.wdOversight.display}; Financial Risk Predictor ${METRICS.riskAuc.display}; SLM Distillation ${METRICS.slmInference.display}; Lead Scorer ${METRICS.leadThroughput.display}.`,
+    fact: `Filed results and evaluations: Veridian ${classifiedShort(METRICS.veridianUptime)} (${METRICS.veridianEmissions.display}); Monash GraphRAG ${classifiedShort(METRICS.monashRetrieval)}; Western Digital ${METRICS.wdOversight.display}; Financial Risk Predictor ${METRICS.riskAuc.display}; SLM Distillation ${classifiedShort(METRICS.slmInference)}; Lead Scorer ${classifiedShort(METRICS.leadThroughput)}.`,
     commentary:
       "I would rather show the graph than the slogan. Accepting the pawn is accepting that the numbers have owners.",
     eval: 0.7,

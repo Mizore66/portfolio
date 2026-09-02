@@ -1,14 +1,22 @@
 import { buildPrintEditionPdf } from "@/lib/print-edition";
+import { activeAvailability } from "@/lib/cms/ledger";
+import { getRenderableDocument } from "@/lib/cms/store";
 
-export function GET() {
-  const bytes = buildPrintEditionPdf();
+export async function GET() {
+  const document = await getRenderableDocument();
+  const bytes = buildPrintEditionPdf({
+    dek: document.profile.dek,
+    availability: activeAvailability(document),
+  });
   const copy = new ArrayBuffer(bytes.byteLength);
   new Uint8Array(copy).set(bytes);
+  const etag = `"resume-${document.revisionId}"`;
   return new Response(copy, {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": 'attachment; filename="Anas-Qumhiyeh-Resume.pdf"',
-      "Cache-Control": "public, max-age=3600",
+      "Content-Disposition": `inline; filename="Anas-Tarek-Qumhiyeh-resume-${document.revisionId}.pdf"`,
+      "Cache-Control": "private, no-store, must-revalidate",
+      ETag: etag,
     },
   });
 }

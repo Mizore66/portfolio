@@ -14,7 +14,7 @@ export function PaperToc({
   const chapters = issueChapters();
 
   return (
-    <nav className="paper-toc" data-testid="paper-toc" aria-label={BROADSHEET.issueKicker}>
+    <nav className="paper-toc min-[980px]:hidden" data-testid="paper-toc" aria-label={BROADSHEET.issueKicker}>
       <details>
         <summary>Contents</summary>
         <ol>

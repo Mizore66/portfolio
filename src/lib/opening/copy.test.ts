@@ -43,7 +43,8 @@ describe("exhibit register", () => {
 
   it("names owners on the numbers that survive the demo", () => {
     expect(getNode("exd4").fact).toMatch(/Monash GraphRAG \+45%/);
-    expect(getNode("exd4").fact).toMatch(/Veridian 99\.9%/);
+    expect(getNode("exd4").fact).toMatch(/Veridian 99\.9% observed uptime/);
+    expect(getNode("oo").fact).toMatch(/Veridian Cloud Run evaluation: 99\.9% observed uptime/);
     expect(getNode("closed").fact).toMatch(/\+35%/);
     expect(getNode("closed").fact).not.toMatch(/\+45%/);
   });

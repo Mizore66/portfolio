@@ -1,7 +1,7 @@
 export const CMS_TAG = "cms";
 export const SITE_REVISED = "2026-09-01T00:00:00.000Z";
 
-export type ClaimKind = "production" | "benchmark" | "evaluation" | "pipeline";
+export type ClaimKind = "production" | "benchmark" | "evaluation" | "pipeline" | "capability";
 
 export type CmsClaim = {
   id: string;

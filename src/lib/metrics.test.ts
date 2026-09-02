@@ -76,7 +76,7 @@ describe("measured claims have one owner each", () => {
     expect(POSITIONING.deskSummaries[0]?.line).toMatch(/department leadership/);
     expect(POSITIONING.desksLine).toMatch(/Built and evaluated payment, laboratory, and retrieval systems/);
     expect(POSITIONING.independentDek).toMatch(/Independent/);
-    expect(POSITIONING.professionalDek).toMatch(/Intern and contract/);
+    expect(POSITIONING.professionalDek).toMatch(/Internships and contract roles/);
     expect(POSITIONING.next).toMatch(/fintech infrastructure/);
     expect(RETRIEVAL_SPLIT).toMatch(/\+45%/);
     expect(RETRIEVAL_SPLIT).toMatch(/\+35%/);
@@ -95,7 +95,7 @@ describe("measured claims have one owner each", () => {
     expect(projectPath("multi-agent-graphrag")).toBe("ML / data systems");
     expect(projectPath("circuitmindai")).toBe("Product / backend");
     expect(projectPath("mirrorfi")).toBe("Product / backend");
-    expect(POSITIONING.deskNote).toMatch(/internal screenshots stay off the paper/);
+    expect(POSITIONING.deskNote).toMatch(/internal screenshots remain private/);
     expect(POSITIONING.nameNote).toMatch(/Anas Tarek Qumhiyeh on the résumé/);
     expect(POSITIONING.availability).not.toMatch(/visa|relocat|work authorization/i);
     expect(exhibitTitle({ name: "Veridian", subtitle: "MLOps Tradeoff Engine" })).toBe(

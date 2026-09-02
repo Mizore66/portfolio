@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { postgresNeedsSsl, postgresUrl, postgresUrlSource } from "@/lib/cms/env";
 import { ledgerDocument } from "@/lib/cms/ledger";
+import { documentDiff } from "@/lib/cms/diff";
 import { claimHeroReady, validateDocument } from "@/lib/cms/validate";
 
 describe("cms ledger", () => {
@@ -22,6 +23,28 @@ describe("cms ledger", () => {
     };
     expect(claimHeroReady(broken.claims.find((c) => c.id === "gateC")!).length).toBeGreaterThan(0);
     expect(validateDocument(broken).join(" ")).toMatch(/gateC/);
+  });
+
+  it("accepts the seeded ledger and refuses evaluation claims without environment", () => {
+    const doc = ledgerDocument();
+    expect(validateDocument(doc)).toEqual([]);
+    const broken = {
+      ...doc,
+      claims: doc.claims.map((claim) =>
+        claim.id === "veridianUptime" ? { ...claim, environment: "", caveat: "" } : claim,
+      ),
+    };
+    expect(validateDocument(broken).join(" ")).toMatch(/veridianUptime/);
+  });
+
+  it("diffs draft profile copy against published", () => {
+    const published = ledgerDocument();
+    const draft = {
+      ...published,
+      profile: { ...published.profile, dek: "Draft dek" },
+    };
+    const rows = documentDiff(published, draft);
+    expect(rows.some((row) => row.path === "profile.dek" && row.to === "Draft dek")).toBe(true);
   });
 });
 
