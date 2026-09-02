@@ -2406,6 +2406,7 @@ section:focus-within .copy-link {
     transition: none !important;
     animation: none !important;
   }
+  .desk-collage {
     transform: none;
   }
   .desk-eval-wash,
