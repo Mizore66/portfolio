@@ -245,6 +245,7 @@ export const VERIDIAN_STILL: ApparatusSpec = {
   move: "5. d4",
   function: "THE DISTILLATION OF REASONING",
   filed: "Apr. 2026",
+  dateKind: "illustration",
   sheets: 3,
   sheet: 3,
   viewBox: SHEET,
@@ -291,8 +292,9 @@ export const VERIDIAN_STILL: ApparatusSpec = {
 export const VERIDIAN_EXCHANGE: ApparatusSpec = {
   fig: 12,
   move: "5. d4",
-  function: "THE RETRIEVAL OF REGULATIONS",
+  function: "THE RETRIEVAL OF POLICY",
   filed: "Apr. 2026",
+  dateKind: "illustration",
   sheets: 3,
   sheet: 2,
   viewBox: SHEET,
@@ -306,16 +308,16 @@ export const VERIDIAN_EXCHANGE: ApparatusSpec = {
   review: {
     status: "validated",
     notes:
-      "Sheet 2 of the Veridian filing. Intake=user query; keyer=Text-to-Cypher; wire wall of drums=the graph; carriages=agents in parallel; wicket=self-correction; delivery=answer assembly; gauge=+45% vs vector-only. The unsorted basket is unlabeled on purpose.",
+      "Sheet 2 of the Veridian filing, shown on the Multi-Agent GraphRAG exhibit as a later illustration. Intake=user query; keyer=Text-to-Cypher; wire wall of drums=the independent university handbook and policy archive; carriages=agents in parallel; wicket=self-correction; delivery=answer assembly; gauge=+35% vs vector-only on that corpus. The Monash contract measures university regulations on a different line and is not this gauge. The unsorted basket is unlabeled on purpose.",
   },
   parts: [
     { n: 1, glyph: "hopper", label: "INTAKE", mapsTo: "the user query", confidence: "confirmed" },
     { n: 2, glyph: "seal", label: "KEYER", mapsTo: "Text-to-Cypher generation", confidence: "confirmed" },
-    { n: 3, glyph: "pigeonhole", label: "WIRE WALL", mapsTo: "the regulations graph", confidence: "confirmed" },
+    { n: 3, glyph: "pigeonhole", label: "WIRE WALL", mapsTo: "the independent handbook and policy archive", confidence: "confirmed" },
     { n: 4, glyph: "capsule", label: "CARRIAGES", mapsTo: "agents, in parallel", confidence: "confirmed" },
     { n: 5, glyph: "relay", label: "WICKET", mapsTo: "the self-correcting loop", confidence: "confirmed" },
     { n: 6, glyph: "ledger", label: "DELIVERY", mapsTo: "answer assembly", confidence: "confirmed" },
-    { n: 7, glyph: "gauge", label: "GAUGE", mapsTo: "+45% retrieval vs vector-only", confidence: "confirmed" },
+    { n: 7, glyph: "gauge", label: "GAUGE", mapsTo: "+35% retrieval vs vector-only (project · handbook / policy archive)", confidence: "confirmed" },
   ],
   numerals: [
     { mark: "1", x: 3.0, y: 58.0, fromX: 14.1, fromY: 65.6, glyph: "hopper" },

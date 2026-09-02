@@ -1,11 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { EvaluationsColumn } from "@/components/opening/EvaluationsColumn";
-import { EloCommitsChart } from "@/components/opening/EloCommitsChart";
+import { SituationsWanted } from "@/components/opening/SituationsWanted";
 import { BROADSHEET } from "@/content/opening";
-import { resumeData } from "@/lib/data";
-import { PHASE2_EXHIBITS } from "@/lib/chess/phase2";
 
 export function BroadsheetFiller() {
   const [weather, setWeather] = useState(0);
@@ -27,25 +24,8 @@ export function BroadsheetFiller() {
             {BROADSHEET.errata}
           </p>
         </div>
-        <div className="border-2 border-dashed border-ink p-4">
-          <p className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
-            {BROADSHEET.classifiedKicker}
-          </p>
-          <a
-            href={`mailto:${resumeData.email}`}
-            className="move-tint mt-2 block font-display text-[16px] leading-snug italic text-ink"
-          >
-            {BROADSHEET.classified}
-          </a>
-          <p className="mt-2 font-mono text-[12px] text-faded">{BROADSHEET.availability}</p>
-        </div>
+        <SituationsWanted />
       </div>
-      {PHASE2_EXHIBITS ? (
-        <>
-          <EvaluationsColumn />
-          <EloCommitsChart />
-        </>
-      ) : null}
       <div className="flex items-end justify-between gap-4">
         <button
           type="button"

@@ -1,7 +1,7 @@
 /**
  * next/image `sizes` per register. With `sizes` set, Next emits a full
  * srcset (including large device widths); the browser picks from `sizes`.
- * Role plates paint at ~184px on the desktop scoresheet — never 3840.
+ * Role plates paint at ~184px on the desktop scoresheet — never 3840 or 1920.
  */
 export const IMAGE_SIZES = {
   /** Education/role clips wrapping the column. */

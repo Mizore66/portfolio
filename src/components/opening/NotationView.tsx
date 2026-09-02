@@ -40,8 +40,11 @@ export const NotationView = memo(function NotationView({
 
   return (
     <article aria-label="Scoresheet" className="p-0" data-testid="notation-view">
-      <p className="mb-8 font-mono text-[12px] uppercase tracking-[0.25em] text-faded">
+      <p className="mb-2 font-mono text-[12px] uppercase tracking-[0.25em] text-faded">
         {BROADSHEET.gameKicker} · every node, in order
+      </p>
+      <p className="mb-8 max-w-[68ch] font-display text-[16px] italic text-faded">
+        {BROADSHEET.gameDek}
       </p>
       <div className="m-0">
         {blocks.map((block) => (
@@ -78,15 +81,20 @@ function Chapter({
       id={`chapter-${node.id}`}
       data-chapter={node.id}
       className={cn(
-        "scroll-mt-4 border-t-2 border-ink pt-8 pb-10",
-        flagship && "border-t-[3px]",
+        "chapter-block scroll-mt-4 border-t-2 border-ink pt-12 pb-8",
+        flagship && "chapter-block-flagship border-t-[3px] pt-16 pb-12",
       )}
     >
       <div className="mb-3">
+        {node.scanTitle ? (
+          <p className="scan-title mb-2 font-display text-[17px] leading-snug text-ink">
+            {node.scanTitle}
+          </p>
+        ) : null}
         <p className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
           {node.kind}
         </p>
-        <h2 className="mt-2 font-display text-[clamp(1.5rem,2.5vw,1.85rem)] leading-tight text-ink">
+        <h3 className="mt-2 font-display text-[clamp(1.5rem,2.5vw,1.85rem)] leading-tight text-ink">
           <ChapterButton
             node={node}
             selected={selected}
@@ -95,7 +103,7 @@ function Chapter({
             onPreview={onPreview}
             stamp={selected && Boolean(node.sym)}
           />
-        </h2>
+        </h3>
       </div>
 
       <div className="chapter-copy">
@@ -120,14 +128,17 @@ function Chapter({
           />
         ) : null}
         {node.fact ? (
-          <p className="drop-cap max-w-prose font-display text-[16px] leading-relaxed text-ink">
+          <p className="drop-cap chapter-fact max-w-prose font-display text-[16px] leading-[1.65] text-ink">
             {node.fact}
           </p>
         ) : null}
         {node.commentary ? (
-          <p className="mt-4 max-w-prose font-lora text-[16px] leading-relaxed italic text-ink">
-            {node.commentary}
-          </p>
+          <details className="annotation mt-4">
+            <summary className="annotation-summary">Annotation</summary>
+            <p className="mt-2 max-w-prose font-lora text-[16px] leading-[1.7] italic text-faded">
+              {node.commentary}
+            </p>
+          </details>
         ) : null}
       </div>
 
@@ -193,11 +204,13 @@ function Chapter({
         </div>
       ) : null}
 
-      <p className="line-so-far mt-4 font-mono text-[12px] leading-relaxed text-faded">
-        <span className="uppercase tracking-[0.18em]">The line so far</span>
-        <br />
-        <span className="text-ink">{formatLine(node.id)}</span>
-      </p>
+      {selected ? (
+        <p className="line-so-far mt-4 font-mono text-[12px] leading-relaxed text-faded">
+          <span className="uppercase tracking-[0.18em]">The line so far</span>
+          <br />
+          <span className="text-ink">{formatLine(node.id)}</span>
+        </p>
+      ) : null}
     </section>
   );
 }
@@ -285,10 +298,9 @@ function ChapterButton({
         selected && flagship && "is-selected",
       )}
     >
+      <span aria-hidden="true">
       <span className="text-book-blue">
-        <span className="mr-1" aria-hidden="true">
-          {node.fig}
-        </span>
+        <span className="mr-1">{node.fig}</span>
         {moveHeading(node)}
       </span>
       {node.sym ? (
@@ -298,7 +310,8 @@ function ChapterButton({
           <InformantMark sym={node.sym} className="ml-1 font-bold text-score-red" />
         )
       ) : null}
-      {!compact ? <span className="ml-2 text-ink">{node.title}</span> : null}
+      {!compact ? <span className="ml-2 text-ink"> — {node.title}</span> : null}
+      </span>
     </button>
   );
 }

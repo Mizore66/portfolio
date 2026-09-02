@@ -1,9 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { OPENING_NODES } from "../../content/opening";
 import { collectPlies, getMainline } from "../opening/tree";
-import { occupancy, positionAfter, snapInnerEdge, squareBox } from "./replay";
+import { occupancy, occupancyFen, positionAfter, snapInnerEdge, squareBox } from "./replay";
 
 describe("Italian Game replay", () => {
+  it("prints occupancy as piece-placement FEN", () => {
+    expect(occupancyFen(positionAfter([]))).toBe("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+    expect(occupancyFen(positionAfter(collectPlies("e4")))).toBe(
+      "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR",
+    );
+  });
+
   it("castles as two raw plies: king g1, rook f1", () => {
     const occ = occupancy(positionAfter(collectPlies("oo")));
     expect(occ.g1).toBe("wK");

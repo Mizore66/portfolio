@@ -30,19 +30,20 @@ export function WayfindIndex({
   }, [shown]);
 
   return (
-    <div
+    <nav
       className="wayfind-index"
       data-testid="wayfind-index"
       data-shown={shown ? "true" : "false"}
       inert={!shown}
       aria-hidden={!shown}
+      aria-label={BROADSHEET.issueKicker}
     >
       <button
         type="button"
         className="wayfind-toggle"
         data-testid="wayfind-toggle"
         aria-expanded={open}
-        aria-controls="wayfind-panel"
+        aria-controls={open ? "wayfind-panel" : undefined}
         aria-label={BROADSHEET.issueKicker}
         tabIndex={shown ? 0 : -1}
         onClick={() => setOpen((v) => !v)}
@@ -50,7 +51,7 @@ export function WayfindIndex({
         ⌃ {BROADSHEET.wayfindLabel}
       </button>
       {open ? (
-        <nav id="wayfind-panel" className="wayfind-panel" aria-label={BROADSHEET.issueKicker}>
+        <div id="wayfind-panel" className="wayfind-panel">
           <ol>
             {chapters.map((node) => {
               const current = node.id === selectedId;
@@ -73,8 +74,8 @@ export function WayfindIndex({
               );
             })}
           </ol>
-        </nav>
+        </div>
       ) : null}
-    </div>
+    </nav>
   );
 }

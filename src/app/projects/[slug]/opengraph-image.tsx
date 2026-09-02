@@ -112,6 +112,19 @@ export default async function Image({
             <div style={{ display: "flex", marginTop: 16, fontSize: 24, fontStyle: "italic", color: RED }}>
               {project?.subtitle ?? "Exhibit"}
             </div>
+            <div
+              style={{
+                display: "flex",
+                marginTop: 16,
+                fontSize: 20,
+                color: INK,
+                textAlign: "center",
+                maxWidth: 920,
+                lineHeight: 1.35,
+              }}
+            >
+              {project?.purpose ?? ""}
+            </div>
             <div style={{ display: "flex", marginTop: 20, fontSize: 20, color: FADED }}>
               Opening Preparation · the scoresheet
             </div>

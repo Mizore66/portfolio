@@ -2,12 +2,14 @@ import { expect, test } from "@playwright/test";
 import { OPENING_NODES } from "../src/content/opening";
 import { PHASE2_EXHIBITS } from "../src/lib/chess/phase2";
 
+const PAPER = "/opening-preparation";
+
 test.describe("Opening Preparation", () => {
   test("notation lists every node and stays in sync with the board", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await expect(page.getByTestId("notation-view")).toBeVisible();
@@ -25,7 +27,7 @@ test.describe("Opening Preparation", () => {
     await expect(
       page.locator('[data-testid="notation-view"] [data-node-id="d4"]'),
     ).toHaveAttribute("aria-current", "true");
-    await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 3, name: "The Central Break" })).toBeVisible();
     await expect(page.getByText("The line so far").first()).toBeVisible();
     await expect(page.getByText("1. e4! e5 2. Nf3 Nc6 3. Bc4 Bc5 4. O-O! Nf6! 5. d4!!").first()).toBeVisible();
   });
@@ -34,14 +36,14 @@ test.describe("Opening Preparation", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
-    await expect(page.getByRole("heading", { level: 1, name: "Anas T. Qumhiyeh" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Opening Preparation" })).toBeVisible();
     await expect(page.getByText("A. T. Qumhiyeh", { exact: true })).toHaveCount(0);
     await expect(page.getByTestId("tree-caption")).toHaveCount(0);
     await expect(page.getByText(/LEAD · FLAGSHIP/i)).toHaveCount(0);
     await expect(page.getByTestId("lead-headline")).toHaveCount(0);
-    await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 3, name: "The Central Break" })).toBeVisible();
     await expect(page.getByText(/^\d+ alts?$/i)).toHaveCount(0);
     await expect(page.getByTestId("inline-diagram")).toHaveCount(3);
     await expect(page.getByTestId("halftone-plate")).toHaveCount(7);
@@ -83,7 +85,6 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="club"]')).toHaveCount(0);
     await expect(page.getByText("High Ground")).toHaveCount(0);
     await expect(page.getByText("Club Years")).toHaveCount(0);
-    await expect(page.getByText(/game I've played since I was a teenager/)).toBeVisible();
     await expect(page.locator("#chapter-e5 [data-testid='halftone-plate']")).toHaveCount(0);
     await expect(page.locator("#chapter-exd4 [data-testid='halftone-plate']")).toHaveCount(0);
     await expect(page.locator("#chapter-re1 [data-testid='inline-diagram']")).toHaveCount(0);
@@ -192,7 +193,7 @@ test.describe("Opening Preparation", () => {
 
   test("the engine eval stays inside the bar", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByTestId("engine-eval")).not.toHaveText("…", { timeout: 4000 });
 
@@ -222,7 +223,7 @@ test.describe("Opening Preparation", () => {
 
   test("arrow keys walk the mainline", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=start");
+    await page.goto(`${PAPER}?move=start`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="start"]')).toHaveAttribute(
@@ -251,7 +252,7 @@ test.describe("Opening Preparation", () => {
 
   test("tree and notation stay in sync", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=start");
+    await page.goto(`${PAPER}?move=start`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="start"]')).toHaveAttribute(
@@ -270,7 +271,7 @@ test.describe("Opening Preparation", () => {
 
   test("mobile viewport shows notation, not the tree", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await expect(page.getByTestId("notation-view")).toBeVisible();
@@ -282,18 +283,18 @@ test.describe("Opening Preparation", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=d4");
+    await page.goto(`${PAPER}?move=d4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
-    await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 3, name: "The Central Break" })).toBeVisible();
 
-    await page.goto("/?move=not-a-node");
+    await page.goto(`${PAPER}?move=not-a-node`);
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="d4"]')).toHaveAttribute(
       "aria-current",
       "true",
     );
 
-    await page.goto("/?move=d4");
-    await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
+    await page.goto(`${PAPER}?move=d4`);
+    await expect(page.getByRole("heading", { level: 3, name: "The Central Break" })).toBeVisible();
     await page.getByRole("link", { name: "Veridian" }).first().evaluate((el: HTMLAnchorElement) => {
       el.click();
     });
@@ -301,15 +302,15 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("halftone-plate")).toBeVisible();
     await page.goBack();
     await expect(page).toHaveURL(/move=d4/);
-    await expect(page.getByRole("heading", { level: 2, name: "The Central Break" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 3, name: "The Central Break" })).toBeVisible();
   });
 
   test("the e-pawn glides on 1.e4 instead of teleporting", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=start");
+    await page.goto(`${PAPER}?move=start`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
-    await expect(page.getByRole("heading", { level: 2, name: "Opening Preparation" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Opening Preparation" })).toBeVisible();
 
     const pawn = page.locator('[data-piece-id="wPe2"]');
     const yAt = () => pawn.evaluate((el) => el.getBoundingClientRect().y);
@@ -343,7 +344,7 @@ test.describe("Opening Preparation", () => {
   }) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=start");
+    await page.goto(`${PAPER}?move=start`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await page.locator('[data-testid="tree-view"] [data-node-id="e4"]').click();
@@ -379,7 +380,7 @@ test.describe("Opening Preparation", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=start");
+    await page.goto(`${PAPER}?move=start`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await page.locator('[data-testid="tree-view"] [data-node-id="d4"]').click();
     await expect(page.getByTestId("glyph-stamp")).toHaveAttribute("data-stamp", "press");
@@ -388,7 +389,7 @@ test.describe("Opening Preparation", () => {
     await page.locator('[data-testid="tree-view"] [data-node-id="d4"]').click();
     await expect(page.getByTestId("glyph-stamp")).toHaveAttribute("data-stamp", "seen");
 
-    await page.goto("/?move=start");
+    await page.goto(`${PAPER}?move=start`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(
       page.locator('[data-testid="tree-view"] [data-node-id="start"]'),
@@ -402,14 +403,14 @@ test.describe("Opening Preparation", () => {
       { timeout: 4000 },
     );
     await page.locator('[data-testid="tree-view"] [data-node-id="e5"]').click();
-    await expect(page.getByTestId("read-the-game")).toContainText("Read the game");
+    await expect(page.getByTestId("read-the-game")).toContainText("Explore career story");
   });
 
   test("hover tints a sideline square; the life lane is gone", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await expect(page.locator('[data-life-clip="true"]')).toHaveCount(0);
@@ -418,7 +419,7 @@ test.describe("Opening Preparation", () => {
       timeout: 1000,
     });
 
-    await page.goto("/?tape=1");
+    await page.goto(`${PAPER}?tape=1`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.locator('[data-life-clip="true"]')).toHaveCount(0);
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="hike"]')).toHaveCount(0);
@@ -426,7 +427,7 @@ test.describe("Opening Preparation", () => {
 
   test("the engine prints a live PV", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect.poll(async () => page.getByTestId("engine-pv").innerText(), { timeout: 12000 }).not.toBe("…");
     await expect(page.getByTestId("engine-pv")).not.toHaveText(/^[a-h][1-8][a-h][1-8]/);
@@ -442,7 +443,9 @@ test.describe("Opening Preparation", () => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/projects/veridian");
     await expect(page.getByRole("heading", { level: 1, name: "Veridian" })).toBeVisible();
-    await expect(page.getByText("Pasted from the desk")).toBeVisible();
+    await expect(page.getByTestId("exhibit-lede")).toContainText(/Intercepts Terraform/);
+    await expect(page.getByTestId("exhibit-why")).toContainText(/\(MCP\) here means/);
+    await expect(page.getByTestId("exhibit-host")).toContainText(/no live host to sleep/);
     await expect(page.getByText("Clipping · Exhibit")).toBeVisible();
     await expect(page.getByTestId("halftone-plate")).toBeVisible();
     await expect(page.locator("[data-plate='/plates/plate-veridian.jpg']")).toBeVisible();
@@ -458,6 +461,7 @@ test.describe("Opening Preparation", () => {
 
     await page.goto("/projects/circuitmindai");
     await expect(page.getByRole("heading", { level: 1, name: "CircuitMindAI" })).toBeVisible();
+    await expect(page.getByTestId("exhibit-host")).toContainText(/GitHub is blocked/);
     await expect(page.locator("[data-plate='/plates/plate-circuitmind.jpg']")).toBeVisible();
     await expect(page.locator("[data-fig='7']")).toBeVisible();
     await expect(page.getByTestId("patent-legend")).toContainText(/LOUPE/);
@@ -477,6 +481,8 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Multi-Agent GraphRAG" })).toBeVisible();
     await expect(page.locator("[data-fig='12']")).toBeVisible();
     await expect(page.getByTestId("patent-legend")).toContainText(/WIRE WALL/);
+    await expect(page.getByTestId("patent-legend")).toContainText(/\+35%/);
+    await expect(page.getByTestId("patent-legend")).not.toContainText(/\+45%/);
     await expect(page.getByText("3 Sheets—Sheet 2.")).toBeVisible();
     await expect(page.getByTestId("architecture-figure")).toHaveCount(0);
   });
@@ -485,7 +491,7 @@ test.describe("Opening Preparation", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     const boardX = (await page.getByTestId("board-diagram").boundingBox())!.x;
@@ -504,7 +510,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("broadsheet-filler")).toContainText("Situations Wanted");
     await expect(page.getByTestId("broadsheet-filler")).toContainText("Errata");
     await expect(page.getByTestId("broadsheet-filler")).not.toContainText(/anasqumhiyeh@/i);
-    await expect(page.getByRole("link", { name: "Print edition" }).first()).toBeVisible();
+    await expect(page.getByTestId("recruiter-nav").locator('a[href="/print-edition"]')).toBeVisible();
     await expect(page.getByTestId("play-the-position")).toBeVisible();
     await expect(page.getByTestId("pv-arrow")).toBeVisible({ timeout: 5000 });
 
@@ -515,7 +521,7 @@ test.describe("Opening Preparation", () => {
 
   test("the diagram quiz and a legal play ply both work", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=nf6");
+    await page.goto(`${PAPER}?move=nf6`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByTestId("find-the-break")).toBeVisible();
     await page.locator('[data-sq="d2"]').click();
@@ -524,7 +530,7 @@ test.describe("Opening Preparation", () => {
       page.locator('[data-testid="notation-view"] [data-node-id="d4"]'),
     ).toHaveAttribute("aria-current", "true");
 
-    await page.goto("/?move=start");
+    await page.goto(`${PAPER}?move=start`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(
       page.locator('[data-testid="tree-view"] [data-node-id="start"]'),
@@ -552,7 +558,7 @@ test.describe("Opening Preparation", () => {
 
   test("reading the article does not yank the page back to the tree", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     await page.locator("#chapter-e4").evaluate((el) => el.scrollIntoView({ block: "start" }));
@@ -565,7 +571,7 @@ test.describe("Opening Preparation", () => {
 
   test("a tree click scrolls the window to that chapter", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     const startY = await page.evaluate(() => window.scrollY);
     await page.locator('[data-testid="tree-view"] [data-node-id="re1"]').click();
@@ -580,7 +586,7 @@ test.describe("Opening Preparation", () => {
 
   test("the start-position PV is the repertoire ply, not a shallow Nc3", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=start");
+    await page.goto(`${PAPER}?move=start`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect
       .poll(async () => page.getByTestId("engine-pv").innerText(), { timeout: 12000 })
@@ -596,7 +602,7 @@ test.describe("Opening Preparation", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     const index = page.getByTestId("issue-index");
     await expect(index).toBeVisible();
@@ -614,7 +620,7 @@ test.describe("Opening Preparation", () => {
 
   test("right-file pieces stay inside the board at a 390px viewport", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/?move=start");
+    await page.goto(`${PAPER}?move=start`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     const plane = page.getByTestId("board-plane");
     await expect(plane).toBeVisible();
@@ -663,7 +669,7 @@ test.describe("Opening Preparation", () => {
 
   test("scroll-spy updates the URL without snapping the page to the top", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.locator('#chapter-e4 img[src*="clip-sunway"]')).toBeVisible();
     await expect(page.locator('#chapter-bc4 img[src*="clip-wd"]')).toBeVisible();
@@ -692,31 +698,32 @@ test.describe("Opening Preparation", () => {
 
   test("the page is one banner, one main, one footer, and a skip link", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.locator("header")).toHaveCount(1);
     await expect(page.locator("main")).toHaveCount(1);
     await expect(page.locator("footer")).toHaveCount(1);
-    const skip = page.getByRole("link", { name: /Skip to the game/i });
+    const skip = page.locator(".skip-link");
     await expect(skip).toHaveCount(1);
+    await expect(skip).toHaveAccessibleName(/Skip chessboard/i);
     await skip.focus();
     await expect(skip).toBeVisible();
-    await expect(page.locator("#chapter-e4 h2 button")).toHaveAttribute(
+    await expect(page.locator("#chapter-e4 h3 button")).toHaveAttribute(
       "aria-label",
       /1\. e4.*University Opening/,
     );
-    await expect(page.locator("#chapter-d4 h2 button")).toHaveAttribute(
+    await expect(page.locator("#chapter-d4 h3 button")).toHaveAttribute(
       "aria-label",
       /5\. d4.*Central Break/,
     );
-    await expect(page.locator("#chapter-e4 h2 button [aria-hidden='true']").first()).toBeVisible();
+    await expect(page.locator("#chapter-e4 h3 button [aria-hidden='true']").first()).toBeVisible();
   });
 
   test("ArrowRight from the flagship updates the URL without snapping to the top", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await page.locator("#chapter-d4").evaluate((el) => el.scrollIntoView({ block: "start" }));
     const y0 = await page.evaluate(() => window.scrollY);
@@ -739,29 +746,34 @@ test.describe("Opening Preparation", () => {
 
   test("the first viewport carries name and role", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
-    await expect(page.getByRole("heading", { level: 1, name: "Anas T. Qumhiyeh" })).toBeVisible();
-    const role = await page.getByTestId("masthead-role").boundingBox();
-    expect(role).toBeTruthy();
-    expect(role!.y).toBeGreaterThanOrEqual(0);
-    expect(role!.y + role!.height).toBeLessThan(900);
-    await expect(page.getByTestId("masthead-role")).toHaveText(/Software engineer/i);
+    await expect(page.getByRole("heading", { level: 1, name: "Opening Preparation" })).toBeVisible();
+    const title = await page.getByTestId("paper-title").boundingBox();
+    expect(title).toBeTruthy();
+    expect(title!.y).toBeGreaterThanOrEqual(0);
+    expect(title!.y + title!.height).toBeLessThan(900);
+    await expect(page.getByTestId("paper-dek")).toHaveText(/chess game/i);
     await expect(page.locator("header")).toContainText(/anasqumhiyeh\.dev/i);
     await expect(page.locator("#chapter-e4")).toContainText(/Graduated May 2026/);
     await expect(page.locator("#chapter-e4")).toContainText(/First Class Honours/);
     await expect(page.getByTestId("masthead-proof")).toHaveCount(0);
+    await expect(page.getByTestId("masthead-availability")).toHaveCount(0);
+    await expect(page.getByTestId("board-keys")).toBeVisible();
+    await expect(page.getByTestId("how-to-read")).toContainText(/résumé is literal/i);
+    await expect(page.getByTestId("recruiter-nav")).toContainText(/Work/);
+    await expect(page.getByTestId("recruiter-nav")).toContainText(/Lab/);
   });
 
   test("chapter titles share one type size", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     const ids = ["e4", "nf3", "bc4", "oo", "d4", "re1"];
     const sizes = [];
     for (const id of ids) {
       sizes.push(
-        await page.locator(`#chapter-${id} h2`).evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
+        await page.locator(`#chapter-${id} > .mb-3 > h3`).evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
       );
     }
     expect(Math.max(...sizes) - Math.min(...sizes)).toBeLessThan(0.5);
@@ -770,7 +782,7 @@ test.describe("Opening Preparation", () => {
   test("the engine depth climbs in view before the PV is honest", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     const seen: number[] = [];
     await expect
       .poll(
@@ -790,21 +802,31 @@ test.describe("Opening Preparation", () => {
     await page.goto("/this-plate-was-never-set");
     await expect(page.getByTestId("correction")).toBeVisible();
     await expect(page.getByRole("heading", { name: /misprint/i })).toBeVisible();
-    await page.getByRole("link", { name: /Back to the game/i }).click();
-    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await page.getByRole("link", { name: /Back to the front page/i }).click();
+    await expect(page.getByRole("heading", { level: 1, name: "Anas T. Qumhiyeh" })).toBeVisible();
+    await expect(page.getByTestId("selected-work")).toBeVisible();
   });
 
-  test("the colophon, puzzle, and situations-wanted box are on the paper", async ({ page }) => {
+  test("the puzzle and situations-wanted box are on the paper; the colophon is its own plate", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByTestId("todays-puzzle")).toBeVisible();
     await expect(page.getByTestId("todays-puzzle")).toContainText(/find the break/i);
     await expect(page.getByTestId("situations-wanted").first()).toBeVisible();
-    await expect(page.getByTestId("situations-wanted").first()).toContainText(/Replies within two days/i);
+    await expect(page.getByTestId("situations-wanted").first()).toContainText(/front page/);
+    await expect(page.getByTestId("situations-wanted").first()).not.toContainText(/Open to early-career/);
+    await expect(page.getByTestId("situations-wanted").first()).not.toContainText(/Graduate and junior/);
     await expect(page.getByTestId("paper-footer")).toBeVisible();
     await expect(page.getByTestId("paper-footer").getByTestId("closer")).toBeVisible();
-    await expect(page.getByTestId("paper-footer").getByTestId("colophon")).toBeVisible();
+    await expect(page.getByTestId("paper-footer").getByTestId("colophon-link")).toBeVisible();
+    await expect(page.getByTestId("paper-footer").getByTestId("colophon")).toHaveCount(0);
+    await expect(page.getByTestId("closer")).toContainText(/The scoresheet stands/i);
+    await expect(page.getByTestId("closer")).not.toContainText(/next line I want to play/i);
+    await page.getByTestId("colophon-link").click();
+    await expect(page).toHaveURL(/\/colophon/);
+    await expect(page).toHaveTitle(/How this paper was set/);
+    await expect(page.getByTestId("colophon")).toBeVisible();
     await expect(page.getByTestId("colophon")).toContainText("8902");
     await expect(page.getByTestId("colophon")).toContainText("How this paper was set");
     await expect(page.getByTestId("colophon")).toContainText("Three registers");
@@ -813,12 +835,9 @@ test.describe("Opening Preparation", () => {
     );
     await expect(page.getByTestId("colophon")).toContainText("The witnesses");
     await expect(page.getByTestId("colophon")).toContainText("Vitest signs the parts list");
-    await expect(page.getByTestId("closer")).toBeVisible();
-    await expect(page.getByTestId("closer")).toContainText(/The scoresheet stands/i);
-    const closerY = (await page.getByTestId("closer").boundingBox())!.y;
-    const coloY = (await page.getByTestId("colophon").boundingBox())!.y;
-    expect(coloY).toBeGreaterThan(closerY);
     await expect(page.getByTestId("inventor-plate")).toBeVisible();
+    await page.goto(PAPER);
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await page.getByTestId("weather-cycle").click();
     await expect(page.getByTestId("weather-cycle")).toContainText(/Fog on the e-file|High pressure/);
     await page.getByTestId("press-stamp").click();
@@ -827,7 +846,7 @@ test.describe("Opening Preparation", () => {
 
   test("the mobile board stays in view while reading", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     const idle = (await page.getByTestId("board-diagram").boundingBox())!;
     expect(idle.height).toBeLessThan(280);
@@ -861,7 +880,7 @@ test.describe("Opening Preparation", () => {
 
   test("compact widths reflow the board instead of shrinking it", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     const plane390 = (await page.getByTestId("board-plane").boundingBox())!;
@@ -892,6 +911,7 @@ test.describe("Opening Preparation", () => {
     }
 
     await page.setViewportSize({ width: 768, height: 1024 });
+    await expect(page.getByTestId("board-plane")).toBeVisible();
     const plane768 = (await page.getByTestId("board-plane").boundingBox())!;
     const board768 = (await page.getByTestId("board-diagram").boundingBox())!;
     const engine768 = (await page.getByTestId("glass-engine").boundingBox())!;
@@ -909,7 +929,7 @@ test.describe("Opening Preparation", () => {
 
   test("the engine lampshade keeps controls from jumping", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByTestId("engine-lampshade")).toBeVisible();
     const gap = async () => {
@@ -936,7 +956,7 @@ test.describe("Opening Preparation", () => {
   test("phase-2 toggle, badge, and match column", async ({ page }) => {
     test.skip(!PHASE2_EXHIBITS, "exhibits stay dark until the SPRT is on the paper");
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByTestId("engine-badge")).toContainText(/2200-anchored/i);
     await expect(page.getByTestId("engine-badge")).toContainText(/50k-node/i);
@@ -945,12 +965,8 @@ test.describe("Opening Preparation", () => {
     expect(badgeFits).toBe(true);
     await expect(page.getByTestId("eval-toggle")).toBeVisible();
     await expect(page.getByTestId("engine-readout")).toBeVisible();
-    await expect(page.getByTestId("evaluations-column")).toBeVisible();
-    await expect(page.getByTestId("evaluations-column")).toContainText(/50 000 nodes|50000 nodes|fixed-N/i);
-    await expect(page.getByTestId("evaluations-net")).toContainText(/768x2x256/);
-    await expect(page.getByTestId("evaluations-net")).toContainText(/2026-08-29/);
-    await expect(page.getByTestId("evaluations-column")).not.toContainText(/sprt:/i);
-    await expect(page.getByTestId("elo-commits")).toBeVisible();
+    await expect(page.getByTestId("lab-teaser")).toHaveCount(0);
+    await expect(page.getByTestId("evaluations-column")).toHaveCount(0);
     await expect(page.getByText(/^Assessment$/i)).toHaveCount(0);
     await expect(page.getByTestId("eval-bar")).toHaveAttribute("aria-label", "Engine evaluation");
     await expect(page.getByTestId("eval-bar")).toHaveAttribute("title", "Engine evaluation");
@@ -974,7 +990,15 @@ test.describe("Opening Preparation", () => {
     const board = (await page.getByTestId("board-diagram").boundingBox())!;
     expect(Math.abs(board.x - engine.x)).toBeLessThanOrEqual(2);
 
+    await page.goto("/lab/learned-evaluator");
+    await expect(page.getByRole("heading", { level: 1, name: /learned evaluator lost 143 Elo/i })).toBeVisible();
+    await expect(page.getByTestId("evaluations-column")).toBeVisible();
+    await expect(page.getByTestId("evaluations-column")).toContainText(/50 000 nodes|50000 nodes|fixed-N/i);
+    await expect(page.getByTestId("evaluations-net")).toContainText(/768x2x256/);
+    await expect(page.getByTestId("evaluations-net")).toContainText(/2026-08-29/);
+    await expect(page.getByTestId("evaluations-column")).not.toContainText(/sprt:/i);
     const chart = page.getByTestId("elo-commits");
+    await expect(chart).toBeVisible();
     await chart.scrollIntoViewIfNeeded();
     const svg = chart.locator("svg");
     const svgBox = (await svg.boundingBox())!;
@@ -985,6 +1009,9 @@ test.describe("Opening Preparation", () => {
       expect(t.x).toBeGreaterThanOrEqual(svgBox.x - 1);
       expect(t.x + t.width).toBeLessThanOrEqual(svgBox.x + svgBox.width + 1);
     }
+
+    await page.goto(PAPER);
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.getByTestId("engine-lampshade")).toContainText(/disagreed since 1997/);
 
     await page.setViewportSize({ width: 900, height: 800 });
@@ -1012,7 +1039,7 @@ test.describe("Opening Preparation", () => {
   test("learned n/s holds a quarter of handcrafted at a 390 viewport", async ({ page }) => {
     test.skip(!PHASE2_EXHIBITS, "n/s budget is measured with the exhibit live");
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect.poll(async () => Number(await page.getByTestId("engine-depth").getAttribute("data-nps")), {
       timeout: 8000,
@@ -1040,7 +1067,7 @@ test.describe("Opening Preparation", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
     const hand = (await page.getByTestId("eval-handcrafted").boundingBox())!;
@@ -1058,31 +1085,31 @@ test.describe("Opening Preparation", () => {
     const stampBorder = await stamp.evaluate((el) => getComputedStyle(el).borderTopWidth);
     expect(Number.parseFloat(stampBorder)).toBeGreaterThanOrEqual(2);
 
-    await page.goto("/?move=start");
+    await page.goto(`${PAPER}?move=start`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await page.getByTestId("board-step-next").click();
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="e4"]')).toHaveAttribute(
       "aria-current",
       "true",
     );
-    await expect(page.locator("#chapter-e4 h2 [data-node-id='e4']")).not.toHaveAttribute(
+    await expect(page.locator("#chapter-e4 h3 [data-node-id='e4']")).not.toHaveAttribute(
       "data-flagship-mark",
     );
 
-    await page.goto("/?move=d4");
+    await page.goto(`${PAPER}?move=d4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
-    await expect(page.locator("#chapter-d4 h2 [data-node-id='d4']")).toHaveAttribute(
+    await expect(page.locator("#chapter-d4 h3 [data-node-id='d4']")).toHaveAttribute(
       "data-flagship-mark",
       "true",
     );
 
-    await page.goto("/?move=e4");
+    await page.goto(`${PAPER}?move=e4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
-    await expect(page.locator("#chapter-d4 h2 [data-node-id='d4']")).toHaveAttribute(
+    await expect(page.locator("#chapter-d4 h3 [data-node-id='d4']")).toHaveAttribute(
       "data-flagship-mark",
       "true",
     );
-    await expect(page.locator("#chapter-e4 h2 [data-node-id='e4']")).not.toHaveAttribute(
+    await expect(page.locator("#chapter-e4 h3 [data-node-id='e4']")).not.toHaveAttribute(
       "data-flagship-mark",
     );
 
@@ -1125,10 +1152,10 @@ test.describe("Opening Preparation", () => {
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
 
-    const chip = (await page.locator(".masthead-chip").first().boundingBox())!;
+    const chip = (await page.locator(".paper-control").first().boundingBox())!;
     expect(chip.height).toBeGreaterThanOrEqual(44);
 
     const step = (await page.getByTestId("board-step-next").boundingBox())!;
@@ -1149,15 +1176,15 @@ test.describe("Opening Preparation", () => {
     await expect.poll(async () => page.getByTestId("wayfind-index").getAttribute("data-shown")).toBe(
       "true",
     );
-    const way = (await page.getByTestId("wayfind-toggle").boundingBox())!;
-    expect(way.height).toBeGreaterThanOrEqual(44);
+    await expect(page.getByTestId("wayfind-toggle")).toBeHidden();
+    await expect(page.getByTestId("paper-toc")).toBeVisible();
   });
 
   test("the patent lightbox close target is 44px and a backdrop tap dismisses", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/?move=d4");
+    await page.goto(`${PAPER}?move=d4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await page.locator("#chapter-d4 [data-testid='patent-expand']").click();
     const lightbox = page.locator("#chapter-d4 [data-testid='patent-lightbox']");
@@ -1172,7 +1199,7 @@ test.describe("Opening Preparation", () => {
 
   test("the lightbox traps tab and restores the expand control", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/?move=d4");
+    await page.goto(`${PAPER}?move=d4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     const expand = page.locator("#chapter-d4 [data-testid='patent-expand']");
     await expand.click();
@@ -1194,7 +1221,7 @@ test.describe("Opening Preparation", () => {
 
   test("a shared deep link names the chapter and the informant glyphs", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/?move=bc4");
+    await page.goto(`${PAPER}?move=bc4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.locator("#chapter-bc4")).toHaveAttribute("data-arrive", "true");
     const margin = await page.locator("#chapter-bc4").evaluate((el) =>
@@ -1208,25 +1235,29 @@ test.describe("Opening Preparation", () => {
   });
 
   test("deep links print a unique title; the apex is the canonical host", async ({ page }) => {
-    await page.goto("/?move=e4");
+    await page.goto(`${PAPER}?move=e4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page).toHaveTitle(/1\. e4! — The University Opening/);
-    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /anasqumhiyeh\.dev\/?$/);
-    const json = await page.locator('script[type="application/ld+json"]').textContent();
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      "href",
+      /anasqumhiyeh\.dev\/opening-preparation\/?$/,
+    );
+    const json = await page.locator('script[type="application/ld+json"]').first().textContent();
     expect(json).toBeTruthy();
     const ld = JSON.parse(json!);
     expect(ld.name).toBe("Anas Tarek Qumhiyeh");
     expect(ld.alternateName).toBe("Anas T. Qumhiyeh");
-    await expect(page.locator("[data-testid='masthead-contacts'] a[href*='github']")).toHaveAttribute(
+    expect(ld.alumniOf.name).toBe("Monash University");
+    await expect(page.locator("header a[href*='github']")).toHaveAttribute(
       "rel",
       /me/,
     );
-    await expect(page.locator("html")).toHaveAttribute("lang", "en");
+    await expect(page.locator("html")).toHaveAttribute("lang", "en-GB");
   });
 
   test("role plates do not advertise a 3840-wide candidate", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=e4");
+    await page.goto(`${PAPER}?move=e4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     const img = page.locator('#chapter-e4 img[src*="clip-sunway"]').first();
     await expect(img).toBeVisible();
@@ -1234,13 +1265,14 @@ test.describe("Opening Preparation", () => {
     expect(sizes).toContain("184px");
     const srcset = await img.getAttribute("srcset");
     expect(srcset ?? "").not.toMatch(/3840/);
+    expect(srcset ?? "").not.toMatch(/1920/);
   });
 
   test("the document does not phone Google Fonts, and 320px does not scroll sideways", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 320, height: 640 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     const html = await page.content();
     expect(html).not.toMatch(/fonts\.googleapis\.com/);
@@ -1252,7 +1284,7 @@ test.describe("Opening Preparation", () => {
 
   test("WCAG 1.4.12 text spacing does not clip the justified column", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/?move=e4");
+    await page.goto(`${PAPER}?move=e4`);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await page.addStyleTag({
       content: `* { letter-spacing: 0.12em !important; word-spacing: 0.16em !important; line-height: 1.5 !important; } p { margin-bottom: 2em !important; }`,
@@ -1270,7 +1302,7 @@ test.describe("Opening Preparation", () => {
 
   test("200% zoom falls into the compact stack without a sideways scroll", async ({ page }) => {
     await page.setViewportSize({ width: 640, height: 720 });
-    await page.goto("/");
+    await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
@@ -1283,6 +1315,84 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByRole("heading", { level: 1, name: "CircuitMindAI" })).toBeVisible();
     await expect(page.locator("body")).toContainText(/Nova Pro reads the copper/);
     await expect(page.locator("body")).not.toContainText(/GenAI-powered/);
-    await expect(page).toHaveTitle(/CircuitMindAI — Exhibit/);
+    await expect(page).toHaveTitle(/CircuitMindAI — PCB Inspection/);
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+      "content",
+      /Nova Pro reads the copper/,
+    );
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+      "content",
+      "summary_large_image",
+    );
+    await expect(page.locator("a.exhibit-repo")).toHaveAttribute(
+      "href",
+      "https://github.com/Mizore66/CircuitMindAI",
+    );
+  });
+
+  test("a deep-link session writes distinct titles into history", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto(`${PAPER}?move=e4`);
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page).toHaveTitle(/1\. e4! — The University Opening/);
+    await page.goto(`${PAPER}?move=e5`);
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page).toHaveTitle(/1…e5 — Meeting e4 with e5/);
+    await page.goBack();
+    await expect(page).toHaveURL(/move=e4/);
+    await expect(page).toHaveTitle(/1\. e4! — The University Opening/);
+  });
+
+  test("forced-colors keeps the board, eval bar, and selection", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.emulateMedia({ forcedColors: "active" });
+    await page.goto(PAPER);
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect
+      .poll(async () =>
+        page.getByTestId("board-plane").evaluate((el) => getComputedStyle(el).forcedColorAdjust),
+      )
+      .toBe("none");
+    await expect
+      .poll(async () =>
+        page.getByTestId("eval-bar").evaluate((el) => getComputedStyle(el).forcedColorAdjust),
+      )
+      .toBe("none");
+    const selected = page.locator('[data-testid="tree-view"] [data-node-id="d4"]');
+    await expect(selected).toHaveClass(/is-selected/);
+    await expect
+      .poll(async () => selected.evaluate((el) => getComputedStyle(el).outlineStyle))
+      .not.toBe("none");
+  });
+
+  test("a missing learned packet prints the editor's line on the glass", async ({ page }) => {
+    await page.route("**/engine/*.bin", (route) => route.abort());
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto(PAPER);
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await expect(page.getByTestId("weights-pending")).toContainText(
+      /learned packet did not arrive/i,
+    );
+    await expect(page.getByTestId("weights-pending")).toContainText(/trust the annotator/);
+  });
+
+  test("print media keeps figures together and shows the sheet mark", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto(`${PAPER}?move=d4`);
+    await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await page.emulateMedia({ media: "print" });
+    await expect
+      .poll(async () =>
+        page.locator("#chapter-d4 [data-testid='patent-figure']").evaluate((el) => {
+          const s = getComputedStyle(el);
+          return s.breakInside || s.pageBreakInside;
+        }),
+      )
+      .toMatch(/avoid/);
+    await expect
+      .poll(async () =>
+        page.locator(".print-sheet-mark").evaluate((el) => getComputedStyle(el).display),
+      )
+      .not.toBe("none");
   });
 });

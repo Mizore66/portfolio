@@ -4,6 +4,7 @@ import { PvArrow } from "@/components/opening/PvArrow";
 import { BROADSHEET } from "@/content/opening";
 import {
   FILES,
+  occupancyFen,
   positionAfter,
   squareBox,
   squareFile,
@@ -56,6 +57,9 @@ export function StickyBoardStatic() {
 
   return (
     <figure>
+      <p className="sr-only" data-testid="board-position">
+        Occupancy {occupancyFen(pieces)}.
+      </p>
       <div className="flex items-stretch gap-2">
         <div className="flex w-10 shrink-0 self-stretch">
           <EvalBar value={node.eval} label={evalLabel} />

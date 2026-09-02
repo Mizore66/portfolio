@@ -7,7 +7,7 @@ export function GET() {
   return new Response(copy, {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": 'attachment; filename="Qumhiyeh-Opening-Preparation.pdf"',
+      "Content-Disposition": 'attachment; filename="Anas-Qumhiyeh-Resume.pdf"',
       "Cache-Control": "public, max-age=3600",
     },
   });

@@ -1,22 +1,14 @@
 "use client";
 
 import { BROADSHEET } from "@/content/opening";
-import { resumeData } from "@/lib/data";
 
 export function SituationsWanted() {
   return (
-    <a
-      data-testid="situations-wanted"
-      href={`mailto:${resumeData.email}`}
-      className="hover-tint block border-2 border-dashed border-ink px-2 py-2"
-    >
+    <div data-testid="situations-wanted" className="border-2 border-dashed border-ink px-4 py-4">
       <p className="font-mono text-[12px] uppercase tracking-[0.18em] text-faded">
-        {BROADSHEET.classifiedSticky}
+        {BROADSHEET.classifiedKicker}
       </p>
-      <p className="mt-2 font-display text-[16px] leading-snug italic text-ink">
-        {BROADSHEET.classified}
-      </p>
-      <p className="mt-2 font-mono text-[12px] text-faded">{BROADSHEET.availability}</p>
-    </a>
+      <p className="mt-2 font-display text-[16px] leading-snug italic text-ink">{BROADSHEET.classified}</p>
+    </div>
   );
 }

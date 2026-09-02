@@ -1,0 +1,129 @@
+{
+  "formFactor": "mobile",
+  "lighthouseVersion": "12.6.0",
+  "fetchTime": "2026-08-29T18:59:17.514Z",
+  "requestedUrl": "https://anasqumhiyeh.dev/",
+  "finalUrl": "https://anasqumhiyeh.dev/",
+  "categories": {
+    "performance": {
+      "title": "Performance",
+      "score": 0.9
+    },
+    "accessibility": {
+      "title": "Accessibility",
+      "score": 1
+    },
+    "best-practices": {
+      "title": "Best Practices",
+      "score": 1
+    },
+    "seo": {
+      "title": "SEO",
+      "score": 1
+    }
+  },
+  "audits": {
+    "first-contentful-paint": {
+      "title": "First Contentful Paint",
+      "score": 0.98,
+      "displayValue": "1.4\u00a0s",
+      "numericValue": 1358.449
+    },
+    "largest-contentful-paint": {
+      "title": "Largest Contentful Paint",
+      "score": 0.7,
+      "displayValue": "3.3\u00a0s",
+      "numericValue": 3268.449
+    },
+    "total-blocking-time": {
+      "title": "Total Blocking Time",
+      "score": 0.99,
+      "displayValue": "70\u00a0ms",
+      "numericValue": 65
+    },
+    "cumulative-layout-shift": {
+      "title": "Cumulative Layout Shift",
+      "score": 1,
+      "displayValue": "0.001",
+      "numericValue": 0.000523
+    },
+    "speed-index": {
+      "title": "Speed Index",
+      "score": 0.77,
+      "displayValue": "4.2\u00a0s",
+      "numericValue": 4210.773952559177
+    },
+    "interactive": {
+      "title": "Time to Interactive",
+      "score": 0.94,
+      "displayValue": "3.3\u00a0s",
+      "numericValue": 3278.6490000000003
+    },
+    "server-response-time": {
+      "title": "Initial server response time was short",
+      "score": 1,
+      "displayValue": "Root document took 10\u00a0ms",
+      "numericValue": 11.576999999999998
+    },
+    "unused-javascript": {
+      "title": "Reduce unused JavaScript",
+      "score": 0,
+      "displayValue": "Est savings of 42\u00a0KiB",
+      "numericValue": 300
+    },
+    "legacy-javascript": {
+      "title": "Avoid serving legacy JavaScript to modern browsers",
+      "score": 0,
+      "displayValue": "Est savings of 14\u00a0KiB",
+      "numericValue": 150
+    },
+    "label-content-name-mismatch": {
+      "title": "Elements with visible text labels do not have matching accessible names.",
+      "score": 0,
+      "displayValue": null,
+      "numericValue": null
+    },
+    "canonical": {
+      "title": "Document has a valid `rel=canonical`",
+      "score": 1,
+      "displayValue": null,
+      "numericValue": null
+    },
+    "document-title": {
+      "title": "Document has a `<title>` element",
+      "score": 1,
+      "displayValue": null,
+      "numericValue": null
+    },
+    "html-has-lang": {
+      "title": "`<html>` element has a `[lang]` attribute",
+      "score": 1,
+      "displayValue": null,
+      "numericValue": null
+    },
+    "meta-description": {
+      "title": "Document has a meta description",
+      "score": 1,
+      "displayValue": null,
+      "numericValue": null
+    },
+    "uses-responsive-images": {
+      "title": "Properly size images",
+      "score": 1,
+      "displayValue": "",
+      "numericValue": 0
+    },
+    "redirects": {
+      "title": "Avoid multiple page redirects",
+      "score": 1,
+      "displayValue": "",
+      "numericValue": 0
+    },
+    "render-blocking-resources": {
+      "title": "Eliminate render-blocking resources",
+      "score": 1,
+      "displayValue": null,
+      "numericValue": 0
+    }
+  }
+}

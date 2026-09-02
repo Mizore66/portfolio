@@ -15,13 +15,13 @@ export default function Icon() {
           justifyContent: "center",
           background: "#f6eedc",
           color: "#1e3a72",
-          fontSize: 11,
+          fontSize: 13,
           fontWeight: 700,
-          letterSpacing: -0.5,
+          letterSpacing: 0.5,
           border: "2px solid #1a120c",
         }}
       >
-        C50
+        AQ
       </div>
     ),
     { ...size },

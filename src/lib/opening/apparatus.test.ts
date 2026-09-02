@@ -27,6 +27,7 @@ describe("patent apparatuses are data, not art", () => {
       expect(spec.engraving.src, `FIG. ${spec.fig}`).toMatch(/^\/figures\/fig-/);
       expect(spec.engraving.width).toBe(1400);
       expect(spec.engraving.alt, `FIG. ${spec.fig}`).toMatch(/^Patent-style engraving:/);
+      expect(spec.engraving.alt, `FIG. ${spec.fig}`).not.toMatch(/file photo/i);
       const marks = spec.numerals;
       expect(marks.length, `FIG. ${spec.fig} numerals`).toBeGreaterThanOrEqual(8);
       expect(marks.length, `FIG. ${spec.fig} numerals`).toBeLessThanOrEqual(14);
@@ -49,6 +50,9 @@ describe("patent apparatuses are data, not art", () => {
       for (const n of spec.flow) {
         expect(nums).toContain(n);
       }
+    }
+    for (const p of resumeData.projects) {
+      expect(p.patent.engraving.alt, p.slug).not.toBe(p.plateCaption);
     }
   });
 
@@ -154,7 +158,7 @@ describe("exhibit machines stay machines", () => {
     const graphrag = resumeData.projects.find((p) => p.slug === "multi-agent-graphrag")!;
     expect(graphrag.patent?.fig).toBe(12);
     expect(graphrag.patent?.sheet).toBe(2);
-    expect(graphrag.patent?.function).toMatch(/RETRIEVAL OF REGULATIONS/);
+    expect(graphrag.patent?.function).toMatch(/RETRIEVAL OF POLICY/);
     expect(graphrag.patent?.parts.find((p) => p.n === 3)?.label).toBe("WIRE WALL");
 
     const circuit = resumeData.projects.find((p) => p.slug === "circuitmindai")!;
@@ -179,7 +183,7 @@ describe("exhibit machines stay machines", () => {
     expect(PROJECT_FIGURES["financial-risk-predictor"].function).toMatch(/UNDERWRITING ENGINE/);
     expect(PROJECT_FIGURES["distributed-lead-scorer"].function).toMatch(/SORTING HALL/);
     expect(PROJECT_FIGURES.veridian.function).toMatch(/ECONOMIZED PLANT/);
-    expect(PROJECT_FIGURES["multi-agent-graphrag"].function).toMatch(/RETRIEVAL OF REGULATIONS/);
+    expect(PROJECT_FIGURES["multi-agent-graphrag"].function).toMatch(/RETRIEVAL OF POLICY/);
     expect(PROJECT_FIGURES["multi-agent-graphrag"].sheet).toBe(2);
     expect(PROJECT_FIGURES["multi-agent-graphrag"].move).toBe(PROJECT_FIGURES.veridian.move);
     expect(PROJECT_FIGURES["slm-distillation-engine"].function).toMatch(/DISTILLATION OF REASONING/);

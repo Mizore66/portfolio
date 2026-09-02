@@ -6,12 +6,11 @@ import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore
 import { BoardDiagram } from "@/components/opening/BoardDiagram";
 import { BroadsheetFiller } from "@/components/opening/BroadsheetFiller";
 import { Closer } from "@/components/opening/Closer";
-import { Colophon } from "@/components/opening/Colophon";
 import { GlassEngine, useEngineSearch, useNnueWeights } from "@/components/opening/GlassEngine";
 import { IssueIndex } from "@/components/opening/IssueIndex";
 import { NewspaperColumn } from "@/components/opening/NewspaperColumn";
-import { SituationsWanted } from "@/components/opening/SituationsWanted";
 import { TodaysPuzzle } from "@/components/opening/TodaysPuzzle";
+import { PaperToc } from "@/components/opening/PaperToc";
 import { WayfindIndex } from "@/components/opening/WayfindIndex";
 import { BROADSHEET } from "@/content/opening";
 import type { EvalMode } from "@/lib/chess/engine";
@@ -35,6 +34,7 @@ import {
 import { visibleEngineLine } from "@/lib/chess/engine-view";
 import {
   getSelection,
+  pushSelection,
   replaceSelection,
   SERVER_SELECTION,
   subscribeSelection,
@@ -167,10 +167,11 @@ export function OpeningApp({
   const userSelect = useCallback(
     (id: string) => {
       setPlaying(false);
-      onSelect(id);
+      setPreviewHl(null);
+      pushSelection(id, tape);
       scrollToChapter(id);
     },
-    [onSelect, scrollToChapter, setPlaying],
+    [tape, scrollToChapter, setPlaying],
   );
 
   const onPreview = useCallback(
@@ -264,14 +265,12 @@ export function OpeningApp({
       const target = e.target as HTMLElement | null;
       if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return;
       e.preventDefault();
-      setPlaying(false);
       const next = stepMainline(selectedId, e.key === "ArrowRight" ? 1 : -1);
-      onSelect(next);
-      scrollToChapter(next);
+      userSelect(next);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onSelect, scrollToChapter, selectedId]);
+  }, [userSelect, selectedId]);
 
   useEffect(() => {
     selectedRef.current = selectedId;
@@ -479,7 +478,22 @@ export function OpeningApp({
 
   return (
     <>
-      <main id="the-game">
+      <main>
+          <section id="the-game" aria-labelledby="paper-title">
+          <div className="game-band px-4 sm:px-6">
+            <PaperToc selectedId={selectedId} onSelect={userSelect} />
+            <p className="mt-3 font-mono text-[12px] uppercase tracking-[0.14em]">
+              <a href="#scoresheet" className="text-book-blue underline decoration-2 underline-offset-4">
+                {BROADSHEET.skipBoard}
+              </a>
+            </p>
+          </div>
+          <p className="read-hint-desktop hidden px-4 font-mono text-[12px] text-faded min-[980px]:block sm:px-6">
+            {BROADSHEET.readHintDesktop}
+          </p>
+          <p className="read-hint-touch px-4 font-mono text-[12px] text-faded min-[980px]:hidden sm:px-6">
+            {BROADSHEET.readHintTouch}
+          </p>
           <div
             data-opening-spread=""
             className="flex flex-col min-[700px]:flex-row min-[980px]:flex-row-reverse min-[980px]:items-stretch"
@@ -557,7 +571,7 @@ export function OpeningApp({
                     )}
                   >
                     <span aria-hidden>{playing ? "❚❚" : "▶"}</span>
-                    {playing ? "Pause" : "Read the game"}
+                    {playing ? BROADSHEET.pauseGame : BROADSHEET.exploreCareer}
                   </button>
                   <button
                     type="button"
@@ -572,20 +586,22 @@ export function OpeningApp({
                     {BROADSHEET.playInvite}
                   </button>
                 </div>
+                <p data-testid="board-keys" className="font-mono text-[12px] text-faded">
+                  {playing
+                    ? BROADSHEET.boardAutoplay
+                    : playHint
+                      ? BROADSHEET.boardPlayable
+                      : BROADSHEET.boardKeys}
+                </p>
                 {playHint ? (
                   <p className="font-display text-[16px] italic text-ink">{BROADSHEET.playHint}</p>
                 ) : null}
                 <IssueIndex selectedId={selectedId} onSelect={userSelect} />
-                <div className="max-[979px]:hidden">
-                  <TodaysPuzzle selectedId={selectedId} onSelect={userSelect} />
-                  <div className="mt-3">
-                    <SituationsWanted />
-                  </div>
-                </div>
               </div>
             </aside>
             <NewspaperColumn />
             <section
+              id="scoresheet"
               data-testid="tree-column"
               className="col-stack flex min-w-0 flex-1 flex-col"
             >
@@ -596,21 +612,39 @@ export function OpeningApp({
                   onPreview={onPreview}
                 />
               </div>
-              <div className="mb-4 min-[980px]:hidden print:hidden">
-                <SituationsWanted />
-              </div>
               <NotationView
                 selectedId={selectedId}
                 onSelect={userSelect}
                 onPreview={onPreview}
               />
-              <BroadsheetFiller />
             </section>
           </div>
+          </section>
+          <section id="lab" data-testid="lab-band" className="recruiter-band" aria-labelledby="lab-heading">
+            <p className="band-kicker">{BROADSHEET.labKicker}</p>
+            <h2 id="lab-heading" className="band-title">
+              {BROADSHEET.labHeading}
+            </h2>
+            <p className="mt-2 max-w-[68ch] font-display text-[16px] italic text-faded">
+              {BROADSHEET.labDek}
+            </p>
+            <div className="mt-6 max-w-xl">
+              <TodaysPuzzle selectedId={selectedId} onSelect={userSelect} />
+            </div>
+            <BroadsheetFiller />
+          </section>
           </main>
       <footer data-testid="paper-footer" className="paper-footer">
         <Closer />
-        <Colophon />
+        <p className="mt-2 font-mono text-[12px] uppercase tracking-widest">
+          <a
+            href={BROADSHEET.colophonHref}
+            data-testid="colophon-link"
+            className="text-book-blue underline decoration-2 underline-offset-4"
+          >
+            {BROADSHEET.colophonKicker}
+          </a>
+        </p>
       </footer>
       <WayfindIndex selectedId={selectedId} onSelect={userSelect} />
     </>

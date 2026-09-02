@@ -1,34 +1,66 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { AboutBand } from "@/components/opening/AboutBand";
+import { ContactBand } from "@/components/opening/ContactBand";
+import { EducationBand } from "@/components/opening/EducationBand";
+import { ExperienceList } from "@/components/opening/ExperienceList";
+import { FooterStrip } from "@/components/opening/FooterStrip";
+import { GameTeaser } from "@/components/opening/GameTeaser";
+import { LabFilings, LabTeaser } from "@/components/opening/LabTeaser";
 import { Masthead } from "@/components/opening/Masthead";
-import { NewspaperPieceSprite } from "@/components/opening/NewspaperPiece";
-import { OpeningApp } from "@/components/opening/OpeningApp";
-import { StickyBoardStatic } from "@/components/opening/StickyBoardStatic";
+import { SelectedWork } from "@/components/opening/SelectedWork";
 import { BROADSHEET } from "@/content/opening";
-import { BRAND_TITLE, getNode, isOpeningId, selectionTitle } from "@/lib/opening/tree";
+import { isOpeningId } from "@/lib/opening/tree";
+import { workPathFromQuery } from "@/lib/metrics";
 
-export async function generateMetadata({
+export const metadata: Metadata = {
+  title: "Anas T. Qumhiyeh — Opening Preparation",
+};
+
+export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ move?: string }>;
-}): Promise<Metadata> {
+  searchParams: Promise<{ move?: string; tape?: string; path?: string }>;
+}) {
   const q = await searchParams;
-  if (!q.move || !isOpeningId(q.move)) {
-    return { title: BRAND_TITLE };
+  if (q.move || q.tape === "1") {
+    const params = new URLSearchParams();
+    if (q.move && isOpeningId(q.move)) params.set("move", q.move);
+    if (q.tape === "1") params.set("tape", "1");
+    const qs = params.toString();
+    redirect(qs ? `${BROADSHEET.paperHref}?${qs}` : BROADSHEET.paperHref);
   }
-  return { title: selectionTitle(getNode(q.move)) };
-}
 
-export default function Home() {
   return (
     <div className="opening-shell min-h-screen text-ink">
-      <NewspaperPieceSprite />
-      <a href="#the-game" className="skip-link">
+      <a href="#work" className="skip-link">
         {BROADSHEET.skipLink}
       </a>
       <div className="relative z-[1] flex justify-center px-2 py-3 sm:px-3">
-        <div data-testid="newspaper-spread" className="sheet w-full max-w-[1180px]">
+        <div data-testid="newspaper-spread" className="sheet sheet-page">
           <Masthead />
-          <OpeningApp staticBoard={<StickyBoardStatic />} />
+          <main>
+            <SelectedWork path={workPathFromQuery(q.path)} />
+            <ExperienceList />
+            <EducationBand />
+            <GameTeaser />
+            <section id="lab" data-testid="lab-band" className="recruiter-band" aria-labelledby="lab-heading">
+              <p className="band-kicker">{BROADSHEET.labKicker}</p>
+              <h2 id="lab-heading" className="band-title">
+                {BROADSHEET.labHeading}
+              </h2>
+              <p className="mt-2 max-w-[68ch] font-display text-[16px] italic text-faded">
+                {BROADSHEET.labDek}
+              </p>
+              <LabTeaser />
+              <LabFilings />
+            </section>
+            <AboutBand />
+            <ContactBand />
+          </main>
+          <footer data-testid="home-footer" className="paper-footer">
+            <FooterStrip />
+          </footer>
         </div>
       </div>
     </div>

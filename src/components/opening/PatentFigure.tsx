@@ -6,6 +6,9 @@ import { pt } from "@/components/opening/patent-ink";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
 import type { ApparatusSpec, GlyphId, PatentNumeral } from "@/lib/opening/types";
 
+function patentDateLine(spec: ApparatusSpec): string {
+  return spec.dateKind === "illustration" ? `Illustration ${spec.filed}.` : `Filed ${spec.filed}.`;
+}
 const DAGGER = "† composed from the archives";
 const INVENTOR = "ANAS T. QUMHIYEH.";
 const INVENTOR_SIGN = "Anas Tarek Qumhiyeh";
@@ -38,7 +41,7 @@ function SheetHeader({ spec }: { spec: ApparatusSpec }) {
           {`No. ${spec.move}.`}
         </text>
         <text x={w - 16} y={68} fontSize="9" textAnchor="end">
-          {`Filed ${spec.filed}.`}
+          {patentDateLine(spec)}
         </text>
         <line x1={16} y1={74} x2={w - 16} y2={74} stroke="var(--ink)" strokeWidth="0.7" />
       </g>
@@ -185,7 +188,7 @@ function Engraving({ spec, labeled }: { spec: ApparatusSpec; labeled?: boolean }
         className="patent-engraving-img"
         sizes={IMAGE_SIZES.patentSheet}
       />
-      <Overlay spec={spec} caption={`APPARATUS FOR ${spec.function}. Filed ${spec.filed}.`} />
+      <Overlay spec={spec} caption={`APPARATUS FOR ${spec.function}. ${patentDateLine(spec)}`} />
     </div>
   );
 }
@@ -194,7 +197,7 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
   const presumed = spec.parts.filter((p) => p.confidence === "presumed");
   const chapterDagger = presumed.length * 2 > spec.parts.length;
   const showDagger = presumed.length > 0;
-  const caption = `APPARATUS FOR ${spec.function}. Filed ${spec.filed}.`;
+  const caption = `APPARATUS FOR ${spec.function}. ${patentDateLine(spec)}`;
   const dialogRef = useRef<HTMLDialogElement>(null);
   const invokerRef = useRef<HTMLElement | null>(null);
   const titleId = useId();

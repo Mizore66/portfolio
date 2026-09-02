@@ -1,5 +1,6 @@
 import { CIRCUITMIND_LINE, MIRRORFI_VAULT, RISK_ENGINE, LEADS_HALL, VERIDIAN_PLANT } from "@/content/project-figures";
-import { resumeData } from "@/lib/data";
+import { repoArtifacts, resumeData } from "@/lib/data";
+import { METRICS, POSITIONING } from "@/lib/metrics";
 import type { OpeningNode } from "@/lib/opening/types";
 
 export const ROOT_ID = "start";
@@ -31,7 +32,7 @@ export const BROADSHEET = {
   errata: "None reported. Corrections to the address above.",
   classifiedKicker: "Situations Wanted",
   classified:
-    "Engineer, MLOps and full-stack, seeks a graduate or junior post in fintech or AI infrastructure. Apply within →",
+    "Correspondence belongs on the front page. This plate is the scoresheet.",
   weatherKicker: "Weather",
   weather: "Outlook: shipping",
   stamp: "C50",
@@ -62,22 +63,47 @@ export const BROADSHEET = {
   closerKicker: "Adjourned",
   closerHed: "The scoresheet stands.",
   closer:
-    "The line is the work. The measurement is on the glass. What the next move writes is still to be played. The next line I want to play: measured systems in fintech infrastructure.",
+    "The line is the work. The measurement is on the glass. What the next move writes is still to be played.",
   closerSign: "Anas Tarek Qumhiyeh",
   eloCommits: [
     { commit: "gate-a-50k", label: "A · 50k", elo: 0, games: 100 },
     { commit: "gate-c-50k", label: "C · 256", elo: -143, games: 100 },
   ] as { commit: string; label: string; elo: number; games: number }[],
-  gameKicker: "The game",
+  paperHref: "/opening-preparation",
+  colophonHref: "/colophon",
+  paperLink: "Read Opening Preparation",
+  teaserLine: "1. e4 e5  2. Nf3 Nc6  3. Bc4 Bc5  4. O-O Nf6  5. d4",
+  teaserDek: "The portfolio told as a chess game. The full scoresheet lives on its own plate.",
+  gameKicker: "Opening Preparation",
+  gameDek: "The portfolio told as a chess game.",
   printEdition: "Print edition",
   printHref: "/print-edition",
+  resumeLabel: "Resume",
   issueKicker: "In this issue",
   wayfindLabel: "index",
-  skipLink: "Skip to the game",
-  dek: "Software engineer — MLOps and full-stack. Data pipelines and infrastructure.",
-  availability: "Seeking graduate/junior engineering roles in fintech or AI infrastructure. Replies within two days (MYT).",
+  skipLink: "Skip to selected work",
+  skipExhibit: "Skip to the exhibit",
+  skipBoard: "Skip chessboard",
+  exploreCareer: "Explore career story",
+  pauseGame: "Pause",
+  howToRead: "The résumé is literal; the chess is annotation.",
+  boardKeys: "Arrow keys step the scoresheet. Chevrons under the diagram do the same.",
+  boardPlayable: "The board is waiting for a move.",
+  boardAutoplay: "Playing the mainline. Pause to stop.",
+  backToWork: "Back to selected work",
+  copyEmail: "Copy email",
+  copiedEmail: "Copied",
+  copyLink: "Copy link",
+  copiedLink: "Copied",
+  dek: POSITIONING.dek,
+  tagline: POSITIONING.tagline,
+  availability: POSITIONING.availability,
+  graduateNote: POSITIONING.graduateNote,
   puzzleKicker: "Today's puzzle",
-  classifiedSticky: "Situations Wanted — apply within",
+  classifiedSticky: "Availability",
+  labKicker: "Analysis board",
+  labHeading: "Laboratory",
+  labDek: "Side lines: the puzzle, the engine trial, and the matches I published anyway.",
   colophonKicker: "How this paper was set",
   colophon:
     "Type: Libre Baskerville, Lora, IBM Plex Mono. Ink #1a120c on cream #f6eedc. Radius none. The tree is the repertoire; the scoresheet is the CV; the glass case is mailbox-64 alpha-beta with LEARNED as the masthead eval — PeSTO remains a comparison toggle. Gate C at 50 000 nodes printed −143.1 ±40.5 Elo, 100 games, LLR −2.33. The 2200 on that case is club strength, not a published Elo. No template. Chess is content, never a lock.",
@@ -90,8 +116,11 @@ export const BROADSHEET = {
   perftKicker: "Perft — the generator's receipt",
   correctionKicker: "Correction",
   correctionHed: "The page you requested was a misprint.",
-  correctionDek: "It never made the plate. The game is still on the front page.",
-  homeLink: "Back to the game",
+  correctionDek: "It never made the plate. The front page still holds the work.",
+  exhibitHost: "There is no live host to sleep. The argument is on this page.",
+  exhibitGithub:
+    "If GitHub is blocked on this network, the apparatus and the line above are the argument.",
+  homeLink: "Back to the front page",
   searching: "going to press…",
   pressMark: "Set by hand. No template survived.",
   weatherCycle: ["Outlook: shipping", "Fog on the e-file", "High pressure on d4"],
@@ -118,7 +147,8 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "Starting position",
     kind: "Start",
     title: "Opening Preparation",
-    fact: `${resumeData.name}. ${resumeData.headline} ${edu.school}, graduated ${edu.graduation}. Seeking ${resumeData.targetRoles}`,
+    scanTitle: `${resumeData.name} — Opening Preparation`,
+    fact: "The Italian Game, C50. Jobs as moves; annotations as voice. The front page still holds the work.",
     commentary:
       "The board is set before the first pawn moves. What follows is not a puzzle. It is the line I actually played, in a game I've played since I was a teenager — jobs as moves, annotations as voice. Chess is the content, never the lock.",
     eval: 0.2,
@@ -140,6 +170,7 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "The University Opening",
     kind: "Education",
     title: "The University Opening",
+    scanTitle: `Monash University — ${edu.degree}`,
     fact: `${edu.degree}, ${edu.honours}. ${edu.school}, ${edu.location}. Graduated ${edu.graduation}. WAM ${edu.wam}, CGPA ${edu.cgpa}.`,
     commentary:
       "Every open game starts by occupying the centre. I opened with software engineering — not because it was the only file, but because it was the one that let both bishops out.",
@@ -171,14 +202,14 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "The ML Defence",
     kind: "Project",
     title: "The ML Defence",
-    fact: `${risk.name} — ${risk.subtitle}. LightGBM / XGBoost, 0.87 AUC-ROC (15% over baseline). SHAP for the why. BentoML to a REST API. Daily retrain on Kafka.`,
+    fact: `${risk.name} — ${risk.subtitle}. LightGBM / XGBoost, ${METRICS.riskAuc.display} (${METRICS.riskAuc.vs}). SHAP for the why. BentoML to a REST API. Daily retrain on Kafka.`,
     commentary:
       "I built models that had to be interpreted, deployed, and retrained every morning — not fitted once for a screenshot. The knight invites the centre forward: the ML line rather than the systems line.",
     eval: 0.25,
     evalText: "!?",
     artifacts: [
       { label: risk.name, href: `/projects/${risk.slug}` },
-      { label: "Repository", href: risk.github },
+      ...repoArtifacts(risk.github, risk.name),
     ],
     plate: {
       src: "/plates/plate-risk.jpg",
@@ -202,9 +233,10 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "Meeting e4 with e5",
     kind: "Identity",
     title: "Meeting e4 with e5",
-    fact: `${resumeData.name}. ${resumeData.headline} Seeking ${resumeData.targetRoles}`,
+    scanTitle: "Meeting e4 with e5",
+    fact: "The classical answer: product engineering on one wing, the data path on the other.",
     commentary:
-      "The classical answer. I did not decline into a closed system. Full-stack plus MLOps is symmetrical development: product on one wing, the data path on the other.",
+      "The classical answer. I did not decline into a closed system. Product engineering on one wing, the data path on the other.",
     eval: 0.3,
     evalText: "+0.30",
     artifacts: [],
@@ -224,6 +256,7 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "First Developed Piece",
     kind: "Internship",
     title: "First Developed Piece",
+    scanTitle: "Petronas — Project Engineer Intern",
     fact: "Petronas — Project Engineer Intern, Nov 2024 – Feb 2025. Converted paid MATLAB licences into free Python packages, then wrote the tests that proved it. Presented usability findings to department leadership.",
     commentary:
       "Knights before bishops, they say. Petronas was the first industry square — converting paid MATLAB licences into free Python packages, then writing the tests that proved it.",
@@ -259,14 +292,14 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "The Elephant Gambit",
     kind: "Project",
     title: "The Elephant Gambit",
-    fact: `${lead.name} — ${lead.subtitle}. PySpark over 100M events/day, Deep Interest Network on PyTorch DDP, checkpointed so a multi-hour run could not lose the tape.`,
+    fact: `${lead.name} — ${lead.subtitle}. PySpark over ${METRICS.leadThroughput.display}, Deep Interest Network on PyTorch DDP, checkpointed so a multi-hour run could not lose the tape.`,
     commentary:
       "A hundred million events a day had to keep moving even when a job died mid-run. 2…d5 is that impatience, with the checkpoint so the sacrifice is not a bluff.",
     eval: 0.45,
     evalText: "+0.45",
     artifacts: [
       { label: lead.name, href: `/projects/${lead.slug}` },
-      { label: "Repository", href: lead.github },
+      ...repoArtifacts(lead.github, lead.name),
     ],
     plate: {
       src: "/plates/plate-leads.jpg",
@@ -318,7 +351,8 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "Defending the Pawn",
     kind: "Internship",
     title: "Defending the Pawn",
-    fact: "Setel — Software Engineer Intern, Jul 2025 – Dec 2025. Payment engine: authorization and capture. 92.5% unit-test coverage, −40% production defects.",
+    scanTitle: "Setel — Software Engineer Intern",
+    fact: `Setel — Software Engineer Intern, Jul 2025 – Dec 2025. Payment engine: authorization and capture. ${METRICS.setelCoverage.display}, ${METRICS.setelDefects.display}.`,
     commentary:
       "Payment-engine defects used to ship as far as the pump. I sat on that square and made sure the pawn could not be taken for free.",
     eval: 0.35,
@@ -348,7 +382,8 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "Pointing at f7",
     kind: "Contract",
     title: "Pointing at f7",
-    fact: "Western Digital — Full Stack Engineer, Feb 2025 – Dec 2025. Lab-systems dashboard; role-based access for 50+ staff, −40% manual oversight. WebSocket to the lab's deep-learning model; shortest path between stations in under 100 ms.",
+    scanTitle: "Western Digital — Full-stack Engineer",
+    fact: `Western Digital — Full-stack Engineer, Feb 2025 – Dec 2025. Lab-systems dashboard; role-based access for 50+ staff, ${METRICS.wdOversight.display}. WebSocket to the lab's deep-learning model; shortest path between stations in under 100 ms.`,
     commentary:
       "The Italian bishop looks at the weakest point in the castled position. At WD the weakness was watching lab systems by hand. I put a bishop there.",
     eval: 0.5,
@@ -378,6 +413,7 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "Quiet Italian",
     kind: "Project",
     title: "Quiet Italian",
+    scanTitle: "CircuitMindAI — PCB inspection",
     fact: `${circuit.name} — ${circuit.subtitle}. Amazon Nova Pro for vision, Nova Sonic for voice. Next.js and Express, CI/CD to ECS Fargate, edge cache for when the network drops.`,
     commentary:
       "CircuitMind sees faults in the copper and talks back over a live voice channel. Black develops the same way — vision on the board, voice on the file.",
@@ -385,7 +421,7 @@ export const OPENING_NODES: OpeningNode[] = [
     evalText: "+0.45",
     artifacts: [
       { label: circuit.name, href: `/projects/${circuit.slug}` },
-      { label: "Repository", href: circuit.github },
+      ...repoArtifacts(circuit.github, circuit.name),
     ],
     plate: {
       src: "/plates/plate-circuitmind.jpg",
@@ -409,7 +445,7 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "Castling",
     kind: "Practice",
     title: "Castling",
-    fact: "Reliability before the break: Setel 92.5% coverage; WD role-based access; Veridian 99.9% uptime.",
+    fact: `Reliability before the break: Setel ${METRICS.setelCoverage.value} coverage; WD role-based access; Veridian ${METRICS.veridianUptime.display}.`,
     commentary:
       "Castling is not a retreat. It is the move that says king safety before the central break. I ship the same way — tests and access control before the spectacular sacrifice.",
     eval: 0.55,
@@ -442,7 +478,7 @@ export const OPENING_NODES: OpeningNode[] = [
     evalText: "+0.50",
     artifacts: [
       { label: mirrorfi.name, href: `/projects/${mirrorfi.slug}` },
-      { label: "Repository", href: mirrorfi.github },
+      ...repoArtifacts(mirrorfi.github, mirrorfi.name),
     ],
     plate: {
       src: "/plates/plate-mirrorfi.jpg",
@@ -472,7 +508,8 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "The Central Break",
     kind: "Flagship",
     title: "The Central Break",
-    fact: `${veridian.name} — ${veridian.subtitle}: intercepts Terraform and Kubernetes and recommends lower-carbon hardware. At Monash: GraphRAG over university regulations, self-correcting Text-to-Cypher, +45% retrieval versus vector-only RAG; an SLM distilled from that reasoning, −50% latency.`,
+    scanTitle: "Veridian — MLOps Tradeoff Engine",
+    fact: `${veridian.name} — ${veridian.subtitle}: intercepts Terraform and Kubernetes and recommends lower-carbon hardware. At Monash: GraphRAG over university regulations, self-correcting Text-to-Cypher, ${METRICS.monashRetrieval.display}; an SLM distilled from that reasoning, ${METRICS.slmLatency.value} latency.`,
     commentary:
       "You castle, then you break the centre. d4 is the move this scoresheet hangs on: agents that intercept infrastructure, a graph that actually understands prerequisites, measurements instead of demos. The double-exclaim is Informant’s, not mine — but I played it.",
     eval: 1.6,
@@ -505,14 +542,15 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "The Closed Centre",
     kind: "Project",
     title: "The Closed Centre",
-    fact: `${graphrag.name} — ${graphrag.subtitle}. LangGraph over Neo4j and a vector store on the university's policy corpus. +35% retrieval versus vector-only.`,
+    scanTitle: "Multi-Agent GraphRAG — policy-corpus retrieval",
+    fact: `${graphrag.name} — ${graphrag.subtitle}. ${METRICS.graphragRetrieval.method} on an independent handbook and policy archive. ${METRICS.graphragRetrieval.display}.`,
     commentary:
       "Prerequisites and credit-transfer live as edges, not another embedding dump. Black can refuse the capture and keep the centre closed — the graph is that kind of patience.",
     eval: 0.55,
     evalText: "+0.55",
     artifacts: [
       { label: graphrag.name, href: `/projects/${graphrag.slug}` },
-      { label: "Repository", href: graphrag.github },
+      ...repoArtifacts(graphrag.github, graphrag.name),
     ],
     plate: {
       src: "/plates/plate-graphrag.jpg",
@@ -535,14 +573,14 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "Tucking the Bishop",
     kind: "Project",
     title: "Tucking the Bishop",
-    fact: `${slm.name} — ${slm.subtitle}. 70B teacher into a 3B student via QLoRA; DeepSpeed and FlashAttention so the distillation fit; −50% latency, 12× inference.`,
+    fact: `${slm.name} — ${slm.subtitle}. 70B teacher into a 3B student via QLoRA; DeepSpeed and FlashAttention so the distillation fit; ${METRICS.slmLatency.display}, ${METRICS.slmInference.display}.`,
     commentary:
       "Distillation keeps the same job on a smaller piece, cheaper to keep on the board. The Italian bishop steps back to b6 and still looks at the same diagonal.",
     eval: 0.5,
     evalText: "+0.50",
     artifacts: [
       { label: slm.name, href: `/projects/${slm.slug}` },
-      { label: "Repository", href: slm.github },
+      ...repoArtifacts(slm.github, slm.name),
     ],
     plate: {
       src: "/plates/plate-slm.jpg",
@@ -565,7 +603,7 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "Taking on d4",
     kind: "Method",
     title: "Taking on d4",
-    fact: "Named results that had to survive the demo: Veridian 99.9% uptime (−15% cloud emissions); Monash GraphRAG +45% retrieval versus vector-only; Western Digital −40% lab oversight; Financial Risk Predictor 0.87 AUC; SLM Distillation 12× inference; Lead Scorer 100M events/day.",
+    fact: `Named results that had to survive the demo: Veridian ${METRICS.veridianUptime.display} (${METRICS.veridianEmissions.display}); Monash GraphRAG ${METRICS.monashRetrieval.display}; Western Digital ${METRICS.wdOversight.display}; Financial Risk Predictor ${METRICS.riskAuc.display}; SLM Distillation ${METRICS.slmInference.display}; Lead Scorer ${METRICS.leadThroughput.display}.`,
     commentary:
       "I would rather show the graph than the slogan. Accepting the pawn is accepting that the numbers have owners.",
     eval: 0.7,
@@ -587,16 +625,17 @@ export const OPENING_NODES: OpeningNode[] = [
     label: "The Open File",
     kind: "Outlook",
     title: "The Open File",
-    fact: `Anas Tarek Qumhiyeh. Seeking ${resumeData.targetRoles} Replies within two days (MYT).`,
+    scanTitle: "The open file",
+    fact: `${resumeData.name}. The scoresheet stands. What the next move writes is still to be played.`,
     commentary:
-      "I want the next line to be measured systems in fintech infrastructure — graduate or junior, on the open file. Rooks belong where the work already points.",
+      "Rooks belong on the open file. The work already points there; the next move is still to be written.",
     eval: 0.8,
     evalText: "+0.80",
     artifacts: [
       { label: "Email", href: mail },
       { label: "GitHub", href: github },
       { label: "LinkedIn", href: linkedin },
-      { label: BROADSHEET.printEdition, href: BROADSHEET.printHref },
+      { label: BROADSHEET.resumeLabel, href: BROADSHEET.printHref },
     ],
     plies: [{ from: "f1", to: "e1" }],
     hl: ["f1", "e1"],
