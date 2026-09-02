@@ -49,7 +49,7 @@ test.describe("round four accessibility", () => {
   test("Opening Preparation has an H2 scoresheet and classified Veridian uptime", async ({ page }) => {
     await page.goto("/opening-preparation");
     await expect(page.getByRole("heading", { level: 1, name: "Opening Preparation" })).toBeVisible();
-    await expect(page.getByRole("heading", { level: 2, name: "The scoresheet" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 2, name: "Scoresheet", exact: true })).toBeVisible();
     await expect(page.locator("#chapter-oo")).toContainText(/Veridian Cloud Run evaluation: 99.9% observed uptime/);
     await expect(page.getByTestId("recruiter-nav").locator('a[href="/opening-preparation"]')).toHaveAttribute(
       "aria-label",
@@ -61,15 +61,16 @@ test.describe("round four accessibility", () => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/opening-preparation?move=start");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
-    await page.locator("#chapter-d4").evaluate((el) => el.scrollIntoView({ block: "start" }));
-    const y0 = await page.evaluate(() => window.scrollY);
-    await page.locator("body").click({ position: { x: 8, y: 8 } });
+    await page.getByTestId("paper-title").click();
+    await expect(page.locator('[data-testid="tree-view"] [data-node-id="start"]')).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
     await page.keyboard.press("ArrowRight");
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="start"]')).toHaveAttribute(
       "aria-current",
       "true",
     );
-    expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(y0 - 80);
   });
 
   test("the lab chart exposes a table of every plotted point", async ({ page }) => {

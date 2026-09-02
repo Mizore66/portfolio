@@ -732,6 +732,7 @@ test.describe("Opening Preparation", () => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await page.locator('[data-testid="tree-view"] [data-node-id="d4"]').click();
     await page.locator("#chapter-d4").evaluate((el) => el.scrollIntoView({ block: "start" }));
     const y0 = await page.evaluate(() => window.scrollY);
     expect(y0).toBeGreaterThan(400);

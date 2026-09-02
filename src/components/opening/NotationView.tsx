@@ -41,7 +41,7 @@ export const NotationView = memo(function NotationView({
   return (
     <article aria-label="Scoresheet" className="p-0" data-testid="notation-view">
       <h2 id="scoresheet-heading" className="mb-2 font-display text-[22px] leading-tight text-ink">
-        The scoresheet
+        Scoresheet
       </h2>
       <p className="mb-2 font-mono text-[12px] uppercase tracking-[0.25em] text-faded">
         {BROADSHEET.gameKicker} · every node, in order
