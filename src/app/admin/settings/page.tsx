@@ -1,4 +1,5 @@
 import { AdminFrame } from "@/app/admin/layout";
+import { postgresUrlSource } from "@/lib/cms/env";
 import { getPublishedDocument } from "@/lib/cms/store";
 
 export default async function SettingsEditor() {
@@ -25,9 +26,9 @@ export default async function SettingsEditor() {
         <div>
           <dt className="font-mono text-[12px] uppercase tracking-[0.14em] text-faded">Database</dt>
           <dd className="mt-1 font-display text-[16px]">
-            {process.env.DATABASE_URL
-              ? "DATABASE_URL present. Published revisions write to Postgres."
-              : "No DATABASE_URL. This environment uses data/cms.json; Vercel production should use Postgres."}
+            {postgresUrlSource()
+              ? `${postgresUrlSource()} present. Published revisions write to Postgres. SUPABASE_URL is the HTTPS API and is ignored.`
+              : "No Postgres URL. Vercel Marketplace Supabase sets POSTGRES_URL; SUPABASE_URL is not a database. This environment falls back to data/cms.json."}
           </dd>
         </div>
       </dl>

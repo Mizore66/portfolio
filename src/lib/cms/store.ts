@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
+import { postgresNeedsSsl, postgresUrl } from "@/lib/cms/env";
 import { ledgerDocument } from "@/lib/cms/ledger";
 import type { CmsStoreFile, SiteDocument } from "@/lib/cms/types";
 
@@ -24,11 +25,11 @@ async function writeFileStore(store: CmsStoreFile) {
 }
 
 async function readPostgresPublished(): Promise<SiteDocument | null> {
-  const url = process.env.DATABASE_URL;
+  const url = postgresUrl();
   if (!url) return null;
   try {
     const postgres = (await import("postgres")).default;
-    const sql = postgres(url, { max: 1, ssl: url.includes("sslmode=") || url.includes("neon") ? "require" : false });
+    const sql = postgres(url, { max: 1, ssl: postgresNeedsSsl(url) ? "require" : false });
     try {
       const rows = await sql<SiteDocument[]>`
         select document from cms_revisions
@@ -49,10 +50,10 @@ async function readPostgresPublished(): Promise<SiteDocument | null> {
 }
 
 async function writePostgres(doc: SiteDocument, action: string) {
-  const url = process.env.DATABASE_URL;
+  const url = postgresUrl();
   if (!url) return false;
   const postgres = (await import("postgres")).default;
-  const sql = postgres(url, { max: 1, ssl: url.includes("sslmode=") || url.includes("neon") ? "require" : false });
+  const sql = postgres(url, { max: 1, ssl: postgresNeedsSsl(url) ? "require" : false });
   try {
     await sql`
       create table if not exists cms_revisions (
@@ -114,7 +115,7 @@ export async function getCmsState(): Promise<CmsStoreFile & { ledger: SiteDocume
   return {
     ...store,
     ledger: ledgerDocument(),
-    backend: process.env.DATABASE_URL ? "postgres" : "file",
+    backend: postgresUrl() ? "postgres" : "file",
   };
 }
 

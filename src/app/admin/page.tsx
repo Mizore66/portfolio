@@ -41,7 +41,8 @@ export default async function AdminHome({
       </ul>
       <p className="mt-6 max-w-[62ch] font-display text-[16px] leading-snug text-ink">
         Homepage, claims, résumé copy, and sitemap lastmod read the published revision. Without a
-        database they persist to <code>data/cms.json</code>; on Vercel set DATABASE_URL (Postgres) and
+        database they persist to <code>data/cms.json</code>. On Vercel, Marketplace Supabase already
+        sets <code>POSTGRES_URL</code> — that is the database, not <code>SUPABASE_URL</code>. Set
         BLOB_READ_WRITE_TOKEN for media.
       </p>
       <p className="mt-4">
