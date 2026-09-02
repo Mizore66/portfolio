@@ -16,8 +16,8 @@ import { getNode } from "@/lib/opening/tree";
 import { META_DESCRIPTION } from "@/lib/person";
 
 describe("document integrity", () => {
-  it("lists the paper plate on the sitemap", () => {
-    const urls = sitemap().map((e) => e.url);
+  it("lists the paper plate on the sitemap", async () => {
+    const urls = (await sitemap()).map((e) => e.url);
     expect(urls.some((u) => u.endsWith("/opening-preparation"))).toBe(true);
     expect(urls.some((u) => u.endsWith("/colophon"))).toBe(true);
     expect(PAPER_HREF).toBe("/opening-preparation");

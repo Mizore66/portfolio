@@ -121,8 +121,8 @@ describe("SEO identity", () => {
     }
   });
 
-  it("lists the lab and every exhibit on the sitemap", () => {
-    const urls = sitemap().map((e) => e.url);
+  it("lists the lab and every exhibit on the sitemap", async () => {
+    const urls = (await sitemap()).map((e) => e.url);
     expect(robots().sitemap).toMatch(/sitemap\.xml/);
     expect(urls.some((u) => u.endsWith("/lab/learned-evaluator"))).toBe(true);
     expect(urls.some((u) => u.endsWith("/opening-preparation"))).toBe(true);
@@ -130,11 +130,12 @@ describe("SEO identity", () => {
     for (const p of resumeData.projects) {
       expect(urls.some((u) => u.endsWith(`/projects/${p.slug}`)), p.slug).toBe(true);
     }
-    const veridian = sitemap().find((e) => e.url.endsWith("/projects/veridian"));
+    const map = await sitemap();
+    const veridian = map.find((e) => e.url.endsWith("/projects/veridian"));
     expect(veridian?.lastModified instanceof Date && veridian.lastModified.toISOString().startsWith("2026-04")).toBe(
       true,
     );
-    const lab = sitemap().find((e) => e.url.endsWith("/lab/learned-evaluator"));
+    const lab = map.find((e) => e.url.endsWith("/lab/learned-evaluator"));
     expect(lab?.lastModified instanceof Date && lab.lastModified.toISOString().startsWith("2026-08-29")).toBe(true);
   });
 });

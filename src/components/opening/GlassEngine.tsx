@@ -6,7 +6,7 @@ import { numberPv } from "@/lib/chess/notation";
 import type { NnueNet } from "@/lib/chess/nnue/types";
 import { PHASE2_DEFAULT_EVAL, PHASE2_EXHIBITS, PHASE2_WEIGHTS_URL } from "@/lib/chess/phase2";
 import { positionAfter } from "@/lib/chess/replay";
-import { SHOW_DEPTHS, visibleEngineLine, type BookLine } from "@/lib/chess/engine-view";
+import { formatEvalCp, SHOW_DEPTHS, visibleEngineLine, type BookLine } from "@/lib/chess/engine-view";
 import { searchSliceMs, type SearchEvent, type SearchJob } from "@/lib/chess/search-job";
 import { BROADSHEET } from "@/content/opening";
 import { GLIDE_MS, depthPaintMs } from "@/lib/opening/motion";
@@ -253,6 +253,7 @@ export const GlassEngine = memo(function GlassEngine({
   onEvalMode,
   weightsStatus,
   down,
+  compact,
 }: {
   info: SearchInfo | null;
   book?: BookLine | null;
@@ -263,6 +264,7 @@ export const GlassEngine = memo(function GlassEngine({
   onEvalMode?: (mode: EvalMode) => void;
   weightsStatus?: "idle" | "loading" | "ready" | "error";
   down?: boolean;
+  compact?: boolean;
 }) {
   const line = visibleEngineLine(book ?? null, info);
   const mode = evalMode ?? PHASE2_DEFAULT_EVAL;
@@ -274,16 +276,17 @@ export const GlassEngine = memo(function GlassEngine({
     ? BROADSHEET.engineDown
     : weightsStatus === "error"
       ? BROADSHEET.weightsError
-      : settled
-        ? "Engine settled."
+      : settled && info
+        ? `Engine settled. Evaluation ${formatEvalCp(info.evalCp)} at depth ${info.depth}. ${pvText}.`
         : "";
 
   return (
     <section
-      className="box-inset border-2 border-ink overflow-hidden"
+      className={cn("box-inset border-2 border-ink overflow-hidden", compact && "hero-glass")}
       data-testid="glass-engine"
       data-eval-mode={usingLearned ? "learned" : "handcrafted"}
       data-engine-down={down ? "true" : undefined}
+      data-compact={compact ? "true" : undefined}
       aria-live="off"
       aria-label="Live engine search"
     >
@@ -361,9 +364,17 @@ export const GlassEngine = memo(function GlassEngine({
           {BROADSHEET.engineDown}
         </p>
       ) : null}
-      {PHASE2_EXHIBITS && mode === "learned" && weightsStatus !== "ready" ? (
-        <p className="mt-2 font-mono text-[12px] text-score-red" data-testid="weights-pending">
-          {weightsStatus === "error" ? BROADSHEET.weightsError : BROADSHEET.weightsPending}
+      {PHASE2_EXHIBITS && mode === "learned" ? (
+        <p
+          className="engine-aux mt-2 font-mono text-[12px] leading-snug text-score-red"
+          data-testid="weights-pending"
+          aria-hidden={weightsStatus === "ready" ? true : undefined}
+        >
+          {weightsStatus === "error"
+            ? BROADSHEET.weightsError
+            : weightsStatus === "ready"
+              ? "\u00a0"
+              : BROADSHEET.weightsPending}
         </p>
       ) : null}
       <p

@@ -15,13 +15,16 @@ function ascii(s: string): string {
     .replace(/[“”]/g, '"')
     .replace(/→/g, "->")
     .replace(/×/g, "x")
-    .replace(/−/g, "-")
     .replace(/…/g, "...")
-    .replace(/[^\x20-\x7E]/g, "");
+    .replace(/[^\x20-\x7E\u2212]/g, "");
 }
 
 function pdfEscape(s: string): string {
-  return ascii(s).replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
+  return ascii(s)
+    .replace(/\\/g, "\\\\")
+    .replace(/\(/g, "\\(")
+    .replace(/\)/g, "\\)")
+    .replace(/\u2212/g, "\\226");
 }
 
 function wrap(text: string, width: number): string[] {
@@ -92,7 +95,7 @@ export function buildPrintEditionPdf(): Uint8Array {
 
   rule(PAGE_H - 32, 1.8);
   rule(PAGE_H - 36, 0.5);
-  marked("P", () => txt("F2", 9, M, PAGE_H - 52, "OPENING PREPARATION  |  Resume  |  Print edition"));
+  marked("P", () => txt("F2", 9, M, PAGE_H - 52, "OPENING PREPARATION  |  Resume  |  Bandar Sunway, Malaysia"));
   marked("H1", () => txt("F2", 20, M, PAGE_H - 76, d.name));
   let y = PAGE_H - 90;
   for (const line of wrap(d.headline, 92)) {
@@ -154,10 +157,12 @@ export function buildPrintEditionPdf(): Uint8Array {
     marked("P", () => txt("F3", 8, M, y, ascii(`${job.period}  |  ${job.tech.join(", ")}`)));
     y -= 10;
     for (const bullet of job.bullets) {
-      const lines = wrap(ascii(bullet), 96);
+      const lines = wrap(ascii(bullet), 94);
       for (let i = 0; i < lines.length; i++) {
-        const prefix = i === 0 ? "* " : "  ";
-        marked("P", () => txt("F1", 8, M, y, `${prefix}${lines[i]}`));
+        if (i === 0) {
+          ops.push(`${INK} rg`, `${n(M + 1)} ${n(y + 1.2)} 2.4 2.4 re f`);
+        }
+        marked("P", () => txt("F1", 8, M + 8, y, lines[i]));
         y -= 10;
       }
     }

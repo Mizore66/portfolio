@@ -64,7 +64,11 @@ export function RecruiterNav() {
           </li>
         ) : null}
       </ul>
-      <a href={BROADSHEET.paperHref} className="recruiter-nav-stamp">
+      <a
+        href={BROADSHEET.paperHref}
+        className="recruiter-nav-stamp"
+        aria-label="Open the chess-engine career story (C50)"
+      >
         C50
       </a>
     </nav>

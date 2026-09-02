@@ -29,8 +29,9 @@ test.describe("document mode", () => {
       "/projects/veridian",
     );
     await expect(page.getByTestId("recruiter-nav").locator('a[href="/#work"]')).toHaveAttribute("href", "/#work");
-    await expect(page.getByTestId("game-teaser")).toBeVisible();
-    await expect(page.getByTestId("teaser-line")).toContainText("1. e4");
+    await expect(page.getByTestId("hero-engine")).toBeVisible();
+    await expect(page.getByTestId("hero-engine-chip")).toContainText(/−143/);
+    await expect(page.getByTestId("teaser-line")).toHaveCount(0);
     await expect(page.getByTestId("notation-view")).toHaveCount(0);
     await expect(page.getByTestId("home-footer")).toBeVisible();
     await expect(page.getByTestId("closer")).toHaveCount(0);
@@ -41,16 +42,18 @@ test.describe("document mode", () => {
     await expect(page.getByTestId("about-band")).toContainText(/played chess since I was a teenager/);
     await expect(page.getByTestId("about-band")).toContainText(/Built production payment/);
     await expect(page.getByTestId("retrieval-split")).toContainText(/different corpus/);
-    await expect(page.getByTestId("masthead-availability")).toContainText(/Open to early-career/);
-    await expect(page.getByTestId("contact-band")).not.toContainText(/Open to early-career/);
+    await expect(page.getByTestId("masthead-availability")).toContainText(/Seeking software engineering roles/);
+    await expect(page.getByTestId("contact-band")).not.toContainText(/Seeking software engineering roles/);
     await expect(page.getByTestId("path-filter")).toContainText(/ML \/ data systems/);
     await expect(page.getByTestId("path-filter")).toContainText(/Product \/ backend/);
     await expect(page.getByRole("link", { name: /Skip to selected work/i })).toHaveCount(1);
     await expect(page.getByTestId("lab-teaser")).toContainText(/learned evaluator lost/i);
     await expect(page.getByTestId("masthead-proof")).toContainText(/−40% production defects/);
-    await expect(page.getByTestId("masthead-proof")).toContainText(/100M events\/day/);
-    await expect(page.getByTestId("masthead-proof").locator(".metric-row").nth(2)).toHaveText("100M events/day");
-    await expect(page.getByTestId("masthead-how")).toContainText(/constraint to the measurement/);
+    await expect(page.getByTestId("masthead-proof")).toContainText(/100M-event capacity/);
+    await expect(page.getByTestId("masthead-proof").locator(".metric-row").nth(2)).toHaveText(
+      "100M-event capacity benchmark",
+    );
+    await expect(page.getByTestId("masthead-how")).toContainText(/constraint to measurement/);
   });
 });
 
@@ -112,6 +115,7 @@ test.describe("css off", () => {
     expect(headings.join("\n")).toMatch(/Experience/);
     expect(headings.join("\n")).toMatch(/Laboratory/);
     expect(headings.join("\n")).toMatch(/Contact/);
+    await expect(page.getByTestId("hero-engine")).toBeVisible();
     await expect(page.locator("#setel")).toContainText(/Setel/);
     await expect(page.locator("#veridian")).toContainText(/Veridian —/);
     await expect(page.getByTestId("contact-email")).toContainText("anasqumhiyeh@gmail.com");
@@ -119,6 +123,16 @@ test.describe("css off", () => {
 });
 
 test.describe("opening paper", () => {
+  test("the analysis board shares the first desktop screen", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto("/");
+    const engine = page.getByTestId("hero-engine");
+    await expect(engine).toBeVisible();
+    const box = await engine.boundingBox();
+    expect(box).toBeTruthy();
+    expect(box!.y).toBeLessThan(640);
+    await expect(page.locator("#hero-board")).not.toHaveAttribute("tabindex");
+  });
   test("/?move= redirects onto the scoresheet plate", async ({ page }) => {
     await page.goto("/?move=e4");
     await expect(page).toHaveURL(/\/opening-preparation/);
@@ -155,6 +169,7 @@ test.describe("plates", () => {
       "/lab/learned-evaluator",
       "/colophon",
       "/print-edition",
+      "/admin/login",
     ]) {
       const res = await request.get(path);
       expect(res.ok(), path).toBe(true);
@@ -170,13 +185,26 @@ test.describe("exhibit evidence", () => {
     await expect(page.getByTestId("retrieval-split")).toContainText(/different corpus/);
     await expect(page.getByTestId("evidence-card")).toContainText(/\+35%/);
     await expect(page.getByTestId("evidence-card")).toContainText(/Vector-only/);
-    await expect(page.getByTestId("evidence-card")).toContainText(/Sample size/);
+    await expect(page.getByTestId("evidence-card")).toContainText(/Evidence gap/);
     await expect(page.getByTestId("exhibit-rail")).toContainText(/Sole builder/);
     await expect(page.getByTestId("exhibit-rail")).toContainText(/Private project archive/);
     await expect(page.locator("#limitations")).toBeVisible();
     await expect(page.getByTestId("illustration-date")).toContainText(/later illustration/);
     await expect(page.getByTestId("exhibit-dates")).toContainText(/Published Oct 2025/);
     await expect(page.getByTestId("evidence-card")).not.toContainText(/Evaluation · evaluation/i);
+  });
+});
+
+test.describe("narrow exhibits", () => {
+  test("Veridian and the homepage do not scroll sideways at 320px", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 640 });
+    for (const path of ["/", "/projects/veridian"]) {
+      await page.goto(path);
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+      );
+      expect(overflow, path).toBe(false);
+    }
   });
 });
 

@@ -36,6 +36,10 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# first-party CMS file store (Postgres is used in production)
+/data/cms.json
 
 # vercel
 .vercel

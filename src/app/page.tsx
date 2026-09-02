@@ -5,7 +5,6 @@ import { ContactBand } from "@/components/opening/ContactBand";
 import { EducationBand } from "@/components/opening/EducationBand";
 import { ExperienceList } from "@/components/opening/ExperienceList";
 import { FooterStrip } from "@/components/opening/FooterStrip";
-import { GameTeaser } from "@/components/opening/GameTeaser";
 import { LabFilings, LabTeaser } from "@/components/opening/LabTeaser";
 import { Masthead } from "@/components/opening/Masthead";
 import { SelectedWork } from "@/components/opening/SelectedWork";
@@ -43,7 +42,6 @@ export default async function Home({
             <SelectedWork path={workPathFromQuery(q.path)} />
             <ExperienceList />
             <EducationBand />
-            <GameTeaser />
             <section id="lab" data-testid="lab-band" className="recruiter-band" aria-labelledby="lab-heading">
               <p className="band-kicker">{BROADSHEET.labKicker}</p>
               <h2 id="lab-heading" className="band-title">

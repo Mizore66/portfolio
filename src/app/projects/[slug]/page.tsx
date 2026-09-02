@@ -109,7 +109,7 @@ export default async function ProjectPage({
       <a href="#exhibit" className="skip-link">
         {BROADSHEET.skipExhibit}
       </a>
-      <div className="relative z-[1] mx-auto max-w-2xl px-3 py-8 sm:px-5 sm:py-12">
+      <div className="relative z-[1] mx-auto max-w-2xl min-w-0 overflow-x-clip px-3 py-8 sm:px-5 sm:py-12">
         <div className="sheet mb-4">
           <RecruiterNav />
         </div>
@@ -213,9 +213,9 @@ export default async function ProjectPage({
                 </p>
               </section>
 
-              <section className="mt-8" aria-label="File photo">
+              <section className="mt-8" aria-label="Halftone plate">
                 <p className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
-                  Decoration · file photo
+                  Decoration · illustrative plate
                 </p>
                 <div className="mt-3">
                   <HalftonePlate

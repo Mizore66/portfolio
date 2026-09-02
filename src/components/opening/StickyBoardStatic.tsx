@@ -22,7 +22,7 @@ import {
 import { cn } from "@/lib/utils";
 
 /** Server HTML for the flagship diagram — OpeningApp does not hydrate this node. */
-export function StickyBoardStatic() {
+export function StickyBoardStatic({ planeId = "play-board" }: { planeId?: string } = {}) {
   const node = getNode(FLAGSHIP_ID);
   const plies = collectPlies(FLAGSHIP_ID);
   const pieces = positionAfter(plies).map((p) => ({ ...p, delay: 0 }));
@@ -56,9 +56,9 @@ export function StickyBoardStatic() {
   }
 
   return (
-    <figure>
-      <p className="sr-only" data-testid="board-position">
-        Occupancy {occupancyFen(pieces)}.
+    <figure aria-describedby={`${planeId}-occ`}>
+      <p className="sr-only" id={`${planeId}-occ`} data-testid="board-position">
+        Occupancy {occupancyFen(pieces)}. {node.cap}.
       </p>
       <div className="flex items-stretch gap-2">
         <div className="flex w-10 shrink-0 self-stretch">
@@ -83,9 +83,8 @@ export function StickyBoardStatic() {
                   aria-label={node.cap}
                   data-testid="board-plane"
                   data-play-side={playSide}
-                  className="newspaper-board relative h-full w-full cursor-pointer"
-                  tabIndex={0}
-                  id="play-board"
+                  className="newspaper-board relative h-full w-full"
+                  id={planeId}
                 >
                   <div className="grid h-full w-full grid-cols-8 grid-rows-8">{squares}</div>
                   {arrow ? <PvArrow ply={arrow} /> : null}

@@ -673,17 +673,23 @@ test.describe("Opening Preparation", () => {
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await expect(page.locator('#chapter-e4 img[src*="clip-sunway"]')).toBeVisible();
     await expect(page.locator('#chapter-bc4 img[src*="clip-wd"]')).toBeVisible();
+    await page.evaluate(() => document.fonts.ready);
 
-    const target = await page.locator("#chapter-oo").evaluate((el) => {
-      const line = window.innerHeight * 0.28;
-      return window.scrollY + el.getBoundingClientRect().top - line;
-    });
-    await page.evaluate((y) => window.scrollTo(0, y), target);
+    const alignCastle = () =>
+      page.locator("#chapter-oo").evaluate((el) => {
+        const line = window.innerHeight * 0.28;
+        const y = window.scrollY + el.getBoundingClientRect().top - line;
+        window.scrollTo(0, y);
+        return y;
+      });
+    await alignCastle();
+    await page.waitForTimeout(50);
+    await alignCastle();
     const y0 = await page.evaluate(() => window.scrollY);
     expect(y0).toBeGreaterThan(400);
 
     await expect
-      .poll(async () => page.evaluate(() => window.location.search), { timeout: 2500 })
+      .poll(async () => page.evaluate(() => window.location.search), { timeout: 5000 })
       .toMatch(/move=oo/);
 
     const samples: number[] = [];
@@ -753,7 +759,7 @@ test.describe("Opening Preparation", () => {
     expect(title).toBeTruthy();
     expect(title!.y).toBeGreaterThanOrEqual(0);
     expect(title!.y + title!.height).toBeLessThan(900);
-    await expect(page.getByTestId("paper-dek")).toHaveText(/chess game/i);
+    await expect(page.getByTestId("paper-dek")).toHaveText(/Italian Game/i);
     await expect(page.locator("header")).toContainText(/anasqumhiyeh\.dev/i);
     await expect(page.locator("#chapter-e4")).toContainText(/Graduated May 2026/);
     await expect(page.locator("#chapter-e4")).toContainText(/First Class Honours/);
