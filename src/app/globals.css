@@ -1055,12 +1055,12 @@
     width: 100%;
     flex: 0 0 auto;
     min-height: 168px;
-    padding: 6px 12px 4px;
+    padding: 4px 12px 2px;
     border-bottom: 2px solid var(--ink);
     background-color: var(--paper);
   }
   [data-sticky-board] figcaption {
-    margin-top: 16px;
+    margin-top: 4px;
     font-size: 12px;
   }
   [data-testid="glass-engine"] {
@@ -2129,7 +2129,7 @@ h1, h2, h3 {
 @media (max-width: 699px) {
   html {
     /* Sticky board is a top bar here; don't wait on JS to keep headings clear. */
-    --sticky-stack: 176px;
+    --sticky-stack: 168px;
   }
 }
 
