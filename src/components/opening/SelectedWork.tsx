@@ -16,6 +16,8 @@ import {
   type EvidenceKind,
   type WorkPath,
 } from "@/lib/metrics";
+import { ExternalLink } from "@/components/opening/ExternalLink";
+import { WorkFilterStatus } from "@/components/opening/WorkFilterStatus";
 import { cn } from "@/lib/utils";
 
 const LAB = new Set<string>(LAB_PROJECT_SLUGS);
@@ -43,27 +45,28 @@ export async function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }
   return (
     <section id="work" data-testid="selected-work" className="recruiter-band" aria-labelledby="work-heading">
       <p className="band-kicker">{POSITIONING.independentKicker}</p>
-      <h2 id="work-heading" className="band-title">
+      <h2 id="work-heading" className="band-title" tabIndex={-1}>
         Selected work
       </h2>
+      <WorkFilterStatus path={path} count={featured.length + archive.length} />
       <p className="path-filter mt-4" data-testid="path-filter">
-        <a href="/#work" className={cn("path-chip", path === "all" && "path-chip-current")} aria-current={path === "all" ? "page" : undefined}>
+        <Link href="/#work" className={cn("path-chip", path === "all" && "path-chip-current")} aria-current={path === "all" ? "page" : undefined}>
           All
-        </a>
-        <a
+        </Link>
+        <Link
           href="/?path=ml#work"
           className={cn("path-chip", path === "ML / data systems" && "path-chip-current")}
           aria-current={path === "ML / data systems" ? "page" : undefined}
         >
           ML / data systems ({mlCount})
-        </a>
-        <a
+        </Link>
+        <Link
           href="/?path=product#work"
           className={cn("path-chip", path === "Product / backend" && "path-chip-current")}
           aria-current={path === "Product / backend" ? "page" : undefined}
         >
           Product / backend ({productCount})
-        </a>
+        </Link>
       </p>
       <ul className="project-card-grid">
         {featured.map((project, i) => (
@@ -119,14 +122,12 @@ export async function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }
                 Read the {project.name} case study
               </Link>
               {project.github ? (
-                <a
+                <ExternalLink
                   href={project.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="artifact-link relative z-[1] external-mark text-book-blue underline decoration-2 underline-offset-4"
+                  className="artifact-link relative z-[1] text-book-blue underline decoration-2 underline-offset-4"
                 >
                   View {project.name} source
-                </a>
+                </ExternalLink>
               ) : null}
             </p>
             </DeskHover>

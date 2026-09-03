@@ -1,4 +1,5 @@
 import { EvidenceMeta } from "@/components/opening/EvidenceMeta";
+import { ExternalLink } from "@/components/opening/ExternalLink";
 import { RecruiterNav } from "@/components/opening/RecruiterNav";
 import { BROADSHEET } from "@/content/opening";
 import { getRenderableDocument } from "@/lib/cms/store";
@@ -6,7 +7,7 @@ import { activeAvailability } from "@/lib/cms/ledger";
 import { heroProofRows } from "@/lib/cms/overlay";
 import { resumeData } from "@/lib/data";
 import { formatClaimDate } from "@/lib/filed";
-import { EVIDENCE_TIER } from "@/lib/metrics";
+import { EVIDENCE_TIER, POSITIONING } from "@/lib/metrics";
 import { SITE_HOST } from "@/lib/site";
 
 function Contacts() {
@@ -21,23 +22,21 @@ function Contacts() {
         </a>
       </div>
       <p className="masthead-quiet mt-3">
-        <a
+        <ExternalLink
           className="external-mark"
           href={`https://${resumeData.github}`}
-          target="_blank"
           rel="me noopener noreferrer"
         >
           GitHub
-        </a>
+        </ExternalLink>
         <span aria-hidden="true"> · </span>
-        <a
+        <ExternalLink
           className="external-mark"
           href={`https://${resumeData.linkedin}`}
-          target="_blank"
           rel="me noopener noreferrer"
         >
           LinkedIn
-        </a>
+        </ExternalLink>
       </p>
     </>
   );
@@ -84,7 +83,7 @@ export async function HeroIdentity() {
               .filter(Boolean)
               .join(" · ");
             return (
-              <li key={item.id}>
+              <li key={item.id} id={`claim-${item.id}`}>
                 <p className="hero-proof-kicker">{EVIDENCE_TIER[item.kind]}</p>
                 <p className="metric-row-line">
                   <span className="metric-row">{item.label}</span>
@@ -106,10 +105,16 @@ export async function HeroIdentity() {
             <li key={item.id} id={`claim-note-${item.id}`}>
               <span className="claim-note-mark">{index + 1}.</span>{" "}
               {item.method || item.sample || item.caveat}
-              {item.baseline ? ` Baseline: ${item.baseline}.` : ""}
+              {item.baseline ? ` Baseline: ${item.baseline}.` : ""}{" "}
+              <a href={`#claim-${item.id}`} className="claim-backlink">
+                Back to {item.label}
+              </a>
             </li>
           ))}
         </ol>
+        <p data-testid="ownership-bridge" className="mt-4 max-w-[68ch] px-4 font-display text-[16px] leading-snug text-ink sm:px-6">
+          {POSITIONING.ownershipBridge}
+        </p>
         <div className="hero-cta-block px-4 pb-5 sm:px-6">
           <p
             data-testid="masthead-availability"
@@ -150,23 +155,19 @@ export function PaperMasthead() {
         </p>
         <p className="mt-2 font-mono text-[12px] uppercase tracking-[0.12em] text-faded">Anas T. Qumhiyeh</p>
         <p className="masthead-quiet mt-3">
-          <a
-            className="external-mark"
+          <ExternalLink
             href={`https://${resumeData.github}`}
-            target="_blank"
             rel="me noopener noreferrer"
           >
             GitHub
-          </a>
+          </ExternalLink>
           <span aria-hidden="true"> · </span>
-          <a
-            className="external-mark"
+          <ExternalLink
             href={`https://${resumeData.linkedin}`}
-            target="_blank"
             rel="me noopener noreferrer"
           >
             LinkedIn
-          </a>
+          </ExternalLink>
         </p>
         <p className="mt-4">
           <a

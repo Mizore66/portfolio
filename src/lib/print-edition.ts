@@ -10,21 +10,20 @@ const INK = "0.102 0.071 0.047";
 
 function ascii(s: string): string {
   return s
-    .replace(/[—–]/g, "-")
+    .replace(/[—–\u2212]/g, "-")
     .replace(/[’‘]/g, "'")
     .replace(/[“”]/g, '"')
-    .replace(/→/g, "->")
+    .replace(/\s*→\s*/g, "-to-")
     .replace(/×/g, "x")
     .replace(/…/g, "...")
-    .replace(/[^\x20-\x7E\u2212]/g, "");
+    .replace(/[^\x20-\x7E]/g, "");
 }
 
 function pdfEscape(s: string): string {
   return ascii(s)
     .replace(/\\/g, "\\\\")
     .replace(/\(/g, "\\(")
-    .replace(/\)/g, "\\)")
-    .replace(/\u2212/g, "\\226");
+    .replace(/\)/g, "\\)");
 }
 
 function wrap(text: string, width: number): string[] {
@@ -177,7 +176,11 @@ export function buildPrintEditionPdf(overlay?: { dek?: string; availability?: st
     const extra =
       p.slug === "veridian"
         ? " Intercepts Terraform before the spike; recommends a lower-carbon compute configuration."
-        : "";
+        : p.slug === "circuitmindai"
+          ? " Detector capability implemented; precision/recall not yet filed. Cached inspection steps for network loss."
+          : p.slug === "multi-agent-graphrag"
+            ? " Independent handbook archive; +35% vs vector-only as filed, not Recall@k."
+            : "";
     marked("P", () => txt("F2", 9, M, y, ascii(`${p.name}  |  ${p.impact}`)));
     y -= 10;
     for (const line of wrap(`${p.subtitle}.${extra}`, 96)) {
@@ -188,7 +191,9 @@ export function buildPrintEditionPdf(overlay?: { dek?: string; availability?: st
   }
   const also = d.projects
     .filter((proj) => !featuredSet.has(proj.slug))
-    .map((p) => `${p.name} (${p.impact})`)
+    .map((p) =>
+      p.slug === "mirrorfi" ? `${p.name} (${p.contextLabel ?? p.impact})` : `${p.name} (${p.impact})`,
+    )
     .join("  |  ");
   for (const line of wrap(`Also: ${also}`, 96)) {
     marked("P", () => txt("F1", 8, M, y, ascii(line)));

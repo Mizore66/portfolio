@@ -3,6 +3,7 @@ import { AdminActions, AdminDirtyForm } from "@/components/admin/AdminForm";
 import { publishAction, saveDraftAction } from "@/lib/cms/actions";
 import { getDraftDocument } from "@/lib/cms/store";
 import { resumeData } from "@/lib/data";
+import { projectSchemaReady } from "@/lib/cms/validate";
 
 export default async function ProjectsEditor() {
   const doc = await getDraftDocument();
@@ -17,6 +18,7 @@ export default async function ProjectsEditor() {
         <input type="hidden" name="projects-present" value="1" />
         {doc.projects.map((project, index) => {
           const named = resumeData.projects.find((row) => row.slug === project.slug);
+          const missing = projectSchemaReady(project);
           return (
             <details key={project.slug} className="border-2 border-ink p-4" open={index < 3 && !project.archived}>
               <summary className="cursor-pointer font-mono text-[12px] uppercase tracking-[0.14em]">
@@ -54,6 +56,14 @@ export default async function ProjectsEditor() {
                   Example
                   <textarea name={`project-${project.slug}-example`} defaultValue={project.example} />
                 </label>
+                <label>
+                  Considered / rejected
+                  <textarea name={`project-${project.slug}-rejected`} defaultValue={project.rejected} />
+                </label>
+                <label>
+                  What I would change now
+                  <textarea name={`project-${project.slug}-retrospective`} defaultValue={project.retrospective} />
+                </label>
                 <label className="flex-row items-center gap-2 normal-case tracking-normal">
                   <input
                     type="checkbox"
@@ -62,6 +72,9 @@ export default async function ProjectsEditor() {
                   />
                   Archive (unpublish this exhibit)
                 </label>
+                {missing.length ? (
+                  <p className="admin-error">Missing case-study fields: {missing.join(", ")}</p>
+                ) : null}
               </fieldset>
             </details>
           );

@@ -2,7 +2,7 @@
 
 A recruiter-first portfolio: an annotated Italian Game mapped onto a career, not a chess puzzle. Moves are facts. Annotations are voice. Chess is the content, never a lock.
 
-This is the public scoresheet of [Anas Tarek Qumhiyeh](https://github.com/Mizore66) — software engineer building payment, laboratory, and retrieval systems.
+This is the public scoresheet of [Anas Tarek Qumhiyeh](https://github.com/Mizore66) — software engineer building ML infrastructure and data-intensive systems for payments, laboratory operations, and retrieval.
 
 ## What you are looking at
 
@@ -45,6 +45,8 @@ Print edition: `GET /print-edition` — a typeset one-pager whose diagram is occ
 ## Production
 
 The live origin is `NEXT_PUBLIC_SITE_URL` (default `https://anasqumhiyeh.dev`). That host is the masthead dateline, the `<link rel="canonical">`, and `og:url`. **Serve the apex; 301 www to it.** `/sitemap.xml` and `/robots.txt` are generated from it; the OG image is `/opengraph-image`. Analytics are `@vercel/analytics` — no cookies, no recruiter-identifying payload.
+
+The desk at `/admin` writes drafts to `POSTGRES_URL` when set, otherwise a private Vercel Blob object (`BLOB_READ_WRITE_TOKEN`), otherwise `data/cms.json` (local only; read-only on Vercel). `/api/cms-health` returns 503 when a Vercel deploy has no writable store — fail promotion on that probe.
 
 Deploy on Vercel. The domain is registered at **Porkbun** — do not transfer it. In Vercel: project → Settings → Domains → Add `anasqumhiyeh.dev` **and** `www.anasqumhiyeh.dev`. Set **anasqumhiyeh.dev as the primary**. Redirect `www` → apex (301). Do not let www remain the serving host — the paper prints the apex. Then in Porkbun → domain → DNS:
 

@@ -35,6 +35,8 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
         environment: text(formData, `claim-${claim.id}-environment`, claim.environment),
         date: text(formData, `claim-${claim.id}-date`, claim.date),
         caveat: text(formData, `claim-${claim.id}-caveat`, claim.caveat),
+        denominator: text(formData, `claim-${claim.id}-denominator`, claim.denominator),
+        source: text(formData, `claim-${claim.id}-source`, claim.source),
         heroEligible: on(formData, `claim-${claim.id}-hero`),
         archived: on(formData, `claim-${claim.id}-archived`),
       }))
@@ -60,6 +62,8 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
         constraint: text(formData, `project-${project.slug}-constraint`, project.constraint),
         limitation: text(formData, `project-${project.slug}-limitation`, project.limitation),
         example: text(formData, `project-${project.slug}-example`, project.example),
+        rejected: text(formData, `project-${project.slug}-rejected`, project.rejected),
+        retrospective: text(formData, `project-${project.slug}-retrospective`, project.retrospective),
         archived: on(formData, `project-${project.slug}-archived`),
       }))
     : current.projects;

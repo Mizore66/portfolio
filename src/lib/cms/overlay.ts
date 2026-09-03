@@ -22,7 +22,7 @@ export function overlayProject<T extends { slug: string }>(project: T, doc: Site
   if (!copy) return project;
   const patch: Record<string, string> = {};
   for (const key of COPY_KEYS) {
-    const value = copy[key].trim();
+    const value = String(copy[key] ?? "").trim();
     if (value) patch[key] = value;
   }
   return { ...project, ...patch };

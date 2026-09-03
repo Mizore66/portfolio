@@ -553,8 +553,8 @@
   box-sizing: border-box;
   padding: 4px 2px 0;
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 10px;
-  line-height: 1;
+  font-size: 12px;
+  line-height: 1.4;
   color: var(--faded);
   text-align: center;
 }
@@ -1054,13 +1054,13 @@
     align-self: flex-start;
     width: 100%;
     flex: 0 0 auto;
-    min-height: 220px;
-    padding: 8px 16px 6px;
+    min-height: 168px;
+    padding: 4px 12px 2px;
     border-bottom: 2px solid var(--ink);
     background-color: var(--paper);
   }
   [data-sticky-board] figcaption {
-    margin-top: 16px;
+    margin-top: 4px;
     font-size: 12px;
   }
   [data-testid="glass-engine"] {
@@ -1081,8 +1081,8 @@
     position: relative;
     top: auto;
     z-index: 20;
-    width: min(46vw, 400px);
-    flex: 0 0 min(46vw, 400px);
+    width: min(38vw, 360px);
+    flex: 0 0 min(38vw, 360px);
   }
   [data-testid="newspaper-column"] {
     display: none;
@@ -1366,19 +1366,31 @@
 
 .evidence-meta {
   margin: 8px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0;
   font-family: var(--type-label);
   font-size: 12px;
   letter-spacing: 0.04em;
   line-height: 1.4;
   color: var(--faded);
 }
+.evidence-meta > div {
+  display: contents;
+}
+.evidence-meta dd {
+  margin: 0;
+  display: inline;
+}
 .evidence-badge {
   display: inline-block;
   border: 1px solid var(--ink);
   padding: 2px 6px;
   font-family: var(--type-label);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.12em;
+  line-height: 1.4;
   text-transform: uppercase;
   color: var(--ink);
   background: var(--paper);
@@ -1500,11 +1512,18 @@
 .evidence-card > div {
   margin: 0;
 }
+.evidence-card > div:not(.evidence-table-wrap) {
+  display: grid;
+  grid-template-columns: minmax(7rem, 9rem) minmax(0, 1fr);
+  gap: var(--space-2);
+  align-items: baseline;
+}
 .evidence-card dt {
   margin: 0;
   font-family: var(--type-label);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.16em;
+  line-height: 1.4;
   text-transform: uppercase;
   color: var(--faded);
 }
@@ -1797,7 +1816,7 @@ h1, h2, h3 {
 .wayfind-index {
   display: none;
 }
-@media (min-width: 768px) and (max-width: 979px) {
+@media (min-width: 768px) {
   .wayfind-index[data-shown="true"] {
     position: fixed;
     right: max(12px, env(safe-area-inset-right, 0px));
@@ -2110,7 +2129,7 @@ h1, h2, h3 {
 @media (max-width: 699px) {
   html {
     /* Sticky board is a top bar here; don't wait on JS to keep headings clear. */
-    --sticky-stack: 232px;
+    --sticky-stack: 168px;
   }
 }
 
@@ -2184,12 +2203,17 @@ h1, h2, h3 {
   font-weight: 400;
 }
 .exhibit-section#rejected {
-  border-top: var(--rule-hairline) solid var(--ink);
-  padding-top: var(--space-6);
+  border-top: 2px solid var(--ink);
+  margin-top: var(--space-8);
+  padding-top: var(--space-8);
+}
+.rejected-split {
+  padding-top: var(--space-2);
 }
 .exhibit-section-prominent {
-  border-top: var(--rule-hairline) solid var(--ink);
-  padding-top: var(--space-6);
+  border-top: 2px solid var(--ink);
+  margin-top: var(--space-10);
+  padding-top: var(--space-8);
 }
 .project-card .evidence-meta {
   margin-bottom: var(--space-2);
@@ -2214,7 +2238,9 @@ h1, h2, h3 {
 .copy-link {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   min-height: 44px;
+  min-width: 44px;
   padding: 0 var(--space-2);
   border: 0;
   background: transparent;
@@ -2243,6 +2269,7 @@ h1, h2, h3 {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
+  min-width: 44px;
   padding: 0 6px;
   color: var(--book-blue);
   text-decoration: underline;
@@ -2323,7 +2350,7 @@ h1, h2, h3 {
 }
 .claim-note-mark {
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.08em;
 }
 @media (max-width: 979px) {
@@ -2350,7 +2377,7 @@ h1, h2, h3 {
 @media (min-width: 980px) {
   .home-desk {
     display: grid;
-    grid-template-columns: minmax(0, 55fr) minmax(0, 45fr);
+    grid-template-columns: minmax(0, 62fr) minmax(0, 38fr);
     grid-template-areas:
       "hero board"
       "work work";
@@ -2477,7 +2504,7 @@ h1, h2, h3 {
   max-width: 11vw;
   margin: 0;
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: rgba(246, 238, 220, 0.42);
@@ -2535,8 +2562,9 @@ h1, h2, h3 {
 .evidence-kind-label {
   margin: 0;
   font-family: var(--type-label);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.14em;
+  line-height: 1.4;
   text-transform: uppercase;
   color: var(--score-red);
 }
@@ -2657,3 +2685,75 @@ h1, h2, h3 {
     font-weight: 700;
   }
 }
+
+@media (max-width: 479px) {
+  .masthead-kicker {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .masthead-title {
+    font-size: clamp(2.1rem, 12vw, 3.2rem);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 900px) {
+  .hero-identity {
+    padding-top: 0.75rem;
+  }
+  .hero-proof {
+    padding-top: var(--space-3);
+    gap: var(--space-2);
+  }
+  .hero-proof-kicker {
+    margin-bottom: 2px;
+  }
+}
+
+.paper-toc-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  background: var(--paper);
+}
+
+@media (max-width: 639px) {
+  .patent-figure {
+    margin-inline: -1rem;
+    padding: 4px;
+  }
+}
+
+.claim-backlink {
+  display: inline-block;
+  min-height: 44px;
+  padding: 12px 0;
+  color: var(--book-blue);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.exhibit-breadcrumb {
+  margin: 0 0 var(--space-2);
+}
+.exhibit-breadcrumb ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.exhibit-breadcrumb a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+@media (max-width: 639px) {
+  .hero-proof,
+  .evidence-card {
+    border-left: 0;
+    box-shadow: none;
+  }
+}
+

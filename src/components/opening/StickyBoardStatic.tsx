@@ -66,7 +66,7 @@ export function StickyBoardStatic({ planeId = "play-board" }: { planeId?: string
         </div>
         <div className="flex min-w-0 flex-1 items-start">
           <div
-            className="flex w-4 shrink-0 flex-col-reverse items-end justify-around pr-1 font-mono text-[10px] leading-none text-faded"
+            className="flex w-4 shrink-0 flex-col-reverse items-end justify-around pr-1 font-mono text-[12px] leading-none text-faded"
             data-testid="board-ranks"
           >
             {Array.from({ length: 8 }, (_, i) => (
@@ -85,6 +85,7 @@ export function StickyBoardStatic({ planeId = "play-board" }: { planeId?: string
                   data-play-side={playSide}
                   className="newspaper-board relative h-full w-full"
                   id={planeId}
+                  tabIndex={planeId === "hero-board" ? undefined : 0}
                 >
                   <div className="grid h-full w-full grid-cols-8 grid-rows-8">{squares}</div>
                   {arrow ? <PvArrow ply={arrow} /> : null}

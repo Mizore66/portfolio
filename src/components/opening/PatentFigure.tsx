@@ -158,14 +158,13 @@ function OverlayFigLabel({
   );
 }
 
-function Overlay({ spec, caption }: { spec: ApparatusSpec; caption: string }) {
+function Overlay({ spec }: { spec: ApparatusSpec; caption: string }) {
   return (
     <svg
       viewBox="0 0 100 100"
       preserveAspectRatio="none"
       className="patent-overlay"
-      role="img"
-      aria-label={caption}
+      aria-hidden="true"
     >
       {spec.numerals.map((m) => (
         <OverlayCallout key={m.mark} {...m} />

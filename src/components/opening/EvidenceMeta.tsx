@@ -18,14 +18,23 @@ export function EvidenceMeta({
   const cleaned = noteWithoutKind(note, kind);
   if (!cleaned && !kind) return null;
   return (
-    <p className="evidence-meta">
+    <dl className="evidence-meta">
       {kind ? (
-        <span className="evidence-badge" data-testid="evidence-badge">
-          {EVIDENCE_TIER[kind]}
-        </span>
+        <div>
+          <dt className="sr-only">Kind</dt>
+          <dd>
+            <span className="evidence-badge" data-testid="evidence-badge">
+              {EVIDENCE_TIER[kind]}
+            </span>
+          </dd>
+        </div>
       ) : null}
-      {kind && cleaned ? <span className="evidence-meta-note"> · {cleaned}</span> : null}
-      {!kind && cleaned ? cleaned : null}
-    </p>
+      {cleaned ? (
+        <div>
+          <dt className="sr-only">Note</dt>
+          <dd className={kind ? "evidence-meta-note" : undefined}>{kind ? ` · ${cleaned}` : cleaned}</dd>
+        </div>
+      ) : null}
+    </dl>
   );
 }

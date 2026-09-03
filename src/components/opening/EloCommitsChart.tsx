@@ -22,8 +22,7 @@ export function EloCommitsChart() {
       <svg
         viewBox={`0 0 ${w} ${h}`}
         className="mt-2 w-full text-ink"
-        role="img"
-        aria-label={BROADSHEET.eloChartKicker}
+        aria-hidden="true"
       >
         <line x1={pad.l} y1={zeroY} x2={w - pad.r} y2={zeroY} stroke="#1a120c" strokeWidth="1" strokeDasharray="3 3" />
         <line x1={pad.l} y1={pad.t} x2={pad.l} y2={h - pad.b} stroke="#1a120c" strokeWidth="1.5" />

@@ -5,7 +5,7 @@ import { resumeData } from "@/lib/data";
 import { parseFiledDate } from "@/lib/filed";
 import { SITE_URL } from "@/lib/site";
 
-const LAB_FILED = parseFiledDate(LAB_ARTICLE.datePublished) ?? new Date("2026-08-29T00:00:00.000Z");
+const LAB_FILED = parseFiledDate(LAB_ARTICLE.dateModified ?? LAB_ARTICLE.datePublished) ?? new Date("2026-09-03T00:00:00.000Z");
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const published = await getPublishedDocument();

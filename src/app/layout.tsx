@@ -15,8 +15,10 @@ export const metadata: Metadata = {
   description: META_DESCRIPTION,
   keywords: [
     "Software Engineer",
-    "payment systems",
-    "laboratory telemetry",
+    "ML infrastructure",
+    "data-intensive systems",
+    "payments",
+    "laboratory operations",
     "retrieval",
     "Anas Qumhiyeh",
     "Opening Preparation",

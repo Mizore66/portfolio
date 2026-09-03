@@ -1,80 +1,170 @@
 import { cookies } from "next/headers";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
+import { cmsBackendKind, cmsStoreStatus } from "@/lib/cms/backend";
 import { postgresNeedsSsl, postgresUrl } from "@/lib/cms/env";
+import { CMS_UNWRITABLE, CmsStoreError } from "@/lib/cms/errors";
 import { hydrateDocument } from "@/lib/cms/hydrate";
 import { ledgerDocument } from "@/lib/cms/ledger";
 import { PREVIEW_COOKIE, SESSION_COOKIE, verifySession } from "@/lib/cms/session";
 import type { CmsStoreFile, SiteDocument } from "@/lib/cms/types";
 
 const FILE = join(process.cwd(), "data", "cms.json");
+const BLOB_PATH = "cms/store.json";
+const STORE_ID = "site";
+export const HISTORY_CAP = 40;
 
 function emptyStore(): CmsStoreFile {
   return { draft: null, published: null, revisions: [], audit: [] };
 }
 
+function asStore(raw: unknown): CmsStoreFile {
+  if (!raw || typeof raw !== "object") return emptyStore();
+  const row = raw as Partial<CmsStoreFile>;
+  return {
+    draft: row.draft ?? null,
+    published: row.published ?? null,
+    revisions: Array.isArray(row.revisions) ? row.revisions : [],
+    audit: Array.isArray(row.audit) ? row.audit : [],
+  };
+}
+
 async function readFileStore(): Promise<CmsStoreFile> {
   try {
     const raw = await readFile(FILE, "utf8");
-    return JSON.parse(raw) as CmsStoreFile;
+    return asStore(JSON.parse(raw));
   } catch {
     return emptyStore();
   }
 }
 
 async function writeFileStore(store: CmsStoreFile) {
-  await mkdir(dirname(FILE), { recursive: true });
-  await writeFile(FILE, JSON.stringify(store, null, 2));
+  try {
+    await mkdir(dirname(FILE), { recursive: true });
+    await writeFile(FILE, JSON.stringify(store, null, 2));
+  } catch (error) {
+    const code = error && typeof error === "object" && "code" in error ? String(error.code) : "";
+    if (code === "EROFS" || code === "EACCES" || code === "EPERM" || code === "ENOENT") {
+      throw new CmsStoreError(CMS_UNWRITABLE);
+    }
+    throw error;
+  }
 }
 
-async function readPostgresPublished(): Promise<SiteDocument | null> {
-  const url = postgresUrl();
-  if (!url) return null;
+async function readStreamText(stream: ReadableStream<Uint8Array>): Promise<string> {
+  return new Response(stream).text();
+}
+
+async function readBlobStore(): Promise<CmsStoreFile | null> {
   try {
-    const postgres = (await import("postgres")).default;
-    const sql = postgres(url, { max: 1, ssl: postgresNeedsSsl(url) ? "require" : false });
-    try {
-      const rows = await sql<SiteDocument[]>`
-        select document from cms_revisions
-        where status = 'published'
-        order by published_at desc
-        limit 1
-      `;
-      const row = rows[0] as unknown as { document?: SiteDocument } | SiteDocument | undefined;
-      if (!row) return null;
-      if ("document" in row && row.document) return row.document;
-      return row as SiteDocument;
-    } finally {
-      await sql.end({ timeout: 2 });
-    }
+    const { get } = await import("@vercel/blob");
+    const result = await get(BLOB_PATH, { access: "private", useCache: false });
+    if (!result || result.statusCode !== 200 || !result.stream) return null;
+    return asStore(JSON.parse(await readStreamText(result.stream)));
   } catch {
     return null;
   }
 }
 
-async function writePostgres(doc: SiteDocument, action: string) {
+async function writeBlobStore(store: CmsStoreFile) {
+  const { put } = await import("@vercel/blob");
+  await put(BLOB_PATH, JSON.stringify(store), {
+    access: "private",
+    addRandomSuffix: false,
+    allowOverwrite: true,
+    contentType: "application/json",
+    cacheControlMaxAge: 60,
+  });
+}
+
+type Sql = Awaited<ReturnType<typeof openSql>>;
+
+async function openSql() {
   const url = postgresUrl();
-  if (!url) return false;
+  if (!url) return null;
   const postgres = (await import("postgres")).default;
-  const sql = postgres(url, { max: 1, ssl: postgresNeedsSsl(url) ? "require" : false });
+  return postgres(url, { max: 1, ssl: postgresNeedsSsl(url) ? "require" : false });
+}
+
+async function ensurePostgresTables(sql: NonNullable<Sql>) {
+  await sql`
+    create table if not exists cms_store (
+      id text primary key,
+      payload jsonb not null,
+      updated_at timestamptz not null default now()
+    )
+  `;
+  await sql`
+    create table if not exists cms_revisions (
+      id text primary key,
+      status text not null,
+      document jsonb not null,
+      note text,
+      created_at timestamptz not null default now(),
+      published_at timestamptz
+    )
+  `;
+  await sql`
+    create table if not exists cms_audit (
+      id text primary key,
+      action text not null,
+      at timestamptz not null default now(),
+      note text
+    )
+  `;
+}
+
+async function readPostgresStore(): Promise<CmsStoreFile | null> {
+  const sql = await openSql();
+  if (!sql) return null;
   try {
-    await sql`
-      create table if not exists cms_revisions (
-        id text primary key,
-        status text not null,
-        document jsonb not null,
-        note text,
-        created_at timestamptz not null default now(),
-        published_at timestamptz
-      )
+    await ensurePostgresTables(sql);
+    const rows = await sql<{ payload: CmsStoreFile }[]>`
+      select payload from cms_store where id = ${STORE_ID} limit 1
     `;
+    if (rows[0]?.payload) return asStore(rows[0].payload);
+    const published = await sql<{ document: SiteDocument }[]>`
+      select document from cms_revisions
+      where status = 'published'
+      order by published_at desc
+      limit 1
+    `;
+    const draft = await sql<{ document: SiteDocument }[]>`
+      select document from cms_revisions
+      where status = 'draft'
+      order by created_at desc
+      limit 1
+    `;
+    const history = await sql<{ document: SiteDocument }[]>`
+      select document from cms_revisions
+      order by created_at desc
+      limit ${HISTORY_CAP}
+    `;
+    if (!published[0] && !draft[0]) return null;
+    return {
+      published: published[0]?.document ?? null,
+      draft: draft[0]?.document ?? null,
+      revisions: history.map((row) => row.document),
+      audit: [],
+    };
+  } catch {
+    return null;
+  } finally {
+    await sql.end({ timeout: 2 });
+  }
+}
+
+async function writePostgresStore(store: CmsStoreFile, doc: SiteDocument, action: string) {
+  const sql = await openSql();
+  if (!sql) throw new CmsStoreError("Postgres URL is set but a connection could not be opened.");
+  try {
+    await ensurePostgresTables(sql);
     await sql`
-      create table if not exists cms_audit (
-        id text primary key,
-        action text not null,
-        at timestamptz not null default now(),
-        note text
-      )
+      insert into cms_store (id, payload, updated_at)
+      values (${STORE_ID}, ${sql.json(store as never)}, now())
+      on conflict (id) do update set
+        payload = excluded.payload,
+        updated_at = now()
     `;
     await sql`
       insert into cms_revisions (id, status, document, note, published_at)
@@ -94,17 +184,40 @@ async function writePostgres(doc: SiteDocument, action: string) {
     await sql`
       insert into cms_audit (id, action, note)
       values (${`${action}-${doc.revisionId}`}, ${action}, ${doc.note})
+      on conflict (id) do nothing
     `;
-    return true;
   } finally {
     await sql.end({ timeout: 2 });
   }
 }
 
+async function readStore(): Promise<CmsStoreFile> {
+  const kind = cmsBackendKind();
+  if (kind === "postgres") {
+    return (await readPostgresStore()) ?? emptyStore();
+  }
+  if (kind === "blob") {
+    return (await readBlobStore()) ?? emptyStore();
+  }
+  return readFileStore();
+}
+
+async function writeStore(store: CmsStoreFile, doc: SiteDocument, action: string) {
+  const status = cmsStoreStatus();
+  if (!status.writable) throw new CmsStoreError(CMS_UNWRITABLE);
+  if (status.backend === "postgres") {
+    await writePostgresStore(store, doc, action);
+    return;
+  }
+  if (status.backend === "blob") {
+    await writeBlobStore(store);
+    return;
+  }
+  await writeFileStore(store);
+}
+
 export async function getPublishedDocument(): Promise<SiteDocument> {
-  const fromDb = await readPostgresPublished();
-  if (fromDb) return hydrateDocument(fromDb);
-  const store = await readFileStore();
+  const store = await readStore();
   return hydrateDocument(store.published ?? ledgerDocument());
 }
 
@@ -117,14 +230,14 @@ export async function getRenderableDocument(): Promise<SiteDocument> {
 }
 
 export async function getRevision(id: string): Promise<SiteDocument | null> {
-  const store = await readFileStore();
+  const store = await readStore();
   const found = store.revisions.find((row) => row.revisionId === id) ?? null;
   return found ? hydrateDocument(found) : null;
 }
 
 export async function restoreRevision(id: string): Promise<SiteDocument> {
   const found = await getRevision(id);
-  if (!found) throw new Error("Revision not found.");
+  if (!found) throw new CmsStoreError("Revision not found.");
   return saveDraft({
     ...found,
     note: `Restored ${id}`,
@@ -132,23 +245,40 @@ export async function restoreRevision(id: string): Promise<SiteDocument> {
 }
 
 export async function getDraftDocument(): Promise<SiteDocument> {
-  const store = await readFileStore();
+  const store = await readStore();
   if (store.draft) return hydrateDocument(store.draft);
   return getPublishedDocument();
 }
 
-export const HISTORY_CAP = 40;
-
-export async function getCmsState(): Promise<CmsStoreFile & { ledger: SiteDocument; backend: string }> {
-  const store = await readFileStore();
-  const publishedRaw = store.published ?? (await readPostgresPublished());
+export async function getCmsState(): Promise<
+  CmsStoreFile & {
+    ledger: SiteDocument;
+    backend: string;
+    writable: boolean;
+    durable: boolean;
+  }
+> {
+  const store = await readStore();
+  const status = cmsStoreStatus();
   return {
     ...store,
-    published: publishedRaw ? hydrateDocument(publishedRaw) : null,
+    published: store.published ? hydrateDocument(store.published) : null,
     draft: store.draft ? hydrateDocument(store.draft) : null,
     revisions: store.revisions.map((row) => hydrateDocument(row)),
     ledger: ledgerDocument(),
-    backend: postgresUrl() ? "postgres" : "file",
+    backend: status.backend,
+    writable: status.writable,
+    durable: status.durable,
+  };
+}
+
+function remember(store: CmsStoreFile, next: SiteDocument, action: string, at: string): CmsStoreFile {
+  return {
+    ...store,
+    draft: next,
+    published: action === "publish" ? next : store.published,
+    revisions: [next, ...store.revisions.filter((row) => row.revisionId !== next.revisionId)].slice(0, HISTORY_CAP),
+    audit: [{ at, action, note: next.note }, ...store.audit].slice(0, HISTORY_CAP),
   };
 }
 
@@ -158,12 +288,8 @@ export async function saveDraft(doc: SiteDocument): Promise<SiteDocument> {
     revisionId: `draft-${Date.now()}`,
     status: "draft",
   };
-  const store = await readFileStore();
-  store.draft = next;
-  store.revisions = [next, ...store.revisions].slice(0, HISTORY_CAP);
-  store.audit.unshift({ at: new Date().toISOString(), action: "draft", note: next.note });
-  await writeFileStore(store);
-  await writePostgres(next, "draft").catch(() => false);
+  const store = remember(await readStore(), next, "draft", new Date().toISOString());
+  await writeStore(store, next, "draft");
   return next;
 }
 
@@ -174,16 +300,39 @@ export async function publishDocument(doc: SiteDocument): Promise<SiteDocument> 
     status: "published",
     publishedAt: new Date().toISOString(),
   };
-  const store = await readFileStore();
-  store.published = next;
-  store.draft = next;
-  store.revisions = [next, ...store.revisions].slice(0, HISTORY_CAP);
-  store.audit.unshift({ at: next.publishedAt, action: "publish", note: next.note });
-  const url = postgresUrl();
-  if (url) {
-    const ok = await writePostgres(next, "publish");
-    if (!ok) throw new Error("Publish did not land in Postgres.");
-  }
-  await writeFileStore(store);
+  const store = remember(await readStore(), next, "publish", next.publishedAt);
+  await writeStore(store, next, "publish");
   return next;
+}
+
+export async function listMediaBlobs(): Promise<{ pathname: string; url: string; uploadedAt: string }[]> {
+  if (!cmsStoreStatus().durable && cmsBackendKind() !== "blob") {
+    if (!process.env.BLOB_READ_WRITE_TOKEN) return [];
+  }
+  if (!process.env.BLOB_READ_WRITE_TOKEN) return [];
+  try {
+    const { list } = await import("@vercel/blob");
+    const result = await list({ prefix: "cms/media/", limit: 40 });
+    return result.blobs.map((blob) => ({
+      pathname: blob.pathname,
+      url: blob.url,
+      uploadedAt: blob.uploadedAt.toISOString(),
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export async function uploadMediaBlob(file: File): Promise<{ pathname: string; url: string }> {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    throw new CmsStoreError("Set BLOB_READ_WRITE_TOKEN before uploading media.");
+  }
+  const safe = file.name.replace(/[^\w.\-]+/g, "-").slice(0, 80) || "upload";
+  const { put } = await import("@vercel/blob");
+  const stored = await put(`cms/media/${Date.now()}-${safe}`, file, {
+    access: "public",
+    addRandomSuffix: false,
+    contentType: file.type || "application/octet-stream",
+  });
+  return { pathname: stored.pathname, url: stored.url };
 }

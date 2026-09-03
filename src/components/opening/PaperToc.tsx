@@ -14,7 +14,7 @@ export function PaperToc({
   const chapters = issueChapters();
 
   return (
-    <nav className="paper-toc min-[980px]:hidden" data-testid="paper-toc" aria-label={BROADSHEET.issueKicker}>
+    <nav className="paper-toc paper-toc-sticky min-[980px]:hidden" data-testid="paper-toc" aria-label={BROADSHEET.issueKicker}>
       <details>
         <summary>Contents</summary>
         <ol>
@@ -25,7 +25,7 @@ export function PaperToc({
                 <button
                   type="button"
                   data-node-id={node.id}
-                  aria-current={current ? "true" : undefined}
+                  aria-current={current ? "location" : undefined}
                   onClick={() => onSelect(node.id)}
                   className={cn(
                     "issue-row move-tint flex w-full items-center justify-between gap-2 border-l-2 pl-2 text-left font-mono text-[12px]",

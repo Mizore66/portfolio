@@ -132,7 +132,7 @@ export function HeroEngine({ staticBoard }: { staticBoard: ReactNode }) {
           aria-pressed={playing}
           onClick={() => setPlaying((value) => !value)}
         >
-          {playing ? BROADSHEET.pauseGame : BROADSHEET.playInvite}
+          {playing ? BROADSHEET.pauseGame : BROADSHEET.playMainline}
         </button>
       </p>
       <p className="hero-engine-chip mt-3" data-testid="hero-engine-chip">

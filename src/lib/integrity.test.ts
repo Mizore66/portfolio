@@ -6,7 +6,9 @@ import { BROADSHEET, OPENING_NODES } from "@/content/opening";
 import { resumeData } from "@/lib/data";
 import {
   COLOPHON_HREF,
+  METRICS,
   PAPER_HREF,
+  POSITIONING,
   RETRIEVAL_SPLIT,
   projectEvidence,
   projectRole,
@@ -83,7 +85,7 @@ describe("document integrity", () => {
     );
     const circuit = resumeData.projects.find((p) => p.slug === "circuitmindai")!;
     expect(circuit.impact).not.toMatch(/real-time/i);
-    expect(circuit.impact).toMatch(/PCB fault detection/);
+    expect(circuit.impact).toMatch(/Detector capability implemented/);
   });
 
   it("keeps the homepage meta description handwritten", () => {
@@ -135,5 +137,13 @@ describe("document integrity", () => {
     const src = readFileSync(join(process.cwd(), "src/components/opening/ContactBand.tsx"), "utf8");
     expect(src).toMatch(/contactHed/);
     expect(src).not.toMatch(/POSITIONING\.availability/);
+  });
+
+  it("files denominators as unfiled rather than inventing sample sizes", () => {
+    expect(METRICS.monashRetrieval.denominator).toMatch(/Unfiled/);
+    expect(METRICS.setelDefects.denominator).toMatch(/not filed/);
+    expect(METRICS.wdOversight.denominator).toMatch(/not filed/);
+    expect(METRICS.leadThroughput.denominator).toMatch(/not filed/);
+    expect(POSITIONING.ownershipBridge).toMatch(/Production at Setel/);
   });
 });

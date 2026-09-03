@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { originMatchesHost } from "@/lib/cms/origin";
 import { postgresNeedsSsl, postgresUrl, postgresUrlSource } from "@/lib/cms/env";
 import { clientIpFrom, nextAttempt, rateLimitKey } from "@/lib/cms/auth-store";
@@ -15,9 +17,9 @@ describe("cms ledger", () => {
   it("seeds claims from the TypeScript registry", () => {
     const doc = ledgerDocument();
     expect(doc.status).toBe("published");
-    expect(doc.profile.dek).toMatch(/payment, laboratory, and retrieval/);
+    expect(doc.profile.dek).toMatch(/ML infrastructure and data-intensive systems/);
     expect(doc.claims.some((claim) => claim.id === "gateC" && claim.heroEligible)).toBe(true);
-    expect(doc.publishedAt.startsWith("2026-09-01")).toBe(true);
+    expect(doc.publishedAt.startsWith("2026-09-03")).toBe(true);
   });
 
   it("refuses hero eligibility without method and environment", () => {
@@ -60,9 +62,14 @@ describe("cms ledger", () => {
     expect(validateDocument(missing).join(" ")).toMatch(/setelDefects/);
     const ghost = {
       ...doc,
-      projects: [{ slug: "not-a-project", purpose: "", impact: "", why: "", judgment: "", constraint: "", limitation: "", example: "", archived: false }],
+      projects: [{ slug: "not-a-project", purpose: "", impact: "", why: "", judgment: "", constraint: "", limitation: "", example: "", rejected: "", retrospective: "", archived: false }],
     };
     expect(validateDocument(ghost).join(" ")).toMatch(/Unknown project slug/);
+    const dated = {
+      ...doc,
+      claims: doc.claims.map((claim) => (claim.id === "gateC" ? { ...claim, date: "3 Sept" } : claim)),
+    };
+    expect(validateDocument(dated).join(" ")).toMatch(/YYYY/);
     const archivedRequired = {
       ...doc,
       claims: doc.claims.map((claim) => (claim.id === "setelDefects" ? { ...claim, archived: true } : claim)),
@@ -147,6 +154,26 @@ describe("cms postgres env", () => {
     const env = { DATABASE_URL: "https://abcd.supabase.co", SUPABASE_URL: "https://abcd.supabase.co" };
     expect(postgresUrlSource(env)).toBeNull();
     expect(postgresUrl(env)).toBeUndefined();
+  });
+});
+
+describe("cms backend selection", () => {
+  it("prefers postgres, then blob, and treats Vercel file fallback as read-only", async () => {
+    const { cmsBackendKind, cmsStoreStatus } = await import("@/lib/cms/backend");
+    expect(cmsBackendKind({ POSTGRES_URL: "postgres://x" })).toBe("postgres");
+    expect(cmsBackendKind({ BLOB_READ_WRITE_TOKEN: "blob_x" })).toBe("blob");
+    expect(cmsBackendKind({})).toBe("file");
+    expect(cmsStoreStatus({ VERCEL: "1" }).writable).toBe(false);
+    expect(cmsStoreStatus({ VERCEL: "1", BLOB_READ_WRITE_TOKEN: "blob_x" }).writable).toBe(true);
+    expect(cmsStoreStatus({}).writable).toBe(true);
+  });
+});
+
+describe("cms health probe", () => {
+  it("fails promotion when Vercel has fallen back to a non-writable file store", async () => {
+    const src = readFileSync(join(process.cwd(), "src/app/api/cms-health/route.ts"), "utf8");
+    expect(src).toMatch(/status: ok \? 200 : 503/);
+    expect(src).toMatch(/cmsStoreStatus/);
   });
 });
 

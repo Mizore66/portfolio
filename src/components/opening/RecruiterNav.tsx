@@ -1,32 +1,71 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { BROADSHEET } from "@/content/opening";
 
 const PRIMARY = [
-  { href: "/", label: "Home" },
-  { href: "/#work", label: "Work" },
-  { href: "/#experience", label: "Experience" },
-  { href: "/#contact", label: "Contact" },
+  { href: "/", label: "Home", match: "home" },
+  { href: "/#work", label: "Work", match: "work" },
+  { href: "/#experience", label: "Experience", match: "experience" },
+  { href: "/#contact", label: "Contact", match: "contact" },
 ] as const;
 
 const MORE = [
-  { href: "/#lab", label: "Experiments" },
-  { href: "/#about", label: "About" },
+  { href: "/#lab", label: "Experiments", match: "lab" },
+  { href: "/#about", label: "About", match: "about" },
 ] as const;
 
 const ALL = [...PRIMARY.slice(0, 3), ...MORE, PRIMARY[3]] as const;
 
+function currentFor(pathname: string, hash: string, match: string): "page" | "location" | undefined {
+  if (pathname.startsWith("/projects/") || pathname.startsWith("/lab/")) {
+    return match === "work" ? "location" : undefined;
+  }
+  if (pathname === "/opening-preparation") return undefined;
+  if (pathname !== "/") return undefined;
+  const section = hash.replace(/^#/, "");
+  if (match === "home" && !section) return "page";
+  if (section && match === section) return "location";
+  return undefined;
+}
+
 export function RecruiterNav({ stamp = "resume" }: { stamp?: "resume" | "c50" }) {
+  const pathname = usePathname() ?? "/";
   const [compact, setCompact] = useState(false);
+  const [hash, setHash] = useState("");
+  const [moreOpen, setMoreOpen] = useState(false);
 
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 359px)");
+    const mq = window.matchMedia("(max-width: 479px)");
     const apply = () => setCompact(mq.matches);
     apply();
     mq.addEventListener("change", apply);
     return () => mq.removeEventListener("change", apply);
   }, []);
+
+  useEffect(() => {
+    const apply = () => setHash(window.location.hash);
+    apply();
+    window.addEventListener("hashchange", apply);
+    return () => window.removeEventListener("hashchange", apply);
+  }, []);
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setMoreOpen(false);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  function linkProps(href: string, match: string) {
+    const current = currentFor(pathname, hash, match);
+    return {
+      href,
+      "aria-current": current,
+    } as const;
+  }
 
   return (
     <nav data-testid="recruiter-nav" aria-label="Primary" className="recruiter-nav">
@@ -34,32 +73,46 @@ export function RecruiterNav({ stamp = "resume" }: { stamp?: "resume" | "c50" })
         {compact
           ? PRIMARY.map((link) => (
               <li key={link.href}>
-                <a href={link.href} className="recruiter-nav-link">
+                <a {...linkProps(link.href, link.match)} className="recruiter-nav-link">
                   {link.label}
                 </a>
               </li>
             ))
           : ALL.map((link) => (
               <li key={link.href}>
-                <a href={link.href} className="recruiter-nav-link">
+                <a {...linkProps(link.href, link.match)} className="recruiter-nav-link">
                   {link.label}
                 </a>
               </li>
             ))}
         {compact ? (
           <li className="nav-more">
-            <details>
-              <summary className="recruiter-nav-link">More</summary>
-              <ul>
-                {MORE.map((link) => (
-                  <li key={link.href}>
-                    <a href={link.href} className="recruiter-nav-link">
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </details>
+            <div>
+              <button
+                type="button"
+                className="recruiter-nav-link"
+                aria-expanded={moreOpen}
+                aria-controls="nav-more-menu"
+                onClick={() => setMoreOpen((open) => !open)}
+              >
+                More
+              </button>
+              {moreOpen ? (
+                <ul id="nav-more-menu">
+                  {MORE.map((link) => (
+                    <li key={link.href}>
+                      <a
+                        {...linkProps(link.href, link.match)}
+                        className="recruiter-nav-link"
+                        onClick={() => setMoreOpen(false)}
+                      >
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
           </li>
         ) : null}
       </ul>
@@ -68,6 +121,7 @@ export function RecruiterNav({ stamp = "resume" }: { stamp?: "resume" | "c50" })
           href={BROADSHEET.paperHref}
           className="recruiter-nav-stamp"
           aria-label="Opening Preparation — C50"
+          aria-current={pathname === BROADSHEET.paperHref ? "page" : undefined}
         >
           C50
         </a>

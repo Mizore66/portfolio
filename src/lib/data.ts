@@ -40,7 +40,7 @@ export const resumeData = {
   },
   experience: [
     {
-      title: "Full-stack AI Engineer",
+      title: "Contract Full-stack AI Engineer",
       type: "Research contract · Faculty of IT",
       company: "Monash University",
       period: "Nov 2025 – Feb 2026",
@@ -64,7 +64,7 @@ export const resumeData = {
       bullets: [
         `${METRICS.wdOversight.display} — ${METRICS.wdOversight.oversight} for 50+ staff.`,
         "CRUD and analytics behind those roles.",
-        `WebSocket to the lab's deep-learning model; ${METRICS.wdOversight.latency}.`,
+        `WebSocket carried station-status and model-inference updates so operators could read the board instead of walking stations; ${METRICS.wdOversight.latency}.`,
       ],
       impact: METRICS.wdOversight.display,
     },
@@ -143,7 +143,7 @@ export const resumeData = {
       name: "CircuitMindAI",
       slug: "circuitmindai",
       subtitle: "PCB Inspection",
-      purpose: "Detects PCB faults from images and returns voice-guided inspection steps, with cached results for network loss.",
+      purpose: "Detector capability implemented; precision/recall not yet filed. Images in, voice-guided inspection steps out, with cached results for network loss.",
       date: "Mar 2026",
       tech: ["Next.js", "AWS Bedrock", "Express", "Amazon OSS", "GitHub Actions"],
       bullets: [
@@ -152,7 +152,7 @@ export const resumeData = {
         "A local cache holds the inspection when the network drops.",
         "A REST API for the line, not a slogan about performance.",
       ],
-      impact: "PCB fault detection",
+      impact: "Detector capability implemented",
       why: "An operator inspecting a board needs to see the copper fault and hear inspection guidance, including when the network drops. A detector that fails with connectivity loss is not dependable enough for the inspection floor.",
       inspectNote: "Express API (backend-js/) and Next.js UI (frontend/).",
       example: "Input: a board image and operator audio. Output: a fault overlay on the copper, with inspection guidance still audible when the network drops.",
@@ -164,7 +164,7 @@ export const resumeData = {
         "CircuitMindAI inspects circuit boards: Nova Pro reads the copper, Nova Sonic talks the operator through the fault. Next.js and Express sit on ECS Fargate; GitHub Actions stamps the image.",
       judgment: "Vision on the copper and voice for the operator: Nova Pro reads the board image, Nova Sonic speaks the inspection steps, and results are cached locally so the floor can keep working when the network drops.",
       constraint: "The inspection has to survive a dropped network. There is no live host after the exhibit.",
-      limitation: "No live host. The argument is this exhibit and the public repository. Detection quality (precision, latency, confusion) was not filed.",
+      limitation: "No live host. Detection quality (precision, latency, confusion) was not filed. Detector capability implemented; precision/recall not yet filed.",
       rejected:
         "I considered a server-only detector. A detector that fails with connectivity loss is not dependable enough for the inspection floor, so results are cached locally.",
       retrospective:
@@ -213,6 +213,8 @@ export const resumeData = {
       judgment: "One schematic that draws, shares, and fires — so the hand-off is the same object the operator sees.",
       constraint: "A Megahack weekend: one schematic had to ship, without a live host after the prize.",
       limitation: "No live host. Source is the public Megahack repository.",
+      rejected:
+        "I considered wiring each protocol desk (Drift, Jupiter, Meteora) as its own UI. A weekend prize cannot keep three hand-offs in sync, so one schematic draws, shares, and fires.",
       retrospective:
         "I would keep a live host after the prize weekend, or state more clearly that the public repository is the remaining artifact.",
       example: "Input: a vault line on the schematic. Output: the same object shared and fired at Drift, Jupiter, or Meteora.",
@@ -291,9 +293,12 @@ export const resumeData = {
       evidenceKind: METRICS.riskAuc.kind,
       why: "Daily credit scores that a desk has to interpret, serve, and retrain — not a notebook that dies after the plot.",
       judgment: "LightGBM and XGBoost with SHAP, served through BentoML, with Kafka carrying the stream so the model can be retrained without taking the API down.",
-      limitation: "The 15% lift names an unnamed baseline. A −30% inference latency on the BentoML hatch was also noted; hardware and percentile were not filed.",
+      constraint: "The morning tape had to retrain the score without taking the serving API down.",
+      limitation: "Dataset size, split, leakage controls, and positive-class prevalence were not filed beside 0.87 AUC-ROC. An unnamed 15% lift was withdrawn.",
+      rejected:
+        "I considered a single offline notebook as the delivery. A score the desk cannot retrain or explain is not a desk tool, so Kafka, SHAP, and BentoML stay on the path.",
       retrospective:
-        "I would recover or drop the unnamed 15% baseline rather than leaving a comparison that cannot be interpreted.",
+        "I would file dataset size, split, leakage controls, and prevalence — and keep the unnamed 15% baseline unpublished.",
       example: "Input: the morning tape on Kafka. Output: a score with SHAP drivers, served through BentoML.",
       github: "",
       plate: "/plates/plate-risk.jpg",
@@ -331,23 +336,25 @@ export const resumeData = {
       evidenceKind: METRICS.leadThroughput.kind,
       why: "A conversion score that takes hours is a score the desk cannot use on today's tape.",
       judgment: "PySpark for the feature path; a Deep Interest Network on PyTorch DDP for the score; checkpoints so a dead job resumes from the last written slice.",
-      constraint: "A failed hour had to resume from the last good slice. The 100 million events per day figure is pipeline capacity, not sustained traffic.",
+      constraint: "A failed hour had to resume from the last completed slice. The 100 million events per day figure is pipeline capacity, not sustained traffic.",
       limitation: "Capacity benchmark. Cluster size, input distribution, and runtime were not filed.",
+      rejected:
+        "I considered restarting a dead job from the beginning of the hour. A hundred-million-event tape cannot afford that, so checkpoints resume from the last completed slice.",
       retrospective:
         "I would file cluster size, input distribution, and a failure-injection record for the capacity benchmark.",
-      example: "Input: an event stream sized at 100 million events per day. Output: conversion scores, with a failed hour resumed from the last written slice.",
+      example: "Input: an event stream sized at 100 million events per day. Output: conversion scores, with a failed hour resumed from the last completed slice.",
       github: "",
       plate: "/plates/plate-leads.jpg",
       plateCaption: "Distributed Lead Scorer — the sorting hall, halftone plate, illustrative.",
       plateAlt: "Halftone photograph: a mail-sorting hall, pigeonholes stretching into the distance.",
       description:
-        "PySpark sorts 100M events/day into features; a Deep Interest Network on PyTorch DDP scores conversion; checkpoints resume a failed hour from the last written slice.",
-      meta: "PySpark sorts 100M events a day. A Deep Interest Network on PyTorch DDP scores conversion. Checkpoints resume a failed hour from the last written slice.",
+        "PySpark is capacity-benchmarked at 100M events/day into features; a Deep Interest Network on PyTorch DDP scores conversion; checkpoints resume a failed hour from the last completed slice.",
+      meta: "Capacity-benchmarked at 100M events/day. A Deep Interest Network on PyTorch DDP scores conversion. Checkpoints resume from the last completed slice.",
       patent: LEADS_HALL satisfies ApparatusSpec,
       apparatus: {
         name: "Distributed Lead Scorer",
         path: [
-          { name: "PySpark", role: "100M+ events / day" },
+          { name: "PySpark", role: "capacity-benchmarked 100M events/day" },
           { name: "PyTorch DDP", role: "Deep Interest Network" },
         ],
       } satisfies Apparatus,
@@ -366,8 +373,12 @@ export const resumeData = {
       ],
       impact: METRICS.slmInference.impact,
       why: "I used QLoRA to distil traces from a 70B teacher into a deployable 3B student.",
+      judgment:
+        "Keep the same job on a 3B student via QLoRA, DeepSpeed, and FlashAttention. Speed-up claims stay unpublished until tokens/second, hardware, and batch size are filed.",
       constraint: "The goal was to preserve task behavior in a 3B student while reducing serving cost and latency. Quality parity was not supported by a named filed evaluation.",
-      limitation: "12× inference is a controlled evaluation on the 70B to 3B path, not a production serving number. −40% memory and 98% pass were also noted; hardware, batch size, and the named evaluation were not filed.",
+      limitation: "70B → 3B is the filed path. A 12× inference figure is not claimed as measured request latency. −40% memory and 98% pass were also noted; hardware, batch size, and the named evaluation were not filed. −50% latency belongs to the Monash GraphRAG SLM.",
+      rejected:
+        "I considered serving the 70B teacher. That cost does not survive a desk that has to keep the same job on cheaper hardware, so the student is the exhibit — without a speed claim that was not measured.",
       retrospective:
         "I would file tokens/second, hardware, batch size, and a named evaluation for quality parity.",
       example: "Input: traces from a 70B teacher. Output: a 3B student on the same job. Tokens/second were not filed.",
@@ -379,7 +390,7 @@ export const resumeData = {
       plateAlt: "Halftone photograph: two machines side by side, the smaller one cabled to the larger.",
       description:
         "A 70B teacher writes the traces; QLoRA, DeepSpeed and FlashAttention compress them into a 3B student that keeps the same job.",
-      meta: "A 70B teacher writes the traces; QLoRA, DeepSpeed and FlashAttention compress them into a 3B student. 12× inference.",
+      meta: "A 70B teacher writes the traces; QLoRA, DeepSpeed and FlashAttention compress them into a 3B student. Speed-up unfiled.",
       patent: VERIDIAN_STILL satisfies ApparatusSpec,
       apparatus: {
         name: "SLM Distillation Engine",
@@ -387,7 +398,7 @@ export const resumeData = {
         path: [
           { name: "70B teacher", role: "source" },
           { name: "QLoRA", role: "distill" },
-          { name: "3B SLM", role: "12× inference" },
+          { name: "3B SLM", role: "student" },
         ],
         beside: [{ name: "FlashAttention", role: "memory" }],
       } satisfies Apparatus,

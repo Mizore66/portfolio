@@ -1,6 +1,6 @@
 # Anas Tarek Qumhiyeh
 
-Software engineer building payment, laboratory, and retrieval systems.
+Software engineer building ML infrastructure and data-intensive systems for payments, laboratory operations, and retrieval.
 
 I like systems that have to survive measurement.
 

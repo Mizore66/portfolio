@@ -10,14 +10,14 @@ export default async function ProfileEditor() {
     <AdminFrame title="Profile">
       <AdminDirtyForm>
         <input type="hidden" name="profile-present" value="1" />
-        <label>
-          Role line
-          <input name="dek" defaultValue={p.dek} />
-        </label>
-        <label>
-          Tagline
-          <input name="tagline" defaultValue={p.tagline} />
-        </label>
+                <label>
+                  Role line
+                  <input name="dek" defaultValue={p.dek} required maxLength={240} />
+                </label>
+                <label>
+                  Tagline
+                  <input name="tagline" defaultValue={p.tagline} required maxLength={160} />
+                </label>
         <label>
           Desks
           <textarea name="desksLine" defaultValue={p.desksLine} />

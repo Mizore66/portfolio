@@ -23,7 +23,7 @@ Errata on the paper currently reads: none reported.
 | −40% manual oversight | Western Digital | evaluation | `METRICS.wdOversight` |
 | 99.9% uptime / −15% emissions | Veridian | evaluation | `METRICS.veridianUptime` / `veridianEmissions` — Cloud Run evaluations; period and sample not filed; demoted from the exhibit Result |
 | 100M events/day | Lead Scorer | pipeline | `METRICS.leadThroughput` — not production volume |
-| 12× inference | SLM Distillation | evaluation | `METRICS.slmInference` |
+| 70B → 3B student | SLM Distillation | evaluation | `METRICS.slmInference` |
 | 0.87 AUC-ROC | Financial Risk Predictor | evaluation | `METRICS.riskAuc` |
 | −143 Elo @ 50k | Gate C | benchmark | `PHASE2_MATCH` / `METRICS.gateC` |
 
