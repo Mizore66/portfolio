@@ -50,23 +50,23 @@ export async function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }
       </h2>
       <WorkFilterStatus path={path} count={featured.length + archive.length} />
       <p className="path-filter mt-4" data-testid="path-filter">
-        <a href="/#work" className={cn("path-chip", path === "all" && "path-chip-current")} aria-current={path === "all" ? "page" : undefined}>
+        <Link href="/#work" className={cn("path-chip", path === "all" && "path-chip-current")} aria-current={path === "all" ? "page" : undefined}>
           All
-        </a>
-        <a
+        </Link>
+        <Link
           href="/?path=ml#work"
           className={cn("path-chip", path === "ML / data systems" && "path-chip-current")}
           aria-current={path === "ML / data systems" ? "page" : undefined}
         >
           ML / data systems ({mlCount})
-        </a>
-        <a
+        </Link>
+        <Link
           href="/?path=product#work"
           className={cn("path-chip", path === "Product / backend" && "path-chip-current")}
           aria-current={path === "Product / backend" ? "page" : undefined}
         >
           Product / backend ({productCount})
-        </a>
+        </Link>
       </p>
       <ul className="project-card-grid">
         {featured.map((project, i) => (
