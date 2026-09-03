@@ -71,7 +71,7 @@ describe("print edition", () => {
     }
     expect(FEATURED_PROJECT_SLUGS).toContain("veridian");
     expect(text).toContain("Automatic lower-carbon");
-    expect(text).toContain("70B -> 3B");
+    expect(text).toContain("70B-to-3B");
     expect(text).not.toContain("12x inference speedup");
     expect(text).toContain("Monash University");
     expect(text).toContain("Contract Full-stack");

@@ -13,7 +13,7 @@ function ascii(s: string): string {
     .replace(/[—–\u2212]/g, "-")
     .replace(/[’‘]/g, "'")
     .replace(/[“”]/g, '"')
-    .replace(/→/g, "->")
+    .replace(/\s*→\s*/g, "-to-")
     .replace(/×/g, "x")
     .replace(/…/g, "...")
     .replace(/[^\x20-\x7E]/g, "");
