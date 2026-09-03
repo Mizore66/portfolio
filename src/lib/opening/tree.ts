@@ -137,15 +137,17 @@ export function spokenChapter(node: OpeningNode, compact?: boolean): string {
   return `${move} — ${node.title}`;
 }
 
-/** Tab and history title for a selected node. Bare `/` keeps the brand title. */
+/** Tab and history title for a selected node. Bare `/opening-preparation` keeps the paper title. */
 export function selectionTitle(node: OpeningNode): string {
   if (!node.color || node.moveNumber === 0) {
-    return "Anas T. Qumhiyeh — Opening Preparation";
+    return PAPER_TITLE;
   }
   return `${moveHeading(node)}${node.sym} — ${node.title} · A. T. Qumhiyeh`;
 }
 
-export const BRAND_TITLE = "Anas T. Qumhiyeh — Opening Preparation";
+export const HOME_TITLE = "Anas T. Qumhiyeh — Opening Preparation";
+export const PAPER_TITLE = "Opening Preparation — the annotated career of A. T. Qumhiyeh";
+export const BRAND_TITLE = PAPER_TITLE;
 
 export type NotationBlock = {
   node: OpeningNode;

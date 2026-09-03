@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { wwwToApex } from "@/lib/canonical-host";
-import { SESSION_COOKIE, verifySession } from "@/lib/cms/session";
+import { SESSION_COOKIE, verifySessionMac } from "@/lib/cms/session-mac";
 
 /** 301 www → apex so canonical, og:url, and the masthead dateline agree.
  *  Host is checked in the handler: Next's matcher parser requires string
@@ -18,7 +18,7 @@ export async function proxy(request: NextRequest) {
     if (path === "/admin/login" || path.startsWith("/admin/login/")) {
       return response;
     }
-    const ok = await verifySession(request.cookies.get(SESSION_COOKIE)?.value);
+    const ok = await verifySessionMac(request.cookies.get(SESSION_COOKIE)?.value);
     if (!ok) {
       const login = new URL("/admin/login", request.url);
       const redirect = NextResponse.redirect(login);

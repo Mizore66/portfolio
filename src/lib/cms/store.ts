@@ -131,13 +131,19 @@ export async function restoreRevision(id: string): Promise<SiteDocument> {
 
 export async function getDraftDocument(): Promise<SiteDocument> {
   const store = await readFileStore();
-  return store.draft ?? store.published ?? ledgerDocument();
+  if (store.draft) return store.draft;
+  return getPublishedDocument();
 }
+
+export const HISTORY_CAP = 40;
 
 export async function getCmsState(): Promise<CmsStoreFile & { ledger: SiteDocument; backend: string }> {
   const store = await readFileStore();
+  const published = store.published ?? (await readPostgresPublished());
   return {
     ...store,
+    published,
+    draft: store.draft,
     ledger: ledgerDocument(),
     backend: postgresUrl() ? "postgres" : "file",
   };
@@ -151,7 +157,7 @@ export async function saveDraft(doc: SiteDocument): Promise<SiteDocument> {
   };
   const store = await readFileStore();
   store.draft = next;
-  store.revisions = [next, ...store.revisions].slice(0, 40);
+  store.revisions = [next, ...store.revisions].slice(0, HISTORY_CAP);
   store.audit.unshift({ at: new Date().toISOString(), action: "draft", note: next.note });
   await writeFileStore(store);
   await writePostgres(next, "draft").catch(() => false);
@@ -168,7 +174,7 @@ export async function publishDocument(doc: SiteDocument): Promise<SiteDocument> 
   const store = await readFileStore();
   store.published = next;
   store.draft = next;
-  store.revisions = [next, ...store.revisions].slice(0, 40);
+  store.revisions = [next, ...store.revisions].slice(0, HISTORY_CAP);
   store.audit.unshift({ at: next.publishedAt, action: "publish", note: next.note });
   const url = postgresUrl();
   if (url) {

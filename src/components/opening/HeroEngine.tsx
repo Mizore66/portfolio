@@ -130,6 +130,7 @@ export function HeroEngine({ staticBoard }: { staticBoard: ReactNode }) {
           {BROADSHEET.paperLink}
         </a>
       </p>
+      <p className="mt-2 max-w-[42ch] font-mono text-[12px] text-faded">{BROADSHEET.paperLinkDek}</p>
     </aside>
   );
 }

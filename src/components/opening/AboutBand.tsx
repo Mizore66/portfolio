@@ -1,22 +1,20 @@
+import { getRenderableDocument } from "@/lib/cms/store";
 import { POSITIONING } from "@/lib/metrics";
 
-export function AboutBand() {
+export async function AboutBand() {
+  const site = await getRenderableDocument();
   return (
     <section id="about" data-testid="about-band" className="recruiter-band" aria-labelledby="about-heading">
       <p className="band-kicker">About</p>
       <h2 id="about-heading" className="band-title">
-        {POSITIONING.dek}
+        {POSITIONING.aboutHeading}
       </h2>
       <p className="mt-4 max-w-[68ch] font-mono text-[12px] uppercase tracking-[0.08em] text-faded">
         {POSITIONING.seniority}
       </p>
-      <div className="mt-6 max-w-[68ch] space-y-4">
-        {POSITIONING.about.map((para) => (
-          <p key={para.slice(0, 24)} className="font-lora text-[16px] leading-[1.7] text-ink">
-            {para}
-          </p>
-        ))}
-      </div>
+      <p className="mt-6 max-w-[68ch] font-lora text-[16px] leading-[1.7] text-ink">
+        {site.profile.followerBio || POSITIONING.followerBio}
+      </p>
     </section>
   );
 }

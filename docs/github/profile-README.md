@@ -1,6 +1,6 @@
 # Anas Tarek Qumhiyeh
 
-Software engineer building ML infrastructure and data-intensive systems.
+Software engineer building payment, laboratory, and retrieval systems.
 
 I like systems that have to survive measurement.
 

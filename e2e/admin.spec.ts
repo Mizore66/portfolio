@@ -21,5 +21,7 @@ test.describe("admin editor", () => {
     await expect(page.getByText(/No public registration/)).toBeVisible();
     await expect(page.locator("a[href*='register']")).toHaveCount(0);
     await expect(page.locator("form")).toHaveCount(1);
+    await expect(page.locator("main")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
   });
 });

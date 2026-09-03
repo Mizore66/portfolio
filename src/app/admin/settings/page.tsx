@@ -9,7 +9,15 @@ export default async function SettingsEditor() {
       <dl className="grid gap-4">
         <div>
           <dt className="font-mono text-[12px] uppercase tracking-[0.14em] text-faded">Published at</dt>
-          <dd className="mt-1 font-display text-[18px]">{published.publishedAt}</dd>
+          <dd className="mt-1 font-display text-[18px]">{published.publishedAt.slice(0, 10)}</dd>
+        </div>
+        <div>
+          <dt className="font-mono text-[12px] uppercase tracking-[0.14em] text-faded">Passphrase</dt>
+          <dd className="mt-1 max-w-[62ch] font-display text-[16px] leading-snug text-ink">
+            Store only <code>ADMIN_PASSWORD_HASH</code> (Argon2id). Run <code>npm run cms:hash</code> locally,
+            paste the hash into Vercel, and delete any plaintext <code>ADMIN_PASSWORD</code>. Rotating the hash
+            invalidates every open session.
+          </dd>
         </div>
         <div>
           <dt className="font-mono text-[12px] uppercase tracking-[0.14em] text-faded">Revision</dt>

@@ -41,7 +41,7 @@ export const resumeData = {
   experience: [
     {
       title: "Full-stack AI Engineer",
-      type: "Contract",
+      type: "Research contract · Faculty of IT",
       company: "Monash University",
       period: "Nov 2025 – Feb 2026",
       tech: ["LangGraph", "Neo4j", "FastAPI"],

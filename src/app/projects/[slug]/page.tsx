@@ -48,6 +48,7 @@ export async function generateMetadata({
       description,
       url: `${SITE_URL}/projects/${slug}`,
       type: "article",
+      images: project.plate ? [{ url: project.plate }] : undefined,
     },
     twitter: {
       card: "summary_large_image",

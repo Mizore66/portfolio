@@ -771,7 +771,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("board-keys")).toBeVisible();
     await expect(page.getByTestId("how-to-read")).toContainText(/résumé is literal/i);
     await expect(page.getByTestId("recruiter-nav")).toContainText(/Work/);
-    await expect(page.getByTestId("recruiter-nav")).toContainText(/Lab/);
+    await expect(page.getByTestId("recruiter-nav")).toContainText(/Experiments/);
   });
 
   test("chapter titles share one type size", async ({ page }) => {
@@ -1000,7 +1000,7 @@ test.describe("Opening Preparation", () => {
     expect(Math.abs(board.x - engine.x)).toBeLessThanOrEqual(2);
 
     await page.goto("/lab/learned-evaluator");
-    await expect(page.getByRole("heading", { level: 1, name: /learned evaluator lost 143 Elo/i })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: /lost −143\.1 ±40\.5 Elo/i })).toBeVisible();
     await expect(page.getByTestId("evaluations-column")).toBeVisible();
     await expect(page.getByTestId("evaluations-column")).toContainText(/50 000 nodes|50000 nodes|fixed-N/i);
     await expect(page.getByTestId("evaluations-net")).toContainText(/768x2x256/);

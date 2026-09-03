@@ -63,6 +63,7 @@ export function ledgerDocument(): SiteDocument {
         method: "Production defect count on checkout and capture",
         environment: "Setel payment engine",
         date: "2025-12",
+        caveat: METRICS.setelDefects.note,
         heroEligible: true,
       }),
       claim("monashRetrieval", METRICS.monashRetrieval, {
@@ -116,6 +117,7 @@ export function ledgerDocument(): SiteDocument {
       claim("slmInference", METRICS.slmInference, {
         method: METRICS.slmInference.path,
         sample: METRICS.slmInference.note,
+        caveat: "Not claimed as a measured throughput.",
         environment: "DeepSpeed distillation path",
         date: "2025-07",
       }),

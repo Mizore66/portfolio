@@ -7,13 +7,13 @@ The paper can ship the UI. These surfaces are still yours. Paste them as written
 **Headline** (identity first; the clever line lives in About):
 
 ```
-Software engineer focused on ML infrastructure and data-intensive systems.
+Software engineer building payment, laboratory, and retrieval systems.
 ```
 
 **About** (quotes the paper, does not contradict it):
 
 ```
-Software engineer focused on ML infrastructure and data-intensive systems.
+Software engineer building payment, laboratory, and retrieval systems.
 
 I like systems that have to survive measurement.
 
@@ -40,7 +40,7 @@ Recruiters will see the site and LinkedIn within five minutes of each other. The
 
 ```
 Anas Tarek Qumhiyeh
-Software engineer focused on ML infrastructure and data-intensive systems.
+Software engineer building payment, laboratory, and retrieval systems.
 https://anasqumhiyeh.dev
 anasqumhiyeh@gmail.com
 ```

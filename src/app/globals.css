@@ -1338,6 +1338,11 @@
 .project-card {
   border: 2px solid var(--ink);
   padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+}
+.project-card-cta {
+  margin-top: auto;
 }
 .project-card-flagship {
   padding: var(--space-8) var(--space-6);
@@ -1392,7 +1397,18 @@
   border-top: var(--rule-hairline) solid var(--ink);
   max-width: none;
 }
+.hero-proof-kicker {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
 .hero-proof li {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
   padding-bottom: var(--space-3);
   border-bottom: var(--rule-hairline) solid var(--ink);
 }
@@ -2158,6 +2174,8 @@ h1, h2, h3 {
 }
 .archive-heading {
   margin: var(--space-8) 0 0;
+  padding-top: var(--space-6);
+  border-top: 2px solid var(--ink);
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 12px;
   letter-spacing: 0.22em;
@@ -2304,10 +2322,12 @@ h1, h2, h3 {
     grid-template-areas:
       "hero board"
       "work work";
-    align-items: start;
+    align-items: stretch;
   }
   .hero-left {
     grid-area: hero;
+    display: flex;
+    flex-direction: column;
   }
   .hero-engine {
     grid-area: board;
@@ -2514,7 +2534,7 @@ h1, h2, h3 {
 }
 @media (min-width: 800px) {
   .desk-summaries {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: var(--space-6);
   }
 }
@@ -2562,4 +2582,46 @@ h1, h2, h3 {
 .admin-error {
   color: var(--score-red);
   font-family: var(--font-display), serif;
+}
+.admin-status {
+  color: var(--book-blue);
+  font-family: var(--font-display), serif;
+}
+.admin-nav .recruiter-nav-list {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+.admin-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin: var(--space-4) 0 0;
+  padding: var(--space-3) 0;
+  background: var(--paper);
+  border-top: 2px solid var(--ink);
+}
+.hero-engine [data-testid="engine-pv"] {
+  font-size: 14px;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+}
+
+@media (forced-colors: active) {
+  .board-sq-last,
+  .board-sq-from,
+  .board-sq-preview {
+    outline: 3px solid CanvasText;
+    box-shadow: none;
+  }
+  .eval-toggle button[aria-pressed="true"] {
+    outline: 3px solid CanvasText;
+  }
+  .metric-row {
+    color: CanvasText;
+    font-weight: 700;
+  }
 }

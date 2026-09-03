@@ -39,13 +39,10 @@ export function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }) {
 
   return (
     <section id="work" data-testid="selected-work" className="recruiter-band" aria-labelledby="work-heading">
-      <p className="band-kicker">Front page</p>
+      <p className="band-kicker">{POSITIONING.independentKicker}</p>
       <h2 id="work-heading" className="band-title">
         Selected work
       </h2>
-      <p className="mt-2 max-w-[68ch] font-display text-[16px] italic text-faded">
-        {POSITIONING.independentDek}
-      </p>
       <p className="path-filter mt-4" data-testid="path-filter">
         <a href="/#work" className={cn("path-chip", path === "all" && "path-chip-current")} aria-current={path === "all" ? "page" : undefined}>
           All
@@ -111,7 +108,7 @@ export function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }) {
                 kind={"evidenceKind" in project ? (project.evidenceKind as EvidenceKind) : undefined}
               />
             ) : null}
-            <p className="mt-4 flex flex-wrap gap-x-4 gap-y-2 font-mono text-[12px] uppercase tracking-wider">
+            <p className="mt-4 flex flex-wrap gap-x-4 gap-y-2 font-mono text-[12px] uppercase tracking-wider project-card-cta">
               <Link
                 href={exhibitHref(project.slug, path)}
                 className="artifact-link relative z-[1] text-book-blue underline decoration-2 underline-offset-4"
@@ -138,6 +135,9 @@ export function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }) {
           <h3 id="archive-heading" className="archive-heading">
             Archive
           </h3>
+          <p className="mt-1 font-mono text-[12px] uppercase tracking-[0.14em] text-faded">
+            Further independent filings
+          </p>
           <ul className="project-archive mt-4" data-testid="project-archive">
             {archive.map((p) => (
               <li key={p.slug}>

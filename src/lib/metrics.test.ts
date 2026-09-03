@@ -74,7 +74,7 @@ describe("measured claims have one owner each", () => {
     expect(POSITIONING.deskSummaries.map((d) => d.desk).join(" ")).toMatch(/Monash/);
     expect(POSITIONING.throughLine).toMatch(/through-line/);
     expect(POSITIONING.deskSummaries[0]?.line).toMatch(/department leadership/);
-    expect(POSITIONING.desksLine).toMatch(/Built payment, laboratory, and retrieval systems/);
+    expect(POSITIONING.desksLine).toMatch(/Built production payments at Setel/);
     expect(POSITIONING.independentDek).toMatch(/Independent/);
     expect(POSITIONING.professionalDek).toMatch(/Internships and contract roles/);
     expect(POSITIONING.next).toMatch(/fintech infrastructure/);

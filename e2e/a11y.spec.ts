@@ -23,7 +23,14 @@ test.describe("axe", () => {
 
   test("the lab article has no violations", async ({ page }) => {
     await page.goto("/lab/learned-evaluator");
-    await expect(page.getByRole("heading", { level: 1, name: /learned evaluator lost 143 Elo/i })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: /lost −143\.1 ±40\.5 Elo/i })).toBeVisible();
+    await expectNoAxeViolations(page);
+  });
+
+  test("the login desk has no violations", async ({ page }) => {
+    await page.goto("/admin/login");
+    await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
+    await expect(page.locator("main")).toBeVisible();
     await expectNoAxeViolations(page);
   });
 

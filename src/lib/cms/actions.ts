@@ -1,14 +1,16 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath, updateTag } from "next/cache";
+import { clientIpFrom, consumeRateLimit, rateLimitKey } from "@/lib/cms/auth-store";
 import { CMS_TAG } from "@/lib/cms/types";
 import { passwordConfigured, verifyPassword } from "@/lib/cms/password";
 import { assertSameOrigin } from "@/lib/cms/origin";
 import {
   newSessionToken,
   PREVIEW_COOKIE,
+  revokeSessionToken,
   SESSION_COOKIE,
   sessionConfigured,
   sessionCookieOptions,
@@ -17,20 +19,6 @@ import {
 import { getDraftDocument, publishDocument, restoreRevision, saveDraft } from "@/lib/cms/store";
 import type { SiteDocument } from "@/lib/cms/types";
 import { validateDocument } from "@/lib/cms/validate";
-
-const attempts = new Map<string, { n: number; reset: number }>();
-
-function rateLimit(key: string): boolean {
-  const now = Date.now();
-  const row = attempts.get(key);
-  if (!row || row.reset < now) {
-    attempts.set(key, { n: 1, reset: now + 15 * 60 * 1000 });
-    return true;
-  }
-  if (row.n >= 8) return false;
-  row.n += 1;
-  return true;
-}
 
 function previewCookieOptions() {
   return {
@@ -56,11 +44,15 @@ export async function loginAction(
   if (!sessionConfigured() || !passwordConfigured()) {
     return { error: "Admin is not configured. Set CMS_SESSION_SECRET and ADMIN_PASSWORD_HASH." };
   }
-  if (!rateLimit("login")) return { error: "Too many attempts. Wait 15 minutes." };
+  const ip = clientIpFrom(await headers());
+  if (!(await consumeRateLimit(rateLimitKey(ip, "login")))) {
+    return { error: "Too many attempts from this network. Wait 15 minutes." };
+  }
   const password = String(formData.get("password") ?? "");
   const ok = await verifyPassword(password);
   if (!ok) return { error: "That passphrase did not match." };
   const token = await newSessionToken();
+  if (!token) return { error: "Could not open a session. Try again." };
   const jar = await cookies();
   jar.set(SESSION_COOKIE, token, sessionCookieOptions());
   redirect("/admin");
@@ -69,6 +61,7 @@ export async function loginAction(
 export async function logoutAction(): Promise<void> {
   await assertSameOrigin();
   const jar = await cookies();
+  await revokeSessionToken(jar.get(SESSION_COOKIE)?.value);
   jar.set(SESSION_COOKIE, "", { ...sessionCookieOptions(), maxAge: 0 });
   jar.set(PREVIEW_COOKIE, "", { ...previewCookieOptions(), maxAge: 0 });
   redirect("/admin/login");
@@ -129,6 +122,7 @@ export async function saveDraftAction(formData: FormData): Promise<void> {
   const current = await getDraftDocument();
   const next = formDoc(formData, current);
   await saveDraft(next);
+  redirect("/admin?saved=1");
 }
 
 export async function publishAction(formData: FormData): Promise<void> {

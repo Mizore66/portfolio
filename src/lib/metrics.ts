@@ -68,7 +68,7 @@ export const METRICS = {
     unit: "production defects",
     owner: "Setel",
     display: "−40% production defects",
-    note: "production",
+    note: "Separate from 92.5% coverage; not claimed as coverage's effect.",
     kind: "production" as const,
   },
   wdOversight: {
@@ -117,7 +117,7 @@ export const METRICS = {
     path: "70B → 3B",
     display: "12× inference",
     impact: "70B → 3B student",
-    note: "70B → 3B student. Tokens/second, hardware, and batch size were not filed.",
+    note: "70B → 3B student. Tokens/second, hardware, and batch size were not filed. Not claimed as a measured throughput.",
     kind: "evaluation" as const,
   },
   riskAuc: {
@@ -162,18 +162,21 @@ export const LAB_PROJECT_SLUGS = ["slm-distillation-engine"] as const;
 
 export const HERO_PROOF = [
   {
+    id: "setelDefects" as const,
     label: METRICS.setelDefects.display,
     owner: METRICS.setelDefects.owner,
     note: METRICS.setelDefects.note,
     kind: METRICS.setelDefects.kind,
   },
   {
-    label: `${METRICS.monashRetrieval.strip} (Monash)`,
+    id: "monashRetrieval" as const,
+    label: `${METRICS.monashRetrieval.strip} vs vector-only (Monash)`,
     owner: METRICS.monashRetrieval.owner,
     note: METRICS.monashRetrieval.note,
     kind: METRICS.monashRetrieval.kind,
   },
   {
+    id: "leadThroughput" as const,
     label: METRICS.leadThroughput.display,
     owner: METRICS.leadThroughput.owner,
     note: METRICS.leadThroughput.note,
@@ -193,26 +196,28 @@ export const YEAR_INDEX = [
 
 export const POSITIONING = {
   tagline: "I like systems that have to survive measurement.",
-  dek: "Software engineer building ML infrastructure and data-intensive systems.",
-  identity: "Software engineer building ML infrastructure and data-intensive systems.",
+  dek: "Software engineer building payment, laboratory, and retrieval systems.",
+  identity: "Software engineer building payment, laboratory, and retrieval systems.",
   seniority:
     "Internships and contract roles across production systems, plus independent experiments that include a published loss.",
   howIWork:
-    "I work from constraints through implementation and measurement, documenting the tradeoffs behind each system.",
+    "At Setel, payment-engine defects could travel to checkout at the pump, so the tests had to survive that path.",
   availability:
     "Open to software engineering roles across fintech, ML infrastructure, and data platforms.",
   graduateNote: "Graduate and junior opportunities welcome.",
-  contactHed: "Interested in building measured, reliable systems?",
+  contactHed: "Hiring for infrastructure that has to survive measurement? Write to me.",
+  replies: "Replies within two days (MYT).",
   closer:
     "I'm interested in teams building reliable ML and data systems in fintech or infrastructure-heavy products.",
   next: "The next line I want to play: measured systems in fintech infrastructure.",
   professionalDek: "Internships and contract roles across production systems.",
-  independentDek: "Independent projects below; production and contract work under Experience.",
+  independentDek: "Independent projects. Production and contract work is under Experience.",
+  independentKicker: "Independent projects",
   deskNote:
-    "Professional work is summarized here; internal screenshots remain private. Internships and contracts sat inside existing teams; independent flagships are solo.",
+    "Professional work is summarized here; internal screenshots remain private. I joined existing teams on internships and contracts; independent flagships are solo.",
   nameNote: "Anas T. Qumhiyeh on the masthead; Anas Tarek Qumhiyeh on the résumé.",
   desksLine:
-    "Built payment, laboratory, and retrieval systems at Setel, Western Digital, Petronas, and Monash University.",
+    "Built production payments at Setel, then laboratory and retrieval systems at Western Digital, Petronas, and Monash University.",
   throughLine: "The through-line is systems that have to keep working after they ship.",
   deskSummaries: [
     {
@@ -233,13 +238,14 @@ export const POSITIONING = {
     },
   ],
   recruiterBio:
-    "Software engineer building ML infrastructure and data-intensive systems. Built payment, laboratory, and retrieval systems at Setel, Western Digital, Petronas, and Monash University.",
+    "Software engineer building payment, laboratory, and retrieval systems. Production payments at Setel; laboratory telemetry at Western Digital; retrieval over university regulations at Monash.",
   followerBio:
-    "Built production payment, laboratory, and retrieval systems across Setel, Western Digital, Petronas, and Monash University. I work from constraints through implementation and measurement, documenting the tradeoffs behind each system. At Petronas I presented usability findings to department leadership; at Western Digital I built for 50+ lab staff. Outside software, I've played chess since I was a teenager, which is why this portfolio is structured as a game.",
+    "I've played chess since I was a teenager, which is why this portfolio is a scoresheet: moves are facts, annotations are voice. I like systems that have to survive measurement — at Petronas I presented usability findings to department leadership; at Western Digital I built for 50+ lab staff. I joined existing teams on internships and contracts; independent flagships are solo.",
+  aboutHeading: "About the annotator",
   about: [
-    "Built production payment, laboratory, and retrieval systems across Setel, Western Digital, Petronas, and Monash University.",
-    "I work from constraints through implementation and measurement, documenting the tradeoffs behind each system. At Petronas I presented usability findings to department leadership; at Western Digital I built for 50+ lab staff. Internships and contracts sat inside existing teams; independent flagships are solo.",
-    "Outside software, I've played chess since I was a teenager, which is why this portfolio is structured as a game. The moves are the work; the annotations are my interpretation of it.",
+    "I've played chess since I was a teenager, which is why this portfolio is a scoresheet: moves are facts, annotations are voice.",
+    "I like systems that have to survive measurement. At Petronas I presented usability findings to department leadership; at Western Digital I built for 50+ lab staff. I joined existing teams on internships and contracts; independent flagships are solo.",
+    "The moves are the work; the annotations are my interpretation of it.",
   ],
 } as const;
 
