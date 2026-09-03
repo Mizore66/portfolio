@@ -14,6 +14,10 @@ export async function hashPassword(plain: string): Promise<string> {
   });
 }
 
+function allowPlaintextFallback(): boolean {
+  return process.env.NODE_ENV !== "production" && process.env.VERCEL !== "1";
+}
+
 export async function verifyPassword(plain: string): Promise<boolean> {
   const stored = process.env.ADMIN_PASSWORD_HASH;
   if (stored) {
@@ -24,6 +28,7 @@ export async function verifyPassword(plain: string): Promise<boolean> {
       return false;
     }
   }
+  if (!allowPlaintextFallback()) return false;
   const expected = process.env.ADMIN_PASSWORD;
   if (!expected) return false;
   const a = Buffer.from(plain);
@@ -33,5 +38,6 @@ export async function verifyPassword(plain: string): Promise<boolean> {
 }
 
 export function passwordConfigured(): boolean {
-  return Boolean(process.env.ADMIN_PASSWORD_HASH || process.env.ADMIN_PASSWORD);
+  if (process.env.ADMIN_PASSWORD_HASH) return true;
+  return allowPlaintextFallback() && Boolean(process.env.ADMIN_PASSWORD);
 }

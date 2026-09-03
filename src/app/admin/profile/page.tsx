@@ -1,4 +1,5 @@
 import { AdminFrame } from "@/app/admin/layout";
+import { AdminActions, AdminDirtyForm } from "@/components/admin/AdminForm";
 import { publishAction, saveDraftAction } from "@/lib/cms/actions";
 import { getDraftDocument } from "@/lib/cms/store";
 
@@ -7,7 +8,8 @@ export default async function ProfileEditor() {
   const p = doc.profile;
   return (
     <AdminFrame title="Profile">
-      <form className="admin-form">
+      <AdminDirtyForm>
+        <input type="hidden" name="profile-present" value="1" />
         <label>
           Role line
           <input name="dek" defaultValue={p.dek} />
@@ -44,15 +46,8 @@ export default async function ProfileEditor() {
           Publish note
           <input name="note" defaultValue={doc.note} />
         </label>
-        <p className="flex flex-wrap gap-3">
-          <button formAction={saveDraftAction} className="masthead-chip">
-            Save draft
-          </button>
-          <button formAction={publishAction} className="masthead-chip masthead-chip-primary">
-            Publish
-          </button>
-        </p>
-      </form>
+        <AdminActions save={saveDraftAction} publish={publishAction} />
+      </AdminDirtyForm>
     </AdminFrame>
   );
 }

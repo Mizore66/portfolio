@@ -117,7 +117,7 @@ describe("art taxonomy", () => {
     expect(getNode("d4").plate).toBeTruthy();
     expect(getNode("d4").figure).toBeTruthy();
     expect(getNode("d4").inlineDiagram).toBe(true);
-    expect(getNode("start").commentary).toMatch(/game I've played since I was a teenager/);
+    expect(getNode("start").commentary).toMatch(/scoresheet is the only place the line is playable/);
   });
 
   it("files every project plate on the scoresheet, including variation parentheticals", () => {
@@ -158,6 +158,6 @@ describe("spoken chapter labels", () => {
     expect(spokenChapter(getNode("start"))).toBe("Opening Preparation");
     expect(spokenChapter(getNode("e4"), true)).toBe("1. e4!");
     expect(selectionTitle(getNode("d4"))).toBe("5. d4!! — The Central Break · A. T. Qumhiyeh");
-    expect(selectionTitle(getNode("start"))).toBe("Anas T. Qumhiyeh — Opening Preparation");
+    expect(selectionTitle(getNode("start"))).toBe("Opening Preparation — the annotated career of A. T. Qumhiyeh");
   });
 });

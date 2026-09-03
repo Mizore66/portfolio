@@ -1,15 +1,30 @@
 import { AdminFrame } from "@/app/admin/layout";
+import { importDocumentAction } from "@/lib/cms/actions";
 import { postgresUrlSource } from "@/lib/cms/env";
 import { getPublishedDocument } from "@/lib/cms/store";
 
-export default async function SettingsEditor() {
+export default async function SettingsEditor({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const q = await searchParams;
   const published = await getPublishedDocument();
   return (
     <AdminFrame title="Site settings">
+      {q.error ? <p className="admin-error">{q.error}</p> : null}
       <dl className="grid gap-4">
         <div>
           <dt className="font-mono text-[12px] uppercase tracking-[0.14em] text-faded">Published at</dt>
-          <dd className="mt-1 font-display text-[18px]">{published.publishedAt}</dd>
+          <dd className="mt-1 font-display text-[18px]">{published.publishedAt.slice(0, 10)}</dd>
+        </div>
+        <div>
+          <dt className="font-mono text-[12px] uppercase tracking-[0.14em] text-faded">Passphrase</dt>
+          <dd className="mt-1 max-w-[62ch] font-display text-[16px] leading-snug text-ink">
+            Store only <code>ADMIN_PASSWORD_HASH</code> (Argon2id). Run <code>npm run cms:hash</code> locally,
+            paste the hash into Vercel, and delete any plaintext <code>ADMIN_PASSWORD</code>. Rotating the hash
+            invalidates every open session.
+          </dd>
         </div>
         <div>
           <dt className="font-mono text-[12px] uppercase tracking-[0.14em] text-faded">Revision</dt>
@@ -21,6 +36,29 @@ export default async function SettingsEditor() {
             <a href="/admin/export" className="text-book-blue underline decoration-2 underline-offset-4">
               Export JSON
             </a>
+          </dd>
+        </div>
+        <div>
+          <dt className="font-mono text-[12px] uppercase tracking-[0.14em] text-faded">Import</dt>
+          <dd className="mt-2">
+            <form action={importDocumentAction} className="admin-form">
+              <label>
+                JSON file
+                <input type="file" name="payload" accept="application/json,.json" />
+              </label>
+              <label>
+                Or paste JSON
+                <textarea name="json" rows={6} />
+              </label>
+              <p>
+                <button type="submit" className="masthead-chip">
+                  Import into draft
+                </button>
+              </p>
+            </form>
+            <p className="mt-2 max-w-[62ch] font-display text-[15px] text-faded">
+              Import lands in draft only. Publish from the editor after you have read the diff.
+            </p>
           </dd>
         </div>
         <div>

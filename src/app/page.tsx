@@ -13,11 +13,11 @@ import { RecruiterNav } from "@/components/opening/RecruiterNav";
 import { SelectedWork } from "@/components/opening/SelectedWork";
 import { StickyBoardStatic } from "@/components/opening/StickyBoardStatic";
 import { BROADSHEET } from "@/content/opening";
-import { isOpeningId } from "@/lib/opening/tree";
 import { workPathFromQuery } from "@/lib/metrics";
+import { HOME_TITLE, isOpeningId } from "@/lib/opening/tree";
 
 export const metadata: Metadata = {
-  title: "Anas T. Qumhiyeh — Opening Preparation",
+  title: HOME_TITLE,
 };
 
 export default async function Home({

@@ -9,6 +9,8 @@ import { HalftonePlate } from "@/components/opening/HalftonePlate";
 import { PatentFigure } from "@/components/opening/PatentFigure";
 import { RecruiterNav } from "@/components/opening/RecruiterNav";
 import { BROADSHEET } from "@/content/opening";
+import { overlayProject } from "@/lib/cms/overlay";
+import { getPublishedDocument, getRenderableDocument } from "@/lib/cms/store";
 import { resumeData } from "@/lib/data";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
 import {
@@ -37,8 +39,11 @@ export async function generateMetadata({
   const { slug } = await params;
   const project = resumeData.projects.find((p) => p.slug === slug);
   if (!project) return { title: "Correction — A. T. Qumhiyeh" };
-  const title = `${exhibitTitle(project)} · A. T. Qumhiyeh`;
-  const description = project.meta;
+  const doc = await getPublishedDocument();
+  const overlaid = overlayProject(project, doc);
+  if (!overlaid) return { title: "Correction — A. T. Qumhiyeh" };
+  const title = `${exhibitTitle(overlaid)} · A. T. Qumhiyeh`;
+  const description = overlaid.meta;
   return {
     title,
     description,
@@ -48,6 +53,7 @@ export async function generateMetadata({
       description,
       url: `${SITE_URL}/projects/${slug}`,
       type: "article",
+      images: project.plate ? [{ url: project.plate }] : undefined,
     },
     twitter: {
       card: "summary_large_image",
@@ -68,7 +74,9 @@ export default async function ProjectPage({
   const q = await searchParams;
   const path = workPathFromQuery(q.path);
   const workHref = workHomeHref(path);
-  const project = resumeData.projects.find((p) => p.slug === slug);
+  const filed = resumeData.projects.find((p) => p.slug === slug);
+  const doc = await getRenderableDocument();
+  const project = filed ? overlayProject(filed, doc) : null;
 
   if (!project) {
     notFound();

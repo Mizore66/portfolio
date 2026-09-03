@@ -511,7 +511,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("broadsheet-filler")).toContainText("Situations Wanted");
     await expect(page.getByTestId("broadsheet-filler")).toContainText("Errata");
     await expect(page.getByTestId("broadsheet-filler")).not.toContainText(/anasqumhiyeh@/i);
-    await expect(page.getByTestId("recruiter-nav").locator('a[href="/print-edition"]')).toBeVisible();
+    await expect(page.getByTestId("recruiter-nav").locator('a[href="/opening-preparation"]')).toBeVisible();
     await expect(page.getByTestId("play-the-position")).toBeVisible();
     await expect(page.getByTestId("pv-arrow")).toBeVisible({ timeout: 5000 });
 
@@ -771,7 +771,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("board-keys")).toBeVisible();
     await expect(page.getByTestId("how-to-read")).toContainText(/résumé is literal/i);
     await expect(page.getByTestId("recruiter-nav")).toContainText(/Work/);
-    await expect(page.getByTestId("recruiter-nav")).toContainText(/Lab/);
+    await expect(page.getByTestId("recruiter-nav")).toContainText(/Experiments/);
   });
 
   test("chapter titles share one type size", async ({ page }) => {
@@ -1000,12 +1000,13 @@ test.describe("Opening Preparation", () => {
     expect(Math.abs(board.x - engine.x)).toBeLessThanOrEqual(2);
 
     await page.goto("/lab/learned-evaluator");
-    await expect(page.getByRole("heading", { level: 1, name: /learned evaluator lost 143 Elo/i })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: /lost −143\.3 ±35\.4 Elo/i })).toBeVisible();
     await expect(page.getByTestId("evaluations-column")).toBeVisible();
-    await expect(page.getByTestId("evaluations-column")).toContainText(/50 000 nodes|50000 nodes|fixed-N/i);
+    await expect(page.getByTestId("evaluations-column")).toContainText(/50 000 nodes|50000 nodes/i);
     await expect(page.getByTestId("evaluations-net")).toContainText(/768x2x256/);
     await expect(page.getByTestId("evaluations-net")).toContainText(/2026-08-29/);
-    await expect(page.getByTestId("evaluations-column")).not.toContainText(/sprt:/i);
+    await expect(page.getByTestId("evaluations-column")).toContainText(/sprt:/i);
+    await expect(page.getByTestId("evaluations-column")).toContainText(/h0/i);
     const chart = page.getByTestId("elo-commits");
     await expect(chart).toBeVisible();
     await chart.scrollIntoViewIfNeeded();

@@ -50,8 +50,17 @@ Net **`nnue-lichess-cc0-768x2x256-32-1-2026-08-29`**. Four process shards, 50 
 
 `sprt: -143.1 ±40.5 Elo, 100 games, LLR -2.33 (inconclusive)`
 
-That line is a **fixed-N** result. The SPRT never hit a bound (LLR −2.33 vs ±≈2.94). The paper reports it as:
+That line is a **fixed-N** result. The SPRT never hit a bound (LLR −2.33 vs ±≈2.94). The paper reported it as:
 
 `fixed-N: −143.1 ±40.5 Elo @ 50000 nodes, 100 games, LLR −2.33 (inconclusive; SPRT unterminated)`
 
-WDL 1–59–40. Gate A at the same cap was 0.0 Elo, so the −143 is not a colour or adjudication artefact. Wall-clock ~46 min (`elapsedMs` 2 746 036). LEARNED is now the playing eval; PeSTO stays as a comparison toggle and the historical opponent.
+WDL 1–59–40. Wall-clock ~46 min (`elapsedMs` 2 746 036). Kept as the incomplete snapshot.
+
+Continuation, wrapping the suite until SPRT, `--sprt-stop --continue matches/gate-c-v1-50000.json --max-games 140`:
+
+`matches/gate-c-v1-50000-sprt.json`:
+
+`sprt: -143.3 ±35.4 Elo, 128 games, LLR -2.99 (h0)`
+
+WDL 2–74–52. Decision **h0** (H0 = 0 Elo, H1 = +10). Gate A at the same cap was 0.0 Elo, so the −143 is not a colour or adjudication artefact. LEARNED is the playing eval; PeSTO stays as a comparison toggle and the historical opponent. Do not rematch this net.
+

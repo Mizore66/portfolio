@@ -7,7 +7,7 @@ import { claimHeroReady } from "@/lib/cms/validate";
 export default async function AdminHome({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; published?: string }>;
+  searchParams: Promise<{ error?: string; published?: string; saved?: string }>;
 }) {
   const q = await searchParams;
   const state = await getCmsState();
@@ -15,13 +15,26 @@ export default async function AdminHome({
   const needsEvidence = published.claims.filter((claim) => claim.heroEligible && claimHeroReady(claim).length);
   const stale = published.claims.filter((claim) => !claim.date);
   return (
-    <AdminFrame title="Dashboard">
+    <AdminFrame
+      title="Dashboard"
+      status={
+        q.saved ? (
+          <p className="mt-2 font-display text-[16px] text-book-blue" role="status">
+            Draft saved.
+          </p>
+        ) : q.published ? (
+          <p className="mt-2 font-display text-[16px] text-book-blue" role="status">
+            Published.
+          </p>
+        ) : q.error ? (
+          <p className="admin-error mt-2">{q.error}</p>
+        ) : null
+      }
+    >
       <p className="font-mono text-[12px] uppercase tracking-[0.12em] text-faded">
         Store · {state.backend}
         {state.published ? ` · published ${state.published.publishedAt.slice(0, 10)}` : " · ledger fallback"}
       </p>
-      {q.published ? <p className="mt-4 font-display text-[16px] text-book-blue">Published.</p> : null}
-      {q.error ? <p className="admin-error mt-4">{q.error}</p> : null}
       <ul className="mt-6 grid gap-3 sm:grid-cols-2">
         <li className="border-2 border-ink p-4">
           <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-faded">Published</p>

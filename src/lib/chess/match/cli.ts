@@ -12,7 +12,7 @@ import type { EvalMode } from "@/lib/chess/engine";
 import { decodeNnue } from "@/lib/chess/nnue/format";
 import { loadNnueWasm } from "@/lib/chess/nnue/wasm";
 import type { NnueNet } from "@/lib/chess/nnue/types";
-import { mergeReports, runMatch, type MatchReport } from "./runner";
+import { mergeReports, runMatch, continueMatch, type MatchReport } from "./runner";
 
 function arg(flag: string, fallback: string): string {
   const i = process.argv.indexOf(flag);
@@ -49,6 +49,8 @@ if ((aMode === "learned" || bMode === "learned") && !net) {
 
 const jobs = Number(arg("--jobs", "1"));
 const shard = parseShard(arg("--shard", ""));
+const continuePath = arg("--continue", "");
+const maxGames = Number(arg("--max-games", "2000"));
 const cfg = {
   a: { evalMode: aMode, net: aMode === "learned" ? net : null },
   b: { evalMode: bMode, net: bMode === "learned" ? net : null },
@@ -58,6 +60,7 @@ const cfg = {
   sprtStop: hasFlag("--sprt-stop") && jobs <= 1 && !shard,
   shardIndex: shard?.index,
   shardCount: shard?.count,
+  maxGames,
 };
 
 function writeReport(report: MatchReport) {
@@ -95,6 +98,9 @@ function runShard(index: number, count: number, outFile: string): Promise<void> 
 }
 
 async function main() {
+  if (continuePath && jobs > 1) {
+    throw new Error("--continue cannot run under --jobs");
+  }
   if (jobs > 1 && !shard) {
     const dir = mkdtempSync(join(tmpdir(), "match-"));
     try {
@@ -117,6 +123,14 @@ async function main() {
     } catch {
       process.stderr.write("match: wasm nnue unavailable, using JS forward pass\n");
     }
+  }
+  if (continuePath) {
+    const prior = JSON.parse(readFileSync(resolve(continuePath), "utf8")) as MatchReport;
+    if (prior.a !== aMode || prior.b !== bMode || prior.nodes !== cfg.nodes) {
+      throw new Error("continue file does not match --a/--b/--nodes");
+    }
+    writeReport(continueMatch(cfg, prior));
+    return;
   }
   writeReport(runMatch(cfg));
 }

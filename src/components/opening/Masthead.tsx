@@ -3,8 +3,10 @@ import { RecruiterNav } from "@/components/opening/RecruiterNav";
 import { BROADSHEET } from "@/content/opening";
 import { getRenderableDocument } from "@/lib/cms/store";
 import { activeAvailability } from "@/lib/cms/ledger";
+import { heroProofRows } from "@/lib/cms/overlay";
 import { resumeData } from "@/lib/data";
-import { HERO_PROOF } from "@/lib/metrics";
+import { formatClaimDate } from "@/lib/filed";
+import { EVIDENCE_TIER } from "@/lib/metrics";
 import { SITE_HOST } from "@/lib/site";
 
 function Contacts() {
@@ -56,9 +58,8 @@ export async function HeroIdentity() {
   const site = await getRenderableDocument();
   const dek = site.profile.dek;
   const tagline = site.profile.tagline;
-  const desksLine = site.profile.desksLine;
-  const howIWork = site.profile.howIWork;
   const availability = activeAvailability(site);
+  const proof = heroProofRows(site);
 
   return (
     <div className="hero-left" data-testid="hero-identity">
@@ -73,25 +74,42 @@ export async function HeroIdentity() {
         >
           {tagline}
         </p>
-        <p
-          data-testid="masthead-how"
-          className="mt-4 max-w-[68ch] font-display text-[16px] leading-snug text-ink"
-        >
-          <span data-testid="masthead-desks">{desksLine}</span> {howIWork}
-        </p>
       </div>
       <div data-testid="masthead-proof" className="hero-proof-wrap">
         <ul className="hero-proof px-4 sm:px-6" aria-label="Filed proof">
-          {HERO_PROOF.map((item) => (
-            <li key={item.label}>
-              <p className="metric-row">{item.label}</p>
-              <EvidenceMeta
-                note={item.kind === "production" ? item.owner : `${item.owner} · ${item.note}`}
-                kind={item.kind}
-              />
+          {proof.map((item, index) => {
+            const caveat = item.note;
+            const date = item.date ? formatClaimDate(item.date) : "";
+            const note = [item.kind === "production" ? item.owner : `${item.owner} · ${caveat}`, date]
+              .filter(Boolean)
+              .join(" · ");
+            return (
+              <li key={item.id}>
+                <p className="hero-proof-kicker">{EVIDENCE_TIER[item.kind]}</p>
+                <p className="metric-row-line">
+                  <span className="metric-row">{item.label}</span>
+                  <a
+                    className="claim-dagger"
+                    href={`#claim-note-${item.id}`}
+                    aria-label={`Method for ${item.label}`}
+                  >
+                    <sup>{index + 1}</sup>
+                  </a>
+                </p>
+                <EvidenceMeta note={note} kind={item.kind} />
+              </li>
+            );
+          })}
+        </ul>
+        <ol className="hero-claim-notes px-4 sm:px-6" data-testid="hero-claim-notes">
+          {proof.map((item, index) => (
+            <li key={item.id} id={`claim-note-${item.id}`}>
+              <span className="claim-note-mark">{index + 1}.</span>{" "}
+              {item.method || item.sample || item.caveat}
+              {item.baseline ? ` Baseline: ${item.baseline}.` : ""}
             </li>
           ))}
-        </ul>
+        </ol>
         <div className="hero-cta-block px-4 pb-5 sm:px-6">
           <p
             data-testid="masthead-availability"
@@ -118,7 +136,7 @@ export function PaperMasthead() {
           Edition {year} · C50 · Italian Game · {SITE_HOST} · Moves are facts · Annotations are voice
         </p>
       </div>
-      <RecruiterNav />
+      <RecruiterNav stamp="c50" />
       <div className="border-b-2 border-ink px-4 py-4 sm:px-6">
         <p className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">Scoresheet</p>
         <h1 id="paper-title" data-testid="paper-title" className="masthead-title">

@@ -47,6 +47,7 @@ export function documentDiff(published: SiteDocument, draft: SiteDocument): Fiel
     push(`claims.${id}.date`, a.date, b.date);
     push(`claims.${id}.caveat`, a.caveat, b.caveat);
     push(`claims.${id}.heroEligible`, a.heroEligible, b.heroEligible);
+    push(`claims.${id}.archived`, a.archived, b.archived);
   }
 
   const aspIds = new Set([...published.aspirations.map((c) => c.id), ...draft.aspirations.map((c) => c.id)]);
@@ -65,5 +66,56 @@ export function documentDiff(published: SiteDocument, draft: SiteDocument): Fiel
     push(`aspirations.${id}.active`, a.active, b.active);
   }
 
+  const slugs = new Set([...published.projects.map((p) => p.slug), ...draft.projects.map((p) => p.slug)]);
+  for (const slug of slugs) {
+    const a = published.projects.find((p) => p.slug === slug);
+    const b = draft.projects.find((p) => p.slug === slug);
+    if (!a) {
+      push(`projects.${slug}`, "", b);
+      continue;
+    }
+    if (!b) {
+      push(`projects.${slug}`, a, "");
+      continue;
+    }
+    push(`projects.${slug}.purpose`, a.purpose, b.purpose);
+    push(`projects.${slug}.impact`, a.impact, b.impact);
+    push(`projects.${slug}.why`, a.why, b.why);
+    push(`projects.${slug}.judgment`, a.judgment, b.judgment);
+    push(`projects.${slug}.constraint`, a.constraint, b.constraint);
+    push(`projects.${slug}.limitation`, a.limitation, b.limitation);
+    push(`projects.${slug}.example`, a.example, b.example);
+    push(`projects.${slug}.archived`, a.archived, b.archived);
+  }
+
   return rows;
+}
+
+export type DiffGroup = { id: string; heading: string; rows: FieldDiff[] };
+
+export function groupedDocumentDiff(published: SiteDocument, draft: SiteDocument): DiffGroup[] {
+  const rows = documentDiff(published, draft);
+  const groups = new Map<string, DiffGroup>();
+  const take = (id: string, heading: string) => {
+    const existing = groups.get(id);
+    if (existing) return existing;
+    const next = { id, heading, rows: [] as FieldDiff[] };
+    groups.set(id, next);
+    return next;
+  };
+  for (const row of rows) {
+    if (row.path.startsWith("claims.")) {
+      const id = row.path.split(".")[1] ?? "claim";
+      take(`claims.${id}`, `Claim · ${id}`).rows.push(row);
+    } else if (row.path.startsWith("projects.")) {
+      const slug = row.path.split(".")[1] ?? "project";
+      take(`projects.${slug}`, `Project · ${slug}`).rows.push(row);
+    } else if (row.path.startsWith("aspirations.")) {
+      const id = row.path.split(".")[1] ?? "aspiration";
+      take(`aspirations.${id}`, `Aspiration · ${id}`).rows.push(row);
+    } else {
+      take("profile", "Profile").rows.push(row);
+    }
+  }
+  return [...groups.values()];
 }

@@ -1,5 +1,6 @@
+import { resumeData } from "@/lib/data";
 import { METRICS, POSITIONING } from "@/lib/metrics";
-import { SITE_REVISED, type CmsClaim, type SiteDocument } from "@/lib/cms/types";
+import { SITE_REVISED, type CmsClaim, type CmsProjectCopy, type SiteDocument } from "@/lib/cms/types";
 
 function claim(
   id: string,
@@ -27,8 +28,29 @@ function claim(
     date: extra.date ?? "",
     caveat: extra.caveat ?? metric.note ?? "",
     heroEligible: extra.heroEligible ?? false,
+    archived: extra.archived ?? false,
     surfaces: extra.surfaces ?? (extra.heroEligible ? ["home", "opening", "resume"] : ["opening", "resume", "exhibit"]),
   };
+}
+
+function field(project: (typeof resumeData.projects)[number], key: keyof CmsProjectCopy): string {
+  return key in project && typeof project[key as keyof typeof project] === "string"
+    ? String(project[key as keyof typeof project])
+    : "";
+}
+
+function projectCopies(): CmsProjectCopy[] {
+  return resumeData.projects.map((project) => ({
+    slug: project.slug,
+    purpose: project.purpose,
+    impact: project.impact,
+    why: field(project, "why"),
+    judgment: field(project, "judgment"),
+    constraint: field(project, "constraint"),
+    limitation: field(project, "limitation"),
+    example: field(project, "example"),
+    archived: false,
+  }));
 }
 
 export function ledgerDocument(): SiteDocument {
@@ -63,6 +85,7 @@ export function ledgerDocument(): SiteDocument {
         method: "Production defect count on checkout and capture",
         environment: "Setel payment engine",
         date: "2025-12",
+        caveat: METRICS.setelDefects.note,
         heroEligible: true,
       }),
       claim("monashRetrieval", METRICS.monashRetrieval, {
@@ -80,11 +103,11 @@ export function ledgerDocument(): SiteDocument {
         heroEligible: true,
       }),
       claim("gateC", METRICS.gateC, {
-        method: "Fixed-N match, same search",
+        method: "SPRT (H0=0 Elo, H1=+10), same search, continued from the 100-game suite",
         baseline: "Handcrafted PeSTO",
         sample: METRICS.gateC.note,
         environment: "50 000 nodes/move",
-        date: "2026-08-29",
+        date: "2026-09-03",
         heroEligible: true,
       }),
       claim("graphragRetrieval", METRICS.graphragRetrieval, {
@@ -116,6 +139,7 @@ export function ledgerDocument(): SiteDocument {
       claim("slmInference", METRICS.slmInference, {
         method: METRICS.slmInference.path,
         sample: METRICS.slmInference.note,
+        caveat: "Not claimed as a measured throughput.",
         environment: "DeepSpeed distillation path",
         date: "2025-07",
       }),
@@ -130,7 +154,7 @@ export function ledgerDocument(): SiteDocument {
         date: "2025-12",
       }),
     ],
-    projects: [],
+    projects: projectCopies(),
   };
 }
 

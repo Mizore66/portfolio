@@ -56,11 +56,13 @@ describe("SEO identity", () => {
     expect(ld.name).toBe(PERSON_NAME);
     expect(ld.alternateName).toBe(PERSON_ALT_NAME);
     expect(ld.alumniOf).toEqual({ "@type": "CollegeOrUniversity", name: "Monash University" });
+    expect(ld.jobTitle).toMatch(/payment, laboratory, and retrieval/);
+    expect(ld.homeLocation.address.addressLocality).toBe("Bandar Sunway");
     expect(ld.sameAs).toContain("https://github.com/Mizore66");
     expect(ld.sameAs).toContain("https://linkedin.com/in/anasqumhiyeh");
     expect(META_DESCRIPTION.length).toBeLessThanOrEqual(160);
     expect(META_DESCRIPTION).toMatch(/annotated career of Anas T\. Qumhiyeh/);
-    expect(META_DESCRIPTION).toMatch(/data-intensive systems/);
+    expect(META_DESCRIPTION).toMatch(/payment, laboratory, and retrieval/);
   });
 
   it("also hands machines a WebSite node", () => {
@@ -87,7 +89,7 @@ describe("SEO identity", () => {
   it("hands machines an Article node for the lab report", () => {
     const article = labArticleJsonLd();
     expect(article["@type"]).toBe("Article");
-    expect(article.headline).toMatch(/lost 143 Elo/);
+    expect(article.headline).toMatch(/lost −143\.3 ±35\.4 Elo/);
     expect(article.datePublished).toBe("2026-08-29");
     expect(article.url).toMatch(/\/lab\/learned-evaluator$/);
   });

@@ -14,7 +14,7 @@ const LINKS = [
 
 export function AdminNav() {
   return (
-    <nav className="recruiter-nav" aria-label="Editor">
+    <nav className="recruiter-nav admin-nav" aria-label="Editor">
       <ul className="recruiter-nav-list">
         {LINKS.map((link) => (
           <li key={link.href}>

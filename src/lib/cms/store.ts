@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { postgresNeedsSsl, postgresUrl } from "@/lib/cms/env";
+import { hydrateDocument } from "@/lib/cms/hydrate";
 import { ledgerDocument } from "@/lib/cms/ledger";
 import { PREVIEW_COOKIE, SESSION_COOKIE, verifySession } from "@/lib/cms/session";
 import type { CmsStoreFile, SiteDocument } from "@/lib/cms/types";
@@ -102,9 +103,9 @@ async function writePostgres(doc: SiteDocument, action: string) {
 
 export async function getPublishedDocument(): Promise<SiteDocument> {
   const fromDb = await readPostgresPublished();
-  if (fromDb) return fromDb;
+  if (fromDb) return hydrateDocument(fromDb);
   const store = await readFileStore();
-  return store.published ?? ledgerDocument();
+  return hydrateDocument(store.published ?? ledgerDocument());
 }
 
 export async function getRenderableDocument(): Promise<SiteDocument> {
@@ -117,7 +118,8 @@ export async function getRenderableDocument(): Promise<SiteDocument> {
 
 export async function getRevision(id: string): Promise<SiteDocument | null> {
   const store = await readFileStore();
-  return store.revisions.find((row) => row.revisionId === id) ?? null;
+  const found = store.revisions.find((row) => row.revisionId === id) ?? null;
+  return found ? hydrateDocument(found) : null;
 }
 
 export async function restoreRevision(id: string): Promise<SiteDocument> {
@@ -131,13 +133,20 @@ export async function restoreRevision(id: string): Promise<SiteDocument> {
 
 export async function getDraftDocument(): Promise<SiteDocument> {
   const store = await readFileStore();
-  return store.draft ?? store.published ?? ledgerDocument();
+  if (store.draft) return hydrateDocument(store.draft);
+  return getPublishedDocument();
 }
+
+export const HISTORY_CAP = 40;
 
 export async function getCmsState(): Promise<CmsStoreFile & { ledger: SiteDocument; backend: string }> {
   const store = await readFileStore();
+  const publishedRaw = store.published ?? (await readPostgresPublished());
   return {
     ...store,
+    published: publishedRaw ? hydrateDocument(publishedRaw) : null,
+    draft: store.draft ? hydrateDocument(store.draft) : null,
+    revisions: store.revisions.map((row) => hydrateDocument(row)),
     ledger: ledgerDocument(),
     backend: postgresUrl() ? "postgres" : "file",
   };
@@ -151,7 +160,7 @@ export async function saveDraft(doc: SiteDocument): Promise<SiteDocument> {
   };
   const store = await readFileStore();
   store.draft = next;
-  store.revisions = [next, ...store.revisions].slice(0, 40);
+  store.revisions = [next, ...store.revisions].slice(0, HISTORY_CAP);
   store.audit.unshift({ at: new Date().toISOString(), action: "draft", note: next.note });
   await writeFileStore(store);
   await writePostgres(next, "draft").catch(() => false);
@@ -168,7 +177,7 @@ export async function publishDocument(doc: SiteDocument): Promise<SiteDocument> 
   const store = await readFileStore();
   store.published = next;
   store.draft = next;
-  store.revisions = [next, ...store.revisions].slice(0, 40);
+  store.revisions = [next, ...store.revisions].slice(0, HISTORY_CAP);
   store.audit.unshift({ at: next.publishedAt, action: "publish", note: next.note });
   const url = postgresUrl();
   if (url) {

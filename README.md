@@ -2,7 +2,7 @@
 
 A recruiter-first portfolio: an annotated Italian Game mapped onto a career, not a chess puzzle. Moves are facts. Annotations are voice. Chess is the content, never a lock.
 
-This is the public scoresheet of [Anas Tarek Qumhiyeh](https://github.com/Mizore66) — software engineer focused on ML infrastructure and data-intensive systems.
+This is the public scoresheet of [Anas Tarek Qumhiyeh](https://github.com/Mizore66) — software engineer building payment, laboratory, and retrieval systems.
 
 ## What you are looking at
 
@@ -20,11 +20,11 @@ The move generator is tested against start-position perft, which the colophon al
 | 2 | 400 |
 | 3 | 8902 |
 
-The learned exhibit is a dedicated lab article at `/lab/learned-evaluator`. LEARNED is the playing eval; PeSTO is a comparison toggle. The net is `nnue-lichess-cc0-768x2x256-32-1-2026-08-29` (20M quiet CC0, min_depth 12, hold-out r vs Stockfish **0.64**, r vs PeSTO 0.70). Gate A at 50 000 nodes/move was 0.0 Elo (handcrafted vs itself). Gate C, same cap, 100 games, colours swapped:
+The learned exhibit is a dedicated lab article at `/lab/learned-evaluator`. LEARNED is the playing eval; PeSTO is a comparison toggle. The net is `nnue-lichess-cc0-768x2x256-32-1-2026-08-29` (20M quiet CC0, min_depth 12, hold-out r vs Stockfish **0.64**, r vs PeSTO 0.70). Gate A at 50 000 nodes/move was 0.0 Elo (handcrafted vs itself). Gate C, same cap, continued to the SPRT bound:
 
-`fixed-N: −143.1 ±40.5 Elo @ 50000 nodes, 100 games, LLR −2.33 (inconclusive; SPRT unterminated)`
+`sprt: −143.3 ±35.4 Elo @ 50000 nodes, 128 games, LLR −2.99 (h0)`
 
-That is not a terminated SPRT. Deltas are rigorous; the 2200 is an anchor, not a CCRL listing. See `training/GUARDS.md`. Run `npx tsx src/lib/chess/match/cli.ts --suite mini --nodes 48` for a tiny self-play.
+H0 = 0 Elo, H1 = +10 Elo. Deltas are rigorous; the 2200 is an anchor, not a CCRL listing. See `training/GUARDS.md`. Run `npx tsx src/lib/chess/match/cli.ts --suite mini --nodes 48` for a tiny self-play.
 
 ## How to run it
 

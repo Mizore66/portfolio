@@ -1,9 +1,13 @@
 import { CopyEmail } from "@/components/opening/CopyEmail";
 import { BROADSHEET } from "@/content/opening";
+import { getRenderableDocument } from "@/lib/cms/store";
+import { activeAvailability } from "@/lib/cms/ledger";
 import { resumeData } from "@/lib/data";
 import { POSITIONING } from "@/lib/metrics";
 
-export function ContactBand() {
+export async function ContactBand() {
+  const site = await getRenderableDocument();
+  const availability = activeAvailability(site);
   return (
     <section
       id="contact"
@@ -18,12 +22,19 @@ export function ContactBand() {
       <p className="mt-2 max-w-[68ch] font-display text-[16px] italic text-faded">
         {POSITIONING.contactHed}
       </p>
+      <p className="mt-3 font-mono text-[12px] uppercase tracking-[0.12em] text-faded" data-testid="contact-availability">
+        {availability}
+      </p>
+      <p className="mt-1 font-mono text-[12px] text-faded" data-testid="contact-location">
+        {site.profile.location} · open to remote
+      </p>
+      <p className="mt-2 font-mono text-[12px] text-faded">{POSITIONING.replies}</p>
       <p className="mt-4 font-mono text-[14px] text-ink" data-testid="contact-email">
         {resumeData.email}
       </p>
       <ul className="masthead-contacts mt-6 list-none p-0">
         <li>
-          <a className="masthead-chip" href={`mailto:${resumeData.email}`}>
+          <a className="masthead-chip masthead-chip-primary" href={`mailto:${resumeData.email}`}>
             Email
           </a>
         </li>

@@ -40,6 +40,7 @@ yarn-error.log*
 
 # first-party CMS file store (Postgres is used in production)
 /data/cms.json
+/data/cms-auth.json
 
 # vercel
 .vercel

@@ -13,7 +13,7 @@ Diagnostics that must exist before treating a self-play number as an exhibit.
 
 ## Retrain gates (this pass)
 
-Data gate ingest is on disk (`training/PROVENANCE-d12.json`). Gate A @ 50k printed `sprt: +0.0 ±0.0 Elo`. Progress gate passed (`corr_sf` 0.64, r vs PeSTO 0.70). Gate C @ 50k printed `fixed-N: −143.1 ±40.5 Elo @ 50000 nodes, 100 games, LLR −2.33 (inconclusive; SPRT unterminated)` — WDL 1–59–40. LEARNED is the playing eval. PeSTO remains a comparison toggle. WASM is harness infrastructure, not Elo.
+Data gate ingest is on disk (`training/PROVENANCE-d12.json`). Gate A @ 50k printed `sprt: +0.0 ±0.0 Elo`. Progress gate passed (`corr_sf` 0.64, r vs PeSTO 0.70). Gate C @ 50k printed `sprt: −143.3 ±35.4 Elo, 128 games, LLR −2.99 (h0)` — WDL 2–74–52. Continuation of the 100-game suite (`matches/gate-c-v1-50000.json`) until the bound. LEARNED is the playing eval. PeSTO remains a comparison toggle. WASM is harness infrastructure, not Elo.
 
 ### Data gate
 
@@ -33,7 +33,7 @@ Hold-out MSE must improve materially over the v1 net **and** the §9 mimicry gua
 ### Then, and only then
 
 1. Gate A sanity at 50k (handcrafted vs handcrafted, even 200 games). Required before any 50k rematch publishes a number.
-2. Rematch to the SPRT bound or a fixed-2000 sample at the standard regime.
+2. Rematch to the SPRT bound or a fixed-2000 sample at the standard regime. **Done for this net:** `matches/gate-c-v1-50000-sprt.json` terminated h0 at 128 games. Do not rematch this net.
 3. WASM / Node-native inference is approved **strictly as harness infrastructure** so that wall-clock is tractable. It is not Elo.
 
 If the retrained 256-wide net still loses at the standard regime, print it. A terminated, calibrated, standard-regime loss with error bars is a legitimate exhibit. The current −100 was unpublished because it was none of those three things, not because it was negative.

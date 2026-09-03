@@ -40,10 +40,10 @@ test.describe("document mode", () => {
     await expect(page.getByTestId("career-trajectory")).toContainText(/through-line/);
     await expect(page.getByTestId("career-trajectory")).not.toContainText(/The desks compound/);
     await expect(page.getByTestId("about-band")).toContainText(/played chess since I was a teenager/);
-    await expect(page.getByTestId("about-band")).toContainText(/Built production payment/);
+    await expect(page.getByTestId("about-band")).toContainText(/About the annotator/);
     await expect(page.getByTestId("retrieval-split")).toContainText(/different corpus/);
     await expect(page.getByTestId("masthead-availability")).toContainText(/Open to software engineering roles/);
-    await expect(page.getByTestId("contact-band")).not.toContainText(/Open to software engineering roles/);
+    await expect(page.getByTestId("contact-band")).toContainText(/Open to software engineering roles/);
     await expect(page.getByTestId("path-filter")).toContainText(/ML \/ data systems/);
     await expect(page.getByTestId("path-filter")).toContainText(/Product \/ backend/);
     await expect(page.getByRole("link", { name: /Skip to selected work/i })).toHaveCount(1);
@@ -53,7 +53,8 @@ test.describe("document mode", () => {
     await expect(page.getByTestId("masthead-proof").locator(".metric-row").nth(2)).toHaveText(
       "100M-event capacity benchmark",
     );
-    await expect(page.getByTestId("masthead-how")).toContainText(/constraints through implementation/);
+    await expect(page.getByTestId("hero-claim-notes")).toContainText(/Production defect count/);
+    await expect(page.getByTestId("masthead-tagline")).toContainText(/survive measurement/);
   });
 });
 
@@ -161,6 +162,13 @@ test.describe("selected work paths", () => {
 });
 
 test.describe("plates", () => {
+  test("home and the paper keep distinct titles", async ({ page }) => {
+    await page.goto("/");
+    await expect(page).toHaveTitle(/Anas T\. Qumhiyeh — Opening Preparation/);
+    await page.goto("/opening-preparation");
+    await expect(page).toHaveTitle(/Opening Preparation — the annotated career/);
+  });
+
   test("internal routes and the print edition respond", async ({ request }) => {
     for (const path of [
       "/",

@@ -34,6 +34,7 @@ test.describe("round four recruiter order", () => {
     await expect(rows.nth(0)).toHaveText("−40% production defects");
     await expect(rows.nth(2)).toHaveText("100M-event capacity benchmark");
     await expect(page.getByTestId("masthead-proof")).not.toContainText(/hours cut/i);
+    await expect(page.getByTestId("hero-claim-notes")).toContainText(/Production defect count/);
   });
 
   test("selected work labels evidence kind and archives secondary projects", async ({ page }) => {

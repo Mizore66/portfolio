@@ -9,9 +9,11 @@ export const PERSON_ALT_NAME = "Anas T. Qumhiyeh";
 
 /** Handwritten. The sentence Google shows recruiters. */
 export const META_DESCRIPTION =
-  "The annotated career of Anas T. Qumhiyeh. Software engineer building ML infrastructure and data-intensive systems.";
+  "The annotated career of Anas T. Qumhiyeh. Software engineer building payment, laboratory, and retrieval systems.";
 
-export function personJsonLd() {
+export function personJsonLd(opts?: { jobTitle?: string; location?: string }) {
+  const jobTitle = opts?.jobTitle || resumeData.headline;
+  const location = opts?.location || resumeData.education.location;
   return {
     "@context": "https://schema.org",
     "@type": "Person",
@@ -20,8 +22,18 @@ export function personJsonLd() {
     url: SITE_URL,
     image: `${SITE_URL}/opengraph-image`,
     email: `mailto:${resumeData.email}`,
-    jobTitle: "Software engineer",
+    jobTitle,
     description: resumeData.headline,
+    homeLocation: {
+      "@type": "Place",
+      name: location,
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Bandar Sunway",
+        addressRegion: "Selangor",
+        addressCountry: "MY",
+      },
+    },
     alumniOf: {
       "@type": "CollegeOrUniversity",
       name: resumeData.education.school,

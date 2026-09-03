@@ -10,7 +10,7 @@ import { SITE_URL } from "@/lib/site";
 const PAPER_META = {
   alternates: { canonical: BROADSHEET.paperHref },
   description:
-    "The Opening Preparation scoresheet: jobs as moves, annotations as voice. The front page still holds the work.",
+    "The career, annotated move by move — with a live engine and the patents for each project.",
   openGraph: {
     url: `${SITE_URL}${BROADSHEET.paperHref}`,
   },

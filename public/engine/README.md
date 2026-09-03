@@ -13,4 +13,4 @@ Rebuild: `npm run nnue:wasm`.
 
 Playing net: Lichess evals CC0, 20M quiet + 40k hold-out, min_depth 12. See `training/HOLDOUT.md`. LEARNED is the playing eval; PeSTO is a comparison toggle.
 
-Published 50k column: `fixed-N: −143.1 ±40.5 Elo @ 50000 nodes, 100 games, LLR −2.33 (inconclusive)`. The v1 128 at 1k was −100 — different net, different cap.
+Published 50k column: `sprt: −143.3 ±35.4 Elo @ 50000 nodes, 128 games, LLR −2.99 (h0)`. The v1 128 at 1k was −100 — different net, different cap.

@@ -53,14 +53,14 @@ export const BROADSHEET = {
   evaluationsKicker: "The evaluations meet",
   evaluationsHed: "LEARNED FALLS −143 ELO AT 50 000 NODES",
   evaluationsDek:
-    "Two evals, one search. LEARNED is the masthead; PeSTO remains the opponent and a comparison toggle. A loss at the spec cap is still a result — not a terminated SPRT.",
+    "Two evals, one search. LEARNED is the masthead; PeSTO remains the opponent and a comparison toggle. SPRT terminated for H0.",
   evaluationsSprt:
-    "fixed-N: −143.1 ±40.5 Elo @ 50 000 nodes, 100 games, LLR −2.33 (inconclusive; SPRT unterminated)",
+    "sprt: −143.3 ±35.4 Elo @ 50 000 nodes, 128 games, LLR −2.99 (h0)",
   evaluationsHonesty:
     "Honest Elo: the deltas are rigorous, the anchor is declared.",
   eloChartKicker: "Elo over commits",
   eloChartCaption:
-    "Each point is a match JSON at 50 000 nodes/move. Gate A is handcrafted vs itself: 0.0 Elo, 100 games, every colour-swapped pair 1–1. Gate C is the depth-12 256, fixed-N, below the axis. The v1 128 at 1 000 nodes (−100) is a different regime.",
+    "Each point is a match JSON at 50 000 nodes/move. Gate A is handcrafted vs itself: 0.0 Elo, 100 games, every colour-swapped pair 1–1. Gate C is the depth-12 256, SPRT h0, below the axis. The v1 128 at 1 000 nodes (−100) is a different regime.",
   closerKicker: "Adjourned",
   closerHed: "The scoresheet stands.",
   closer:
@@ -68,19 +68,20 @@ export const BROADSHEET = {
   closerSign: "Anas Tarek Qumhiyeh",
   eloCommits: [
     { commit: "gate-a-50k", label: "A · 50k", elo: 0, games: 100 },
-    { commit: "gate-c-50k", label: "C · 256", elo: -143, games: 100 },
+    { commit: "gate-c-50k", label: "C · 256", elo: -143.3, games: 128 },
   ] as { commit: string; label: string; elo: number; games: number }[],
   paperHref: "/opening-preparation",
   colophonHref: "/colophon",
   paperLink: "Read Opening Preparation",
+  paperLinkDek: "the annotated career, as a chess game",
   teaserLine: "1. e4 e5  2. Nf3 Nc6  3. Bc4 Bc5  4. O-O Nf6  5. d4",
   teaserDek: "A playable career timeline told through an Italian Game. The full scoresheet lives on its own plate.",
   gameKicker: "Opening Preparation",
   gameDek: "A playable career timeline told through an Italian Game.",
-  heroBoardKicker: "A live chess-engine study, not a decorative theme.",
-  heroCaption: `Learned evaluator, same search and 50k-node budget: ${METRICS.gateC.value} Elo across 100 games.`,
+  heroBoardKicker: "Live engine on the Italian Game.",
+  heroCaption: `Learned evaluator, same search and 50k-node budget: ${METRICS.gateC.value} Elo across 128 games.`,
   heroFollowThrough: "I published the loss, the confidence interval, and what failed.",
-  heroResultChip: "Learned · −143 Elo · 100 games · 50k nodes",
+  heroResultChip: "Learned · −143 Elo · 128 games · 50k nodes",
   printEdition: "Print edition",
   printHref: "/print-edition",
   resumeLabel: "Resume",
@@ -111,7 +112,7 @@ export const BROADSHEET = {
   labDek: "Side lines: the puzzle, the engine trial, and the matches I published anyway.",
   colophonKicker: "How this paper was set",
   colophon:
-    "Type: Libre Baskerville, Lora, IBM Plex Mono. Ink #1a120c on cream #f6eedc. Radius none. The tree is the repertoire; the scoresheet is the CV; the glass case is mailbox-64 alpha-beta with LEARNED as the masthead eval — PeSTO remains a comparison toggle. Gate C at 50 000 nodes printed −143.1 ±40.5 Elo, 100 games, LLR −2.33. The 2200 on that case is club strength, not a published Elo. No template. Chess is content, never a lock.",
+    "Type: Libre Baskerville, Lora, IBM Plex Mono. Ink #1a120c on cream #f6eedc. Radius none. The tree is the repertoire; the scoresheet is the CV; the glass case is mailbox-64 alpha-beta with LEARNED as the masthead eval — PeSTO remains a comparison toggle. Gate C at 50 000 nodes printed −143.3 ±35.4 Elo, 128 games, LLR −2.99 (h0). The 2200 on that case is club strength, not a published Elo. Copy is published from a private desk; every publish is a numbered revision. No template. Chess is content, never a lock.",
   colophonHonestyKicker: "Three registers",
   colophonHonesty:
     "Photographs real and composed; impressions imagined; the subject is real throughout.",
@@ -153,9 +154,9 @@ export const OPENING_NODES: OpeningNode[] = [
     kind: "Start",
     title: "Opening Preparation",
     scanTitle: `${resumeData.name} — Opening Preparation`,
-    fact: "The Italian Game, C50. Jobs as moves; annotations as voice. The front page still holds the work.",
+    fact: "The Italian Game, C50. Jobs as moves; annotations as voice.",
     commentary:
-      "The board is set before the first pawn moves. What follows is not a puzzle. It is the line I actually played, in a game I've played since I was a teenager — jobs as moves, annotations as voice. Chess is the content, never the lock.",
+      "The scoresheet is the only place the line is playable. What follows is the game I actually played — jobs as moves, annotations as voice. Chess is the content, never the lock.",
     eval: 0.2,
     evalText: "+0.2",
     artifacts: [],

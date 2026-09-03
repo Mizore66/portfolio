@@ -66,13 +66,15 @@ export default function LearnedEvaluatorPage() {
               <h1 id="lab-title" className="exhibit-title mt-2 font-display text-ink">
                 {LAB_ARTICLE.hed}
               </h1>
+              <p className="mt-3 max-w-[68ch] font-display text-[18px] leading-snug text-ink">{LAB_ARTICLE.dek}</p>
               <p className="metric-row mt-4">{LAB_ARTICLE.result}</p>
               <p className="mt-1 font-mono text-[12px] text-faded">{LAB_ARTICLE.resultNote}</p>
               <p className="mt-4 font-display text-[18px] italic text-score-red">{LAB_ARTICLE.resultJoke}</p>
             </header>
 
             <section id="hypothesis" className="mt-8" aria-labelledby="lab-hypothesis">
-              <h2 id="lab-hypothesis" className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
+              <p className="band-kicker">{LAB_ARTICLE.hypothesisKicker}</p>
+              <h2 id="lab-hypothesis" className="band-title">
                 {LAB_ARTICLE.hypothesisHed}
               </h2>
               <p className="mt-3 max-w-[68ch] font-display text-[16px] leading-[1.65] text-ink">
@@ -81,7 +83,8 @@ export default function LearnedEvaluatorPage() {
             </section>
 
             <section id="experiment" className="mt-8" aria-labelledby="lab-experiment">
-              <h2 id="lab-experiment" className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
+              <p className="band-kicker">{LAB_ARTICLE.experimentKicker}</p>
+              <h2 id="lab-experiment" className="band-title">
                 {LAB_ARTICLE.experimentHed}
               </h2>
               <p className="mt-3 max-w-[68ch] font-lora text-[16px] leading-[1.7] text-ink">
@@ -90,14 +93,16 @@ export default function LearnedEvaluatorPage() {
             </section>
 
             <section id="result" className="mt-8" aria-labelledby="lab-result">
-              <h2 id="lab-result" className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
+              <p className="band-kicker">{LAB_ARTICLE.resultKicker}</p>
+              <h2 id="lab-result" className="band-title">
                 {LAB_ARTICLE.resultHed}
               </h2>
               <p className="mt-3 font-mono text-[14px] leading-relaxed text-ink">{LAB_ARTICLE.resultLine}</p>
             </section>
 
             <section id="failed" className="mt-8" aria-labelledby="lab-failed">
-              <h2 id="lab-failed" className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
+              <p className="band-kicker">{LAB_ARTICLE.failedKicker}</p>
+              <h2 id="lab-failed" className="band-title">
                 {LAB_ARTICLE.failedHed}
               </h2>
               <p className="mt-3 max-w-[68ch] font-lora text-[16px] leading-[1.7] text-ink">
@@ -106,7 +111,8 @@ export default function LearnedEvaluatorPage() {
             </section>
 
             <section id="learned" className="mt-8" aria-labelledby="lab-learned">
-              <h2 id="lab-learned" className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
+              <p className="band-kicker">{LAB_ARTICLE.learnedKicker}</p>
+              <h2 id="lab-learned" className="band-title">
                 {LAB_ARTICLE.learnedHed}
               </h2>
               <p className="mt-3 max-w-[68ch] font-display text-[16px] italic leading-snug text-ink">
