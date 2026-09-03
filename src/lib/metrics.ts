@@ -140,9 +140,9 @@ export const METRICS = {
     value: "−143",
     unit: "Elo",
     owner: "Gate C",
-    condition: "50 000 nodes/move, 100 games",
+    condition: "50 000 nodes/move, 128 games",
     display: "−143 Elo @ 50k nodes",
-    note: "100 games · 50 000 nodes/move · fixed-N",
+    note: "128 games · 50 000 nodes/move · SPRT h0",
     kind: "benchmark" as const,
   },
 } as const;

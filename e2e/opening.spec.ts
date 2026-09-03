@@ -1000,12 +1000,13 @@ test.describe("Opening Preparation", () => {
     expect(Math.abs(board.x - engine.x)).toBeLessThanOrEqual(2);
 
     await page.goto("/lab/learned-evaluator");
-    await expect(page.getByRole("heading", { level: 1, name: /lost −143\.1 ±40\.5 Elo/i })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: /lost −143\.3 ±35\.4 Elo/i })).toBeVisible();
     await expect(page.getByTestId("evaluations-column")).toBeVisible();
-    await expect(page.getByTestId("evaluations-column")).toContainText(/50 000 nodes|50000 nodes|fixed-N/i);
+    await expect(page.getByTestId("evaluations-column")).toContainText(/50 000 nodes|50000 nodes/i);
     await expect(page.getByTestId("evaluations-net")).toContainText(/768x2x256/);
     await expect(page.getByTestId("evaluations-net")).toContainText(/2026-08-29/);
-    await expect(page.getByTestId("evaluations-column")).not.toContainText(/sprt:/i);
+    await expect(page.getByTestId("evaluations-column")).toContainText(/sprt:/i);
+    await expect(page.getByTestId("evaluations-column")).toContainText(/h0/i);
     const chart = page.getByTestId("elo-commits");
     await expect(chart).toBeVisible();
     await chart.scrollIntoViewIfNeeded();

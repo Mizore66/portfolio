@@ -103,11 +103,11 @@ export function ledgerDocument(): SiteDocument {
         heroEligible: true,
       }),
       claim("gateC", METRICS.gateC, {
-        method: "Fixed-N match, same search",
+        method: "SPRT (H0=0 Elo, H1=+10), same search, continued from the 100-game suite",
         baseline: "Handcrafted PeSTO",
         sample: METRICS.gateC.note,
         environment: "50 000 nodes/move",
-        date: "2026-08-29",
+        date: "2026-09-03",
         heroEligible: true,
       }),
       claim("graphragRetrieval", METRICS.graphragRetrieval, {

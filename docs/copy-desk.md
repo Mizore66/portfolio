@@ -27,7 +27,7 @@ Moves are facts. Annotations are voice. Chess is the content, never the lock.
 
 Monash University, Bachelor of Engineering (Honours), software. First Class. Graduated May 2026. WAM 82.1, CGPA 3.82.
 
-LEARNED is the masthead eval. Gate C at 50 000 nodes printed −143.1 ±40.5 Elo, 100 games, LLR −2.33. A loss at the spec cap is still a result. The match report lives at https://anasqumhiyeh.dev/lab/learned-evaluator
+LEARNED is the masthead eval. Gate C at 50 000 nodes printed −143.3 ±35.4 Elo, 128 games, LLR −2.99 (h0). A loss at the spec cap is still a result. The match report lives at https://anasqumhiyeh.dev/lab/learned-evaluator
 
 Open to early-career software engineering roles in fintech and AI infrastructure.
 

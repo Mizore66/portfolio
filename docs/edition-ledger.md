@@ -48,10 +48,14 @@ No retired pages.
 - Team size, duration, or “I owned X on a team of Y”
 - “Today I would…” on older exhibits
 - Work authorization, relocation, or target geography
-- Terminated SPRT / `RESULT: REJECTED` (Gate C is inconclusive)
+- Terminated SPRT billed as `RESULT: REJECTED` (the exhibit is SPRT **h0**, not that slogan)
 - Live demo hosts (there are none to sleep)
 - Empty Writing / blog section
 - Vanity counters or Lighthouse badges
+
+## Corrections (3 September 2026)
+
+- Gate C continued from the 100-game suite to SPRT **h0**: −143.3 ±35.4 Elo, 128 games, LLR −2.99. The incomplete 100-game snapshot stays on disk.
 
 ## Corrections (1 September 2026)
 

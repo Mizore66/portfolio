@@ -6,22 +6,21 @@ export const PHASE2_NET_ID = "nnue-lichess-cc0-768x2x256-32-1-2026-08-29";
 export const PHASE2_WEIGHTS_URL = `/engine/${PHASE2_NET_ID}.bin`;
 
 /**
- * From matches/gate-c-v1-50000.json.
- * Fixed-N at 50 000 nodes/move — SPRT unterminated (LLR −2.33 vs ±2.94).
- * Gate A at the same cap was 0.0 Elo. Deltas are rigorous; the 2200 is an anchor.
+ * From matches/gate-c-v1-50000-sprt.json.
+ * Continuation of the 100-game 50 000-node match to the SPRT bound.
+ * H0 = 0 Elo, H1 = +10 Elo. Decision h0. Gate A at the same cap was 0.0 Elo.
  */
 export const PHASE2_MATCH = {
   netId: PHASE2_NET_ID,
   suiteId: "openings-v1",
   nodes: 50_000,
-  games: 100,
-  wdl: { w: 1, d: 59, l: 40 },
-  elo: -143.1,
-  eloErr: 40.5,
-  llr: -2.33,
-  sprtLine: "sprt: -143.1 ±40.5 Elo, 100 games, LLR -2.33 (inconclusive)",
-  reportLine:
-    "fixed-N: −143.1 ±40.5 Elo @ 50000 nodes, 100 games, LLR −2.33 (inconclusive; SPRT unterminated)",
-  regime: "openings-v1 · 50000 nodes/move · 100 games · fixed-N",
-  decision: "inconclusive" as "h0" | "h1" | "inconclusive",
+  games: 128,
+  wdl: { w: 2, d: 74, l: 52 },
+  elo: -143.3,
+  eloErr: 35.4,
+  llr: -2.99,
+  sprtLine: "sprt: -143.3 ±35.4 Elo, 128 games, LLR -2.99 (h0)",
+  reportLine: "sprt: −143.3 ±35.4 Elo @ 50000 nodes, 128 games, LLR −2.99 (h0)",
+  regime: "openings-v1 · 50000 nodes/move · 128 games · SPRT h0",
+  decision: "h0" as "h0" | "h1" | "inconclusive",
 };

@@ -89,7 +89,7 @@ describe("SEO identity", () => {
   it("hands machines an Article node for the lab report", () => {
     const article = labArticleJsonLd();
     expect(article["@type"]).toBe("Article");
-    expect(article.headline).toMatch(/lost −143\.1 ±40\.5 Elo/);
+    expect(article.headline).toMatch(/lost −143\.3 ±35\.4 Elo/);
     expect(article.datePublished).toBe("2026-08-29");
     expect(article.url).toMatch(/\/lab\/learned-evaluator$/);
   });

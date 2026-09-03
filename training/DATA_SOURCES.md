@@ -45,7 +45,7 @@ Same CC0 dump, stricter cut. Receipt: `training/PROVENANCE-d12.json` (packs in `
 | Label convention | White POV centipawns (white-to-move mean +52cp, black-to-move mean +39cp); STM WDL = sigmoid(±cp / 410) |
 | Quiet | same filters as v1 |
 
-Playing-net identity for this ingest is `nnue-lichess-cc0-768x2x256-32-1-2026-08-29`. Progress gate passed (r vs SF 0.64, r vs PeSTO 0.70). Gate C @ 50k printed `fixed-N: −143.1 ±40.5 Elo`. LEARNED is the playing eval.
+Playing-net identity for this ingest is `nnue-lichess-cc0-768x2x256-32-1-2026-08-29`. Progress gate passed (r vs SF 0.64, r vs PeSTO 0.70). Gate C @ 50k printed `sprt: −143.3 ±35.4 Elo, 128 games, LLR −2.99 (h0)`. LEARNED is the playing eval.
 
 ## Phase 2b (later)
 

@@ -161,6 +161,33 @@ describe("Gate C — learned vs handcrafted", () => {
     expect(raw.elo.elo).toBeCloseTo(-143.1, 1);
     expect(raw.sprtLine).toMatch(/-143\.1/);
   });
+
+  it("has a terminated SPRT continuation of that 50k match", () => {
+    const raw = JSON.parse(
+      readFileSync(join(process.cwd(), "matches/gate-c-v1-50000-sprt.json"), "utf8"),
+    ) as {
+      nodes: number;
+      a: string;
+      b: string;
+      netId: string;
+      elo: { elo: number; wdl: { w: number; d: number; l: number }; games: number; decision: string };
+      stoppedEarly: boolean;
+      games: unknown[];
+      sprtLine: string;
+    };
+    expect(raw.nodes).toBe(50_000);
+    expect(raw.a).toBe("learned");
+    expect(raw.b).toBe("handcrafted");
+    expect(raw.netId).toBe("nnue-lichess-cc0-768x2x256-32-1-2026-08-29");
+    expect(raw.games).toHaveLength(128);
+    expect(raw.stoppedEarly).toBe(true);
+    expect(raw.elo.games).toBe(128);
+    expect(raw.elo.wdl).toEqual({ w: 2, d: 74, l: 52 });
+    expect(raw.elo.elo).toBeCloseTo(-143.3, 1);
+    expect(raw.elo.decision).toBe("h0");
+    expect(raw.sprtLine).toMatch(/-143\.3/);
+    expect(raw.sprtLine).toMatch(/\(h0\)/);
+  });
 });
 
 describe("eval filter pipeline", () => {
