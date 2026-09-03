@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { DeskCollage } from "@/components/opening/DeskCollage";
 import { FontLoader } from "@/components/opening/FontLoader";
+import { NewspaperPieceSprite } from "@/components/opening/NewspaperPiece";
 import { personJsonLd, websiteJsonLd, META_DESCRIPTION } from "@/lib/person";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
@@ -56,6 +57,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd()) }}
         />
         <FontLoader />
+        <NewspaperPieceSprite />
         <DeskCollage />
         {children}
         <p className="print-sheet-mark" aria-hidden="true">
