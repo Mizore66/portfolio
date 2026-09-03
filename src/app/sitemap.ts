@@ -35,11 +35,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.7,
     },
-    ...resumeData.projects.map((project) => ({
-      url: `${SITE_URL}/projects/${project.slug}`,
-      lastModified: parseFiledDate(project.date) ?? revised,
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    })),
+    ...resumeData.projects.flatMap((project) => {
+      const copy = published.projects.find((row) => row.slug === project.slug);
+      if (copy?.archived) return [];
+      return [
+        {
+          url: `${SITE_URL}/projects/${project.slug}`,
+          lastModified: parseFiledDate(project.date) ?? revised,
+          changeFrequency: "monthly" as const,
+          priority: 0.6,
+        },
+      ];
+    }),
   ];
 }

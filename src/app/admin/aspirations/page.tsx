@@ -8,6 +8,7 @@ export default async function AspirationsEditor() {
   return (
     <AdminFrame title="Aspirations">
       <AdminDirtyForm>
+        <input type="hidden" name="aspirations-present" value="1" />
         {doc.aspirations.map((item) => (
           <fieldset key={item.id} className="border-2 border-ink p-4">
             <legend className="px-2 font-mono text-[12px] uppercase tracking-[0.14em]">{item.id}</legend>

@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { postgresNeedsSsl, postgresUrl } from "@/lib/cms/env";
+import { hydrateDocument } from "@/lib/cms/hydrate";
 import { ledgerDocument } from "@/lib/cms/ledger";
 import { PREVIEW_COOKIE, SESSION_COOKIE, verifySession } from "@/lib/cms/session";
 import type { CmsStoreFile, SiteDocument } from "@/lib/cms/types";
@@ -102,9 +103,9 @@ async function writePostgres(doc: SiteDocument, action: string) {
 
 export async function getPublishedDocument(): Promise<SiteDocument> {
   const fromDb = await readPostgresPublished();
-  if (fromDb) return fromDb;
+  if (fromDb) return hydrateDocument(fromDb);
   const store = await readFileStore();
-  return store.published ?? ledgerDocument();
+  return hydrateDocument(store.published ?? ledgerDocument());
 }
 
 export async function getRenderableDocument(): Promise<SiteDocument> {
@@ -117,7 +118,8 @@ export async function getRenderableDocument(): Promise<SiteDocument> {
 
 export async function getRevision(id: string): Promise<SiteDocument | null> {
   const store = await readFileStore();
-  return store.revisions.find((row) => row.revisionId === id) ?? null;
+  const found = store.revisions.find((row) => row.revisionId === id) ?? null;
+  return found ? hydrateDocument(found) : null;
 }
 
 export async function restoreRevision(id: string): Promise<SiteDocument> {
@@ -131,7 +133,7 @@ export async function restoreRevision(id: string): Promise<SiteDocument> {
 
 export async function getDraftDocument(): Promise<SiteDocument> {
   const store = await readFileStore();
-  if (store.draft) return store.draft;
+  if (store.draft) return hydrateDocument(store.draft);
   return getPublishedDocument();
 }
 
@@ -139,11 +141,12 @@ export const HISTORY_CAP = 40;
 
 export async function getCmsState(): Promise<CmsStoreFile & { ledger: SiteDocument; backend: string }> {
   const store = await readFileStore();
-  const published = store.published ?? (await readPostgresPublished());
+  const publishedRaw = store.published ?? (await readPostgresPublished());
   return {
     ...store,
-    published,
-    draft: store.draft,
+    published: publishedRaw ? hydrateDocument(publishedRaw) : null,
+    draft: store.draft ? hydrateDocument(store.draft) : null,
+    revisions: store.revisions.map((row) => hydrateDocument(row)),
     ledger: ledgerDocument(),
     backend: postgresUrl() ? "postgres" : "file",
   };

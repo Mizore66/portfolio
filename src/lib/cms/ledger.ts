@@ -1,5 +1,6 @@
+import { resumeData } from "@/lib/data";
 import { METRICS, POSITIONING } from "@/lib/metrics";
-import { SITE_REVISED, type CmsClaim, type SiteDocument } from "@/lib/cms/types";
+import { SITE_REVISED, type CmsClaim, type CmsProjectCopy, type SiteDocument } from "@/lib/cms/types";
 
 function claim(
   id: string,
@@ -27,8 +28,29 @@ function claim(
     date: extra.date ?? "",
     caveat: extra.caveat ?? metric.note ?? "",
     heroEligible: extra.heroEligible ?? false,
+    archived: extra.archived ?? false,
     surfaces: extra.surfaces ?? (extra.heroEligible ? ["home", "opening", "resume"] : ["opening", "resume", "exhibit"]),
   };
+}
+
+function field(project: (typeof resumeData.projects)[number], key: keyof CmsProjectCopy): string {
+  return key in project && typeof project[key as keyof typeof project] === "string"
+    ? String(project[key as keyof typeof project])
+    : "";
+}
+
+function projectCopies(): CmsProjectCopy[] {
+  return resumeData.projects.map((project) => ({
+    slug: project.slug,
+    purpose: project.purpose,
+    impact: project.impact,
+    why: field(project, "why"),
+    judgment: field(project, "judgment"),
+    constraint: field(project, "constraint"),
+    limitation: field(project, "limitation"),
+    example: field(project, "example"),
+    archived: false,
+  }));
 }
 
 export function ledgerDocument(): SiteDocument {
@@ -132,7 +154,7 @@ export function ledgerDocument(): SiteDocument {
         date: "2025-12",
       }),
     ],
-    projects: [],
+    projects: projectCopies(),
   };
 }
 

@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { describe, expect, it, afterEach } from "vitest";
 import { configureEngine, playUci, startPos } from "../engine";
 import { OPENING_SUITE_V1 } from "./openings";
-import { runMatch } from "./runner";
+import { runMatch, continueMatch } from "./runner";
 import { addPair, emptyPenta, eloFromScore, reportElo } from "./sprt";
 
 afterEach(() => {
@@ -58,6 +58,31 @@ describe("Gate A — handcrafted vs handcrafted", () => {
       const g2 = report.games[pair * 2 + 1];
       expect(g1.aScore + g2.aScore).toBe(1);
     }
+  }, 30_000);
+
+  it("continues a mini match by wrapping the suite", () => {
+    const first = runMatch({
+      a: { evalMode: "handcrafted" },
+      b: { evalMode: "handcrafted" },
+      nodes: 48,
+      suite: "mini",
+      maxPly: 48,
+    });
+    const continued = continueMatch(
+      {
+        a: { evalMode: "handcrafted" },
+        b: { evalMode: "handcrafted" },
+        nodes: 48,
+        suite: "mini",
+        maxPly: 48,
+        openingCount: 1,
+        maxGames: 18,
+      },
+      first,
+    );
+    expect(continued.games).toHaveLength(18);
+    expect(continued.elo.elo).toBeCloseTo(0, 8);
+    expect(continued.games.at(-1)?.openingIndex).toBe(8);
   }, 30_000);
 
   it("has a 1000-node openings-v1 receipt at 0 Elo", () => {

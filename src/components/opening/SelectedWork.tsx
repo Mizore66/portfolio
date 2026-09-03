@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { DeskHover } from "@/components/opening/DeskHover";
 import { EvidenceMeta } from "@/components/opening/EvidenceMeta";
+import { getRenderableDocument } from "@/lib/cms/store";
+import { overlayProjects } from "@/lib/cms/overlay";
 import { resumeData } from "@/lib/data";
 import {
   EVIDENCE_TIER,
@@ -18,24 +20,23 @@ import { cn } from "@/lib/utils";
 
 const LAB = new Set<string>(LAB_PROJECT_SLUGS);
 
-function visibleProjects(path: WorkPath | "all") {
-  return resumeData.projects.filter(
-    (p) => !LAB.has(p.slug) && (path === "all" || projectPath(p.slug) === path),
+export async function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }) {
+  const doc = await getRenderableDocument();
+  const projects = overlayProjects(resumeData.projects, doc);
+  const visibleFor = (workPath: WorkPath | "all") =>
+    projects.filter((p) => !LAB.has(p.slug) && (workPath === "all" || projectPath(p.slug) === workPath));
+  const featured = FEATURED_PROJECT_SLUGS.map((slug) => projects.find((p) => p.slug === slug)).filter(
+    (project): project is NonNullable<typeof project> =>
+      Boolean(project) && (path === "all" || projectPath(project.slug) === path),
   );
-}
-
-export function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }) {
-  const featured = FEATURED_PROJECT_SLUGS.map(
-    (slug) => resumeData.projects.find((p) => p.slug === slug)!,
-  ).filter((project) => path === "all" || projectPath(project.slug) === path);
-  const archive = resumeData.projects.filter(
+  const archive = projects.filter(
     (p) =>
       !FEATURED_PROJECT_SLUGS.includes(p.slug as (typeof FEATURED_PROJECT_SLUGS)[number]) &&
       !LAB.has(p.slug) &&
       (path === "all" || projectPath(p.slug) === path),
   );
-  const mlCount = visibleProjects("ML / data systems").length;
-  const productCount = visibleProjects("Product / backend").length;
+  const mlCount = visibleFor("ML / data systems").length;
+  const productCount = visibleFor("Product / backend").length;
 
   return (
     <section id="work" data-testid="selected-work" className="recruiter-band" aria-labelledby="work-heading">

@@ -44,6 +44,15 @@ test.describe("round five invariants", () => {
     );
   });
 
+  test("the hero board can pause the Italian autoplay", async ({ page }) => {
+    await page.goto("/");
+    const play = page.getByTestId("hero-play");
+    await expect(play).toBeVisible();
+    await expect(play).toHaveAttribute("aria-pressed", "true");
+    await play.click();
+    await expect(play).toHaveAttribute("aria-pressed", "false");
+  });
+
   test("hero CTAs do not steal arrow keys from the page", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");

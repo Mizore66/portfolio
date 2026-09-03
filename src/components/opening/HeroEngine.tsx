@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { BoardDiagram } from "@/components/opening/BoardDiagram";
 import { GlassEngine, useEngineSearch, useNnueWeights } from "@/components/opening/GlassEngine";
 import { BROADSHEET } from "@/content/opening";
@@ -9,11 +9,13 @@ import { formatEvalCp } from "@/lib/chess/engine-view";
 import { PHASE2_DEFAULT_EVAL, PHASE2_EXHIBITS } from "@/lib/chess/phase2";
 import { isChessKeyTarget } from "@/lib/chess/keys";
 import { emitDesk } from "@/lib/desk";
+import { playDelayMs } from "@/lib/opening/motion";
 import {
   collectPlies,
   FLAGSHIP_ID,
   getNode,
   nextMainlineBook,
+  ROOT_ID,
   sideToMove,
   stepMainline,
 } from "@/lib/opening/tree";
@@ -22,16 +24,29 @@ export function HeroEngine({ staticBoard }: { staticBoard: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [id, setId] = useState(FLAGSHIP_ID);
   const [evalMode, setEvalMode] = useState<EvalMode>(PHASE2_DEFAULT_EVAL);
+  const [playing, setPlaying] = useState(false);
+  const playingRef = useRef(false);
 
   useEffect(() => {
     setReady(true);
   }, []);
 
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const start = window.setTimeout(() => setPlaying(true), 900);
+    return () => window.clearTimeout(start);
+  }, []);
+
+  useEffect(() => {
+    playingRef.current = playing;
+  }, [playing]);
+
+  useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
       if (!isChessKeyTarget(e.target)) return;
       e.preventDefault();
+      setPlaying(false);
       setId((current) => stepMainline(current, e.key === "ArrowRight" ? 1 : -1));
     }
     window.addEventListener("keydown", onKey);
@@ -47,8 +62,27 @@ export function HeroEngine({ staticBoard }: { staticBoard: ReactNode }) {
   const using: EvalMode = wantLearned && net ? "learned" : "handcrafted";
   const { info, down } = useEngineSearch(plies, side, using, net);
 
-  const onPrev = useCallback(() => setId((current) => stepMainline(current, -1)), []);
-  const onNext = useCallback(() => setId((current) => stepMainline(current, 1)), []);
+  const onPrev = useCallback(() => {
+    setPlaying(false);
+    setId((current) => stepMainline(current, -1));
+  }, []);
+  const onNext = useCallback(() => {
+    setPlaying(false);
+    setId((current) => stepMainline(current, 1));
+  }, []);
+
+  useEffect(() => {
+    if (!playing) return;
+    const wait = playDelayMs(Math.max(1, node.plies.length));
+    const t = window.setTimeout(() => {
+      if (!playingRef.current) return;
+      setId((current) => {
+        const next = stepMainline(current, 1);
+        return next === current ? ROOT_ID : next;
+      });
+    }, wait);
+    return () => window.clearTimeout(t);
+  }, [playing, id, node.plies.length]);
 
   useEffect(() => {
     emitDesk({
@@ -90,6 +124,17 @@ export function HeroEngine({ staticBoard }: { staticBoard: ReactNode }) {
           staticBoard
         )}
       </div>
+      <p className="mt-3">
+        <button
+          type="button"
+          className="masthead-chip"
+          data-testid="hero-play"
+          aria-pressed={playing}
+          onClick={() => setPlaying((value) => !value)}
+        >
+          {playing ? BROADSHEET.pauseGame : BROADSHEET.playInvite}
+        </button>
+      </p>
       <p className="hero-engine-chip mt-3" data-testid="hero-engine-chip">
         {BROADSHEET.heroResultChip}
       </p>

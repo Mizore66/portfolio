@@ -56,6 +56,8 @@ describe("SEO identity", () => {
     expect(ld.name).toBe(PERSON_NAME);
     expect(ld.alternateName).toBe(PERSON_ALT_NAME);
     expect(ld.alumniOf).toEqual({ "@type": "CollegeOrUniversity", name: "Monash University" });
+    expect(ld.jobTitle).toMatch(/payment, laboratory, and retrieval/);
+    expect(ld.homeLocation.address.addressLocality).toBe("Bandar Sunway");
     expect(ld.sameAs).toContain("https://github.com/Mizore66");
     expect(ld.sameAs).toContain("https://linkedin.com/in/anasqumhiyeh");
     expect(META_DESCRIPTION.length).toBeLessThanOrEqual(160);

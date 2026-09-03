@@ -53,6 +53,7 @@ test.describe("document mode", () => {
     await expect(page.getByTestId("masthead-proof").locator(".metric-row").nth(2)).toHaveText(
       "100M-event capacity benchmark",
     );
+    await expect(page.getByTestId("hero-claim-notes")).toContainText(/Production defect count/);
     await expect(page.getByTestId("masthead-tagline")).toContainText(/survive measurement/);
   });
 });

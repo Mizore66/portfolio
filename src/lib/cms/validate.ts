@@ -52,15 +52,21 @@ export function validateDocument(doc: SiteDocument): string[] {
     }
   }
   for (const id of REQUIRED_CLAIM_IDS) {
-    if (!doc.claims.some((claim) => claim.id === id)) {
+    const row = doc.claims.find((claim) => claim.id === id);
+    if (!row) {
       errors.push(`Required claim ${id} is missing. Homepage, Opening Preparation, and the résumé still cite it.`);
+    } else if (row.archived) {
+      errors.push(`Required claim ${id} cannot be archived.`);
     }
   }
   const knownSlugs = new Set(resumeData.projects.map((p) => p.slug));
+  const slugs = new Set<string>();
   for (const project of doc.projects) {
     if (!knownSlugs.has(project.slug)) {
       errors.push(`Unknown project slug ${project.slug}.`);
     }
+    if (slugs.has(project.slug)) errors.push(`Duplicate project slug ${project.slug}.`);
+    slugs.add(project.slug);
   }
   return errors;
 }

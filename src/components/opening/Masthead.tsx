@@ -3,9 +3,10 @@ import { RecruiterNav } from "@/components/opening/RecruiterNav";
 import { BROADSHEET } from "@/content/opening";
 import { getRenderableDocument } from "@/lib/cms/store";
 import { activeAvailability } from "@/lib/cms/ledger";
+import { heroProofRows } from "@/lib/cms/overlay";
 import { resumeData } from "@/lib/data";
 import { formatClaimDate } from "@/lib/filed";
-import { HERO_PROOF, EVIDENCE_TIER } from "@/lib/metrics";
+import { EVIDENCE_TIER } from "@/lib/metrics";
 import { SITE_HOST } from "@/lib/site";
 
 function Contacts() {
@@ -58,6 +59,7 @@ export async function HeroIdentity() {
   const dek = site.profile.dek;
   const tagline = site.profile.tagline;
   const availability = activeAvailability(site);
+  const proof = heroProofRows(site);
 
   return (
     <div className="hero-left" data-testid="hero-identity">
@@ -75,23 +77,39 @@ export async function HeroIdentity() {
       </div>
       <div data-testid="masthead-proof" className="hero-proof-wrap">
         <ul className="hero-proof px-4 sm:px-6" aria-label="Filed proof">
-          {HERO_PROOF.map((item) => {
-            const claim = site.claims.find((row) => row.id === item.id);
-            const label = claim?.id === "monashRetrieval" ? item.label : (claim?.display ?? item.label);
-            const caveat = claim?.caveat || item.note;
-            const date = claim?.date ? formatClaimDate(claim.date) : "";
+          {proof.map((item, index) => {
+            const caveat = item.note;
+            const date = item.date ? formatClaimDate(item.date) : "";
             const note = [item.kind === "production" ? item.owner : `${item.owner} · ${caveat}`, date]
               .filter(Boolean)
               .join(" · ");
             return (
               <li key={item.id}>
                 <p className="hero-proof-kicker">{EVIDENCE_TIER[item.kind]}</p>
-                <p className="metric-row">{label}</p>
+                <p className="metric-row-line">
+                  <span className="metric-row">{item.label}</span>
+                  <a
+                    className="claim-dagger"
+                    href={`#claim-note-${item.id}`}
+                    aria-label={`Method for ${item.label}`}
+                  >
+                    <sup>{index + 1}</sup>
+                  </a>
+                </p>
                 <EvidenceMeta note={note} kind={item.kind} />
               </li>
             );
           })}
         </ul>
+        <ol className="hero-claim-notes px-4 sm:px-6" data-testid="hero-claim-notes">
+          {proof.map((item, index) => (
+            <li key={item.id} id={`claim-note-${item.id}`}>
+              <span className="claim-note-mark">{index + 1}.</span>{" "}
+              {item.method || item.sample || item.caveat}
+              {item.baseline ? ` Baseline: ${item.baseline}.` : ""}
+            </li>
+          ))}
+        </ol>
         <div className="hero-cta-block px-4 pb-5 sm:px-6">
           <p
             data-testid="masthead-availability"

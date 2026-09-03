@@ -13,6 +13,7 @@ export default async function ClaimsEditor() {
         caveat, environment, and date.
       </p>
       <AdminDirtyForm>
+        <input type="hidden" name="claims-present" value="1" />
         {doc.claims.map((claim, index) => {
           const missing = claim.heroEligible ? claimHeroReady(claim) : [];
           return (
@@ -20,6 +21,7 @@ export default async function ClaimsEditor() {
               <summary className="cursor-pointer font-mono text-[12px] uppercase tracking-[0.14em]">
                 {claim.id}
                 {claim.heroEligible ? " · hero" : ""}
+                {claim.archived ? " · archived" : ""}
               </summary>
               <fieldset className="mt-4 grid gap-3 border-0 p-0">
                 <legend className="sr-only">{claim.id}</legend>
@@ -54,6 +56,10 @@ export default async function ClaimsEditor() {
                 <label className="flex-row items-center gap-2 normal-case tracking-normal">
                   <input type="checkbox" name={`claim-${claim.id}-hero`} defaultChecked={claim.heroEligible} />
                   Hero eligible
+                </label>
+                <label className="flex-row items-center gap-2 normal-case tracking-normal">
+                  <input type="checkbox" name={`claim-${claim.id}-archived`} defaultChecked={claim.archived} />
+                  Archive (hide from public surfaces)
                 </label>
                 {missing.length ? (
                   <p className="admin-error">Missing for hero: {missing.join(", ")}</p>

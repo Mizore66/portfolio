@@ -9,6 +9,7 @@ export default async function ProfileEditor() {
   return (
     <AdminFrame title="Profile">
       <AdminDirtyForm>
+        <input type="hidden" name="profile-present" value="1" />
         <label>
           Role line
           <input name="dek" defaultValue={p.dek} />

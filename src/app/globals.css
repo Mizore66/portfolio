@@ -2294,6 +2294,38 @@ h1, h2, h3 {
   letter-spacing: 0.04em;
   color: var(--score-red);
 }
+.metric-row-line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.2em;
+}
+.claim-dagger {
+  color: var(--book-blue);
+  text-decoration: none;
+  font-family: var(--font-display), serif;
+}
+.claim-dagger:hover,
+.claim-dagger:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.hero-claim-notes {
+  margin: var(--space-3) 0 0;
+  max-width: 68ch;
+  padding-left: 1.4rem;
+  font-family: var(--font-display), serif;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--faded);
+}
+.hero-claim-notes li {
+  margin-top: 0.35em;
+}
+.claim-note-mark {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
 @media (max-width: 979px) {
   .hero-left,
   .hero-proof-wrap {

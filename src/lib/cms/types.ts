@@ -17,6 +17,7 @@ export type CmsClaim = {
   date: string;
   caveat: string;
   heroEligible: boolean;
+  archived: boolean;
   surfaces: ("home" | "opening" | "resume" | "exhibit" | "lab")[];
 };
 
@@ -41,6 +42,16 @@ export type CmsProfile = {
   location: string;
 };
 
+export const PROJECT_COPY_KEYS = [
+  "purpose",
+  "impact",
+  "why",
+  "judgment",
+  "constraint",
+  "limitation",
+  "example",
+] as const;
+
 export type CmsProjectCopy = {
   slug: string;
   purpose: string;
@@ -50,6 +61,7 @@ export type CmsProjectCopy = {
   constraint: string;
   limitation: string;
   example: string;
+  archived: boolean;
 };
 
 export type SiteDocument = {

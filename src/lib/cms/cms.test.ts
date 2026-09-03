@@ -2,10 +2,14 @@ import { describe, expect, it } from "vitest";
 import { originMatchesHost } from "@/lib/cms/origin";
 import { postgresNeedsSsl, postgresUrl, postgresUrlSource } from "@/lib/cms/env";
 import { clientIpFrom, nextAttempt, rateLimitKey } from "@/lib/cms/auth-store";
+import { applyFormToDocument } from "@/lib/cms/form";
+import { parseImportedDocument } from "@/lib/cms/import-document";
 import { ledgerDocument } from "@/lib/cms/ledger";
-import { documentDiff } from "@/lib/cms/diff";
+import { overlayProject } from "@/lib/cms/overlay";
+import { documentDiff, groupedDocumentDiff } from "@/lib/cms/diff";
 import { claimHeroReady, validateDocument } from "@/lib/cms/validate";
 import { parseSessionToken } from "@/lib/cms/session-mac";
+import { resumeData } from "@/lib/data";
 
 describe("cms ledger", () => {
   it("seeds claims from the TypeScript registry", () => {
@@ -56,9 +60,75 @@ describe("cms ledger", () => {
     expect(validateDocument(missing).join(" ")).toMatch(/setelDefects/);
     const ghost = {
       ...doc,
-      projects: [{ slug: "not-a-project", purpose: "", impact: "", why: "", judgment: "", constraint: "", limitation: "", example: "" }],
+      projects: [{ slug: "not-a-project", purpose: "", impact: "", why: "", judgment: "", constraint: "", limitation: "", example: "", archived: false }],
     };
     expect(validateDocument(ghost).join(" ")).toMatch(/Unknown project slug/);
+    const archivedRequired = {
+      ...doc,
+      claims: doc.claims.map((claim) => (claim.id === "setelDefects" ? { ...claim, archived: true } : claim)),
+    };
+    expect(validateDocument(archivedRequired).join(" ")).toMatch(/cannot be archived/);
+  });
+
+  it("seeds project copy from the résumé ledger", () => {
+    const doc = ledgerDocument();
+    expect(doc.projects.some((p) => p.slug === "veridian" && p.purpose.length > 20)).toBe(true);
+    expect(doc.claims.every((c) => c.archived === false)).toBe(true);
+  });
+
+  it("does not clear hero eligibility when a profile form is posted", () => {
+    const published = ledgerDocument();
+    const form = new FormData();
+    form.set("profile-present", "1");
+    form.set("dek", "Draft dek");
+    form.set("tagline", published.profile.tagline);
+    form.set("desksLine", published.profile.desksLine);
+    form.set("howIWork", published.profile.howIWork);
+    form.set("availability", published.profile.availability);
+    form.set("recruiterBio", published.profile.recruiterBio);
+    form.set("followerBio", published.profile.followerBio);
+    form.set("location", published.profile.location);
+    const next = applyFormToDocument(form, published);
+    expect(next.profile.dek).toBe("Draft dek");
+    expect(next.claims.find((c) => c.id === "setelDefects")?.heroEligible).toBe(true);
+  });
+
+  it("groups diffs by claim and overlays archived projects", () => {
+    const published = ledgerDocument();
+    const draft = {
+      ...published,
+      claims: published.claims.map((c) => (c.id === "gateC" ? { ...c, caveat: "Draft caveat" } : c)),
+      projects: published.projects.map((p) => (p.slug === "veridian" ? { ...p, purpose: "Draft purpose" } : p)),
+    };
+    const groups = groupedDocumentDiff(published, draft);
+    expect(groups.some((g) => g.heading === "Claim · gateC")).toBe(true);
+    expect(groups.some((g) => g.heading === "Project · veridian")).toBe(true);
+    expect(overlayProject(resumeData.projects[0]!, published)?.slug).toBe(resumeData.projects[0]!.slug);
+    const hidden = overlayProject(
+      resumeData.projects[0]!,
+      {
+        ...published,
+        projects: published.projects.map((p) =>
+          p.slug === resumeData.projects[0]!.slug ? { ...p, archived: true } : p,
+        ),
+      },
+    );
+    expect(hidden).toBeNull();
+  });
+
+  it("imports an export wrapper into a hydrated draft", () => {
+    const published = ledgerDocument();
+    const raw = JSON.stringify({
+      exportedAt: "2026-09-03T00:00:00.000Z",
+      published: { ...published, profile: { ...published.profile, dek: "Imported dek" } },
+    });
+    const parsed = parseImportedDocument(raw);
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) {
+      expect(parsed.doc.profile.dek).toBe("Imported dek");
+      expect(parsed.doc.projects.some((p) => p.slug === "veridian")).toBe(true);
+    }
+    expect(parseImportedDocument("{not json").ok).toBe(false);
   });
 });
 
