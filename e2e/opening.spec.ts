@@ -1123,7 +1123,7 @@ test.describe("Opening Preparation", () => {
     );
 
     const faded = await page.locator(".text-faded").first().evaluate((el) => getComputedStyle(el).color);
-    expect(faded).toBe("rgb(107, 99, 83)");
+    expect(faded).toBe("rgb(83, 76, 64)");
 
     const h1 = (await page.locator("h1").boundingBox())!;
     const drop = (await page.locator(".drop-cap").first().boundingBox())!;

@@ -39,7 +39,7 @@ test.describe("round five invariants", () => {
     );
     await expect(page.locator("#chapter-nf3")).toContainText("post-release acceptance cases");
     await expect(page.locator("#chapter-nf3")).not.toContainText(/converting paid MATLAB licences/i);
-    await expect(page.getByTestId("news-clipping").first()).toContainText(
+    await expect(page.locator("#chapter-nf3 [data-testid='news-clipping']")).toContainText(
       "PETRONAS TAKES ON SOFTWARE ENGINEERING INTERN",
     );
   });
@@ -83,9 +83,8 @@ test.describe("round five invariants", () => {
   test("robots and export keep the editor private", async ({ request }) => {
     const robots = await request.get("/robots.txt");
     expect(await robots.text()).toMatch(/Disallow: \/admin/);
-    const exported = await request.get("/admin/export");
-    expect(exported.status()).toBeGreaterThanOrEqual(300);
-    expect(exported.status()).toBeLessThan(400);
+    const exported = await request.get("/admin/export", { maxRedirects: 0 });
+    expect([302, 303, 307, 308]).toContain(exported.status());
     const pdf = await request.get("/print-edition");
     expect(pdf.headers()["cache-control"]).toMatch(/no-store/);
     const again = await request.get("/print-edition");
