@@ -20,12 +20,12 @@ export function overlayProject<T extends { slug: string }>(project: T, doc: Site
   const copy = doc.projects.find((row) => row.slug === project.slug);
   if (copy?.archived) return null;
   if (!copy) return project;
-  const next = { ...project } as T & Record<string, string>;
+  const patch: Record<string, string> = {};
   for (const key of COPY_KEYS) {
     const value = copy[key].trim();
-    if (value) next[key] = value;
+    if (value) patch[key] = value;
   }
-  return next;
+  return { ...project, ...patch };
 }
 
 export function overlayProjects<T extends { slug: string }>(projects: readonly T[], doc: SiteDocument): T[] {

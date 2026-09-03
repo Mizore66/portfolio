@@ -26,8 +26,10 @@ export async function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }
   const visibleFor = (workPath: WorkPath | "all") =>
     projects.filter((p) => !LAB.has(p.slug) && (workPath === "all" || projectPath(p.slug) === workPath));
   const featured = FEATURED_PROJECT_SLUGS.map((slug) => projects.find((p) => p.slug === slug)).filter(
-    (project): project is NonNullable<typeof project> =>
-      Boolean(project) && (path === "all" || projectPath(project.slug) === path),
+    (project): project is NonNullable<typeof project> => {
+      if (!project) return false;
+      return path === "all" || projectPath(project.slug) === path;
+    },
   );
   const archive = projects.filter(
     (p) =>
