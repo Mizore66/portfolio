@@ -17,6 +17,7 @@ export type CmsClaim = {
   date: string;
   caveat: string;
   heroEligible: boolean;
+  surfaces: ("home" | "opening" | "resume" | "exhibit" | "lab")[];
 };
 
 export type CmsAspiration = {

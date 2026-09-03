@@ -1,4 +1,13 @@
 import type { CmsClaim, SiteDocument } from "@/lib/cms/types";
+import { resumeData } from "@/lib/data";
+
+export const REQUIRED_CLAIM_IDS = [
+  "setelDefects",
+  "monashRetrieval",
+  "leadThroughput",
+  "gateC",
+  "veridianUptime",
+] as const;
 
 export function claimHeroReady(claim: CmsClaim): string[] {
   const missing: string[] = [];
@@ -34,9 +43,23 @@ export function validateDocument(doc: SiteDocument): string[] {
         errors.push(`${claim.id} is marked heroEligible but missing ${missing.join(", ")}.`);
       }
     }
+    if (claim.heroEligible && claim.surfaces && !claim.surfaces.includes("home")) {
+      errors.push(`${claim.id} is heroEligible but not allowed on home.`);
+    }
     const epistemic = claimEvidenceReady(claim);
     if (epistemic.length) {
       errors.push(`${claim.id} is a ${claim.kind} claim missing ${epistemic.join(", ")}.`);
+    }
+  }
+  for (const id of REQUIRED_CLAIM_IDS) {
+    if (!doc.claims.some((claim) => claim.id === id)) {
+      errors.push(`Required claim ${id} is missing. Homepage, Opening Preparation, and the résumé still cite it.`);
+    }
+  }
+  const knownSlugs = new Set(resumeData.projects.map((p) => p.slug));
+  for (const project of doc.projects) {
+    if (!knownSlugs.has(project.slug)) {
+      errors.push(`Unknown project slug ${project.slug}.`);
     }
   }
   return errors;

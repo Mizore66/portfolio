@@ -181,3 +181,15 @@ describe("quiz and glass-case copy", () => {
     expect(BROADSHEET.settling).toMatch(/settling/);
   });
 });
+
+describe("canonical desk facts", () => {
+  it("does not let Opening Preparation redefine the Petronas migration", () => {
+    const node = getNode("nf3");
+    const blob = `${node.fact}\n${node.commentary}\n${node.clipping?.headline}`;
+    expect(blob).toMatch(/Replaced MATLAB-dependent back-end functionality with Python packages/);
+    expect(blob).toMatch(/post-release acceptance cases/);
+    expect(blob).not.toMatch(/converting paid MATLAB licences/i);
+    expect(blob).not.toMatch(/tests that proved it/i);
+    expect(node.clipping?.headline).toBe("PETRONAS TAKES ON SOFTWARE ENGINEERING INTERN");
+  });
+});

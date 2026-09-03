@@ -1,17 +1,18 @@
 import { AdminFrame } from "@/app/admin/layout";
-import { restoreRevisionAction } from "@/lib/cms/actions";
+import { restoreAndPublishAction, restoreRevisionAction } from "@/lib/cms/actions";
 import { getCmsState } from "@/lib/cms/store";
 
 export default async function HistoryEditor({
   searchParams,
 }: {
-  searchParams: Promise<{ restored?: string; error?: string }>;
+  searchParams: Promise<{ restored?: string; published?: string; error?: string }>;
 }) {
   const q = await searchParams;
   const state = await getCmsState();
   return (
     <AdminFrame title="Version history">
       {q.restored ? <p className="font-display text-[16px] text-book-blue">Restored into draft.</p> : null}
+      {q.published ? <p className="font-display text-[16px] text-book-blue">Restored and published.</p> : null}
       {q.error ? <p className="admin-error">{q.error}</p> : null}
       <p className="max-w-[62ch] font-display text-[16px] text-ink">
         Every save and publish keeps a snapshot. Restore copies a snapshot into draft; publish to put it on the
@@ -32,6 +33,12 @@ export default async function HistoryEditor({
                 <input type="hidden" name="revisionId" value={row.revisionId} />
                 <button type="submit" className="masthead-chip">
                   Restore to draft
+                </button>
+              </form>
+              <form action={restoreAndPublishAction} className="mt-2">
+                <input type="hidden" name="revisionId" value={row.revisionId} />
+                <button type="submit" className="masthead-chip masthead-chip-primary">
+                  Restore and publish
                 </button>
               </form>
             </li>

@@ -221,7 +221,7 @@ export default async function ProjectPage({
                   </ExhibitSection>
                 ) : null}
                 {retrospective ? (
-                  <ExhibitSection id="retrospective" title="What I would change now">
+                  <ExhibitSection id="retrospective" title="What I would change now" prominent>
                     <p
                       data-testid="exhibit-retrospective"
                       className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug text-ink"

@@ -14,4 +14,12 @@ test.describe("admin editor", () => {
     await expect(page).toHaveURL(/\/admin\/login/);
     await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
   });
+
+  test("the login desk is noindexed and has no public registration", async ({ page }) => {
+    await page.goto("/admin/login");
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+    await expect(page.getByText(/No public registration/)).toBeVisible();
+    await expect(page.locator("a[href*='register']")).toHaveCount(0);
+    await expect(page.locator("form")).toHaveCount(1);
+  });
 });

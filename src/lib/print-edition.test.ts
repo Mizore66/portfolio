@@ -47,7 +47,8 @@ describe("print edition", () => {
     const text = new TextDecoder().decode(buildPrintEditionPdf());
     expect(text).toContain("Authorization and capture");
     expect(text).toContain("separate observation");
-    expect(text).toContain("Python");
+    expect(text).toContain("Replaced MATLAB-dependent back-end functionality");
+    expect(text).not.toContain("converting paid MATLAB");
     expect(text).toContain("LangGraph");
     expect(text).not.toContain("Flutter");
     expect(text).not.toContain("JQuery");

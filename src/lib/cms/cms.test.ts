@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { originMatchesHost } from "@/lib/cms/origin";
 import { postgresNeedsSsl, postgresUrl, postgresUrlSource } from "@/lib/cms/env";
 import { ledgerDocument } from "@/lib/cms/ledger";
 import { documentDiff } from "@/lib/cms/diff";
@@ -46,6 +47,17 @@ describe("cms ledger", () => {
     const rows = documentDiff(published, draft);
     expect(rows.some((row) => row.path === "profile.dek" && row.to === "Draft dek")).toBe(true);
   });
+
+  it("refuses to drop a required claim or invent a project slug", () => {
+    const doc = ledgerDocument();
+    const missing = { ...doc, claims: doc.claims.filter((claim) => claim.id !== "setelDefects") };
+    expect(validateDocument(missing).join(" ")).toMatch(/setelDefects/);
+    const ghost = {
+      ...doc,
+      projects: [{ slug: "not-a-project", purpose: "", impact: "", why: "", judgment: "", constraint: "", limitation: "", example: "" }],
+    };
+    expect(validateDocument(ghost).join(" ")).toMatch(/Unknown project slug/);
+  });
 });
 
 describe("cms postgres env", () => {
@@ -63,5 +75,14 @@ describe("cms postgres env", () => {
     const env = { DATABASE_URL: "https://abcd.supabase.co", SUPABASE_URL: "https://abcd.supabase.co" };
     expect(postgresUrlSource(env)).toBeNull();
     expect(postgresUrl(env)).toBeUndefined();
+  });
+});
+
+describe("cms origin", () => {
+  it("rejects a cross-origin mutation host", () => {
+    expect(originMatchesHost(null, "anasqumhiyeh.dev")).toBe(true);
+    expect(originMatchesHost("https://anasqumhiyeh.dev", "anasqumhiyeh.dev")).toBe(true);
+    expect(originMatchesHost("https://evil.example", "anasqumhiyeh.dev")).toBe(false);
+    expect(originMatchesHost("not-a-url", "anasqumhiyeh.dev")).toBe(false);
   });
 });

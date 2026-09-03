@@ -1,6 +1,5 @@
 import { BROADSHEET } from "@/content/opening";
 import { resumeData } from "@/lib/data";
-import { POSITIONING } from "@/lib/metrics";
 
 export function FooterStrip() {
   return (
@@ -23,7 +22,6 @@ export function FooterStrip() {
         <span aria-hidden="true"> · </span>
         <a href={BROADSHEET.colophonHref}>{BROADSHEET.colophonKicker}</a>
       </p>
-      <p className="mt-6 font-mono text-[12px] leading-relaxed text-faded">{POSITIONING.nameNote}</p>
       <p className="mt-6 font-display text-[18px] italic text-score-red">1–0</p>
     </section>
   );

@@ -270,7 +270,6 @@ export const GlassEngine = memo(function GlassEngine({
   const mode = evalMode ?? PHASE2_DEFAULT_EVAL;
   const usingLearned = info?.evalMode === "learned";
   const pvText = line.pv.length ? numberPv(line.pv, side, moveNumber) : "…";
-  const settling = !down && (line.settling || (!info && PHASE2_EXHIBITS));
   const settled = Boolean(!down && info && !info.thinking && !line.settling);
   const announcement = down
     ? BROADSHEET.engineDown
@@ -351,9 +350,7 @@ export const GlassEngine = memo(function GlassEngine({
             ? `d${info.depth} · ${info.nps.toLocaleString()} n/s${info.thinking ? " · …" : ""}`
             : down
               ? "—"
-              : settling
-                ? BROADSHEET.settling
-                : BROADSHEET.searching}
+              : BROADSHEET.searching}
         </p>
       </div>
       {down ? (

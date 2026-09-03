@@ -6,7 +6,7 @@ I like systems that have to survive measurement.
 
 **[Opening Preparation](https://anasqumhiyeh.dev)** is the paper. Moves are facts. Annotations are voice. Chess is the content, never the lock.
 
-Open to software engineering roles in fintech, ML infrastructure, and data platforms.
+Open to software engineering roles across fintech, ML infrastructure, and data platforms.
 
 Internships and contract roles across production systems at Setel, Western Digital, Petronas, and Monash University. Professional work is summarized on the paper; internal screenshots remain private.
 

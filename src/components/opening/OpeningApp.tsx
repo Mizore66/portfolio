@@ -520,7 +520,7 @@ export function OpeningApp({
               className="col-stack w-full shrink-0 min-[980px]:w-[min(520px,46%)] max-[699px]:contents"
             >
               <div className="flex flex-col gap-3 min-[980px]:gap-4 min-[980px]:sticky min-[980px]:top-3 newsprint-sticky z-10 max-[699px]:contents">
-                <div className="board-engine-cluster" data-testid="board-engine-cluster">
+                <div className="board-engine-cluster" data-testid="board-engine-cluster" data-chess-keys>
                 <div
                   data-sticky-board=""
                   onClick={

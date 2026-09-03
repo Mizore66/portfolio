@@ -154,6 +154,21 @@ export async function restoreRevisionAction(formData: FormData): Promise<void> {
   redirect("/admin/history?restored=1");
 }
 
+export async function restoreAndPublishAction(formData: FormData): Promise<void> {
+  await assertSameOrigin();
+  await requireAdmin();
+  const id = String(formData.get("revisionId") ?? "");
+  if (!id) redirect("/admin/history?error=missing");
+  const draft = await restoreRevision(id);
+  const errors = validateDocument(draft);
+  if (errors.length) {
+    redirect(`/admin/history?error=${encodeURIComponent(errors[0] ?? "invalid")}`);
+  }
+  await publishDocument(draft);
+  revalidatePublicSurfaces();
+  redirect("/admin/history?published=1");
+}
+
 export async function enablePreviewAction(): Promise<void> {
   await assertSameOrigin();
   await requireAdmin();

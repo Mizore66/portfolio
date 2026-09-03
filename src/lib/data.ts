@@ -1,5 +1,6 @@
 import type { Apparatus, ApparatusSpec } from "@/lib/opening/types";
 import { CIRCUITMIND_LINE, MIRRORFI_VAULT, RISK_ENGINE, LEADS_HALL, VERIDIAN_PLANT, VERIDIAN_STILL, VERIDIAN_EXCHANGE } from "@/content/project-figures";
+import { DESKS } from "@/lib/canonical";
 import { classifiedShort, METRICS, POSITIONING, RETRIEVAL_SPLIT } from "@/lib/metrics";
 
 export function repoArtifacts(github: string, name?: string): { label: string; href: string }[] {
@@ -11,7 +12,7 @@ export const resumeData = {
   name: "Anas Tarek Qumhiyeh",
   tagline: POSITIONING.tagline,
   headline: POSITIONING.dek,
-  targetRoles: "software engineering roles in fintech, ML infrastructure, and data platforms.",
+  targetRoles: "software engineering roles across fintech, ML infrastructure, and data platforms.",
   graduateNote: POSITIONING.graduateNote,
   email: "anasqumhiyeh@gmail.com",
   linkedin: "linkedin.com/in/anasqumhiyeh/",
@@ -45,11 +46,11 @@ export const resumeData = {
       period: "Nov 2025 – Feb 2026",
       tech: ["LangGraph", "Neo4j", "FastAPI"],
       scope:
-        "Contract. Owned the GraphRAG retrieval path and the distilled graph-logic SLM; surrounding function was university administration tools.",
+        DESKS.monash.collaboration,
       bullets: [
-        `${METRICS.monashRetrieval.impact} — self-correcting Text-to-Cypher over a Neo4j graph of ${METRICS.monashRetrieval.corpus}.`,
+        `${METRICS.monashRetrieval.impact} — ${DESKS.monash.cypher} over a Neo4j graph of ${METRICS.monashRetrieval.corpus}.`,
         "Hybrid retrieval: embeddings plus multi-hop graph walks for prerequisites and credit-transfer.",
-        `A graph-logic SLM distilled from that reasoning: ${METRICS.slmLatency.display}, contradictions surfaced for administrators.`,
+        `A graph-logic SLM distilled from that reasoning: ${METRICS.slmLatency.display}, ${DESKS.monash.contradictions}.`,
       ],
       impact: METRICS.monashRetrieval.impact,
     },
@@ -59,11 +60,11 @@ export const resumeData = {
       company: "Western Digital",
       period: "Feb 2025 – Dec 2025",
       tech: ["Next.js", "ASP.NET", "PostgreSQL", "Docker"],
-      scope: "Contract. Owned the lab dashboard used by 50+ lab staff.",
+      scope: DESKS.westernDigital.collaboration,
       bullets: [
-        `${METRICS.wdOversight.display} — lab dashboard with role-based access for 50+ staff.`,
+        `${METRICS.wdOversight.display} — ${METRICS.wdOversight.oversight} for 50+ staff.`,
         "CRUD and analytics behind those roles.",
-        "WebSocket to the lab's deep-learning model; shortest path between stations in under 100 ms on that dashboard path.",
+        `WebSocket to the lab's deep-learning model; ${METRICS.wdOversight.latency}.`,
       ],
       impact: METRICS.wdOversight.display,
     },
@@ -73,10 +74,9 @@ export const resumeData = {
       company: "Setel",
       period: "Jul 2025 – Dec 2025",
       tech: ["Docker", "Kubernetes", "MERN Stack", "Swagger", "NestJS"],
-      scope: "Internship. Owned authorization and capture on the payment engine.",
+      scope: DESKS.setel.collaboration,
       bullets: [
-        "Authorization and capture of stored payment methods on the payment engine.",
-        "Checkout and capture documented so a new developer could follow the path without a walkthrough.",
+        ...DESKS.setel.facts,
         `${METRICS.setelCoverage.display} on checkout and capture.`,
         `${METRICS.setelDefects.display} on that path (separate observation, not claimed as the coverage's effect).`,
       ],
@@ -88,14 +88,9 @@ export const resumeData = {
       company: "Petronas",
       period: "Nov 2024 – Feb 2025",
       tech: ["MATLAB", "Python", "MathCAD"],
-      scope:
-        "Internship. Owned the MATLAB-to-Python migration and presented usability findings to department leadership.",
-      bullets: [
-        "Replaced MATLAB-dependent back-end functionality with Python packages, removing paid runtime dependencies.",
-        "Wrote post-release acceptance cases for features after they reached production.",
-        "Presented usability findings to department leadership.",
-      ],
-      impact: "Migrated MATLAB back-end to Python, replacing paid licences",
+      scope: DESKS.petronas.collaboration,
+      bullets: [...DESKS.petronas.facts],
+      impact: "Replaced MATLAB-dependent back-end functionality with Python packages",
     },
   ],
   projects: [
@@ -112,12 +107,12 @@ export const resumeData = {
         "BigQuery holds the ESG ledger; it is not on the request.",
       ],
       impact: "Automatic lower-carbon infrastructure recommendation",
-      why: "Choosing compute after a demand spike means remediation arrives after the expensive decision has already been made. Model Context Protocol (MCP) here means the Terraform change is read as it is written, before that box is already running.",
+      why: "Selecting compute after a demand spike means remediation arrives after the expensive decision has already been made. Model Context Protocol (MCP) here means the Terraform change is read as it is written, before that box is already running.",
       constraint: "The ledger had to stay off the request path so a slow or missing carbon number could not stall a provision.",
       limitation: "Private project archive. 99.9% observed uptime and −15% emissions are Cloud Run evaluations; evaluation period, sample size, and the emissions calculation source were not filed — not a named production SLO.",
       example: "Input: a Terraform intent. Output: a recommended compute configuration, with the carbon ledger written beside the request, not on it.",
       rejected:
-        "I considered putting the carbon ledger on the request path. That would have stalled provision whenever the number was slow or missing, so the ledger stays beside the request. I also considered choosing the box after the spike; that arrives too late.",
+        "I considered putting the carbon ledger on the request path. That would have stalled provision whenever the number was slow or missing, so the ledger stays beside the request. I also considered selecting compute after the spike; that arrives too late.",
       retrospective:
         "I would file the evaluation period, sample size, and emissions calculation source so the Cloud Run numbers can be read as an experiment rather than an implied SLO.",
       evidenceNote: METRICS.veridianUptime.note,
@@ -127,9 +122,9 @@ export const resumeData = {
       plateCaption: "Veridian intercepts the change — halftone plate, illustrative.",
       plateAlt: "Halftone photograph: an engineer at a drafting table, an infrastructure drawing unrolled before him.",
       description:
-        "GitLab Duo intercepts the Terraform change; a Model Context Protocol (MCP) server on Cloud Run asks Vertex what the model needs; BigQuery keeps the carbon ledger off that request.",
-      judgment: "Read the Terraform as it is written. Vertex recommends a lower-carbon compute configuration. The carbon ledger stays off the request path.",
-      meta: "GitLab Duo intercepts Terraform; Vertex recommends a lower-carbon compute configuration; BigQuery keeps the carbon ledger off the request.",
+        "GitLab Duo intercepts the Terraform change; a Model Context Protocol (MCP) server on Cloud Run asks Vertex AI what the model needs; BigQuery keeps the carbon ledger off that request.",
+      judgment: "Inspect Terraform before provisioning. Vertex AI recommends a lower-carbon compute configuration. The carbon ledger stays off the request path.",
+      meta: "GitLab Duo intercepts Terraform; Vertex AI recommends a lower-carbon compute configuration; BigQuery keeps the carbon ledger off the request.",
       patent: VERIDIAN_PLANT satisfies ApparatusSpec,
       apparatus: {
         name: "Veridian",
@@ -154,7 +149,7 @@ export const resumeData = {
       bullets: [
         "Nova Pro reads the copper; Nova Sonic talks the operator through the fault.",
         "Next.js and Express on ECS Fargate, with GitHub Actions stamping ECR.",
-        "Edge cache holds the inspection when the network drops.",
+        "A local cache holds the inspection when the network drops.",
         "A REST API for the line, not a slogan about performance.",
       ],
       impact: "PCB fault detection",
@@ -167,11 +162,11 @@ export const resumeData = {
       plateAlt: "Halftone photograph: a printed circuit board under a loupe, traces filling the frame.",
       description:
         "CircuitMindAI inspects circuit boards: Nova Pro reads the copper, Nova Sonic talks the operator through the fault. Next.js and Express sit on ECS Fargate; GitHub Actions stamps the image.",
-      judgment: "Vision on the copper and voice for the operator, with the inspection cached at the edge so the floor can keep working when the network drops.",
+      judgment: "Vision on the copper and voice for the operator: Nova Pro reads the board image, Nova Sonic speaks the inspection steps, and results are cached locally so the floor can keep working when the network drops.",
       constraint: "The inspection has to survive a dropped network. There is no live host after the exhibit.",
       limitation: "No live host. The argument is this exhibit and the public repository. Detection quality (precision, latency, confusion) was not filed.",
       rejected:
-        "I considered a server-only detector. A detector that fails with connectivity loss is not dependable enough for the inspection floor, so results are cached at the edge.",
+        "I considered a server-only detector. A detector that fails with connectivity loss is not dependable enough for the inspection floor, so results are cached locally.",
       retrospective:
         "I would file detection quality — precision, latency, and confusion — so the floor capability can be measured rather than only described.",
       evidenceNote: "Detection quality was not filed.",

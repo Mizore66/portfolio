@@ -51,7 +51,7 @@ export function NewsClipping({
       data-clip={src}
     >
       <p className="news-clipping-kicker">{kicker}</p>
-      <h3 className="news-clipping-hed">{headline}</h3>
+      <p className="news-clipping-hed">{headline}</p>
       <p className="news-clipping-dateline">{dateline}</p>
       <div className={photoInset ? "news-clipping-photos mt-2" : "mt-2"}>
         <PhotoWell

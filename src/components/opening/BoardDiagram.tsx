@@ -239,6 +239,7 @@ export const BoardDiagram = memo(function BoardDiagram({
           key={sq}
           data-sq={sq}
           data-hl={committed ? "true" : ghost ? "preview" : undefined}
+          tabIndex={-1}
           className={cn(
             dark ? "board-sq-dark" : "board-sq-light",
             dest && "board-sq-dest",
