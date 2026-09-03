@@ -150,7 +150,7 @@ function Chapter({
       </div>
 
       {node.figure ? (
-        <div className="mt-4 scoresheet-secondary">
+        <div className="mt-4">
           <PatentFigure spec={node.figure} />
         </div>
       ) : null}

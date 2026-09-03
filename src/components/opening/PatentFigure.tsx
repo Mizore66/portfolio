@@ -196,7 +196,7 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
   const presumed = spec.parts.filter((p) => p.confidence === "presumed");
   const chapterDagger = presumed.length * 2 > spec.parts.length;
   const showDagger = presumed.length > 0;
-  const caption = spec.engraving.alt;
+  const caption = `APPARATUS FOR ${spec.function}. ${patentDateLine(spec)}`;
   const dialogRef = useRef<HTMLDialogElement>(null);
   const invokerRef = useRef<HTMLElement | null>(null);
   const titleId = useId();
@@ -271,7 +271,7 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
       data-fig={spec.fig}
       data-layout={spec.layout}
       data-move={spec.move}
-      aria-label={caption}
+      aria-label={spec.engraving.alt}
     >
       <div className="patent-figure-mat">
         <SheetHeader spec={spec} />

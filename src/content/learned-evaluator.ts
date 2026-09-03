@@ -34,7 +34,7 @@ export const LAB_ARTICLE = {
   failedKicker: "What failed",
   failedHed: "Data quality is the leading hypothesis",
   failed:
-    "LEARNED scored 2 wins, 74 draws, 52 losses in 128 games. LLR −2.99 against bounds ±2.94 terminated for H0. Gate A at the same cap was 0.0 Elo (17–66–17, every pair 1–1), so the −143 is not a colour or adjudication artefact. The retrained net lost harder at 50k than the v1 128 did at 1k. Ablations that isolate model capacity, training recipe, or features were not run; the result makes data quality the leading hypothesis, not a proven cause.",
+    "LEARNED scored 2 wins, 74 draws, 52 losses in 128 games. LLR −2.99 against bounds ±2.94 terminated for H0. Gate A at the same cap was 0.0 Elo (17–66–17, every pair 1–1), so the −143 is not a colour or adjudication artefact. The retrained net lost harder at 50k than the v1 128 did at 1k. Causal ablations that isolate model capacity, training recipe, or features were not run; the result makes data quality the leading hypothesis, not a proven cause.",
   learnedKicker: "What I learned",
   learnedHed: "This net is closed; rematch only after a new ingest",
   learned:
