@@ -14,9 +14,15 @@ export const EVIDENCE_TIER = {
   benchmark: "Controlled benchmark",
   evaluation: "Controlled evaluation",
   pipeline: "Capacity benchmark",
+  capability: "Capability",
 } as const;
 
 export type EvidenceKind = keyof typeof EVIDENCE_TIER;
+
+/** Short classified line: the number never travels without its epistemic status. */
+export function classifiedShort(metric: { display: string; kind: EvidenceKind }): string {
+  return `${metric.display} · ${EVIDENCE_TIER[metric.kind]}`;
+}
 
 export const METRICS = {
   monashRetrieval: {
@@ -74,11 +80,13 @@ export const METRICS = {
   },
   veridianUptime: {
     value: "99.9%",
-    unit: "uptime",
+    unit: "observed uptime",
     owner: "Veridian",
     runtime: "Cloud Run",
-    display: "99.9% uptime",
-    note: "Cloud Run — not a named production SLO",
+    display: "99.9% observed uptime",
+    opening: "Veridian Cloud Run evaluation: 99.9% observed uptime",
+    resume: "Cloud Run evaluation · 99.9% observed uptime",
+    note: "Cloud Run evaluation — not a named production SLO",
     kind: "evaluation" as const,
   },
   veridianEmissions: {
@@ -94,7 +102,7 @@ export const METRICS = {
     unit: "events/day capacity",
     owner: "Distributed Lead Scorer",
     display: "100M-event capacity benchmark",
-    note: "PySpark pipeline; hours cut to minutes as filed. Capacity, not sustained traffic.",
+    note: "PySpark pipeline capacity. Not claimed as sustained traffic.",
     kind: "pipeline" as const,
   },
   slmInference: {
@@ -183,20 +191,19 @@ export const POSITIONING = {
   dek: "Software engineer building ML infrastructure and data-intensive systems.",
   identity: "Software engineer building ML infrastructure and data-intensive systems.",
   seniority:
-    "Intern and contract desks in production systems, plus independent experiments that include a published loss.",
+    "Internships and contract roles across production systems, plus independent experiments that include a published loss.",
   howIWork:
-    "I take systems from constraint to measurement and leave the decisions legible for the next engineer.",
+    "I work from constraints through implementation and measurement, and document the tradeoffs behind the system.",
   availability:
-    "Seeking software engineering roles in fintech, ML infrastructure, and data platforms.",
+    "Open to software engineering roles in fintech, ML infrastructure, and data platforms.",
   graduateNote: "Graduate and junior opportunities welcome.",
   contactHed: "Interested in building measured, reliable systems?",
   closer:
     "I'm interested in teams building reliable ML and data systems in fintech or infrastructure-heavy products.",
   next: "The next line I want to play: measured systems in fintech infrastructure.",
-  professionalDek: "Intern and contract desks in production systems.",
+  professionalDek: "Internships and contract roles across production systems.",
   independentDek: "Independent projects below; production and contract work under Experience.",
-  deskNote:
-    "Professional desks are named and measured here; internal screenshots stay off the paper.",
+  deskNote: "Professional work is summarized here; internal screenshots remain private.",
   nameNote: "Anas T. Qumhiyeh on the masthead; Anas Tarek Qumhiyeh on the résumé.",
   desksLine:
     "Built and evaluated payment, laboratory, and retrieval systems at Setel, Western Digital, Petronas, and Monash University.",
@@ -204,7 +211,7 @@ export const POSITIONING = {
   deskSummaries: [
     {
       desk: "Petronas",
-      line: "MATLAB back-end to Python; usability findings to department leadership.",
+      line: "Replaced MATLAB-dependent back-end functionality with Python packages; usability findings to department leadership.",
     },
     {
       desk: "Western Digital",
@@ -222,10 +229,10 @@ export const POSITIONING = {
   recruiterBio:
     "Software engineer building ML infrastructure and data-intensive systems. Built and evaluated payment, laboratory, and retrieval systems at Setel, Western Digital, Petronas, and Monash University.",
   followerBio:
-    "Built production payment, laboratory, and retrieval systems across Setel, Western Digital, Petronas, and Monash University. I take systems from constraint to measurement and leave the decisions legible for the next engineer. At Petronas that meant presenting usability findings to department leadership; at Western Digital the dashboard was for lab staff. Outside software, I've played chess since I was a teenager, which is why this portfolio is structured as a game.",
+    "Built production payment, laboratory, and retrieval systems across Setel, Western Digital, Petronas, and Monash University. I work from constraints through implementation and measurement, and document the tradeoffs behind the system. At Petronas I presented usability findings to department leadership; at Western Digital I built for 50+ lab staff. Outside software, I've played chess since I was a teenager, which is why this portfolio is structured as a game.",
   about: [
     "Built production payment, laboratory, and retrieval systems across Setel, Western Digital, Petronas, and Monash University.",
-    "I take systems from constraint to measurement and leave the decisions legible for the next engineer. At Petronas that meant presenting usability findings to department leadership; at Western Digital the dashboard was for lab staff.",
+    "I work from constraints through implementation and measurement, and document the tradeoffs behind the system. At Petronas I presented usability findings to department leadership; at Western Digital I built for 50+ lab staff.",
     "Outside software, I've played chess since I was a teenager, which is why this portfolio is structured as a game. The moves are the work; the annotations are my interpretation of it.",
   ],
 } as const;
@@ -345,7 +352,7 @@ export function projectEvidence(project: {
     case "distributed-lead-scorer":
       return {
         result: METRICS.leadThroughput.display,
-        method: "PySpark pipeline. Hours of latency cut to minutes.",
+        method: "PySpark pipeline. Hours of latency were cut to minutes as filed; the exact before/after clocks were not named.",
         environment: "PySpark pipeline",
         sample: "Capacity benchmark. Not claimed as sustained traffic.",
         alsoFiled:
@@ -356,7 +363,7 @@ export function projectEvidence(project: {
         result: METRICS.slmInference.display,
         baseline: METRICS.slmInference.path,
         environment: project.apparatus.runtime,
-        sample: "Tokens/second, hardware, and batch size were not filed.",
+        sample: "Tokens/second, hardware, and batch size were not filed. Quality parity was not supported by a named filed evaluation.",
         alsoFiled:
           "−40% memory and 98% pass were also noted; hardware, batch size, and a named evaluation for quality parity were not filed.",
       };

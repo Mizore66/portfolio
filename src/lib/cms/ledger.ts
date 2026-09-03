@@ -74,6 +74,7 @@ export function ledgerDocument(): SiteDocument {
       claim("leadThroughput", METRICS.leadThroughput, {
         method: "PySpark pipeline capacity",
         sample: METRICS.leadThroughput.note,
+        environment: "PySpark pipeline",
         date: "2025-05",
         heroEligible: true,
       }),
@@ -101,17 +102,20 @@ export function ledgerDocument(): SiteDocument {
       claim("veridianEmissions", METRICS.veridianEmissions, {
         method: METRICS.veridianEmissions.note,
         sample: "Evaluation period and emissions source were not filed.",
+        environment: "Cloud Run",
         date: "2026-04",
       }),
       claim("riskAuc", METRICS.riskAuc, {
         method: "AUC-ROC",
         baseline: METRICS.riskAuc.vs,
         sample: METRICS.riskAuc.note,
+        environment: "Offline evaluation",
         date: "2025",
       }),
       claim("slmInference", METRICS.slmInference, {
         method: METRICS.slmInference.path,
         sample: METRICS.slmInference.note,
+        environment: "DeepSpeed distillation path",
         date: "2025-07",
       }),
       claim("setelCoverage", METRICS.setelCoverage, {

@@ -231,6 +231,7 @@ test.describe("Opening Preparation", () => {
       "true",
     );
 
+    await page.getByTestId("board-plane").focus();
     await page.keyboard.press("ArrowRight");
     await expect(page.locator('[data-testid="tree-view"] [data-node-id="e4"]')).toHaveAttribute(
       "aria-current",
@@ -731,10 +732,12 @@ test.describe("Opening Preparation", () => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
+    await page.locator('[data-testid="tree-view"] [data-node-id="d4"]').click();
     await page.locator("#chapter-d4").evaluate((el) => el.scrollIntoView({ block: "start" }));
     const y0 = await page.evaluate(() => window.scrollY);
     expect(y0).toBeGreaterThan(400);
 
+    await page.getByTestId("board-plane").focus();
     await page.keyboard.press("ArrowRight");
     await expect
       .poll(async () => page.evaluate(() => window.location.search), { timeout: 2500 })

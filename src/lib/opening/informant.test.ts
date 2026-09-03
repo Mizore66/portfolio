@@ -28,7 +28,7 @@ describe("biography register", () => {
     expect(BROADSHEET.closer).not.toMatch(/next line I want to play/);
     expect(SITE_URL).toBe("https://anasqumhiyeh.dev");
     expect(SITE_HOST).toBe("anasqumhiyeh.dev");
-    expect(BROADSHEET.availability).toMatch(/Seeking software engineering roles/);
+    expect(BROADSHEET.availability).toMatch(/Open to software engineering roles/);
     expect(BROADSHEET.availability).not.toMatch(/MYT/);
     expect(BROADSHEET.graduateNote).toMatch(/Graduate and junior/);
     expect(BROADSHEET.engineDown).toMatch(/Refresh, or trust the annotator/);

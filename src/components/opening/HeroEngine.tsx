@@ -7,6 +7,7 @@ import { BROADSHEET } from "@/content/opening";
 import type { EvalMode } from "@/lib/chess/engine";
 import { formatEvalCp } from "@/lib/chess/engine-view";
 import { PHASE2_DEFAULT_EVAL, PHASE2_EXHIBITS } from "@/lib/chess/phase2";
+import { isChessKeyTarget } from "@/lib/chess/keys";
 import { emitDesk } from "@/lib/desk";
 import {
   collectPlies,
@@ -29,10 +30,7 @@ export function HeroEngine({ staticBoard }: { staticBoard: ReactNode }) {
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
-      const target = e.target as HTMLElement | null;
-      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT")) {
-        return;
-      }
+      if (!isChessKeyTarget(e.target)) return;
       e.preventDefault();
       setId((current) => stepMainline(current, e.key === "ArrowRight" ? 1 : -1));
     }
@@ -102,7 +100,7 @@ export function HeroEngine({ staticBoard }: { staticBoard: ReactNode }) {
             book={book}
             side={side}
             moveNumber={moveNumber}
-            lampshade={BROADSHEET.heroFollowThrough}
+            lampshade=""
             evalMode={evalMode}
             onEvalMode={setEvalMode}
             weightsStatus={weightsStatus}

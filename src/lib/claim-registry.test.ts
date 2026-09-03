@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { PROJECT_FIGURES } from "@/content/project-figures";
 import { resumeData } from "@/lib/data";
 import {
+  classifiedShort,
   EVIDENCE_TIER,
   HERO_PROOF,
   METRICS,
@@ -28,7 +29,8 @@ describe("claim registry", () => {
   it("keeps hours-cut only in the lead note, not the hero label", () => {
     expect(HERO_PROOF[2]?.label).toBe("100M-event capacity benchmark");
     expect(HERO_PROOF[2]?.label).not.toMatch(/hours cut/i);
-    expect(HERO_PROOF[2]?.note).toMatch(/hours cut to minutes/);
+    expect(HERO_PROOF[2]?.note).toMatch(/capacity/i);
+    expect(HERO_PROOF[2]?.note).not.toMatch(/hours cut to minutes/);
     expect(HERO_PROOF[2]?.note).not.toMatch(/production/i);
   });
 
@@ -72,5 +74,12 @@ describe("claim registry", () => {
     expect(EVIDENCE_TIER.pipeline).toBe("Capacity benchmark");
     expect(EVIDENCE_TIER.benchmark).toBe("Controlled benchmark");
     expect(EVIDENCE_TIER.production).toBe("Production");
+    expect(EVIDENCE_TIER.capability).toBe("Capability");
+  });
+
+  it("never lets a Veridian number travel without Cloud Run classification", () => {
+    expect(METRICS.veridianUptime.opening).toMatch(/Cloud Run evaluation/);
+    expect(classifiedShort(METRICS.veridianUptime)).toMatch(/Controlled evaluation/);
+    expect(classifiedShort(METRICS.veridianUptime)).toMatch(/99\.9% observed uptime/);
   });
 });

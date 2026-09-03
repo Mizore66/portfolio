@@ -3,6 +3,7 @@ import { DeskHover } from "@/components/opening/DeskHover";
 import { EvidenceMeta } from "@/components/opening/EvidenceMeta";
 import { resumeData } from "@/lib/data";
 import {
+  EVIDENCE_TIER,
   FEATURED_PROJECT_SLUGS,
   LAB_PROJECT_SLUGS,
   POSITIONING,
@@ -69,7 +70,11 @@ export function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }) {
           <li
             key={project.slug}
             id={project.slug}
-            className={cn("project-card", i === 0 && path === "all" && "project-card-flagship")}
+            className={cn(
+              "project-card",
+              i === 0 && path === "all" && "project-card-flagship",
+              "evidenceKind" in project && project.evidenceKind === "capability" && "project-card-capability",
+            )}
           >
             <DeskHover slug={project.slug}>
             <Link
@@ -85,6 +90,16 @@ export function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }) {
               })}{" "}
               · {project.date} · {projectPath(project.slug)}
             </p>
+            {"evidenceKind" in project && project.evidenceKind ? (
+              <p
+                className={cn(
+                  "evidence-kind-label mt-2",
+                  project.evidenceKind === "capability" && "evidence-kind-capability",
+                )}
+              >
+                {EVIDENCE_TIER[project.evidenceKind as EvidenceKind]}
+              </p>
+            ) : null}
             <h3 className="mt-2 font-display text-[22px] leading-tight text-ink sm:text-[24px]">
               {exhibitTitle(project)}
             </h3>
@@ -119,15 +134,20 @@ export function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }) {
         ))}
       </ul>
       {archive.length > 0 ? (
-        <ul className="project-archive mt-8" data-testid="project-archive">
-          {archive.map((p) => (
-            <li key={p.slug}>
-              <Link href={exhibitHref(p.slug, path)} className="archive-row">
-                {exhibitTitle(p)}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <section className="mt-8" aria-labelledby="archive-heading">
+          <h3 id="archive-heading" className="band-title text-[1.15rem]">
+            Archive
+          </h3>
+          <ul className="project-archive mt-4" data-testid="project-archive">
+            {archive.map((p) => (
+              <li key={p.slug}>
+                <Link href={exhibitHref(p.slug, path)} className="archive-row">
+                  {exhibitTitle(p)}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
       ) : null}
     </section>
   );

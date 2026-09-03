@@ -1,24 +1,34 @@
 # Anas Tarek Qumhiyeh
 
-Software engineer focused on ML infrastructure and data-intensive systems.
+Software engineer building ML infrastructure and data-intensive systems.
 
 I like systems that have to survive measurement.
 
 **[Opening Preparation](https://anasqumhiyeh.dev)** is the paper. Moves are facts. Annotations are voice. Chess is the content, never the lock.
 
-Open to early-career software engineering roles in fintech and AI infrastructure.
+Open to software engineering roles in fintech, ML infrastructure, and data platforms.
 
-The desks compound. Petronas was converting a licensed MATLAB back-end to Python, then presenting usability findings to department leadership. Western Digital put full-stack work behind roles for 50+ staff, with a WebSocket to the lab's deep-learning model. Setel was payments in production: authorization, capture, and tests on that path. Monash was retrieval over a graph of university regulations. The through-line is systems that have to keep working after they ship.
+Internships and contract roles across production systems at Setel, Western Digital, Petronas, and Monash University. Professional work is summarized on the paper; internal screenshots remain private.
 
-## The line
+## Selected work — pin these
 
-- Monash University, Bachelor of Engineering (Honours), software. First Class. Graduated May 2026. WAM 82.1, CGPA 3.82.
-- LEARNED is the masthead eval on the glass. Gate C at 50 000 nodes printed −143.1 ±40.5 Elo, 100 games, LLR −2.33. A loss at the spec cap is still a result. Match report: https://anasqumhiyeh.dev/lab/learned-evaluator
-- Veridian intercepts Terraform; CircuitMindAI reads the copper; MirrorFi drew the vault line (Grand Prize, Solana Megahack 2025).
+GitHub does not expose a pin API. Pin these repositories on the profile so they match the homepage:
+
+1. **[CircuitMindAI](https://github.com/Mizore66/CircuitMindAI)** — PCB inspection. Public source.
+2. **[MirrorFi](https://github.com/Mizore66/MirrorFi)** — Solana vault strategies. Grand Prize, Megahack 2025. Public source.
+
+The other flagship, **Veridian**, and **Multi-Agent GraphRAG** live in a private project archive; their case studies are on the paper:
+
+- Veridian: https://anasqumhiyeh.dev/projects/veridian
+- CircuitMindAI: https://anasqumhiyeh.dev/projects/circuitmindai
+- GraphRAG: https://anasqumhiyeh.dev/projects/multi-agent-graphrag
+- Archive (MirrorFi, Financial Risk Predictor, Distributed Lead Scorer): https://anasqumhiyeh.dev/#work
+- Lab (learned evaluator, published loss): https://anasqumhiyeh.dev/lab/learned-evaluator
 
 ## The desks
 
 - Paper: https://anasqumhiyeh.dev
+- Resume: https://anasqumhiyeh.dev/print-edition
 - CircuitMindAI: https://github.com/Mizore66/CircuitMindAI
 - MirrorFi: https://github.com/Mizore66/MirrorFi
 - Mail: anasqumhiyeh@gmail.com

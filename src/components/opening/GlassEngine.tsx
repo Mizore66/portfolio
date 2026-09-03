@@ -377,12 +377,14 @@ export const GlassEngine = memo(function GlassEngine({
               : BROADSHEET.weightsPending}
         </p>
       ) : null}
-      <p
-        data-testid="engine-lampshade"
-        className="engine-lampshade mt-2 font-display text-[12px] leading-snug italic text-ink"
-      >
-        {lampshade}
-      </p>
+      {lampshade ? (
+        <p
+          data-testid="engine-lampshade"
+          className="engine-lampshade mt-2 font-display text-[12px] leading-snug italic text-ink"
+        >
+          {lampshade}
+        </p>
+      ) : null}
     </section>
   );
 });

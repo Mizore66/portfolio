@@ -1,7 +1,9 @@
+import { cookies } from "next/headers";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { postgresNeedsSsl, postgresUrl } from "@/lib/cms/env";
 import { ledgerDocument } from "@/lib/cms/ledger";
+import { PREVIEW_COOKIE, SESSION_COOKIE, verifySession } from "@/lib/cms/session";
 import type { CmsStoreFile, SiteDocument } from "@/lib/cms/types";
 
 const FILE = join(process.cwd(), "data", "cms.json");
@@ -103,6 +105,28 @@ export async function getPublishedDocument(): Promise<SiteDocument> {
   if (fromDb) return fromDb;
   const store = await readFileStore();
   return store.published ?? ledgerDocument();
+}
+
+export async function getRenderableDocument(): Promise<SiteDocument> {
+  const jar = await cookies();
+  const preview = jar.get(PREVIEW_COOKIE)?.value === "1";
+  const authed = await verifySession(jar.get(SESSION_COOKIE)?.value);
+  if (preview && authed) return getDraftDocument();
+  return getPublishedDocument();
+}
+
+export async function getRevision(id: string): Promise<SiteDocument | null> {
+  const store = await readFileStore();
+  return store.revisions.find((row) => row.revisionId === id) ?? null;
+}
+
+export async function restoreRevision(id: string): Promise<SiteDocument> {
+  const found = await getRevision(id);
+  if (!found) throw new Error("Revision not found.");
+  return saveDraft({
+    ...found,
+    note: `Restored ${id}`,
+  });
 }
 
 export async function getDraftDocument(): Promise<SiteDocument> {

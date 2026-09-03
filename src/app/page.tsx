@@ -5,9 +5,13 @@ import { ContactBand } from "@/components/opening/ContactBand";
 import { EducationBand } from "@/components/opening/EducationBand";
 import { ExperienceList } from "@/components/opening/ExperienceList";
 import { FooterStrip } from "@/components/opening/FooterStrip";
+import { HeroEngine } from "@/components/opening/HeroEngine";
 import { LabFilings, LabTeaser } from "@/components/opening/LabTeaser";
-import { Masthead } from "@/components/opening/Masthead";
+import { EditionKicker, HeroIdentity } from "@/components/opening/Masthead";
+import { PreviewBanner } from "@/components/opening/PreviewBanner";
+import { RecruiterNav } from "@/components/opening/RecruiterNav";
 import { SelectedWork } from "@/components/opening/SelectedWork";
+import { StickyBoardStatic } from "@/components/opening/StickyBoardStatic";
 import { BROADSHEET } from "@/content/opening";
 import { isOpeningId } from "@/lib/opening/tree";
 import { workPathFromQuery } from "@/lib/metrics";
@@ -37,9 +41,17 @@ export default async function Home({
       </a>
       <div className="relative z-[1] flex justify-center px-2 py-3 sm:px-3">
         <div data-testid="newspaper-spread" className="sheet sheet-page">
-          <Masthead />
+          <header>
+            <PreviewBanner />
+            <EditionKicker />
+            <RecruiterNav />
+          </header>
           <main>
-            <SelectedWork path={workPathFromQuery(q.path)} />
+            <div className="home-desk" data-testid="home-desk">
+              <HeroIdentity />
+              <SelectedWork path={workPathFromQuery(q.path)} />
+              <HeroEngine staticBoard={<StickyBoardStatic planeId="hero-board" />} />
+            </div>
             <ExperienceList />
             <EducationBand />
             <section id="lab" data-testid="lab-band" className="recruiter-band" aria-labelledby="lab-heading">

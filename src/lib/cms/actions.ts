@@ -2,11 +2,19 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { updateTag } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { CMS_TAG } from "@/lib/cms/types";
 import { passwordConfigured, verifyPassword } from "@/lib/cms/password";
-import { newSessionToken, SESSION_COOKIE, sessionConfigured, sessionCookieOptions, verifySession } from "@/lib/cms/session";
-import { getDraftDocument, publishDocument, saveDraft } from "@/lib/cms/store";
+import { assertSameOrigin } from "@/lib/cms/origin";
+import {
+  newSessionToken,
+  PREVIEW_COOKIE,
+  SESSION_COOKIE,
+  sessionConfigured,
+  sessionCookieOptions,
+  verifySession,
+} from "@/lib/cms/session";
+import { getDraftDocument, publishDocument, restoreRevision, saveDraft } from "@/lib/cms/store";
 import type { SiteDocument } from "@/lib/cms/types";
 import { validateDocument } from "@/lib/cms/validate";
 
@@ -24,6 +32,16 @@ function rateLimit(key: string): boolean {
   return true;
 }
 
+function previewCookieOptions() {
+  return {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict" as const,
+    path: "/",
+    maxAge: 60 * 60 * 8,
+  };
+}
+
 export async function requireAdmin(): Promise<void> {
   const jar = await cookies();
   const ok = await verifySession(jar.get(SESSION_COOKIE)?.value);
@@ -34,6 +52,7 @@ export async function loginAction(
   _prev: { error: string } | null,
   formData: FormData,
 ): Promise<{ error: string } | null> {
+  await assertSameOrigin();
   if (!sessionConfigured() || !passwordConfigured()) {
     return { error: "Admin is not configured. Set CMS_SESSION_SECRET and ADMIN_PASSWORD_HASH." };
   }
@@ -48,8 +67,10 @@ export async function loginAction(
 }
 
 export async function logoutAction(): Promise<void> {
+  await assertSameOrigin();
   const jar = await cookies();
   jar.set(SESSION_COOKIE, "", { ...sessionCookieOptions(), maxAge: 0 });
+  jar.set(PREVIEW_COOKIE, "", { ...previewCookieOptions(), maxAge: 0 });
   redirect("/admin/login");
 }
 
@@ -91,7 +112,19 @@ function formDoc(formData: FormData, current: SiteDocument): SiteDocument {
   };
 }
 
+function revalidatePublicSurfaces() {
+  updateTag(CMS_TAG);
+  revalidatePath("/");
+  revalidatePath("/print-edition");
+  revalidatePath("/opening-preparation");
+  revalidatePath("/sitemap.xml");
+  revalidatePath("/projects", "layout");
+  revalidatePath("/colophon");
+  revalidatePath("/lab/learned-evaluator");
+}
+
 export async function saveDraftAction(formData: FormData): Promise<void> {
+  await assertSameOrigin();
   await requireAdmin();
   const current = await getDraftDocument();
   const next = formDoc(formData, current);
@@ -99,6 +132,7 @@ export async function saveDraftAction(formData: FormData): Promise<void> {
 }
 
 export async function publishAction(formData: FormData): Promise<void> {
+  await assertSameOrigin();
   await requireAdmin();
   const current = await getDraftDocument();
   const next = formDoc(formData, current);
@@ -107,6 +141,30 @@ export async function publishAction(formData: FormData): Promise<void> {
     redirect(`/admin?error=${encodeURIComponent(errors[0] ?? "invalid")}`);
   }
   await publishDocument(next);
-  updateTag(CMS_TAG);
+  revalidatePublicSurfaces();
   redirect("/admin?published=1");
+}
+
+export async function restoreRevisionAction(formData: FormData): Promise<void> {
+  await assertSameOrigin();
+  await requireAdmin();
+  const id = String(formData.get("revisionId") ?? "");
+  if (!id) redirect("/admin/history?error=missing");
+  await restoreRevision(id);
+  redirect("/admin/history?restored=1");
+}
+
+export async function enablePreviewAction(): Promise<void> {
+  await assertSameOrigin();
+  await requireAdmin();
+  const jar = await cookies();
+  jar.set(PREVIEW_COOKIE, "1", previewCookieOptions());
+  redirect("/");
+}
+
+export async function disablePreviewAction(): Promise<void> {
+  await assertSameOrigin();
+  const jar = await cookies();
+  jar.set(PREVIEW_COOKIE, "", { ...previewCookieOptions(), maxAge: 0 });
+  redirect("/admin");
 }

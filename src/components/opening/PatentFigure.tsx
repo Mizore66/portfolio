@@ -310,6 +310,7 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
         className="patent-lightbox"
         data-testid="patent-lightbox"
         aria-labelledby={titleId}
+        aria-modal="true"
         tabIndex={-1}
         onTouchStart={(e) => {
           swipeStart.current = e.touches[0]?.clientY ?? null;

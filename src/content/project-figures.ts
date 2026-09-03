@@ -220,7 +220,7 @@ export const VERIDIAN_PLANT: ApparatusSpec = {
     { n: 5, glyph: "bedplate", label: "BEDPLATE", mapsTo: "Cloud Run", confidence: "confirmed" },
     { n: 6, glyph: "ledger", label: "LEDGER", mapsTo: "BigQuery — not this request", confidence: "confirmed" },
     { n: 7, glyph: "funnel", label: "FUNNEL", mapsTo: "Python — glue, not this path", confidence: "confirmed" },
-    { n: 8, glyph: "gauge", label: "GAUGE", mapsTo: "99.9% uptime", confidence: "confirmed" },
+    { n: 8, glyph: "gauge", label: "GAUGE", mapsTo: "99.9% observed uptime", confidence: "confirmed" },
   ],
   numerals: [
     { mark: "1", x: 15.0, y: 8.0, fromX: 16.0, fromY: 22.0, glyph: "hopper" },

@@ -1,6 +1,6 @@
 import type { Apparatus, ApparatusSpec } from "@/lib/opening/types";
 import { CIRCUITMIND_LINE, MIRRORFI_VAULT, RISK_ENGINE, LEADS_HALL, VERIDIAN_PLANT, VERIDIAN_STILL, VERIDIAN_EXCHANGE } from "@/content/project-figures";
-import { METRICS, POSITIONING, RETRIEVAL_SPLIT } from "@/lib/metrics";
+import { classifiedShort, METRICS, POSITIONING, RETRIEVAL_SPLIT } from "@/lib/metrics";
 
 export function repoArtifacts(github: string, name?: string): { label: string; href: string }[] {
   if (!github) return [];
@@ -44,6 +44,8 @@ export const resumeData = {
       company: "Monash University",
       period: "Nov 2025 – Feb 2026",
       tech: ["LangGraph", "Neo4j", "FastAPI"],
+      scope:
+        "Contract. Owned the GraphRAG retrieval path and the distilled graph-logic SLM; surrounding function was university administration tools.",
       bullets: [
         `${METRICS.monashRetrieval.impact} — self-correcting Text-to-Cypher over a Neo4j graph of ${METRICS.monashRetrieval.corpus}.`,
         "Hybrid retrieval: embeddings plus multi-hop graph walks for prerequisites and credit-transfer.",
@@ -53,10 +55,11 @@ export const resumeData = {
     },
     {
       title: "Full-stack Engineer",
-      type: "Contract Employee",
+      type: "Contract · Full-stack Engineer",
       company: "Western Digital",
       period: "Feb 2025 – Dec 2025",
       tech: ["Next.js", "ASP.NET", "PostgreSQL", "Docker"],
+      scope: "Contract. Owned the lab dashboard used by 50+ lab staff.",
       bullets: [
         `${METRICS.wdOversight.display} — lab dashboard with role-based access for 50+ staff.`,
         "CRUD and analytics behind those roles.",
@@ -70,6 +73,7 @@ export const resumeData = {
       company: "Setel",
       period: "Jul 2025 – Dec 2025",
       tech: ["Docker", "Kubernetes", "MERN Stack", "Swagger", "NestJS"],
+      scope: "Internship. Owned authorization and capture on the payment engine.",
       bullets: [
         "Authorization and capture of stored payment methods on the payment engine.",
         "Checkout and capture documented so a new developer could follow the path without a walkthrough.",
@@ -84,9 +88,11 @@ export const resumeData = {
       company: "Petronas",
       period: "Nov 2024 – Feb 2025",
       tech: ["MATLAB", "Python", "MathCAD"],
+      scope:
+        "Internship. Owned the MATLAB-to-Python migration and presented usability findings to department leadership.",
       bullets: [
-        "Converted the department's MATLAB back-end to Python, replacing paid licences with free packages.",
-        "Wrote user test cases for features after they reached production.",
+        "Replaced MATLAB-dependent back-end functionality with Python packages, removing paid runtime dependencies.",
+        "Wrote post-release acceptance cases for features after they reached production.",
         "Presented usability findings to department leadership.",
       ],
       impact: "Migrated MATLAB back-end to Python, replacing paid licences",
@@ -106,10 +112,14 @@ export const resumeData = {
         "BigQuery holds the ESG ledger; it is not on the request.",
       ],
       impact: "Automatic lower-carbon infrastructure recommendation",
-      why: "The box named after the spike is already the wrong box. Model Context Protocol (MCP) here means the Terraform change is read as it is written, before that box is already running.",
+      why: "Choosing compute after a demand spike means remediation arrives after the expensive decision has already been made. Model Context Protocol (MCP) here means the Terraform change is read as it is written, before that box is already running.",
       constraint: "The ledger had to stay off the request path so a slow or missing carbon number could not stall a provision.",
-      limitation: "Private project archive. 99.9% uptime and −15% emissions are Cloud Run evaluations; evaluation period, sample size, and the emissions calculation source were not filed — not a named production SLO.",
-      example: "Input: a Terraform intent. Output: the named box, with the carbon ledger written beside the request, not on it.",
+      limitation: "Private project archive. 99.9% observed uptime and −15% emissions are Cloud Run evaluations; evaluation period, sample size, and the emissions calculation source were not filed — not a named production SLO.",
+      example: "Input: a Terraform intent. Output: a recommended compute configuration, with the carbon ledger written beside the request, not on it.",
+      rejected:
+        "I considered putting the carbon ledger on the request path. That would have stalled provision whenever the number was slow or missing, so the ledger stays beside the request. I also considered choosing the box after the spike; that arrives too late.",
+      retrospective:
+        "I would file the evaluation period, sample size, and emissions calculation source so the Cloud Run numbers can be read as an experiment rather than an implied SLO.",
       evidenceNote: METRICS.veridianUptime.note,
       evidenceKind: METRICS.veridianUptime.kind,
       github: "",
@@ -148,9 +158,9 @@ export const resumeData = {
         "A REST API for the line, not a slogan about performance.",
       ],
       impact: "PCB fault detection",
-      why: "An operator inspecting a board needs to see the copper fault and hear the work, including when the network drops. A detector that only lives on a server is a detector the floor cannot use.",
+      why: "An operator inspecting a board needs to see the copper fault and hear inspection guidance, including when the network drops. A detector that fails with connectivity loss is not dependable enough for the inspection floor.",
       inspectNote: "Express API (backend-js/) and Next.js UI (frontend/).",
-      example: "Input: a board image and operator audio. Output: a fault overlay on the copper, with the work still audible when the network drops.",
+      example: "Input: a board image and operator audio. Output: a fault overlay on the copper, with inspection guidance still audible when the network drops.",
       github: "https://github.com/Mizore66/CircuitMindAI",
       plate: "/plates/plate-circuitmind.jpg",
       plateCaption: "CircuitMindAI under the loupe — halftone plate, illustrative.",
@@ -160,6 +170,12 @@ export const resumeData = {
       judgment: "Vision on the copper and voice for the operator, with the inspection cached at the edge so the floor can keep working when the network drops.",
       constraint: "The inspection has to survive a dropped network. There is no live host after the exhibit.",
       limitation: "No live host. The argument is this exhibit and the public repository. Detection quality (precision, latency, confusion) was not filed.",
+      rejected:
+        "I considered a server-only detector. A detector that fails with connectivity loss is not dependable enough for the inspection floor, so results are cached at the edge.",
+      retrospective:
+        "I would file detection quality — precision, latency, and confusion — so the floor capability can be measured rather than only described.",
+      evidenceNote: "Detection quality was not filed.",
+      evidenceKind: "capability" as const,
       meta: "Nova Pro reads the copper; Nova Sonic talks the operator through the fault. Next.js and Express on ECS Fargate.",
       patent: CIRCUITMIND_LINE satisfies ApparatusSpec,
       apparatus: {
@@ -202,6 +218,8 @@ export const resumeData = {
       judgment: "One schematic that draws, shares, and fires — so the hand-off is the same object the operator sees.",
       constraint: "A Megahack weekend: one schematic had to ship, without a live host after the prize.",
       limitation: "No live host. Source is the public Megahack repository.",
+      retrospective:
+        "I would keep a live host after the prize weekend, or state more clearly that the public repository is the remaining artifact.",
       example: "Input: a vault line on the schematic. Output: the same object shared and fired at Drift, Jupiter, or Meteora.",
       meta: "Builds, shares, and executes no-code Solana vault strategies across Drift, Jupiter, and Meteora. Grand Prize, Megahack 2025; source is the public repository.",
       patent: MIRRORFI_VAULT satisfies ApparatusSpec,
@@ -242,8 +260,12 @@ export const resumeData = {
       judgment:
         "The graph is the structured path for prerequisites and policy; the vector store is the fallback when the graph is silent.",
       why: "A question about prerequisites has to walk the graph, not only the nearest paragraph. This archive is not the Monash regulations corpus.",
-      constraint: "Prerequisites and credit-transfer are edges, not another embedding dump.",
+      constraint: "Prerequisites and credit-transfer are edges, not another vector-only retrieval dump.",
       limitation: "Ambiguous questions fall back to a broader semantic search. Sample size and Recall@k were not filed.",
+      rejected:
+        "I considered vector-only retrieval as the primary path. Prerequisites and credit-transfer are edges; a vector-only neighbourhood is the fallback, not the structured walk.",
+      retrospective:
+        "I would file the query set, scoring rule, and denominator so the +35% can be audited as Recall@k or left clearly as a filed accuracy comparison.",
       split: RETRIEVAL_SPLIT,
       example: "Input: a policy question. Output: a neighbourhood of clauses from the independent handbook archive, not a vector-only nearest neighbour.",
       meta: `LangGraph over an independent university handbook and policy archive: agents write Cypher, check it, and fall back to a vector store. ${METRICS.graphragRetrieval.strip}.`,
@@ -265,7 +287,7 @@ export const resumeData = {
       date: "Jul 2025",
       tech: ["TensorFlow", "XGBoost", "LightGBM", "BentoML", "SHAP"],
       bullets: [
-        `${METRICS.riskAuc.display} on that sample. A 15% lift was noted against an unnamed baseline — that comparison is not independently interpretable.`,
+        `${METRICS.riskAuc.display} on that sample.`,
         "SHAP names the drivers on the score.",
         "Daily retrain from Kafka so the score is this morning's tape.",
       ],
@@ -275,6 +297,8 @@ export const resumeData = {
       why: "Daily credit scores that a desk has to interpret, serve, and retrain — not a notebook that dies after the plot.",
       judgment: "LightGBM and XGBoost with SHAP, served through BentoML, with Kafka carrying the stream so the model can be retrained without taking the API down.",
       limitation: "The 15% lift names an unnamed baseline. A −30% inference latency on the BentoML hatch was also noted; hardware and percentile were not filed.",
+      retrospective:
+        "I would recover or drop the unnamed 15% baseline rather than leaving a comparison that cannot be interpreted.",
       example: "Input: the morning tape on Kafka. Output: a score with SHAP drivers, served through BentoML.",
       github: "",
       plate: "/plates/plate-risk.jpg",
@@ -314,6 +338,8 @@ export const resumeData = {
       judgment: "PySpark for the feature path; a Deep Interest Network on PyTorch DDP for the score; checkpoints so a dead job resumes from the last written slice.",
       constraint: "A failed hour had to resume from the last good slice. The 100 million events per day figure is pipeline capacity, not sustained traffic.",
       limitation: "Capacity benchmark. Cluster size, input distribution, and runtime were not filed.",
+      retrospective:
+        "I would file cluster size, input distribution, and a failure-injection record for the capacity benchmark.",
       example: "Input: an event stream sized at 100 million events per day. Output: conversion scores, with a failed hour resumed from the last written slice.",
       github: "",
       plate: "/plates/plate-leads.jpg",
@@ -339,14 +365,16 @@ export const resumeData = {
       date: "Jul 2025",
       tech: ["PyTorch", "QLoRA", "DeepSpeed", "FlashAttention"],
       bullets: [
-        `${METRICS.slmInference.display} — 70B teacher into a 3B student. Tokens/second, hardware, and batch size were not filed.`,
+        `${classifiedShort(METRICS.slmInference)} — 70B teacher into a 3B student. Tokens/second, hardware, and batch size were not filed.`,
         "QLoRA on the domain set.",
         "DeepSpeed and FlashAttention on the compression path.",
       ],
       impact: METRICS.slmInference.impact,
       why: "I used QLoRA to distil traces from a 70B teacher into a deployable 3B student.",
-      constraint: "The student had to keep the same job on a smaller piece. A named evaluation for quality parity was not filed.",
-      limitation: "12x inference is an evaluation on the 70B to 3B path, not a production serving number. −40% memory and 98% pass were also noted; hardware, batch size, and the named evaluation were not filed.",
+      constraint: "The goal was to preserve task behavior in a 3B student while reducing serving cost and latency. Quality parity was not supported by a named filed evaluation.",
+      limitation: "12× inference is a controlled evaluation on the 70B to 3B path, not a production serving number. −40% memory and 98% pass were also noted; hardware, batch size, and the named evaluation were not filed.",
+      retrospective:
+        "I would file tokens/second, hardware, batch size, and a named evaluation for quality parity.",
       example: "Input: traces from a 70B teacher. Output: a 3B student on the same job. Tokens/second were not filed.",
       evidenceNote: METRICS.slmInference.note,
       evidenceKind: METRICS.slmInference.kind,

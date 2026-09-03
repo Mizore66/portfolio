@@ -1,10 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BROADSHEET } from "@/content/opening";
 
 export function CopyEmail({ email }: { email: string }) {
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!copied) return;
+    const timer = window.setTimeout(() => setCopied(false), 4000);
+    return () => window.clearTimeout(timer);
+  }, [copied]);
 
   async function onCopy() {
     try {
@@ -34,9 +40,12 @@ export function CopyEmail({ email }: { email: string }) {
       className="masthead-chip"
       onClick={() => void onCopy()}
       data-testid="copy-email"
-      aria-live="polite"
+      aria-label={copied ? BROADSHEET.copiedEmail : BROADSHEET.copyEmail}
     >
       {copied ? BROADSHEET.copiedEmail : BROADSHEET.copyEmail}
+      <span className="sr-only" aria-live="polite">
+        {copied ? BROADSHEET.copiedEmail : ""}
+      </span>
     </button>
   );
 }
