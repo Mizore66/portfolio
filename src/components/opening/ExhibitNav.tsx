@@ -1,9 +1,12 @@
 import Link from "next/link";
+import { overlayProjects } from "@/lib/cms/overlay";
+import { getRenderableDocument } from "@/lib/cms/store";
 import { resumeData } from "@/lib/data";
 import { exhibitHref, exhibitTitle, workHomeHref, type WorkPath } from "@/lib/metrics";
 
-export function ExhibitNav({ slug, path = "all" }: { slug: string; path?: WorkPath | "all" }) {
-  const projects = resumeData.projects;
+export async function ExhibitNav({ slug, path = "all" }: { slug: string; path?: WorkPath | "all" }) {
+  const doc = await getRenderableDocument();
+  const projects = overlayProjects(resumeData.projects, doc);
   const i = projects.findIndex((p) => p.slug === slug);
   const prev = i > 0 ? projects[i - 1] : undefined;
   const next = i >= 0 && i < projects.length - 1 ? projects[i + 1] : undefined;

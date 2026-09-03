@@ -283,7 +283,8 @@ export function projectOrigin(project: {
 }
 
 /** Two recruiter paths. Not a persona mode. */
-export function projectPath(slug: string): WorkPath {
+export function projectPath(slug: string, category?: string): WorkPath {
+  if (category === "Product / backend" || category === "ML / data systems") return category;
   if (slug === "circuitmindai" || slug === "mirrorfi") return "Product / backend";
   return "ML / data systems";
 }

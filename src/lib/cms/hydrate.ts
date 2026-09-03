@@ -25,7 +25,21 @@ function hydrateClaim(seed: CmsClaim, row: Partial<CmsClaim> | undefined): CmsCl
 }
 
 function hydrateProject(seed: CmsProjectCopy, row: Partial<CmsProjectCopy> | undefined): CmsProjectCopy {
-  if (!row) return { ...seed, archived: seed.archived ?? false };
+  if (!row) {
+    return {
+      ...seed,
+      archived: seed.archived ?? false,
+      bullets: seed.bullets ?? "",
+      description: seed.description ?? "",
+      plate: seed.plate ?? "",
+      plateCaption: seed.plateCaption ?? "",
+      plateAlt: seed.plateAlt ?? "",
+      apparatusName: seed.apparatusName ?? "",
+      apparatusRuntime: seed.apparatusRuntime ?? "",
+      apparatusPath: seed.apparatusPath ?? "",
+      apparatusBeside: seed.apparatusBeside ?? "",
+    };
+  }
   return {
     ...seed,
     ...row,
@@ -41,6 +55,15 @@ function hydrateProject(seed: CmsProjectCopy, row: Partial<CmsProjectCopy> | und
     seoDescription: str(row.seoDescription, seed.seoDescription),
     rejected: str(row.rejected, seed.rejected),
     retrospective: str(row.retrospective, seed.retrospective),
+    bullets: str(row.bullets, seed.bullets ?? ""),
+    description: str(row.description, seed.description ?? ""),
+    plate: str(row.plate, seed.plate ?? ""),
+    plateCaption: str(row.plateCaption, seed.plateCaption ?? ""),
+    plateAlt: str(row.plateAlt, seed.plateAlt ?? ""),
+    apparatusName: str(row.apparatusName, seed.apparatusName ?? ""),
+    apparatusRuntime: str(row.apparatusRuntime, seed.apparatusRuntime ?? ""),
+    apparatusPath: str(row.apparatusPath, seed.apparatusPath ?? ""),
+    apparatusBeside: str(row.apparatusBeside, seed.apparatusBeside ?? ""),
   };
 }
 
@@ -79,8 +102,6 @@ export function hydrateDocument(doc: SiteDocument): SiteDocument {
   const extraProjects = doc.projects.filter(
     (project) => !ledger.projects.some((seed) => seed.slug === project.slug),
   );
-  const aspById = new Map(doc.aspirations.map((item) => [item.id, item]));
-  const extraAsp = doc.aspirations.filter((item) => !ledger.aspirations.some((seed) => seed.id === item.id));
   return {
     ...doc,
     savedAt: str(doc.savedAt, doc.publishedAt),
@@ -94,9 +115,11 @@ export function hydrateDocument(doc: SiteDocument): SiteDocument {
       ...ledger.projects.map((seed) => hydrateProject(seed, projectsBySlug.get(seed.slug))),
       ...extraProjects.map((project) => hydrateProject(project, project)),
     ],
-    aspirations: [
-      ...ledger.aspirations.map((seed) => hydrateAspiration(seed, aspById.get(seed.id))),
-      ...extraAsp.map((item) => hydrateAspiration(item, item)),
-    ],
+    aspirations: Array.isArray(doc.aspirations)
+      ? doc.aspirations.map((item) => {
+          const seed = ledger.aspirations.find((row) => row.id === item.id);
+          return hydrateAspiration(seed ?? item, item);
+        })
+      : ledger.aspirations,
   };
 }

@@ -66,6 +66,15 @@ export const PROJECT_STRUCTURE_KEYS = [
   "github",
   "seoTitle",
   "seoDescription",
+  "bullets",
+  "description",
+  "plate",
+  "plateCaption",
+  "plateAlt",
+  "apparatusName",
+  "apparatusRuntime",
+  "apparatusPath",
+  "apparatusBeside",
 ] as const;
 
 export type CmsProjectCopy = {
@@ -87,6 +96,15 @@ export type CmsProjectCopy = {
   example: string;
   rejected: string;
   retrospective: string;
+  bullets: string;
+  description: string;
+  plate: string;
+  plateCaption: string;
+  plateAlt: string;
+  apparatusName: string;
+  apparatusRuntime: string;
+  apparatusPath: string;
+  apparatusBeside: string;
   archived: boolean;
 };
 

@@ -42,6 +42,10 @@ function field(project: (typeof resumeData.projects)[number], key: keyof CmsProj
     : "";
 }
 
+function formatLayers(layers?: { name: string; role: string }[]): string {
+  return (layers ?? []).map((layer) => `${layer.name} — ${layer.role}`).join("\n");
+}
+
 function projectCopies(): CmsProjectCopy[] {
   return resumeData.projects.map((project) => ({
     slug: project.slug,
@@ -62,6 +66,15 @@ function projectCopies(): CmsProjectCopy[] {
     example: field(project, "example"),
     rejected: field(project, "rejected"),
     retrospective: field(project, "retrospective"),
+    bullets: project.bullets.join("\n"),
+    description: project.description,
+    plate: project.plate,
+    plateCaption: project.plateCaption,
+    plateAlt: project.plateAlt,
+    apparatusName: project.apparatus.name,
+    apparatusRuntime: project.apparatus.runtime ?? "",
+    apparatusPath: formatLayers(project.apparatus.path),
+    apparatusBeside: formatLayers(project.apparatus.beside),
     archived: false,
   }));
 }

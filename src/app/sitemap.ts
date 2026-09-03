@@ -47,5 +47,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
       ];
     }),
+    ...published.projects.flatMap((project) => {
+      if (resumeData.projects.some((row) => row.slug === project.slug) || project.archived) return [];
+      return [
+        {
+          url: `${SITE_URL}/projects/${project.slug}`,
+          lastModified: parseFiledDate(project.date) ?? revised,
+          changeFrequency: "monthly" as const,
+          priority: 0.5,
+        },
+      ];
+    }),
   ];
 }

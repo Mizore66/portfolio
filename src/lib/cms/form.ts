@@ -1,5 +1,5 @@
-import { REQUIRED_CLAIM_IDS } from "@/lib/cms/validate";
-import type { ClaimKind, CmsClaim, CmsProjectCopy, SiteDocument } from "@/lib/cms/types";
+import { LEDGER_PROJECT_SLUGS, REQUIRED_CLAIM_IDS } from "@/lib/cms/validate";
+import type { ClaimKind, CmsAspiration, CmsClaim, CmsProjectCopy, SiteDocument } from "@/lib/cms/types";
 
 const KINDS: ClaimKind[] = ["production", "benchmark", "evaluation", "pipeline", "capability"];
 const SURFACES: CmsClaim["surfaces"][number][] = ["home", "opening", "resume", "exhibit", "lab"];
@@ -57,12 +57,69 @@ function blankClaim(id: string): CmsClaim {
   };
 }
 
+function blankProject(slug: string): CmsProjectCopy {
+  return {
+    slug,
+    title: "New exhibit",
+    subtitle: "",
+    date: "",
+    category: "ML / data systems",
+    tech: "",
+    github: "",
+    seoTitle: "",
+    seoDescription: "",
+    purpose: "",
+    impact: "",
+    why: "",
+    judgment: "",
+    constraint: "",
+    limitation: "",
+    example: "",
+    rejected: "",
+    retrospective: "",
+    bullets: "",
+    description: "",
+    plate: "",
+    plateCaption: "",
+    plateAlt: "",
+    apparatusName: "",
+    apparatusRuntime: "",
+    apparatusPath: "",
+    apparatusBeside: "",
+    archived: true,
+  };
+}
+
+function blankAspiration(id: string): CmsAspiration {
+  return { id, label: "New aspiration", active: false, start: "", end: "" };
+}
+
 function slugify(value: string): string {
   return value
     .trim()
     .replace(/[^a-zA-Z0-9]+/g, "-")
     .replace(/^-|-$/g, "")
     .slice(0, 48);
+}
+
+function uniqueCopyId(base: string, taken: (id: string) => boolean): string {
+  let nextId = `${base}-copy`;
+  let n = 2;
+  while (taken(nextId)) {
+    nextId = `${base}-copy-${n}`;
+    n += 1;
+  }
+  return nextId;
+}
+
+function sortByOrder<T>(rows: T[], order: string, id: (row: T) => string): T[] {
+  if (!order) return rows;
+  const ids = order.split(",").map((part) => part.trim()).filter(Boolean);
+  return [...rows].sort((a, b) => {
+    const ai = ids.indexOf(id(a));
+    const bi = ids.indexOf(id(b));
+    return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+  });
 }
 
 /** Merge a sectioned editor POST onto the current document. Missing sections stay as they are. */
@@ -135,7 +192,7 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
     });
   }
 
-  const aspirations = formData.has("aspirations-present")
+  let aspirations = formData.has("aspirations-present")
     ? current.aspirations.map((item) => ({
         ...item,
         label: text(formData, `asp-${item.id}-label`, item.label),
@@ -145,7 +202,27 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
       }))
     : current.aspirations;
 
-  const projects = formData.has("projects-present")
+  if (formData.has("aspirations-present")) {
+    const createAsp = slugify(text(formData, "asp-new-id", ""));
+    if (formData.get("asp-create") === "1" && createAsp && !aspirations.some((item) => item.id === createAsp)) {
+      aspirations = [...aspirations, blankAspiration(createAsp)];
+    }
+    const duplicateAsp = String(formData.get("asp-duplicate") ?? "");
+    if (duplicateAsp) {
+      const src = aspirations.find((item) => item.id === duplicateAsp);
+      if (src) {
+        const nextId = uniqueCopyId(src.id, (id) => aspirations.some((item) => item.id === id));
+        aspirations = [...aspirations, { ...src, id: nextId, active: false }];
+      }
+    }
+    const deleteAsp = String(formData.get("asp-delete") ?? "");
+    if (deleteAsp) {
+      aspirations = aspirations.filter((item) => item.id !== deleteAsp);
+    }
+    aspirations = sortByOrder(aspirations, text(formData, "asp-order", ""), (item) => item.id);
+  }
+
+  let projects = formData.has("projects-present")
     ? current.projects.map((project) => ({
         ...project,
         title: text(formData, `project-${project.slug}-title`, project.title),
@@ -165,19 +242,38 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
         example: text(formData, `project-${project.slug}-example`, project.example),
         rejected: text(formData, `project-${project.slug}-rejected`, project.rejected),
         retrospective: text(formData, `project-${project.slug}-retrospective`, project.retrospective),
+        bullets: text(formData, `project-${project.slug}-bullets`, project.bullets),
+        description: text(formData, `project-${project.slug}-description`, project.description),
+        plate: text(formData, `project-${project.slug}-plate`, project.plate),
+        plateCaption: text(formData, `project-${project.slug}-plateCaption`, project.plateCaption),
+        plateAlt: text(formData, `project-${project.slug}-plateAlt`, project.plateAlt),
+        apparatusName: text(formData, `project-${project.slug}-apparatusName`, project.apparatusName),
+        apparatusRuntime: text(formData, `project-${project.slug}-apparatusRuntime`, project.apparatusRuntime),
+        apparatusPath: text(formData, `project-${project.slug}-apparatusPath`, project.apparatusPath),
+        apparatusBeside: text(formData, `project-${project.slug}-apparatusBeside`, project.apparatusBeside),
         archived: on(formData, `project-${project.slug}-archived`),
       }))
     : current.projects;
 
-  const projectOrder = text(formData, "project-order", "");
-  const orderedProjects = projectOrder
-    ? [...projects].sort((a, b) => {
-        const ids = projectOrder.split(",").map((id) => id.trim()).filter(Boolean);
-        const ai = ids.indexOf(a.slug);
-        const bi = ids.indexOf(b.slug);
-        return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
-      })
-    : projects;
+  if (formData.has("projects-present")) {
+    const createSlug = slugify(text(formData, "project-new-slug", "")).toLowerCase();
+    if (formData.get("project-create") === "1" && createSlug && !projects.some((project) => project.slug === createSlug)) {
+      projects = [...projects, blankProject(createSlug)];
+    }
+    const duplicateSlug = String(formData.get("project-duplicate") ?? "");
+    if (duplicateSlug) {
+      const src = projects.find((project) => project.slug === duplicateSlug);
+      if (src) {
+        const nextId = uniqueCopyId(src.slug, (id) => projects.some((project) => project.slug === id)).toLowerCase();
+        projects = [...projects, { ...src, slug: nextId, title: `${src.title} copy`, archived: true }];
+      }
+    }
+    const deleteSlug = String(formData.get("project-delete") ?? "");
+    if (deleteSlug && !LEDGER_PROJECT_SLUGS.has(deleteSlug)) {
+      projects = projects.filter((project) => project.slug !== deleteSlug);
+    }
+    projects = sortByOrder(projects, text(formData, "project-order", ""), (project) => project.slug);
+  }
 
   return {
     ...current,
@@ -185,7 +281,7 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
     profile,
     claims,
     aspirations,
-    projects: orderedProjects,
+    projects,
   };
 }
 

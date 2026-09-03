@@ -112,7 +112,7 @@ export const resumeData = {
       limitation: "Private project archive. 99.9% observed uptime and −15% emissions are Cloud Run evaluations; evaluation period, sample size, and the emissions calculation source were not filed — not a named production SLO.",
       example: "Input: a Terraform intent. Output: a recommended compute configuration, with the carbon ledger written beside the request, not on it.",
       rejected:
-        "I considered putting the carbon ledger on the request path. That would have stalled provision whenever the number was slow or missing, so the ledger stays beside the request. I also considered selecting compute after the spike; that arrives too late.",
+        "I considered putting the carbon ledger on the request path. That would have stalled provision whenever the number was slow or missing, so the ledger stays beside the request. I also considered selecting compute after provisioning or a demand-driven scale event; that arrives too late.",
       retrospective:
         "I would file the evaluation period, sample size, and emissions calculation source so the Cloud Run numbers can be read as an experiment rather than an implied SLO.",
       evidenceNote: METRICS.veridianUptime.note,

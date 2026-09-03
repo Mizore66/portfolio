@@ -56,7 +56,10 @@ export function projectSchemaReady(project: {
   return missing;
 }
 
+export const LEDGER_PROJECT_SLUGS = new Set(resumeData.projects.map((project) => project.slug));
+
 const DATE = /^\d{4}(?:-\d{2}(?:-\d{2})?)?$/;
+const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export function validateDocument(doc: SiteDocument): string[] {
   const errors: string[] = [];
@@ -92,11 +95,10 @@ export function validateDocument(doc: SiteDocument): string[] {
       errors.push(`Required claim ${id} cannot be archived.`);
     }
   }
-  const knownSlugs = new Set(resumeData.projects.map((p) => p.slug));
   const slugs = new Set<string>();
   for (const project of doc.projects) {
-    if (!knownSlugs.has(project.slug)) {
-      errors.push(`Unknown project slug ${project.slug}.`);
+    if (!project.slug || !SLUG.test(project.slug)) {
+      errors.push(`Invalid project slug ${project.slug || "(empty)"}.`);
     }
     if (slugs.has(project.slug)) errors.push(`Duplicate project slug ${project.slug}.`);
     slugs.add(project.slug);

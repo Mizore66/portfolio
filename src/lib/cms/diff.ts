@@ -105,6 +105,15 @@ export function documentDiff(published: SiteDocument, draft: SiteDocument): Fiel
     push(`projects.${slug}.example`, a.example, b.example);
     push(`projects.${slug}.rejected`, a.rejected, b.rejected);
     push(`projects.${slug}.retrospective`, a.retrospective, b.retrospective);
+    push(`projects.${slug}.bullets`, a.bullets, b.bullets);
+    push(`projects.${slug}.description`, a.description, b.description);
+    push(`projects.${slug}.plate`, a.plate, b.plate);
+    push(`projects.${slug}.plateCaption`, a.plateCaption, b.plateCaption);
+    push(`projects.${slug}.plateAlt`, a.plateAlt, b.plateAlt);
+    push(`projects.${slug}.apparatusName`, a.apparatusName, b.apparatusName);
+    push(`projects.${slug}.apparatusRuntime`, a.apparatusRuntime, b.apparatusRuntime);
+    push(`projects.${slug}.apparatusPath`, a.apparatusPath, b.apparatusPath);
+    push(`projects.${slug}.apparatusBeside`, a.apparatusBeside, b.apparatusBeside);
     push(`projects.${slug}.archived`, a.archived, b.archived);
   }
 

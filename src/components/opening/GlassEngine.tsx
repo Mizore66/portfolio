@@ -337,7 +337,6 @@ export const GlassEngine = memo(function GlassEngine({
         <p
           className="mt-2 min-h-4 font-mono text-[12px] text-faded"
           data-testid="engine-settling"
-          aria-busy={!settled && !down}
           aria-hidden="true"
         >
           {down ? "\u00a0" : line.settling || !info ? BROADSHEET.settling : "\u00a0"}

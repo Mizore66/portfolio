@@ -3,7 +3,7 @@ import { AdminActions, AdminDirtyForm, EditorSearch, ReorderList } from "@/compo
 import { publishAction, saveDraftAction } from "@/lib/cms/actions";
 import { editorBar } from "@/lib/cms/editor-state";
 import { getDraftDocument, getPublishedDocument } from "@/lib/cms/store";
-import { projectSchemaReady } from "@/lib/cms/validate";
+import { LEDGER_PROJECT_SLUGS, projectSchemaReady } from "@/lib/cms/validate";
 
 export default async function ProjectsEditor({
   searchParams,
@@ -29,8 +29,9 @@ export default async function ProjectsEditor({
       }
     >
       <p className="max-w-[62ch] font-display text-[16px] text-ink">
-        Title, date, category, source, technologies, and SEO overlay the public exhibits. Archive hides a filing
-        from Selected work, the sitemap, and the exhibit URL. Patent plates still compile from the TypeScript ledger.
+        Title, slug, date, category, source, technologies, apparatus layers, plate captions, and SEO overlay the
+        public exhibits. New exhibits start archived. Ledger filings can be archived, not permanently deleted.
+        Patent drawings still compile from the TypeScript ledger.
       </p>
       <AdminDirtyForm expectedRevisionId={bar.expectedRevisionId} returnTo="/admin/projects">
         <input type="hidden" name="projects-present" value="1" />
@@ -117,6 +118,42 @@ export default async function ProjectsEditor({
                     Retrospective: what I would change now
                     <textarea name={`project-${project.slug}-retrospective`} defaultValue={project.retrospective} />
                   </label>
+                  <label>
+                    The line (one bullet per line)
+                    <textarea name={`project-${project.slug}-bullets`} defaultValue={project.bullets} rows={4} />
+                  </label>
+                  <label>
+                    Description
+                    <textarea name={`project-${project.slug}-description`} defaultValue={project.description} />
+                  </label>
+                  <label>
+                    Plate image URL
+                    <input name={`project-${project.slug}-plate`} defaultValue={project.plate} />
+                  </label>
+                  <label>
+                    Plate caption
+                    <input name={`project-${project.slug}-plateCaption`} defaultValue={project.plateCaption} />
+                  </label>
+                  <label>
+                    Plate alt text
+                    <input name={`project-${project.slug}-plateAlt`} defaultValue={project.plateAlt} />
+                  </label>
+                  <label>
+                    Apparatus name
+                    <input name={`project-${project.slug}-apparatusName`} defaultValue={project.apparatusName} />
+                  </label>
+                  <label>
+                    Apparatus runtime
+                    <input name={`project-${project.slug}-apparatusRuntime`} defaultValue={project.apparatusRuntime} />
+                  </label>
+                  <label>
+                    Apparatus path (one `name — role` per line)
+                    <textarea name={`project-${project.slug}-apparatusPath`} defaultValue={project.apparatusPath} rows={4} />
+                  </label>
+                  <label>
+                    Beside the path (one `name — role` per line)
+                    <textarea name={`project-${project.slug}-apparatusBeside`} defaultValue={project.apparatusBeside} rows={3} />
+                  </label>
                   <label className="flex-row items-center gap-2 normal-case tracking-normal">
                     <input
                       type="checkbox"
@@ -127,7 +164,31 @@ export default async function ProjectsEditor({
                   </label>
                   <p className="font-mono text-[12px] normal-case tracking-normal text-faded">
                     Archiving removes the homepage card and the public exhibit URL in preview and after publish.
-                    The TypeScript page file remains; restore the overlay to republish.
+                    {LEDGER_PROJECT_SLUGS.has(project.slug)
+                      ? " This slug is compiled from TypeScript, so archive it instead of deleting."
+                      : " This slug exists only in the CMS and can be permanently deleted."}
+                  </p>
+                  <p className="flex flex-wrap gap-2">
+                    <button
+                      type="submit"
+                      className="masthead-chip"
+                      name="project-duplicate"
+                      value={project.slug}
+                      formAction={saveDraftAction}
+                    >
+                      Duplicate
+                    </button>
+                    {!LEDGER_PROJECT_SLUGS.has(project.slug) ? (
+                      <button
+                        type="submit"
+                        className="masthead-chip"
+                        name="project-delete"
+                        value={project.slug}
+                        formAction={saveDraftAction}
+                      >
+                        Delete
+                      </button>
+                    ) : null}
                   </p>
                   {missing.length ? (
                     <p className="admin-error">Missing case-study fields: {missing.join(", ")}</p>
@@ -137,6 +198,15 @@ export default async function ProjectsEditor({
             );
           })}
         </EditorSearch>
+        <label>
+          New exhibit slug
+          <input name="project-new-slug" placeholder="kebab-case-slug" />
+        </label>
+        <p>
+          <button type="submit" name="project-create" value="1" className="masthead-chip" formAction={saveDraftAction}>
+            Create exhibit
+          </button>
+        </p>
         <label>
           Revision note
           <input name="note" defaultValue={doc.note} />

@@ -193,7 +193,7 @@ test.describe("exhibit evidence", () => {
     await expect(page.getByTestId("retrieval-split")).toContainText(/different corpus/);
     await expect(page.getByTestId("evidence-card")).toContainText(/\+35%/);
     await expect(page.getByTestId("evidence-card")).toContainText(/Vector-only/);
-    await expect(page.getByTestId("evidence-card")).toContainText(/Evidence gap/);
+    await expect(page.getByTestId("evidence-card")).toContainText(/Gap/);
     await expect(page.getByTestId("exhibit-rail")).toContainText(/Sole builder/);
     await expect(page.getByTestId("exhibit-rail")).toContainText(/Private project archive/);
     await expect(page.locator("#limitations")).toBeVisible();

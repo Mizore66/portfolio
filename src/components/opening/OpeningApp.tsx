@@ -510,8 +510,11 @@ export function OpeningApp({
   }
 
   function onPlayThePosition() {
-    setPlayHint(true);
-    document.getElementById("play-board")?.focus();
+    setPlayHint((on) => {
+      const next = !on;
+      if (next) document.getElementById("play-board")?.focus();
+      return next;
+    });
   }
 
   return (
@@ -622,7 +625,7 @@ export function OpeningApp({
                     )}
                   >
                     <span aria-hidden>♟</span>
-                    {BROADSHEET.playInvite}
+                    {playHint ? BROADSHEET.playInviteOff : BROADSHEET.playInvite}
                   </button>
                 </div>
                 <p data-testid="board-keys" id="board-keys" className="font-mono text-[12px] text-faded">

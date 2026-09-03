@@ -5,9 +5,10 @@ import { originMatchesHost } from "@/lib/cms/origin";
 import { postgresNeedsSsl, postgresUrl, postgresUrlSource } from "@/lib/cms/env";
 import { clientIpFrom, nextAttempt, rateLimitKey } from "@/lib/cms/auth-store";
 import { applyFormToDocument } from "@/lib/cms/form";
+import { hydrateDocument } from "@/lib/cms/hydrate";
 import { parseImportedDocument } from "@/lib/cms/import-document";
 import { ledgerDocument } from "@/lib/cms/ledger";
-import { overlayProject } from "@/lib/cms/overlay";
+import { overlayProject, overlayProjects, resolveExhibit } from "@/lib/cms/overlay";
 import { documentDiff, groupedDocumentDiff, wordDiff } from "@/lib/cms/diff";
 import { claimHeroReady, validateDocument } from "@/lib/cms/validate";
 import { draftHealth, draftStatus, revisionInstant } from "@/lib/cms/health";
@@ -57,35 +58,20 @@ describe("cms ledger", () => {
     expect(rows.some((row) => row.path === "profile.dek" && row.to === "Draft dek")).toBe(true);
   });
 
-  it("refuses to drop a required claim or invent a project slug", () => {
+  it("refuses to drop a required claim and accepts a CMS-created project slug", () => {
     const doc = ledgerDocument();
     const missing = { ...doc, claims: doc.claims.filter((claim) => claim.id !== "setelDefects") };
     expect(validateDocument(missing).join(" ")).toMatch(/setelDefects/);
-    const ghost = {
+    const created = {
       ...doc,
-      projects: [{
-        slug: "not-a-project",
-        title: "",
-        subtitle: "",
-        date: "",
-        category: "",
-        tech: "",
-        github: "",
-        seoTitle: "",
-        seoDescription: "",
-        purpose: "",
-        impact: "",
-        why: "",
-        judgment: "",
-        constraint: "",
-        limitation: "",
-        example: "",
-        rejected: "",
-        retrospective: "",
-        archived: false,
-      }],
+      projects: [...doc.projects, { ...doc.projects[0]!, slug: "new-desk", title: "New desk", archived: true }],
     };
-    expect(validateDocument(ghost).join(" ")).toMatch(/Unknown project slug/);
+    expect(validateDocument(created)).toEqual([]);
+    const invalid = {
+      ...doc,
+      projects: [{ ...doc.projects[0]!, slug: "Not A Project" }],
+    };
+    expect(validateDocument(invalid).join(" ")).toMatch(/Invalid project slug/);
     const dated = {
       ...doc,
       claims: doc.claims.map((claim) => (claim.id === "gateC" ? { ...claim, date: "3 Sept" } : claim)),
@@ -295,6 +281,87 @@ describe("cms ledger caveats", () => {
     const rows = documentDiff(published, restored);
     expect(rows.some((row) => row.path === "note")).toBe(false);
     expect(rows.some((row) => row.path === "profile.dek" && row.to === "Older dek")).toBe(true);
+  });
+
+  it("creates, duplicates, and deletes CMS aspirations and exhibits", () => {
+    const published = ledgerDocument();
+    const aspForm = new FormData();
+    aspForm.set("aspirations-present", "1");
+    aspForm.set("asp-new-id", "next-desk");
+    aspForm.set("asp-create", "1");
+    const withAsp = applyFormToDocument(aspForm, published);
+    expect(withAsp.aspirations.some((item) => item.id === "next-desk")).toBe(true);
+
+    const dupAsp = new FormData();
+    dupAsp.set("aspirations-present", "1");
+    dupAsp.set("asp-duplicate", "next-desk");
+    const copiedAsp = applyFormToDocument(dupAsp, withAsp);
+    expect(copiedAsp.aspirations.some((item) => item.id === "next-desk-copy")).toBe(true);
+
+    const delLedgerAsp = new FormData();
+    delLedgerAsp.set("aspirations-present", "1");
+    delLedgerAsp.set("asp-delete", "swe-fintech-ml");
+    const withoutLedgerAsp = applyFormToDocument(delLedgerAsp, published);
+    expect(withoutLedgerAsp.aspirations.some((item) => item.id === "swe-fintech-ml")).toBe(false);
+    expect(hydrateDocument(withoutLedgerAsp).aspirations.some((item) => item.id === "swe-fintech-ml")).toBe(false);
+
+    const projectForm = new FormData();
+    projectForm.set("projects-present", "1");
+    projectForm.set("project-new-slug", "new-desk");
+    projectForm.set("project-create", "1");
+    const withProject = applyFormToDocument(projectForm, published);
+    const created = withProject.projects.find((project) => project.slug === "new-desk");
+    expect(created?.archived).toBe(true);
+    expect(validateDocument(withProject)).toEqual([]);
+
+    const dupProject = new FormData();
+    dupProject.set("projects-present", "1");
+    dupProject.set("project-duplicate", "veridian");
+    const copiedProject = applyFormToDocument(dupProject, withProject);
+    expect(copiedProject.projects.some((project) => project.slug === "veridian-copy")).toBe(true);
+
+    const delLedger = new FormData();
+    delLedger.set("projects-present", "1");
+    delLedger.set("project-delete", "veridian");
+    expect(applyFormToDocument(delLedger, copiedProject).projects.some((project) => project.slug === "veridian")).toBe(
+      true,
+    );
+
+    const delCreated = new FormData();
+    delCreated.set("projects-present", "1");
+    delCreated.set("project-delete", "new-desk");
+    expect(applyFormToDocument(delCreated, copiedProject).projects.some((project) => project.slug === "new-desk")).toBe(
+      false,
+    );
+  });
+
+  it("overlays apparatus layers and renders a CMS-only exhibit", () => {
+    const published = ledgerDocument();
+    const draft = {
+      ...published,
+      projects: [
+        ...published.projects.map((project) =>
+          project.slug === "veridian"
+            ? { ...project, apparatusRuntime: "Cloud Run preview", apparatusPath: "MCP — intercepts Terraform" }
+            : project,
+        ),
+        {
+          ...published.projects[0]!,
+          slug: "new-desk",
+          title: "New desk",
+          purpose: "A CMS-only filing.",
+          archived: false,
+          apparatusName: "New desk",
+          apparatusPath: "Editor — writes copy",
+        },
+      ],
+    };
+    const veridian = overlayProject(resumeData.projects[0]!, draft);
+    expect(veridian && "apparatus" in veridian ? veridian.apparatus.runtime : "").toBe("Cloud Run preview");
+    const extras = overlayProjects(resumeData.projects, draft);
+    expect(extras.some((project) => project.slug === "new-desk")).toBe(true);
+    expect(resolveExhibit("new-desk", draft)?.name).toBe("New desk");
+    expect(validateDocument(draft)).toEqual([]);
   });
 
   it("marks word-level insertions and deletions", () => {
