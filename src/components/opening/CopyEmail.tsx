@@ -43,7 +43,7 @@ export function CopyEmail({ email }: { email: string }) {
       aria-label={copied ? BROADSHEET.copiedEmail : BROADSHEET.copyEmail}
     >
       {copied ? BROADSHEET.copiedEmail : BROADSHEET.copyEmail}
-      <span className="sr-only" aria-live="polite">
+      <span className="sr-only" role="status" aria-live="polite">
         {copied ? BROADSHEET.copiedEmail : ""}
       </span>
     </button>

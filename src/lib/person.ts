@@ -21,6 +21,7 @@ export function personJsonLd() {
     image: `${SITE_URL}/opengraph-image`,
     email: `mailto:${resumeData.email}`,
     jobTitle: "Software engineer",
+    description: resumeData.headline,
     alumniOf: {
       "@type": "CollegeOrUniversity",
       name: resumeData.education.school,

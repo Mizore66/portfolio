@@ -1,4 +1,5 @@
 import { CIRCUITMIND_LINE, MIRRORFI_VAULT, RISK_ENGINE, LEADS_HALL, VERIDIAN_PLANT } from "@/content/project-figures";
+import { DESKS, deskFactLine } from "@/lib/canonical";
 import { repoArtifacts, resumeData } from "@/lib/data";
 import { classifiedShort, METRICS, POSITIONING } from "@/lib/metrics";
 import type { OpeningNode } from "@/lib/opening/types";
@@ -47,7 +48,7 @@ export const BROADSHEET = {
   weightsPending: "Learned weights still in the post — handcrafted holds the line.",
   weightsError: "The learned packet did not arrive. Refresh, or trust the annotator. — Ed.",
   engineDown: "The engine is thinking about something else. Refresh, or trust the annotator. — Ed.",
-  readHintDesktop: "Click any move. ← → steps the mainline, or skip the diagram and read the scoresheet.",
+  readHintDesktop: "Click any move. When the board has focus, ← → steps the mainline. Or skip the diagram and read the scoresheet.",
   readHintTouch: "Tap the chevrons under the board, or skip the diagram and read the scoresheet.",
   evaluationsKicker: "The evaluations meet",
   evaluationsHed: "LEARNED FALLS −143 ELO AT 50 000 NODES",
@@ -56,7 +57,7 @@ export const BROADSHEET = {
   evaluationsSprt:
     "fixed-N: −143.1 ±40.5 Elo @ 50 000 nodes, 100 games, LLR −2.33 (inconclusive; SPRT unterminated)",
   evaluationsHonesty:
-    "Honest Elo: the deltas are rigorous, the anchor is declared. A loss at the spec cap is still a result.",
+    "Honest Elo: the deltas are rigorous, the anchor is declared.",
   eloChartKicker: "Elo over commits",
   eloChartCaption:
     "Each point is a match JSON at 50 000 nodes/move. Gate A is handcrafted vs itself: 0.0 Elo, 100 games, every colour-swapped pair 1–1. Gate C is the depth-12 256, fixed-N, below the axis. The v1 128 at 1 000 nodes (−100) is a different regime.",
@@ -261,9 +262,9 @@ export const OPENING_NODES: OpeningNode[] = [
     kind: "Internship",
     title: "First Developed Piece",
     scanTitle: "Petronas — Project Engineer Intern",
-    fact: "Petronas — Project Engineer Intern, Nov 2024 – Feb 2025. Replaced MATLAB-dependent back-end functionality with Python packages, removing paid runtime dependencies, then wrote post-release acceptance cases. Presented usability findings to department leadership.",
+    fact: `${deskFactLine(DESKS.petronas)}`,
     commentary:
-      "Knights before bishops, they say. Petronas was the first industry square — converting paid MATLAB licences into free Python packages, then writing the tests that proved it.",
+      "Knights before bishops, they say. Petronas was the first industry square — I replaced MATLAB-dependent back-end functionality with Python packages, then wrote post-release acceptance cases for the migrated features.",
     eval: 0.4,
     evalText: "+0.40",
     artifacts: [],
@@ -272,7 +273,7 @@ export const OPENING_NODES: OpeningNode[] = [
     cap: "Position after 2. Nf3",
     clipping: {
       kicker: "Engineering Notes",
-      headline: "PETRONAS RETAINS YOUNG TALENT ON THE PIPELINE DESIGN TEAM",
+      headline: DESKS.petronas.headline,
       dateline: "Kuala Lumpur, Nov. 2024.",
       src: "/plates/clip-petronas.jpg",
       caption: "Before the towers — file photo.",
@@ -356,9 +357,9 @@ export const OPENING_NODES: OpeningNode[] = [
     kind: "Internship",
     title: "Defending the Pawn",
     scanTitle: "Setel — Software Engineer Intern",
-    fact: `Setel — Software Engineer Intern, Jul 2025 – Dec 2025. Payment engine: authorization and capture. ${METRICS.setelCoverage.display}, ${METRICS.setelDefects.display}.`,
+    fact: `Setel — Software Engineer Intern, Jul 2025 – Dec 2025. Payment engine: authorization and capture. ${METRICS.setelCoverage.display}, ${METRICS.setelDefects.display}. ${METRICS.setelDefects.display} is a separate observation, not claimed as the coverage's effect.`,
     commentary:
-      "Payment-engine defects used to ship as far as the pump. I sat on that square and made sure the pawn could not be taken for free.",
+      "Payment-engine defects could travel all the way to checkout at the pump. I sat on that square and made sure the pawn could not be taken for free.",
     eval: 0.35,
     evalText: "+0.35",
     artifacts: [],
@@ -387,7 +388,7 @@ export const OPENING_NODES: OpeningNode[] = [
     kind: "Contract",
     title: "Pointing at f7",
     scanTitle: "Western Digital — Full-stack Engineer",
-    fact: `Western Digital — Full-stack Engineer, Feb 2025 – Dec 2025. Lab-systems dashboard; role-based access for 50+ staff, ${METRICS.wdOversight.display}. WebSocket to the lab's deep-learning model; shortest path between stations in under 100 ms.`,
+    fact: `Western Digital — Full-stack Engineer, Feb 2025 – Dec 2025. Lab-systems dashboard; role-based access for 50+ staff, ${METRICS.wdOversight.display} (${METRICS.wdOversight.oversight}). WebSocket to the lab's deep-learning model; ${METRICS.wdOversight.latency}.`,
     commentary:
       "The Italian bishop looks at the weakest point in the castled position. At WD the weakness was watching lab systems by hand. I put a bishop there.",
     eval: 0.5,
@@ -418,7 +419,7 @@ export const OPENING_NODES: OpeningNode[] = [
     kind: "Project",
     title: "Quiet Italian",
     scanTitle: "CircuitMindAI — PCB inspection",
-    fact: `${circuit.name} — ${circuit.subtitle}. Amazon Nova Pro for vision, Nova Sonic for voice. Next.js and Express, CI/CD to ECS Fargate, edge cache for when the network drops.`,
+    fact: `${circuit.name} — ${circuit.subtitle}. Amazon Nova Pro for vision, Nova Sonic for voice. Next.js and Express, CI/CD to ECS Fargate, cached locally for when the network drops.`,
     commentary:
       "CircuitMind sees faults in the copper and talks back over a live voice channel. Black develops the same way — vision on the board, voice on the file.",
     eval: 0.45,
@@ -513,7 +514,7 @@ export const OPENING_NODES: OpeningNode[] = [
     kind: "Flagship",
     title: "The Central Break",
     scanTitle: "Veridian — MLOps Tradeoff Engine",
-    fact: `${veridian.name} — ${veridian.subtitle}: intercepts Terraform and Kubernetes and recommends lower-carbon hardware. ${METRICS.veridianUptime.opening}. Separate engagement — Monash University: GraphRAG over university regulations, self-correcting Text-to-Cypher, ${METRICS.monashRetrieval.display}; an SLM distilled from that reasoning, ${METRICS.slmLatency.value} latency.`,
+    fact: `${veridian.name} — ${veridian.subtitle}: intercepts Terraform and Kubernetes and recommends lower-carbon hardware. ${METRICS.veridianUptime.opening}. Separate engagement — Monash University: GraphRAG over university regulations, ${DESKS.monash.cypher}, ${METRICS.monashRetrieval.display}; an SLM distilled from that reasoning, ${METRICS.slmLatency.value} latency.`,
     commentary:
       "You castle, then you break the centre. d4 is the move this scoresheet hangs on: agents that intercept infrastructure, a graph that actually understands prerequisites, measurements instead of demos. The double-exclaim is Informant’s, not mine — but I played it.",
     eval: 1.6,

@@ -138,7 +138,7 @@ describe("art taxonomy", () => {
 
   it("files news-clippings on education and the three employer roles", () => {
     expect(getNode("e4").clipping?.headline).toMatch(/HONOURS FOR MONASH ENGINEERING GRADUATE/);
-    expect(getNode("nf3").clipping?.headline).toMatch(/PETRONAS RETAINS YOUNG TALENT ON THE PIPELINE DESIGN TEAM/);
+    expect(getNode("nf3").clipping?.headline).toMatch(/PETRONAS TAKES ON SOFTWARE ENGINEERING INTERN/);
     expect(getNode("nc6").clipping?.headline).toMatch(/SETEL RECRUITS NEW HANDS ON THE PAYMENT ENGINE/);
     expect(getNode("bc4").clipping?.headline).toMatch(/WESTERN DIGITAL ADDS NEW HANDS ON THE LAB FLOOR/);
     expect(getNode("oo").clipping).toBeUndefined();

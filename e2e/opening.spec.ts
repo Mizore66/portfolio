@@ -123,7 +123,7 @@ test.describe("Opening Preparation", () => {
     );
     await expect(page.locator("#chapter-e4 .news-clipping-kicker")).toHaveText(/University Intelligence/i);
     await expect(page.locator("#chapter-nf3 [data-testid='news-clipping']")).toContainText(
-      "PETRONAS RETAINS YOUNG TALENT ON THE PIPELINE DESIGN TEAM",
+      "PETRONAS TAKES ON SOFTWARE ENGINEERING INTERN",
     );
     await expect(page.locator("#chapter-nf3 .news-clipping-dateline")).toHaveText(/Kuala Lumpur, Nov\. 2024/);
     await expect(page.locator("#chapter-nf3 [data-testid='news-clipping-inset']")).toBeVisible();
@@ -1123,7 +1123,7 @@ test.describe("Opening Preparation", () => {
     );
 
     const faded = await page.locator(".text-faded").first().evaluate((el) => getComputedStyle(el).color);
-    expect(faded).toBe("rgb(107, 99, 83)");
+    expect(faded).toBe("rgb(83, 76, 64)");
 
     const h1 = (await page.locator("h1").boundingBox())!;
     const drop = (await page.locator(".drop-cap").first().boundingBox())!;

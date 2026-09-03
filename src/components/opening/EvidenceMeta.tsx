@@ -19,9 +19,13 @@ export function EvidenceMeta({
   if (!cleaned && !kind) return null;
   return (
     <p className="evidence-meta">
-      {kind ? EVIDENCE_TIER[kind] : null}
-      {kind && cleaned ? " · " : null}
-      {cleaned}
+      {kind ? (
+        <span className="evidence-badge" data-testid="evidence-badge">
+          {EVIDENCE_TIER[kind]}
+        </span>
+      ) : null}
+      {kind && cleaned ? <span className="evidence-meta-note"> · {cleaned}</span> : null}
+      {!kind && cleaned ? cleaned : null}
     </p>
   );
 }

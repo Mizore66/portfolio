@@ -2,6 +2,7 @@ import Image from "next/image";
 import { BROADSHEET } from "@/content/opening";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
 import { START_PERFT } from "@/lib/chess/perft-table";
+import { POSITIONING } from "@/lib/metrics";
 
 export function Colophon() {
   return (
@@ -24,6 +25,9 @@ export function Colophon() {
         <figcaption>The inventor, on the stair — file photo.</figcaption>
       </figure>
       <p className="mt-4 font-lora text-[16px] leading-relaxed text-ink">{BROADSHEET.colophon}</p>
+      <p className="mt-4 font-mono text-[12px] leading-relaxed text-faded" data-testid="name-note">
+        {POSITIONING.nameNote}
+      </p>
       <p className="mt-4 font-mono text-[12px] uppercase tracking-[0.18em] text-faded">
         {BROADSHEET.colophonHonestyKicker}
       </p>

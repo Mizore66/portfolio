@@ -135,7 +135,7 @@ export function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }) {
       </ul>
       {archive.length > 0 ? (
         <section className="mt-8" aria-labelledby="archive-heading">
-          <h3 id="archive-heading" className="band-title text-[1.15rem]">
+          <h3 id="archive-heading" className="archive-heading">
             Archive
           </h3>
           <ul className="project-archive mt-4" data-testid="project-archive">

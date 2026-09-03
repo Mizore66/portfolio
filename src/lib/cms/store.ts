@@ -170,7 +170,11 @@ export async function publishDocument(doc: SiteDocument): Promise<SiteDocument> 
   store.draft = next;
   store.revisions = [next, ...store.revisions].slice(0, 40);
   store.audit.unshift({ at: next.publishedAt, action: "publish", note: next.note });
+  const url = postgresUrl();
+  if (url) {
+    const ok = await writePostgres(next, "publish");
+    if (!ok) throw new Error("Publish did not land in Postgres.");
+  }
   await writeFileStore(store);
-  await writePostgres(next, "publish").catch(() => false);
   return next;
 }

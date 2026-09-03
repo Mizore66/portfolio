@@ -70,7 +70,7 @@ export function HeroEngine({ staticBoard }: { staticBoard: ReactNode }) {
       <p className="mt-1 font-mono text-[12px] uppercase tracking-[0.14em] text-faded">
         {BROADSHEET.heroBoardKicker}
       </p>
-      <div className="hero-engine-board mt-3">
+      <div className="hero-engine-board mt-3" data-chess-keys>
         {ready ? (
           <BoardDiagram
             planeId="hero-board"
@@ -94,7 +94,7 @@ export function HeroEngine({ staticBoard }: { staticBoard: ReactNode }) {
         {BROADSHEET.heroResultChip}
       </p>
       {ready ? (
-        <div className="mt-3">
+        <div className="mt-3" data-chess-keys>
           <GlassEngine
             info={info}
             book={book}
@@ -108,9 +108,7 @@ export function HeroEngine({ staticBoard }: { staticBoard: ReactNode }) {
             compact
           />
         </div>
-      ) : (
-        <p className="mt-3 font-mono text-[12px] text-faded">{BROADSHEET.heroCaption}</p>
-      )}
+      ) : null}
       <p
         className="mt-3 max-w-[42ch] font-display text-[15px] leading-snug text-ink"
         data-testid="hero-engine-caption"

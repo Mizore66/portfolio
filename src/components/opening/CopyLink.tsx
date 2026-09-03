@@ -50,8 +50,8 @@ export function CopyLink({ href, label }: { href: string; label?: string }) {
       aria-label={copied ? BROADSHEET.copiedLink : name}
     >
       <span aria-hidden="true">#</span>
-      <span className="sr-only" aria-live="polite">
-        {copied ? BROADSHEET.copiedLink : name}
+      <span className="sr-only" role="status" aria-live="polite">
+        {copied ? BROADSHEET.copiedLink : ""}
       </span>
     </button>
   );

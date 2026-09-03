@@ -7,7 +7,7 @@
   --color-ink: #1a120c;
   --color-book-blue: #1e3a72;
   --color-score-red: #8b241c;
-  --color-faded: #6b6353;
+  --color-faded: #534c40;
   --color-board-light: #e8dcc4;
   --color-board-dark: #8f8574;
   --color-background: var(--paper);
@@ -48,7 +48,7 @@
   --ink: #1a120c;
   --book-blue: #1e3a72;
   --score-red: #8b241c;
-  --faded: #6b6353;
+  --faded: #534c40;
   --board-light: #e8dcc4;
   --board-dark: #8f8574;
   --background: #f6eedc;
@@ -711,6 +711,11 @@
   font-variant: normal;
   margin-right: 0.35em;
 }
+@media (max-width: 639px) {
+  .patent-reference-grid {
+    display: none;
+  }
+}
 .patent-dagger {
   margin-top: 8px;
   font-family: var(--font-display), "Libre Baskerville", serif;
@@ -1362,6 +1367,20 @@
   line-height: 1.4;
   color: var(--faded);
 }
+.evidence-badge {
+  display: inline-block;
+  border: 1px solid var(--ink);
+  padding: 2px 6px;
+  font-family: var(--type-label);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--paper);
+}
+.evidence-meta-note {
+  color: var(--faded);
+}
 
 .hero-proof {
   margin: var(--space-4) 0 0;
@@ -1414,7 +1433,7 @@
   flex-shrink: 0;
   color: var(--score-red);
 }
-@media (min-width: 640px) {
+@media (min-width: 1024px) {
   .year-index {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1459,7 +1478,7 @@
 .evidence-card {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-2);
   margin-top: var(--space-3);
 }
 .evidence-card > div {
@@ -1913,7 +1932,7 @@ h1, h2, h3 {
     font-family: "Libre Baskerville", Georgia, serif;
     font-size: 9pt;
     font-style: italic;
-    color: #6b6353;
+    color: var(--faded);
   }
   a {
     color: inherit;
@@ -1928,7 +1947,7 @@ h1, h2, h3 {
     font-family: "Libre Baskerville", Georgia, serif;
     font-size: 9pt;
     font-style: italic;
-    color: #6b6353;
+    color: var(--faded);
   }
 }
 
@@ -2129,13 +2148,33 @@ h1, h2, h3 {
 }
 
 .project-archive {
-  margin: var(--space-8) 0 0;
+  margin: var(--space-4) 0 0;
   padding: 0;
   list-style: none;
   display: flex;
   flex-direction: column;
   gap: 0;
   border-top: var(--rule-hairline) solid var(--ink);
+}
+.archive-heading {
+  margin: var(--space-8) 0 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--faded);
+  font-weight: 400;
+}
+.exhibit-section#rejected {
+  border-top: var(--rule-hairline) solid var(--ink);
+  padding-top: var(--space-6);
+}
+.exhibit-section-prominent {
+  border-top: var(--rule-hairline) solid var(--ink);
+  padding-top: var(--space-6);
+}
+.project-card .evidence-meta {
+  margin-bottom: var(--space-2);
 }
 .archive-row {
   display: flex;
@@ -2172,9 +2211,7 @@ h1, h2, h3 {
   opacity: 0.35;
 }
 .copy-link:hover,
-.copy-link:focus-visible,
-section:hover .copy-link,
-section:focus-within .copy-link {
+.copy-link:focus-visible {
   opacity: 1;
   background: color-mix(in srgb, var(--book-blue) 8%, transparent);
 }
@@ -2281,6 +2318,7 @@ section:focus-within .copy-link {
   #work {
     grid-area: work;
     border-top: 2px solid var(--ink);
+    padding-top: var(--space-12);
   }
   .hero-engine-board {
     width: min(100%, 380px);

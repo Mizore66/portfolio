@@ -15,7 +15,7 @@ export const LAB_ARTICLE = {
   resultJoke: "Result: Black was unconvinced.",
   filed: "Filed against the 2026-08-29 net",
   datePublished: "2026-08-29",
-  meta: "Gate C: the playing 768×2×256 net lost −143.1 ±40.5 Elo to PeSTO at 50 000 nodes/move, 100 games. A loss at the spec cap is still a result.",
+  meta: "Gate C: the playing 768×2×256 net lost −143.1 ±40.5 Elo to PeSTO at 50 000 nodes/move, 100 games.",
   hypothesisHed: "Hypothesis",
   hypothesis:
     "Two evaluations, one search: would the playing 768×2×256 net — trained on 20 million quiet CC0 Lichess cloud evals, depth-12 labels — beat handcrafted PeSTO at the same node budget?",

@@ -32,6 +32,8 @@ export const METRICS = {
     owner: "Monash University contract",
     corpus: "university regulations",
     method: "self-correcting Text-to-Cypher over Neo4j",
+    methodPlain:
+      "generated graph queries, checked failures, and retried malformed Cypher automatically",
     strip: "+45% retrieval",
     display: "+45% retrieval vs vector-only",
     impact: "+45% retrieval accuracy",
@@ -74,6 +76,9 @@ export const METRICS = {
     unit: "manual oversight",
     owner: "Western Digital",
     context: "lab dashboard, 50+ staff",
+    oversight:
+      "manual station-checking on the lab dashboard — operators verifying station status by hand rather than reading it on the board",
+    latency: "under 100 ms of UI-visible latency on the dashboard path",
     display: "−40% manual oversight",
     note: "lab dashboard · 50+ staff",
     kind: "evaluation" as const,
@@ -193,9 +198,9 @@ export const POSITIONING = {
   seniority:
     "Internships and contract roles across production systems, plus independent experiments that include a published loss.",
   howIWork:
-    "I work from constraints through implementation and measurement, and document the tradeoffs behind the system.",
+    "I work from constraints through implementation and measurement, documenting the tradeoffs behind each system.",
   availability:
-    "Open to software engineering roles in fintech, ML infrastructure, and data platforms.",
+    "Open to software engineering roles across fintech, ML infrastructure, and data platforms.",
   graduateNote: "Graduate and junior opportunities welcome.",
   contactHed: "Interested in building measured, reliable systems?",
   closer:
@@ -203,10 +208,11 @@ export const POSITIONING = {
   next: "The next line I want to play: measured systems in fintech infrastructure.",
   professionalDek: "Internships and contract roles across production systems.",
   independentDek: "Independent projects below; production and contract work under Experience.",
-  deskNote: "Professional work is summarized here; internal screenshots remain private.",
+  deskNote:
+    "Professional work is summarized here; internal screenshots remain private. Internships and contracts sat inside existing teams; independent flagships are solo.",
   nameNote: "Anas T. Qumhiyeh on the masthead; Anas Tarek Qumhiyeh on the résumé.",
   desksLine:
-    "Built and evaluated payment, laboratory, and retrieval systems at Setel, Western Digital, Petronas, and Monash University.",
+    "Built payment, laboratory, and retrieval systems at Setel, Western Digital, Petronas, and Monash University.",
   throughLine: "The through-line is systems that have to keep working after they ship.",
   deskSummaries: [
     {
@@ -227,12 +233,12 @@ export const POSITIONING = {
     },
   ],
   recruiterBio:
-    "Software engineer building ML infrastructure and data-intensive systems. Built and evaluated payment, laboratory, and retrieval systems at Setel, Western Digital, Petronas, and Monash University.",
+    "Software engineer building ML infrastructure and data-intensive systems. Built payment, laboratory, and retrieval systems at Setel, Western Digital, Petronas, and Monash University.",
   followerBio:
-    "Built production payment, laboratory, and retrieval systems across Setel, Western Digital, Petronas, and Monash University. I work from constraints through implementation and measurement, and document the tradeoffs behind the system. At Petronas I presented usability findings to department leadership; at Western Digital I built for 50+ lab staff. Outside software, I've played chess since I was a teenager, which is why this portfolio is structured as a game.",
+    "Built production payment, laboratory, and retrieval systems across Setel, Western Digital, Petronas, and Monash University. I work from constraints through implementation and measurement, documenting the tradeoffs behind each system. At Petronas I presented usability findings to department leadership; at Western Digital I built for 50+ lab staff. Outside software, I've played chess since I was a teenager, which is why this portfolio is structured as a game.",
   about: [
     "Built production payment, laboratory, and retrieval systems across Setel, Western Digital, Petronas, and Monash University.",
-    "I work from constraints through implementation and measurement, and document the tradeoffs behind the system. At Petronas I presented usability findings to department leadership; at Western Digital I built for 50+ lab staff.",
+    "I work from constraints through implementation and measurement, documenting the tradeoffs behind each system. At Petronas I presented usability findings to department leadership; at Western Digital I built for 50+ lab staff. Internships and contracts sat inside existing teams; independent flagships are solo.",
     "Outside software, I've played chess since I was a teenager, which is why this portfolio is structured as a game. The moves are the work; the annotations are my interpretation of it.",
   ],
 } as const;

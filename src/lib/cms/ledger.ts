@@ -27,6 +27,7 @@ function claim(
     date: extra.date ?? "",
     caveat: extra.caveat ?? metric.note ?? "",
     heroEligible: extra.heroEligible ?? false,
+    surfaces: extra.surfaces ?? (extra.heroEligible ? ["home", "opening", "resume"] : ["opening", "resume", "exhibit"]),
   };
 }
 
