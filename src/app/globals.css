@@ -1932,7 +1932,7 @@ h1, h2, h3 {
     font-family: "Libre Baskerville", Georgia, serif;
     font-size: 9pt;
     font-style: italic;
-    color: #6b6353;
+    color: var(--faded);
   }
   a {
     color: inherit;
@@ -1947,7 +1947,7 @@ h1, h2, h3 {
     font-family: "Libre Baskerville", Georgia, serif;
     font-size: 9pt;
     font-style: italic;
-    color: #6b6353;
+    color: var(--faded);
   }
 }
 
