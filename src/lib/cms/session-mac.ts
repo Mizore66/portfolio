@@ -1,5 +1,6 @@
 export const SESSION_COOKIE = "__Host-op-cms";
 export const PREVIEW_COOKIE = "__Host-op-preview";
+export const PREVIEW_RETURN_COOKIE = "__Host-op-preview-return";
 export const MAX_AGE_SEC = 60 * 60 * 8;
 
 function secret(): string {

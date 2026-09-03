@@ -45,6 +45,30 @@ export type CmsProfile = {
   location: string;
 };
 
+export type CmsExperience = {
+  id: string;
+  employer: string;
+  role: string;
+  type: string;
+  period: string;
+  tech: string;
+  ownership: string;
+  bullets: string;
+  impact: string;
+  archived: boolean;
+};
+
+export type CmsEducation = {
+  id: string;
+  institution: string;
+  qualification: string;
+  honours: string;
+  grades: string;
+  dates: string;
+  location: string;
+  archived: boolean;
+};
+
 export const PROJECT_COPY_KEYS = [
   "purpose",
   "impact",
@@ -119,6 +143,8 @@ export type SiteDocument = {
   aspirations: CmsAspiration[];
   claims: CmsClaim[];
   projects: CmsProjectCopy[];
+  experience: CmsExperience[];
+  education: CmsEducation[];
 };
 
 export type CmsMediaAsset = {

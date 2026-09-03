@@ -17,20 +17,39 @@ export function documentDiff(published: SiteDocument, draft: SiteDocument): Fiel
     if (a !== b) rows.push({ path, from: a, to: b });
   };
 
-    push("note", published.note, draft.note);
-  push("profile.dek", published.profile.dek, draft.profile.dek);
-  push("profile.tagline", published.profile.tagline, draft.profile.tagline);
-  push("profile.desksLine", published.profile.desksLine, draft.profile.desksLine);
-  push("profile.howIWork", published.profile.howIWork, draft.profile.howIWork);
-  push("profile.availability", published.profile.availability, draft.profile.availability);
-  push("profile.recruiterBio", published.profile.recruiterBio, draft.profile.recruiterBio);
-  push("profile.followerBio", published.profile.followerBio, draft.profile.followerBio);
-  push("profile.location", published.profile.location, draft.profile.location);
+  const pub = {
+    ...published,
+    claims: Array.isArray(published?.claims) ? published.claims : [],
+    projects: Array.isArray(published?.projects) ? published.projects : [],
+    aspirations: Array.isArray(published?.aspirations) ? published.aspirations : [],
+    experience: Array.isArray(published?.experience) ? published.experience : [],
+    education: Array.isArray(published?.education) ? published.education : [],
+    profile: published?.profile ?? ({} as SiteDocument["profile"]),
+  };
+  const next = {
+    ...draft,
+    claims: Array.isArray(draft?.claims) ? draft.claims : [],
+    projects: Array.isArray(draft?.projects) ? draft.projects : [],
+    aspirations: Array.isArray(draft?.aspirations) ? draft.aspirations : [],
+    experience: Array.isArray(draft?.experience) ? draft.experience : [],
+    education: Array.isArray(draft?.education) ? draft.education : [],
+    profile: draft?.profile ?? ({} as SiteDocument["profile"]),
+  };
 
-  const claimIds = new Set([...published.claims.map((c) => c.id), ...draft.claims.map((c) => c.id)]);
+    push("note", pub.note, next.note);
+  push("profile.dek", pub.profile.dek, next.profile.dek);
+  push("profile.tagline", pub.profile.tagline, next.profile.tagline);
+  push("profile.desksLine", pub.profile.desksLine, next.profile.desksLine);
+  push("profile.howIWork", pub.profile.howIWork, next.profile.howIWork);
+  push("profile.availability", pub.profile.availability, next.profile.availability);
+  push("profile.recruiterBio", pub.profile.recruiterBio, next.profile.recruiterBio);
+  push("profile.followerBio", pub.profile.followerBio, next.profile.followerBio);
+  push("profile.location", pub.profile.location, next.profile.location);
+
+  const claimIds = new Set([...pub.claims.map((c) => c.id), ...next.claims.map((c) => c.id)]);
   for (const id of claimIds) {
-    const a = published.claims.find((c) => c.id === id);
-    const b = draft.claims.find((c) => c.id === id);
+    const a = pub.claims.find((c) => c.id === id);
+    const b = next.claims.find((c) => c.id === id);
     if (!a) {
       push(`claims.${id}`, "", b);
       continue;
@@ -55,13 +74,13 @@ export function documentDiff(published: SiteDocument, draft: SiteDocument): Fiel
     push(`claims.${id}.sourceUrl`, a.sourceUrl, b.sourceUrl);
     push(`claims.${id}.heroEligible`, a.heroEligible, b.heroEligible);
     push(`claims.${id}.archived`, a.archived, b.archived);
-    push(`claims.${id}.surfaces`, a.surfaces.join(","), b.surfaces.join(","));
+    push(`claims.${id}.surfaces`, (a.surfaces ?? []).join(","), (b.surfaces ?? []).join(","));
   }
 
-  const aspIds = new Set([...published.aspirations.map((c) => c.id), ...draft.aspirations.map((c) => c.id)]);
+  const aspIds = new Set([...pub.aspirations.map((c) => c.id), ...next.aspirations.map((c) => c.id)]);
   for (const id of aspIds) {
-    const a = published.aspirations.find((c) => c.id === id);
-    const b = draft.aspirations.find((c) => c.id === id);
+    const a = pub.aspirations.find((c) => c.id === id);
+    const b = next.aspirations.find((c) => c.id === id);
     if (!a) {
       push(`aspirations.${id}`, "", b);
       continue;
@@ -76,10 +95,10 @@ export function documentDiff(published: SiteDocument, draft: SiteDocument): Fiel
     push(`aspirations.${id}.end`, a.end, b.end);
   }
 
-  const slugs = new Set([...published.projects.map((p) => p.slug), ...draft.projects.map((p) => p.slug)]);
+  const slugs = new Set([...pub.projects.map((p) => p.slug), ...next.projects.map((p) => p.slug)]);
   for (const slug of slugs) {
-    const a = published.projects.find((p) => p.slug === slug);
-    const b = draft.projects.find((p) => p.slug === slug);
+    const a = pub.projects.find((p) => p.slug === slug);
+    const b = next.projects.find((p) => p.slug === slug);
     if (!a) {
       push(`projects.${slug}`, "", b);
       continue;
@@ -115,6 +134,50 @@ export function documentDiff(published: SiteDocument, draft: SiteDocument): Fiel
     push(`projects.${slug}.apparatusPath`, a.apparatusPath, b.apparatusPath);
     push(`projects.${slug}.apparatusBeside`, a.apparatusBeside, b.apparatusBeside);
     push(`projects.${slug}.archived`, a.archived, b.archived);
+  }
+
+  const expIds = new Set([...pub.experience.map((row) => row.id), ...next.experience.map((row) => row.id)]);
+  for (const id of expIds) {
+    const a = pub.experience.find((row) => row.id === id);
+    const b = next.experience.find((row) => row.id === id);
+    if (!a) {
+      push(`experience.${id}`, "", b);
+      continue;
+    }
+    if (!b) {
+      push(`experience.${id}`, a, "");
+      continue;
+    }
+    push(`experience.${id}.employer`, a.employer, b.employer);
+    push(`experience.${id}.role`, a.role, b.role);
+    push(`experience.${id}.type`, a.type, b.type);
+    push(`experience.${id}.period`, a.period, b.period);
+    push(`experience.${id}.tech`, a.tech, b.tech);
+    push(`experience.${id}.ownership`, a.ownership, b.ownership);
+    push(`experience.${id}.bullets`, a.bullets, b.bullets);
+    push(`experience.${id}.impact`, a.impact, b.impact);
+    push(`experience.${id}.archived`, a.archived, b.archived);
+  }
+
+  const eduIds = new Set([...pub.education.map((row) => row.id), ...next.education.map((row) => row.id)]);
+  for (const id of eduIds) {
+    const a = pub.education.find((row) => row.id === id);
+    const b = next.education.find((row) => row.id === id);
+    if (!a) {
+      push(`education.${id}`, "", b);
+      continue;
+    }
+    if (!b) {
+      push(`education.${id}`, a, "");
+      continue;
+    }
+    push(`education.${id}.institution`, a.institution, b.institution);
+    push(`education.${id}.qualification`, a.qualification, b.qualification);
+    push(`education.${id}.honours`, a.honours, b.honours);
+    push(`education.${id}.grades`, a.grades, b.grades);
+    push(`education.${id}.dates`, a.dates, b.dates);
+    push(`education.${id}.location`, a.location, b.location);
+    push(`education.${id}.archived`, a.archived, b.archived);
   }
 
   return rows;
@@ -165,6 +228,8 @@ export function editorHrefForPath(path: string): string {
   if (path.startsWith("claims.")) return "/admin/claims";
   if (path.startsWith("projects.")) return "/admin/projects";
   if (path.startsWith("aspirations.")) return "/admin/aspirations";
+  if (path.startsWith("experience.")) return "/admin/experience";
+  if (path.startsWith("education.")) return "/admin/education";
   return "/admin/profile";
 }
 
@@ -190,6 +255,12 @@ export function groupedDocumentDiff(published: SiteDocument, draft: SiteDocument
     } else if (row.path.startsWith("aspirations.")) {
       const id = row.path.split(".")[1] ?? "aspiration";
       take(`aspirations.${id}`, `Aspiration · ${id}`).rows.push(row);
+    } else if (row.path.startsWith("experience.")) {
+      const id = row.path.split(".")[1] ?? "experience";
+      take(`experience.${id}`, `Experience · ${id}`).rows.push(row);
+    } else if (row.path.startsWith("education.")) {
+      const id = row.path.split(".")[1] ?? "education";
+      take(`education.${id}`, `Education · ${id}`).rows.push(row);
     } else {
       take("profile", "Profile").rows.push(row);
     }

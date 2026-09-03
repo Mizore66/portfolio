@@ -51,7 +51,7 @@ export async function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }
       <WorkFilterStatus path={path} count={featured.length + archive.length} />
       <p className="path-filter mt-4" data-testid="path-filter">
         <Link href="/#work" className={cn("path-chip", path === "all" && "path-chip-current")} aria-current={path === "all" ? "page" : undefined}>
-          All
+          All ({mlCount + productCount})
         </Link>
         <Link
           href="/?path=ml#work"

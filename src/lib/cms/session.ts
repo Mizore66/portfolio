@@ -8,6 +8,7 @@ import {
 
 export {
   PREVIEW_COOKIE,
+  PREVIEW_RETURN_COOKIE,
   SESSION_COOKIE,
   sessionConfigured,
   sessionCookieOptions,

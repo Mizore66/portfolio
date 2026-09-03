@@ -23,6 +23,7 @@ export function EvidencePanel({
 }) {
   const cleaned = noteWithoutKind(note, kind);
   const gap = evidence.sample || evidence.alsoFiled;
+  const extra = Boolean(evidence.method || evidence.baseline || evidence.environment || gap);
   return (
     <dl className="evidence-card" data-testid="evidence-card">
       <div className="evidence-result">
@@ -62,34 +63,44 @@ export function EvidencePanel({
           <dd>{source}</dd>
         </div>
       ) : null}
-      {gap ? (
-        <div className="evidence-limitation">
-          <dt>Gap</dt>
-          <dd>{gap}</dd>
-        </div>
-      ) : null}
-      {evidence.method ? (
-        <div className="evidence-method">
-          <dt>Method</dt>
-          <dd>{evidence.method}</dd>
-        </div>
-      ) : null}
-      {evidence.baseline ? (
-        <div className="evidence-method">
-          <dt>Baseline</dt>
-          <dd>{evidence.baseline}</dd>
-        </div>
-      ) : null}
-      {evidence.environment ? (
-        <div className="evidence-method">
-          <dt>Environment</dt>
-          <dd>{evidence.environment}</dd>
-        </div>
-      ) : null}
       <div className="evidence-method">
         <dt>Date</dt>
         <dd>{date}</dd>
       </div>
+      {extra ? (
+        <div className="evidence-method">
+          <dt className="sr-only">Method packet</dt>
+          <dd>
+            <details className="evidence-disclose">
+              <summary>Method, gap, baseline, and environment</summary>
+              {gap ? (
+                <p className="mt-2">
+                  <span className="font-mono text-[12px] uppercase tracking-[0.12em] text-faded">Gap. </span>
+                  {gap}
+                </p>
+              ) : null}
+              {evidence.method ? (
+                <p className="mt-2">
+                  <span className="font-mono text-[12px] uppercase tracking-[0.12em] text-faded">Method. </span>
+                  {evidence.method}
+                </p>
+              ) : null}
+              {evidence.baseline ? (
+                <p className="mt-2">
+                  <span className="font-mono text-[12px] uppercase tracking-[0.12em] text-faded">Baseline. </span>
+                  {evidence.baseline}
+                </p>
+              ) : null}
+              {evidence.environment ? (
+                <p className="mt-2">
+                  <span className="font-mono text-[12px] uppercase tracking-[0.12em] text-faded">Environment. </span>
+                  {evidence.environment}
+                </p>
+              ) : null}
+            </details>
+          </dd>
+        </div>
+      ) : null}
       {evidence.rows ? (
         <div className="evidence-table-wrap">
           <dt>Comparison</dt>

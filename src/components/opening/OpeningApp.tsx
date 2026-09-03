@@ -523,8 +523,8 @@ export function OpeningApp({
           <section id="the-game" aria-labelledby="paper-title">
           <div className="game-band px-4 sm:px-6">
             <PaperToc selectedId={selectedId} onSelect={userSelect} />
-            <p className="mt-3 font-mono text-[12px] uppercase tracking-[0.14em]">
-              <a href="#scoresheet" className="text-book-blue underline decoration-2 underline-offset-4">
+            <p className="mt-3">
+              <a href="#scoresheet" className="paper-hit">
                 {BROADSHEET.skipBoard}
               </a>
             </p>

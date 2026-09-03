@@ -4,7 +4,7 @@ import { dirname, join } from "node:path";
 import { cmsBackendKind, cmsStoreStatus } from "@/lib/cms/backend";
 import { postgresNeedsSsl, postgresUrl } from "@/lib/cms/env";
 import { CMS_STALE, CMS_UNWRITABLE, CmsStoreError } from "@/lib/cms/errors";
-import { hydrateDocument } from "@/lib/cms/hydrate";
+import { hydrateDocument, evidenceBackfillPaths } from "@/lib/cms/hydrate";
 import { ledgerDocument } from "@/lib/cms/ledger";
 import { PREVIEW_COOKIE, SESSION_COOKIE, verifySession } from "@/lib/cms/session";
 import type { CmsMediaAsset, CmsStoreFile, SiteDocument } from "@/lib/cms/types";
@@ -260,19 +260,25 @@ export async function getCmsState(): Promise<
     backend: string;
     writable: boolean;
     durable: boolean;
+    backfill: string[];
   }
 > {
   const store = await readStore();
   const status = cmsStoreStatus();
+  const published = store.published ? hydrateDocument(store.published) : null;
+  const draft = store.draft ? hydrateDocument(store.draft) : null;
+  const revisions = store.revisions.map((row) => hydrateDocument(row));
+  const backfill = evidenceBackfillPaths(store.published ?? store.draft, published ?? draft ?? ledgerDocument());
   return {
     ...store,
-    published: store.published ? hydrateDocument(store.published) : null,
-    draft: store.draft ? hydrateDocument(store.draft) : null,
-    revisions: store.revisions.map((row) => hydrateDocument(row)),
+    published,
+    draft,
+    revisions,
     ledger: ledgerDocument(),
     backend: status.backend,
     writable: status.writable,
     durable: status.durable,
+    backfill,
   };
 }
 

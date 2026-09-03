@@ -60,12 +60,24 @@ export default async function AdminHome({
         ) : q.saved ? (
           <p className="mt-2 font-display text-[16px] text-book-blue" role="status">
             Draft saved
-            {q.changes ? ` · ${q.changes} fields differ from live.` : "."}{" "}
+            {q.changes ? ` · ${q.changes} unpublished changes.` : "."}{" "}
             {new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })} local.
           </p>
         ) : q.published ? (
           <p className="mt-2 font-display text-[16px] text-book-blue" role="status">
-            Published revision {q.revision || published.revisionId}. Homepage and résumé updated.
+            Published release {q.revision || published.revisionId}. Updated homepage, project pages, résumé, sitemap,
+            and structured data.{" "}
+            <a href="/" className="underline">
+              Homepage
+            </a>
+            {" · "}
+            <a href="/print-edition" className="underline">
+              Résumé
+            </a>
+            {" · "}
+            <a href="/sitemap.xml" className="underline">
+              Sitemap
+            </a>
           </p>
         ) : q.discarded ? (
           <p className="mt-2 font-display text-[16px] text-book-blue" role="status">
@@ -83,6 +95,14 @@ export default async function AdminHome({
       {!state.writable ? (
         <p className="admin-error mt-4" role="alert">
           Save Draft cannot persist here. Set POSTGRES_URL or BLOB_READ_WRITE_TOKEN. Health probe: /api/cms-health.
+        </p>
+      ) : null}
+      {state.backfill.length ? (
+        <p className="mt-4 border-2 border-ink p-4 font-display text-[16px]" role="status">
+          Upgrade applied. Empty required evidence fields were filled from the TypeScript ledger (
+          {state.backfill.slice(0, 6).join(", ")}
+          {state.backfill.length > 6 ? "…" : ""}). Preview and Publish use the filled packet. Publish this revision to
+          persist the backfill in the store.
         </p>
       ) : null}
       <ul className="mt-6 grid gap-3 sm:grid-cols-2">
@@ -126,6 +146,7 @@ export default async function AdminHome({
           Edit homepage and biography
         </Link>
         <form action={enablePreviewAction}>
+          <input type="hidden" name="returnTo" value="/admin" />
           <button type="submit" className="masthead-chip" title="Opens the site in private preview mode.">
             Preview draft
           </button>

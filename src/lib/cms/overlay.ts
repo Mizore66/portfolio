@@ -1,5 +1,6 @@
 import type { CmsClaim, CmsProjectCopy, SiteDocument } from "@/lib/cms/types";
 import { PROJECT_COPY_KEYS } from "@/lib/cms/types";
+import { companyAnchor } from "@/lib/anchors";
 import { resumeData } from "@/lib/data";
 import { HERO_PROOF } from "@/lib/metrics";
 import type { Apparatus, ApparatusLayer } from "@/lib/opening/types";
@@ -188,4 +189,55 @@ export function heroProofRows(doc: SiteDocument): HeroProofRow[] {
       },
     ];
   });
+}
+
+export type OverlayJob = {
+  title: string;
+  type?: string;
+  company: string;
+  period: string;
+  tech: string[];
+  scope?: string;
+  bullets: string[];
+  impact: string;
+};
+
+export function overlayJobs(doc: SiteDocument): OverlayJob[] {
+  const rows = Array.isArray(doc.experience) ? doc.experience.filter((row) => !row.archived) : [];
+  if (!rows.length) return resumeData.experience.map((job) => ({ ...job }));
+  const seeds = new Map(resumeData.experience.map((job) => [companyAnchor(job.company), job]));
+  return rows.map((row) => {
+    const seed = seeds.get(row.id);
+    return {
+      title: row.role || seed?.title || row.employer,
+      type: row.type || ("type" in (seed ?? {}) ? seed?.type : undefined),
+      company: row.employer || seed?.company || row.id,
+      period: row.period || seed?.period || "",
+      tech: row.tech
+        ? row.tech.split(",").map((part) => part.trim()).filter(Boolean)
+        : (seed?.tech ?? []),
+      scope: row.ownership || ("scope" in (seed ?? {}) ? seed?.scope : undefined),
+      bullets: row.bullets
+        ? row.bullets.split("\n").map((line) => line.trim()).filter(Boolean)
+        : (seed?.bullets ?? []),
+      impact: row.impact || seed?.impact || "",
+    };
+  });
+}
+
+export function overlayEducation(doc: SiteDocument) {
+  const seed = resumeData.education;
+  const row = (doc.education ?? []).find((item) => !item.archived) ?? doc.education?.[0];
+  if (!row) return seed;
+  const wam = row.grades.match(/WAM\s+([\d.]+)/i)?.[1] ?? seed.wam;
+  const cgpa = row.grades.match(/CGPA\s+([\d.]+)/i)?.[1] ?? seed.cgpa;
+  return {
+    school: row.institution || seed.school,
+    location: row.location || seed.location,
+    degree: row.qualification || seed.degree,
+    honours: row.honours || seed.honours,
+    graduation: row.dates || seed.graduation,
+    wam,
+    cgpa,
+  };
 }

@@ -1,6 +1,7 @@
+import { companyAnchor } from "@/lib/anchors";
 import { resumeData } from "@/lib/data";
 import { METRICS, POSITIONING } from "@/lib/metrics";
-import { SITE_REVISED, type CmsClaim, type CmsProjectCopy, type SiteDocument } from "@/lib/cms/types";
+import { SITE_REVISED, type CmsClaim, type CmsEducation, type CmsExperience, type CmsProjectCopy, type SiteDocument } from "@/lib/cms/types";
 
 function claim(
   id: string,
@@ -79,6 +80,37 @@ function projectCopies(): CmsProjectCopy[] {
   }));
 }
 
+function experienceCopies(): CmsExperience[] {
+  return resumeData.experience.map((job) => ({
+    id: companyAnchor(job.company),
+    employer: job.company,
+    role: job.title,
+    type: "type" in job && job.type ? String(job.type) : "",
+    period: job.period,
+    tech: job.tech.join(", "),
+    ownership: "scope" in job && job.scope ? String(job.scope) : "",
+    bullets: job.bullets.join("\n"),
+    impact: job.impact,
+    archived: false,
+  }));
+}
+
+function educationCopies(): CmsEducation[] {
+  const edu = resumeData.education;
+  return [
+    {
+      id: "monash-beng",
+      institution: edu.school,
+      qualification: edu.degree,
+      honours: edu.honours,
+      grades: `WAM ${edu.wam} · CGPA ${edu.cgpa}`,
+      dates: edu.graduation,
+      location: edu.location,
+      archived: false,
+    },
+  ];
+}
+
 export function ledgerDocument(): SiteDocument {
   return {
     revisionId: "ledger",
@@ -86,7 +118,7 @@ export function ledgerDocument(): SiteDocument {
     publishedAt: SITE_REVISED,
     savedAt: SITE_REVISED,
     restoredFrom: "",
-    note: "TypeScript ledger. Publish from /admin to replace this snapshot.",
+    note: "Published snapshot from the TypeScript ledger.",
     profile: {
       displayName: "Anas T. Qumhiyeh",
       legalName: "Anas Tarek Qumhiyeh",
@@ -208,6 +240,8 @@ export function ledgerDocument(): SiteDocument {
       }),
     ],
     projects: projectCopies(),
+    experience: experienceCopies(),
+    education: educationCopies(),
   };
 }
 

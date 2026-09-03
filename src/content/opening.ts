@@ -267,7 +267,7 @@ export const OPENING_NODES: OpeningNode[] = [
     scanTitle: "Petronas — Project Engineer Intern",
     fact: `${deskFactLine(DESKS.petronas)}`,
     commentary:
-      "Knights before bishops, they say. Petronas was the first industry square — I replaced MATLAB-dependent back-end functionality with Python packages, then wrote post-release acceptance cases for the migrated features.",
+      "Knights before bishops, they say. Petronas was the first industry square — I replaced MATLAB-dependent back-end calculation and reporting functions with Python packages, then wrote post-release acceptance cases for the migrated features.",
     eval: 0.4,
     evalText: "+0.40",
     artifacts: [],

@@ -10,6 +10,7 @@ import { assertSameOrigin } from "@/lib/cms/origin";
 import {
   newSessionToken,
   PREVIEW_COOKIE,
+  PREVIEW_RETURN_COOKIE,
   revokeSessionToken,
   SESSION_COOKIE,
   sessionConfigured,
@@ -126,7 +127,11 @@ export async function saveDraftAction(formData: FormData): Promise<void> {
   const published = await getPublishedDocument();
   let next = applyFormToDocument(formData, current);
   const typedNote = String(formData.get("note") ?? "").trim();
-  const staleNotes = new Set(["", "TypeScript ledger. Publish from /admin to replace this snapshot."]);
+  const staleNotes = new Set([
+    "",
+    "TypeScript ledger. Publish from /admin to replace this snapshot.",
+    "Published snapshot from the TypeScript ledger.",
+  ]);
   if (!typedNote || staleNotes.has(typedNote) || typedNote.startsWith("Restored ")) {
     const generated = defaultRevisionNote(documentDiff(published, next).map((row) => row.path));
     next = { ...next, note: generated || typedNote };
@@ -137,6 +142,16 @@ export async function saveDraftAction(formData: FormData): Promise<void> {
   } catch (error) {
     failTo(dest, error);
   }
+  revalidatePath(dest);
+  revalidatePath("/admin");
+  revalidatePath("/admin/claims");
+  revalidatePath("/admin/projects");
+  revalidatePath("/admin/profile");
+  revalidatePath("/admin/history");
+  revalidatePath("/admin/experience");
+  revalidatePath("/admin/education");
+  revalidatePath("/admin/release");
+  updateTag(CMS_TAG);
   if (errors.length) {
     redirect(
       withQuery(dest, {
@@ -314,24 +329,28 @@ export async function deleteMediaAction(formData: FormData): Promise<void> {
   redirect("/admin/settings?deleted=1");
 }
 
-export async function enablePreviewAction(): Promise<void> {
+export async function enablePreviewAction(formData?: FormData): Promise<void> {
   await assertSameOrigin();
   await requireAdmin();
+  const dest = formData ? returnPath(formData, "/admin") : "/admin";
   const draft = await getDraftDocument();
   const health = draftHealth(draft);
   if (health.blocking) {
     redirect(
-      `/admin?error=${encodeURIComponent(health.errors[0] ?? "Fix claim evidence before preview.")}&invalid=1`,
+      `${dest}?error=${encodeURIComponent(health.errors[0] ?? "Fix claim evidence before preview.")}&invalid=1`,
     );
   }
   const jar = await cookies();
   jar.set(PREVIEW_COOKIE, "1", previewCookieOptions());
+  jar.set(PREVIEW_RETURN_COOKIE, dest, previewCookieOptions());
   redirect("/");
 }
 
 export async function disablePreviewAction(): Promise<void> {
   await assertSameOrigin();
   const jar = await cookies();
+  const dest = jar.get(PREVIEW_RETURN_COOKIE)?.value;
   jar.set(PREVIEW_COOKIE, "", { ...previewCookieOptions(), maxAge: 0 });
-  redirect("/admin");
+  jar.set(PREVIEW_RETURN_COOKIE, "", { ...previewCookieOptions(), maxAge: 0 });
+  redirect(dest && dest.startsWith("/admin") ? dest : "/admin");
 }

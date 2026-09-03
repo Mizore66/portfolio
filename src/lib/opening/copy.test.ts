@@ -19,6 +19,9 @@ describe("exhibit register", () => {
       .join("\n");
     expect(blob).not.toMatch(BANNED);
     expect(resumeData.projects.find((p) => p.slug === "circuitmindai")?.description).toMatch(
+      /Nova Pro analyses the PCB image/,
+    );
+    expect(resumeData.projects.find((p) => p.slug === "circuitmindai")?.plateCaption).toMatch(
       /Nova Pro reads the copper/,
     );
     expect(resumeData.projects.find((p) => p.slug === "multi-agent-graphrag")?.description).toMatch(
@@ -89,7 +92,7 @@ describe("SEO identity", () => {
   it("hands machines an Article node for the lab report", () => {
     const article = labArticleJsonLd();
     expect(article["@type"]).toBe("Article");
-    expect(article.headline).toMatch(/lost −143\.3 ±35\.4 Elo/);
+    expect(article.headline).toMatch(/underperformed PeSTO by 143\.3 ±35\.4 Elo/);
     expect(article.datePublished).toBe("2026-08-29");
     expect(article.url).toMatch(/\/lab\/learned-evaluator$/);
   });
@@ -196,7 +199,7 @@ describe("canonical desk facts", () => {
   it("does not let Opening Preparation redefine the Petronas migration", () => {
     const node = getNode("nf3");
     const blob = `${node.fact}\n${node.commentary}\n${node.clipping?.headline}`;
-    expect(blob).toMatch(/Replaced MATLAB-dependent back-end functionality with Python packages/);
+    expect(blob).toMatch(/Replaced MATLAB-dependent back-end calculation and reporting functions with Python packages/);
     expect(blob).toMatch(/post-release acceptance cases/);
     expect(blob).not.toMatch(/converting paid MATLAB licences/i);
     expect(blob).not.toMatch(/tests that proved it/i);

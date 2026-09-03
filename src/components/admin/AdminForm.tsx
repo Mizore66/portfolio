@@ -177,11 +177,16 @@ export function WordCount({
   const [value, setValue] = useState(defaultValue);
   const words = value.trim() ? value.trim().split(/\s+/).length : 0;
   const ok = words >= min && words <= max;
+  const hint = !ok
+    ? words < min
+      ? `${words} words — add ${min - words}–${max - words}`
+      : `${words} words — cut ${words - max}–${words - min}`
+    : `${words} words (in range ${min}–${max})`;
   return (
     <>
       <textarea name={name} defaultValue={defaultValue} rows={rows} onChange={(e) => setValue(e.target.value)} />
       <span className={ok ? "normal-case tracking-normal text-faded" : "admin-error normal-case tracking-normal"}>
-        {words} words (aim {min}–{max})
+        {hint}
       </span>
     </>
   );
@@ -301,5 +306,108 @@ export function EditorSearch({
       </p>
       {children}
     </div>
+  );
+}
+
+export function MediaPicker({
+  name,
+  defaultValue,
+  assets,
+}: {
+  name: string;
+  defaultValue: string;
+  assets: { url: string; alt: string; caption: string; pathname: string }[];
+}) {
+  const [value, setValue] = useState(defaultValue);
+  return (
+    <div>
+      <input name={name} value={value} onChange={(e) => setValue(e.target.value)} />
+      <p className="mt-2 font-mono text-[12px] normal-case tracking-normal text-faded">
+        Choose an existing asset or paste a path. Upload new files on Settings.
+      </p>
+      {value ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={value} alt="" className="mt-2 max-h-32 border border-ink" />
+      ) : null}
+      {assets.length ? (
+        <ul className="mt-2 grid gap-1">
+          {assets.map((asset) => (
+            <li key={asset.pathname}>
+              <button type="button" className="masthead-chip" onClick={() => setValue(asset.url)}>
+                Use {asset.alt || asset.pathname}
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-2 font-mono text-[12px] text-faded">Media library is empty.</p>
+      )}
+    </div>
+  );
+}
+
+export function ApparatusRows({
+  name,
+  defaultValue,
+  legend,
+}: {
+  name: string;
+  defaultValue: string;
+  legend: string;
+}) {
+  const initial = defaultValue
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const parts = line.split(/\s+[—–|-]\s+/);
+      return { name: (parts[0] ?? "").trim(), role: parts.slice(1).join(" — ").trim() };
+    });
+  const [rows, setRows] = useState(initial.length ? initial : [{ name: "", role: "" }]);
+  const serialized = rows
+    .filter((row) => row.name.trim())
+    .map((row) => (row.role.trim() ? `${row.name.trim()} — ${row.role.trim()}` : row.name.trim()))
+    .join("\n");
+  return (
+    <fieldset className="border-0 p-0">
+      <legend className="font-mono text-[12px] uppercase tracking-[0.12em]">{legend}</legend>
+      <input type="hidden" name={name} value={serialized} />
+      {rows.map((row, index) => (
+        <p key={index} className="mt-2 grid gap-2 sm:grid-cols-2">
+          <label className="normal-case tracking-normal">
+            Name
+            <input
+              value={row.name}
+              onChange={(e) => {
+                const next = [...rows];
+                next[index] = { ...row, name: e.target.value };
+                setRows(next);
+              }}
+            />
+          </label>
+          <label className="normal-case tracking-normal">
+            Role
+            <input
+              value={row.role}
+              onChange={(e) => {
+                const next = [...rows];
+                next[index] = { ...row, role: e.target.value };
+                setRows(next);
+              }}
+            />
+          </label>
+        </p>
+      ))}
+      <p className="mt-2 flex flex-wrap gap-2">
+        <button type="button" className="masthead-chip" onClick={() => setRows([...rows, { name: "", role: "" }])}>
+          Add node
+        </button>
+        {rows.length > 1 ? (
+          <button type="button" className="masthead-chip" onClick={() => setRows(rows.slice(0, -1))}>
+            Remove last
+          </button>
+        ) : null}
+      </p>
+    </fieldset>
   );
 }

@@ -40,6 +40,8 @@ export function parseImportedDocument(raw: string): ImportResult {
     claims: candidate.claims,
     aspirations: Array.isArray(candidate.aspirations) ? candidate.aspirations : ledger.aspirations,
     projects: Array.isArray(candidate.projects) ? candidate.projects : ledger.projects,
+    experience: Array.isArray(candidate.experience) ? candidate.experience : ledger.experience,
+    education: Array.isArray(candidate.education) ? candidate.education : ledger.education,
     note: typeof candidate.note === "string" && candidate.note ? candidate.note : "Imported JSON",
     revisionId: "import",
     status: "draft",

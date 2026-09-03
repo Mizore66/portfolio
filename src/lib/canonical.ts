@@ -10,7 +10,7 @@ export const DESKS = {
     period: "Nov 2024 – Feb 2025",
     employmentKind: "Internship",
     facts: [
-      "Replaced MATLAB-dependent back-end functionality with Python packages, removing paid runtime dependencies.",
+      "Replaced MATLAB-dependent back-end calculation and reporting functions with Python packages, removing paid runtime dependencies.",
       "Wrote post-release acceptance cases for the migrated features.",
       "Presented usability findings to department leadership.",
     ],
@@ -36,7 +36,7 @@ export const DESKS = {
     employmentKind: "Contract",
     facts: [
       "Lab dashboard with role-based access for 50+ staff.",
-        "Role-backed station records and the dashboards operators used to decide which stations to visit.",
+        "Role-based station records and the dashboards operators used to decide which stations to visit.",
     ],
     oversight:
       "Manual station-checking on the lab dashboard — operators verifying station status by hand rather than reading it on the board.",
@@ -55,7 +55,7 @@ export const DESKS = {
     contradictions:
       "inconsistencies between rules in the graph surfaced for administrators (examples confidential)",
     collaboration:
-      "Contract. Owned the GraphRAG retrieval path and the distilled graph-logic SLM. That path sat beside the faculty's existing administration tools; I did not own those tools.",
+      "Contract. I owned the GraphRAG retrieval path and distilled SLM; the faculty's administration tools were outside my scope.",
   },
 } as const;
 

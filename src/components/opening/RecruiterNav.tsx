@@ -98,7 +98,12 @@ export function RecruiterNav({ stamp = "resume" }: { stamp?: "resume" | "c50" })
                 More
               </button>
               {moreOpen ? (
-                <ul id="nav-more-menu">
+                <div id="nav-more-menu" className="nav-more-panel">
+                  <p className="px-2 pb-1 font-mono text-[11px] uppercase tracking-[0.16em] text-faded">More pages</p>
+                  <p className="px-2 pb-2 font-mono text-[11px] text-faded">
+                    Current: {ALL.find((link) => currentFor(pathname, hash, link.match))?.label ?? "Home"}
+                  </p>
+                  <ul>
                   {MORE.map((link) => (
                     <li key={link.href}>
                       <a
@@ -110,7 +115,8 @@ export function RecruiterNav({ stamp = "resume" }: { stamp?: "resume" | "c50" })
                       </a>
                     </li>
                   ))}
-                </ul>
+                  </ul>
+                </div>
               ) : null}
             </div>
           </li>

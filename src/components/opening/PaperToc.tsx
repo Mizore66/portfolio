@@ -16,7 +16,17 @@ export function PaperToc({
   return (
     <nav className="paper-toc paper-toc-sticky" data-testid="paper-toc" aria-label={BROADSHEET.issueKicker}>
       <details>
-        <summary>Contents</summary>
+        <summary>
+          <span>
+            <span className="toc-chevron" aria-hidden="true">
+              ▸
+            </span>{" "}
+            Contents
+          </span>
+          <span className="font-mono text-[11px] tracking-[0.12em] text-faded">
+            {chapters.length} chapters
+          </span>
+        </summary>
         <ol>
           {chapters.map((node) => {
             const current = node.id === selectedId;

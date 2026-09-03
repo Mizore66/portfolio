@@ -32,6 +32,9 @@ describe("print edition", () => {
     expect(text).not.toContain("a game played since I was a teenager");
     expect(text).toContain("opening-preparation");
     expect(text).toContain("lower-carbon compute");
+    expect(text).toContain("/MediaBox [0 0 612 792]");
+    const a4 = new TextDecoder().decode(buildPrintEditionPdf({ paper: "a4" }));
+    expect(a4).toContain("/MediaBox [0 0 595 842]");
   });
 
   it("does not put the chessboard in the reading order", () => {
@@ -49,7 +52,7 @@ describe("print edition", () => {
     const text = new TextDecoder().decode(buildPrintEditionPdf());
     expect(text).toContain("Authorization and capture");
     expect(text).toContain("separate observation");
-    expect(text).toContain("Replaced MATLAB-dependent back-end functionality");
+    expect(text).toContain("Replaced MATLAB-dependent back-end calculation and reporting functions");
     expect(text).not.toContain("converting paid MATLAB");
     expect(text).toContain("LangGraph");
     expect(text).not.toContain("Flutter");

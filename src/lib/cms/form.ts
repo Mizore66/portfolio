@@ -1,5 +1,5 @@
-import { LEDGER_PROJECT_SLUGS, REQUIRED_CLAIM_IDS } from "@/lib/cms/validate";
-import type { ClaimKind, CmsAspiration, CmsClaim, CmsProjectCopy, SiteDocument } from "@/lib/cms/types";
+import { LEDGER_EXPERIENCE_IDS, LEDGER_PROJECT_SLUGS, REQUIRED_CLAIM_IDS } from "@/lib/cms/validate";
+import type { ClaimKind, CmsAspiration, CmsClaim, CmsEducation, CmsExperience, CmsProjectCopy, SiteDocument } from "@/lib/cms/types";
 
 const KINDS: ClaimKind[] = ["production", "benchmark", "evaluation", "pipeline", "capability"];
 const SURFACES: CmsClaim["surfaces"][number][] = ["home", "opening", "resume", "exhibit", "lab"];
@@ -92,6 +92,34 @@ function blankProject(slug: string): CmsProjectCopy {
 
 function blankAspiration(id: string): CmsAspiration {
   return { id, label: "New aspiration", active: false, start: "", end: "" };
+}
+
+function blankExperience(id: string): CmsExperience {
+  return {
+    id,
+    employer: "New employer",
+    role: "Role",
+    type: "Contract",
+    period: "",
+    tech: "",
+    ownership: "",
+    bullets: "",
+    impact: "",
+    archived: true,
+  };
+}
+
+function blankEducation(id: string): CmsEducation {
+  return {
+    id,
+    institution: "New institution",
+    qualification: "",
+    honours: "",
+    grades: "",
+    dates: "",
+    location: "",
+    archived: false,
+  };
 }
 
 function slugify(value: string): string {
@@ -222,6 +250,82 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
     aspirations = sortByOrder(aspirations, text(formData, "asp-order", ""), (item) => item.id);
   }
 
+  let experience = formData.has("experience-present")
+    ? (current.experience ?? []).map((row) => ({
+        ...row,
+        employer: text(formData, `exp-${row.id}-employer`, row.employer),
+        role: text(formData, `exp-${row.id}-role`, row.role),
+        type: text(formData, `exp-${row.id}-type`, row.type),
+        period: text(formData, `exp-${row.id}-period`, row.period),
+        tech: text(formData, `exp-${row.id}-tech`, row.tech),
+        ownership: text(formData, `exp-${row.id}-ownership`, row.ownership),
+        bullets: text(formData, `exp-${row.id}-bullets`, row.bullets),
+        impact: text(formData, `exp-${row.id}-impact`, row.impact),
+        archived: on(formData, `exp-${row.id}-archived`),
+      }))
+    : (current.experience ?? []);
+
+  if (formData.has("experience-present")) {
+    const createExp = slugify(text(formData, "exp-new-id", "") || text(formData, "exp-new-employer", "")).toLowerCase();
+    if (formData.get("exp-create") === "1" && createExp && !experience.some((row) => row.id === createExp)) {
+      const created = blankExperience(createExp);
+      created.employer = text(formData, "exp-new-employer", created.employer);
+      created.role = text(formData, "exp-new-role", created.role);
+      experience = [...experience, created];
+    }
+    const duplicateExp = String(formData.get("exp-duplicate") ?? "");
+    if (duplicateExp) {
+      const src = experience.find((row) => row.id === duplicateExp);
+      if (src) {
+        const nextId = uniqueCopyId(src.id, (id) => experience.some((row) => row.id === id));
+        experience = [...experience, { ...src, id: nextId, archived: true }];
+      }
+    }
+    const deleteExp = String(formData.get("exp-delete") ?? "");
+    if (deleteExp && !LEDGER_EXPERIENCE_IDS.has(deleteExp)) {
+      experience = experience.filter((row) => row.id !== deleteExp);
+    }
+    if (deleteExp && LEDGER_EXPERIENCE_IDS.has(deleteExp)) {
+      experience = experience.map((row) => (row.id === deleteExp ? { ...row, archived: true } : row));
+    }
+    experience = sortByOrder(experience, text(formData, "exp-order", ""), (row) => row.id);
+  }
+
+  let education = formData.has("education-present")
+    ? (current.education ?? []).map((row) => ({
+        ...row,
+        institution: text(formData, `edu-${row.id}-institution`, row.institution),
+        qualification: text(formData, `edu-${row.id}-qualification`, row.qualification),
+        honours: text(formData, `edu-${row.id}-honours`, row.honours),
+        grades: text(formData, `edu-${row.id}-grades`, row.grades),
+        dates: text(formData, `edu-${row.id}-dates`, row.dates),
+        location: text(formData, `edu-${row.id}-location`, row.location),
+        archived: on(formData, `edu-${row.id}-archived`),
+      }))
+    : (current.education ?? []);
+
+  if (formData.has("education-present")) {
+    const createEdu = slugify(text(formData, "edu-new-id", "") || text(formData, "edu-new-institution", "")).toLowerCase();
+    if (formData.get("edu-create") === "1" && createEdu && !education.some((row) => row.id === createEdu)) {
+      const created = blankEducation(createEdu);
+      created.institution = text(formData, "edu-new-institution", created.institution);
+      education = [...education, created];
+    }
+    const duplicateEdu = String(formData.get("edu-duplicate") ?? "");
+    if (duplicateEdu) {
+      const src = education.find((row) => row.id === duplicateEdu);
+      if (src) {
+        const nextId = uniqueCopyId(src.id, (id) => education.some((row) => row.id === id));
+        education = [...education, { ...src, id: nextId, archived: true }];
+      }
+    }
+    const deleteEdu = String(formData.get("edu-delete") ?? "");
+    if (deleteEdu && deleteEdu !== "monash-beng") {
+      education = education.filter((row) => row.id !== deleteEdu);
+    }
+    education = sortByOrder(education, text(formData, "edu-order", ""), (row) => row.id);
+  }
+
   let projects = formData.has("projects-present")
     ? current.projects.map((project) => ({
         ...project,
@@ -256,9 +360,10 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
     : current.projects;
 
   if (formData.has("projects-present")) {
-    const createSlug = slugify(text(formData, "project-new-slug", "")).toLowerCase();
+    const createTitle = text(formData, "project-new-title", "");
+    const createSlug = slugify(text(formData, "project-new-slug", "") || createTitle).toLowerCase();
     if (formData.get("project-create") === "1" && createSlug && !projects.some((project) => project.slug === createSlug)) {
-      projects = [...projects, blankProject(createSlug)];
+      projects = [...projects, { ...blankProject(createSlug), title: createTitle || "New exhibit" }];
     }
     const duplicateSlug = String(formData.get("project-duplicate") ?? "");
     if (duplicateSlug) {
@@ -282,6 +387,8 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
     claims,
     aspirations,
     projects,
+    experience,
+    education,
   };
 }
 

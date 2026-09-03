@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Fragment, memo } from "react";
+import { Fragment, memo, useState } from "react";
 import { ArtifactLinks } from "@/components/opening/ArtifactLinks";
 import { ArtistsImpression } from "@/components/opening/ArtistsImpression";
 import { GlyphStamp } from "@/components/opening/GlyphStamp";
@@ -17,6 +17,7 @@ import {
   formatLine,
   moveHeading,
   spokenChapter,
+  stepMainline,
   type NotationBlock,
 } from "@/lib/opening/tree";
 import type { OpeningNode } from "@/lib/opening/types";
@@ -37,6 +38,12 @@ export const NotationView = memo(function NotationView({
   onPreview?: (id: string | null) => void;
 }) {
   const blocks = buildNotation();
+  const [view, setView] = useState<"full" | "career" | "projects">("full");
+  const visible = blocks.filter((block) => {
+    if (view === "full") return true;
+    if (view === "career") return block.node.type === "mainline";
+    return block.node.type === "variation" || /project|exhibit|lab|hack/i.test(block.node.kind);
+  });
 
   return (
     <article aria-label="Scoresheet" className="p-0" data-testid="notation-view">
@@ -46,17 +53,44 @@ export const NotationView = memo(function NotationView({
       <p className="mb-2 font-mono text-[12px] uppercase tracking-[0.25em] text-faded">
         {BROADSHEET.gameKicker} · every node, in order
       </p>
-      <p className="mb-8 max-w-[68ch] font-display text-[16px] italic text-faded">
+      <p className="mb-4 max-w-[68ch] font-display text-[16px] italic text-faded">
         {BROADSHEET.gameDek}
       </p>
+      <p className="path-filter mb-8" data-testid="scoresheet-filter">
+        <button
+          type="button"
+          className={cn("path-chip", view === "career" && "path-chip-current")}
+          aria-pressed={view === "career"}
+          onClick={() => setView("career")}
+        >
+          Career only
+        </button>
+        <button
+          type="button"
+          className={cn("path-chip", view === "projects" && "path-chip-current")}
+          aria-pressed={view === "projects"}
+          onClick={() => setView("projects")}
+        >
+          Projects
+        </button>
+        <button
+          type="button"
+          className={cn("path-chip", view === "full" && "path-chip-current")}
+          aria-pressed={view === "full"}
+          onClick={() => setView("full")}
+        >
+          Full scoresheet
+        </button>
+      </p>
       <div className="m-0">
-        {blocks.map((block) => (
+        {visible.map((block) => (
           <Chapter
             key={block.node.id}
             block={block}
             selectedId={selectedId}
             onSelect={onSelect}
             onPreview={onPreview}
+            hideVariations={view === "career"}
           />
         ))}
       </div>
@@ -69,15 +103,19 @@ function Chapter({
   selectedId,
   onSelect,
   onPreview,
+  hideVariations,
 }: {
   block: NotationBlock;
   selectedId: string;
   onSelect: (id: string) => void;
   onPreview?: (id: string | null) => void;
+  hideVariations?: boolean;
 }) {
   const { node } = block;
   const selected = node.id === selectedId;
   const flagship = node.id === FLAGSHIP_ID;
+  const prevId = node.type === "mainline" ? stepMainline(node.id, -1) : node.id;
+  const nextId = node.type === "mainline" ? stepMainline(node.id, 1) : node.id;
 
   return (
     <section
@@ -163,7 +201,7 @@ function Chapter({
         <ArtifactLinks artifacts={node.artifacts} />
       </div>
 
-      {block.variations.length > 0 ? (
+      {!hideVariations && block.variations.length > 0 ? (
         <div className="mt-3">
           {block.variations.map((line) => {
             const head = line[0]?.node;
@@ -216,6 +254,20 @@ function Chapter({
           <span className="uppercase tracking-[0.18em]">The line so far</span>
           <br />
           <span className="text-ink">{formatLine(node.id)}</span>
+        </p>
+      ) : null}
+      {node.type === "mainline" ? (
+        <p className="mt-6 flex flex-wrap gap-3">
+          {prevId !== node.id ? (
+            <button type="button" className="paper-hit" onClick={() => onSelect(prevId)}>
+              Previous chapter
+            </button>
+          ) : null}
+          {nextId !== node.id ? (
+            <button type="button" className="paper-hit" onClick={() => onSelect(nextId)}>
+              Next chapter
+            </button>
+          ) : null}
         </p>
       ) : null}
     </section>
@@ -299,7 +351,7 @@ function ChapterButton({
       onBlur={() => onPreview?.(null)}
       className={cn(
         "move-tint inline text-left font-[inherit] text-[1em] leading-[inherit] focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2",
-        compact && "notation-hit font-display text-[12px] not-italic",
+        compact && "notation-hit font-display text-[12px] not-italic min-w-[44px]",
         node.type === "not-taken" && "border border-dashed border-ink px-1",
         selected && !flagship && "is-selected underline decoration-score-red/50 decoration-2 underline-offset-4",
         selected && flagship && "is-selected",

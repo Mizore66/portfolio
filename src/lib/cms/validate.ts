@@ -57,15 +57,30 @@ export function projectSchemaReady(project: {
 }
 
 export const LEDGER_PROJECT_SLUGS = new Set(resumeData.projects.map((project) => project.slug));
+export const LEDGER_EXPERIENCE_IDS = new Set(
+  resumeData.experience.map((job) => job.company.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")),
+);
 
 const DATE = /^\d{4}(?:-\d{2}(?:-\d{2})?)?$/;
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+function wordCount(value: string): number {
+  return value.trim() ? value.trim().split(/\s+/).length : 0;
+}
 
 export function validateDocument(doc: SiteDocument): string[] {
   const errors: string[] = [];
   if (!doc.profile.dek) errors.push("Profile role line is required.");
   if (!doc.profile.tagline) errors.push("Profile tagline is required.");
   if (doc.profile.dek.length > 240) errors.push("Profile role line is too long.");
+  const recruiterWords = wordCount(doc.profile.recruiterBio);
+  if (recruiterWords < 35 || recruiterWords > 45) {
+    errors.push(`Recruiter biography is ${recruiterWords} words; it must be 35–45.`);
+  }
+  const followerWords = wordCount(doc.profile.followerBio);
+  if (followerWords < 100 || followerWords > 140) {
+    errors.push(`Follower biography is ${followerWords} words; it must be 100–140.`);
+  }
   const ids = new Set<string>();
   for (const claim of doc.claims) {
     if (ids.has(claim.id)) errors.push(`Duplicate claim id ${claim.id}.`);

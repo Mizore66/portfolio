@@ -1,5 +1,6 @@
 import { companyAnchor } from "@/lib/anchors";
-import { resumeData } from "@/lib/data";
+import { getRenderableDocument } from "@/lib/cms/store";
+import { overlayJobs } from "@/lib/cms/overlay";
 import { POSITIONING, RETRIEVAL_SPLIT, YEAR_INDEX } from "@/lib/metrics";
 
 function yearsOf(period: string): string {
@@ -10,7 +11,9 @@ function yearsOf(period: string): string {
   return first === last ? first : `${first}–${last}`;
 }
 
-export function ExperienceList() {
+export async function ExperienceList() {
+  const site = await getRenderableDocument();
+  const jobs = overlayJobs(site);
   return (
     <section
       id="experience"
@@ -52,7 +55,7 @@ export function ExperienceList() {
         <p className="mt-4 max-w-[68ch] font-display text-[16px] italic text-ink">{POSITIONING.throughLine}</p>
       </div>
       <ol className="mt-8">
-        {resumeData.experience.map((job) => (
+        {jobs.map((job) => (
           <li
             key={`${job.company}-${job.period}`}
             id={companyAnchor(job.company)}

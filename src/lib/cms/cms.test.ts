@@ -364,6 +364,42 @@ describe("cms ledger caveats", () => {
     expect(validateDocument(draft)).toEqual([]);
   });
 
+  it("creates a project from a title and overlays experience from the ledger", () => {
+    const published = ledgerDocument();
+    const form = new FormData();
+    form.set("projects-present", "1");
+    form.set("project-new-title", "New Desk Filing");
+    form.set("project-create", "1");
+    const next = applyFormToDocument(form, published);
+    expect(next.projects.some((project) => project.slug === "new-desk-filing" && project.archived)).toBe(true);
+    expect(next.experience.some((row) => row.id === "setel")).toBe(true);
+    expect(next.education.some((row) => row.id === "monash-beng")).toBe(true);
+  });
+
+  it("hydrates incomplete revisions without throwing and backfills blank Gate C evidence", () => {
+    const ledger = ledgerDocument();
+    const raw = {
+      revisionId: "pub-old",
+      status: "published" as const,
+      publishedAt: "2026-09-01T00:00:00.000Z",
+      note: "old",
+      profile: { dek: "Role" },
+      claims: [
+        { id: "gateC", display: "Gate C", heroEligible: true, source: "", denominator: "" },
+      ],
+    };
+    const hydrated = hydrateDocument(raw);
+    expect(hydrated.claims.find((claim) => claim.id === "gateC")?.source).toBe(
+      ledger.claims.find((claim) => claim.id === "gateC")?.source,
+    );
+    expect(hydrated.claims.find((claim) => claim.id === "gateC")?.denominator).toMatch(/128 games/);
+    expect(claimHeroReady(hydrated.claims.find((claim) => claim.id === "gateC")!)).toEqual([]);
+    expect(validateDocument(hydrated).filter((error) => error.includes("gateC"))).toEqual([]);
+    const history = [raw, null, { revisionId: "broken" }, ledger].map((row) => hydrateDocument(row));
+    expect(history).toHaveLength(4);
+    expect(documentDiff({ ...hydrated, claims: [] } as typeof hydrated, hydrated).length).toBeGreaterThan(0);
+  });
+
   it("marks word-level insertions and deletions", () => {
     const marks = wordDiff("hello world", "hello there");
     expect(marks.some((mark) => mark.type === "del" && mark.text === "world")).toBe(true);

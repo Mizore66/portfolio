@@ -23,7 +23,7 @@ test.describe("axe", () => {
 
   test("the lab article has no violations", async ({ page }) => {
     await page.goto("/lab/learned-evaluator");
-    await expect(page.getByRole("heading", { level: 1, name: /lost −143\.3 ±35\.4 Elo/i })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: /underperformed PeSTO by 143\.3 ±35\.4 Elo/i })).toBeVisible();
     await expectNoAxeViolations(page);
   });
 
