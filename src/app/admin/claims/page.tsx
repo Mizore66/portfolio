@@ -46,12 +46,25 @@ export default async function ClaimsEditor() {
                   <input name={`claim-${claim.id}-environment`} defaultValue={claim.environment} />
                 </label>
                 <label>
-                  Date
-                  <input name={`claim-${claim.id}-date`} defaultValue={claim.date} />
-                </label>
-                <label>
                   Caveat
                   <textarea name={`claim-${claim.id}-caveat`} defaultValue={claim.caveat} />
+                </label>
+                <label>
+                  Denominator / sample size
+                  <textarea name={`claim-${claim.id}-denominator`} defaultValue={claim.denominator} />
+                </label>
+                <label>
+                  Source
+                  <input name={`claim-${claim.id}-source`} defaultValue={claim.source} />
+                </label>
+                <label>
+                  Date
+                  <input
+                    name={`claim-${claim.id}-date`}
+                    defaultValue={claim.date}
+                    pattern="\d{4}(-\d{2}(-\d{2})?)?"
+                    title="YYYY, YYYY-MM, or YYYY-MM-DD"
+                  />
                 </label>
                 <label className="flex-row items-center gap-2 normal-case tracking-normal">
                   <input type="checkbox" name={`claim-${claim.id}-hero`} defaultChecked={claim.heroEligible} />

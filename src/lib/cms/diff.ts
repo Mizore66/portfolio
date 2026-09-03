@@ -46,6 +46,8 @@ export function documentDiff(published: SiteDocument, draft: SiteDocument): Fiel
     push(`claims.${id}.environment`, a.environment, b.environment);
     push(`claims.${id}.date`, a.date, b.date);
     push(`claims.${id}.caveat`, a.caveat, b.caveat);
+    push(`claims.${id}.denominator`, a.denominator, b.denominator);
+    push(`claims.${id}.source`, a.source, b.source);
     push(`claims.${id}.heroEligible`, a.heroEligible, b.heroEligible);
     push(`claims.${id}.archived`, a.archived, b.archived);
   }
@@ -85,6 +87,8 @@ export function documentDiff(published: SiteDocument, draft: SiteDocument): Fiel
     push(`projects.${slug}.constraint`, a.constraint, b.constraint);
     push(`projects.${slug}.limitation`, a.limitation, b.limitation);
     push(`projects.${slug}.example`, a.example, b.example);
+    push(`projects.${slug}.rejected`, a.rejected, b.rejected);
+    push(`projects.${slug}.retrospective`, a.retrospective, b.retrospective);
     push(`projects.${slug}.archived`, a.archived, b.archived);
   }
 

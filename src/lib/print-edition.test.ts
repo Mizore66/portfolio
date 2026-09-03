@@ -24,7 +24,9 @@ describe("print edition", () => {
     expect(text).toContain("/S /H1");
     expect(text).toContain("/S /H2");
     expect(text).toContain("/Title (Anas Tarek Qumhiyeh - Resume)");
-    expect(text).not.toContain("- -40%");
+    expect(text).not.toContain("\\226");
+    expect(text).toContain("-40%");
+    expect(text).toContain("-50%");
     expect(text).not.toContain("3-sheet filing");
     expect(text).not.toContain("Photographs real and composed");
     expect(text).not.toContain("a game played since I was a teenager");
@@ -72,7 +74,8 @@ describe("print edition", () => {
     expect(text).toContain("70B -> 3B");
     expect(text).not.toContain("12x inference speedup");
     expect(text).toContain("Monash University");
-    expect(text).toContain("Full-stack");
+    expect(text).toContain("Contract Full-stack");
+    expect(text).toContain("Solana Megahack 2025");
     expect(text).toContain("Open to");
     expect(text).toContain(SITE_HOST);
     expect(text).toContain(`/URI (mailto:${resumeData.email})`);

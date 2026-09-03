@@ -33,8 +33,20 @@ export default async function AdminHome({
     >
       <p className="font-mono text-[12px] uppercase tracking-[0.12em] text-faded">
         Store · {state.backend}
+        {state.writable ? " · writable" : " · read-only"}
+        {state.durable ? " · durable" : " · not durable"}
         {state.published ? ` · published ${state.published.publishedAt.slice(0, 10)}` : " · ledger fallback"}
       </p>
+      {!state.writable ? (
+        <p className="admin-error mt-4" role="alert">
+          Save Draft cannot persist here. Set POSTGRES_URL (Marketplace Supabase) or BLOB_READ_WRITE_TOKEN.
+          The file ledger is read-only on Vercel. Health probe: /api/cms-health.
+        </p>
+      ) : !state.durable ? (
+        <p className="mt-4 max-w-[62ch] font-display text-[16px] text-ink">
+          Local file store is writable in this environment. Production needs POSTGRES_URL or a Blob token.
+        </p>
+      ) : null}
       <ul className="mt-6 grid gap-3 sm:grid-cols-2">
         <li className="border-2 border-ink p-4">
           <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-faded">Published</p>
@@ -54,10 +66,10 @@ export default async function AdminHome({
         </li>
       </ul>
       <p className="mt-6 max-w-[62ch] font-display text-[16px] leading-snug text-ink">
-        Homepage, claims, résumé copy, and sitemap lastmod read the published revision. Without a
-        database they persist to <code>data/cms.json</code>. On Vercel, Marketplace Supabase already
-        sets <code>POSTGRES_URL</code> — that is the database, not <code>SUPABASE_URL</code>. Set
-        BLOB_READ_WRITE_TOKEN for media.
+        Homepage, claims, résumé copy, and sitemap lastmod read the published revision. Drafts, history,
+        and publish write to Postgres when <code>POSTGRES_URL</code> is set, otherwise to a private
+        Vercel Blob object, otherwise to <code>data/cms.json</code> (local only). Marketplace Supabase
+        sets <code>POSTGRES_URL</code> — that is the database, not <code>SUPABASE_URL</code>.
       </p>
       <p className="mt-4 flex flex-wrap gap-3">
         <Link href="/admin/profile" className="masthead-chip masthead-chip-primary">

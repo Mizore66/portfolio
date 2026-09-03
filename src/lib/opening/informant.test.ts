@@ -18,7 +18,7 @@ describe("informant glyphs", () => {
 describe("biography register", () => {
   it("treats May 2026 as graduated, not upcoming", () => {
     expect(resumeData.education.graduation).toBe("May 2026");
-    expect(BROADSHEET.dek).toMatch(/Software engineer building payment/);
+    expect(BROADSHEET.dek).toMatch(/ML infrastructure and data-intensive systems/);
     expect(resumeData.targetRoles).toMatch(/fintech, ML infrastructure/);
     expect(OPENING_NODES.find((n) => n.id === "e4")?.fact).toMatch(/Graduated May 2026/);
     expect(OPENING_NODES.find((n) => n.id === "e4")?.fact).toMatch(/First Class Honours/);

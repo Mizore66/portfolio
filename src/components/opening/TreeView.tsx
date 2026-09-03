@@ -233,12 +233,12 @@ function TreeNode({
       <span aria-hidden="true" className="flex flex-col items-center">
       <span className="relative leading-none">
         {node.color === "w" && node.moveNumber > 0 ? (
-          <span className="mr-0.5 font-mono text-[9px] font-normal not-italic text-faded">
+          <span className="mr-0.5 font-mono text-[12px] font-normal not-italic leading-[1.4] text-faded">
             {node.moveNumber}.
           </span>
         ) : null}
         {node.moveNumber === 0 ? (
-          <span className="font-mono text-[11px] uppercase tracking-widest">{label}</span>
+          <span className="font-mono text-[12px] uppercase leading-[1.4] tracking-widest">{label}</span>
         ) : (
           <>
             <span className="mr-0.5 text-[14px] font-semibold not-italic">{node.fig}</span>
@@ -252,7 +252,7 @@ function TreeNode({
           </>
         )}
       </span>
-      <span className="mt-0.5 line-clamp-2 font-lora text-[10px] font-normal not-italic leading-tight text-ink">
+      <span className="mt-0.5 line-clamp-2 font-lora text-[12px] font-normal not-italic leading-[1.4] text-ink">
         {node.title}
       </span>
       </span>

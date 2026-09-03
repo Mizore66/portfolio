@@ -1,5 +1,5 @@
 export const CMS_TAG = "cms";
-export const SITE_REVISED = "2026-09-01T00:00:00.000Z";
+export const SITE_REVISED = "2026-09-03T00:00:00.000Z";
 
 export type ClaimKind = "production" | "benchmark" | "evaluation" | "pipeline" | "capability";
 
@@ -16,6 +16,8 @@ export type CmsClaim = {
   environment: string;
   date: string;
   caveat: string;
+  denominator: string;
+  source: string;
   heroEligible: boolean;
   archived: boolean;
   surfaces: ("home" | "opening" | "resume" | "exhibit" | "lab")[];
@@ -50,6 +52,8 @@ export const PROJECT_COPY_KEYS = [
   "constraint",
   "limitation",
   "example",
+  "rejected",
+  "retrospective",
 ] as const;
 
 export type CmsProjectCopy = {
@@ -61,6 +65,8 @@ export type CmsProjectCopy = {
   constraint: string;
   limitation: string;
   example: string;
+  rejected: string;
+  retrospective: string;
   archived: boolean;
 };
 

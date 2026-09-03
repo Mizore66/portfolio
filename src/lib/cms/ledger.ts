@@ -27,6 +27,8 @@ function claim(
     environment: extra.environment ?? "",
     date: extra.date ?? "",
     caveat: extra.caveat ?? metric.note ?? "",
+    denominator: extra.denominator ?? "",
+    source: extra.source ?? "",
     heroEligible: extra.heroEligible ?? false,
     archived: extra.archived ?? false,
     surfaces: extra.surfaces ?? (extra.heroEligible ? ["home", "opening", "resume"] : ["opening", "resume", "exhibit"]),
@@ -49,6 +51,8 @@ function projectCopies(): CmsProjectCopy[] {
     constraint: field(project, "constraint"),
     limitation: field(project, "limitation"),
     example: field(project, "example"),
+    rejected: field(project, "rejected"),
+    retrospective: field(project, "retrospective"),
     archived: false,
   }));
 }
@@ -86,13 +90,18 @@ export function ledgerDocument(): SiteDocument {
         environment: "Setel payment engine",
         date: "2025-12",
         caveat: METRICS.setelDefects.note,
+        denominator: METRICS.setelDefects.denominator,
+        source: "Internship observation on checkout and capture, Jul–Dec 2025",
         heroEligible: true,
       }),
       claim("monashRetrieval", METRICS.monashRetrieval, {
         method: METRICS.monashRetrieval.method,
         baseline: METRICS.monashRetrieval.vs,
         environment: METRICS.monashRetrieval.corpus,
+        sample: METRICS.monashRetrieval.sample,
         date: "2026-02",
+        denominator: METRICS.monashRetrieval.denominator,
+        source: "Monash University contract, Faculty of IT",
         heroEligible: true,
       }),
       claim("leadThroughput", METRICS.leadThroughput, {
@@ -100,6 +109,8 @@ export function ledgerDocument(): SiteDocument {
         sample: METRICS.leadThroughput.note,
         environment: "PySpark pipeline",
         date: "2025-05",
+        denominator: METRICS.leadThroughput.denominator,
+        source: "Capacity benchmark filing",
         heroEligible: true,
       }),
       claim("gateC", METRICS.gateC, {

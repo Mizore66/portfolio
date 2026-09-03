@@ -446,7 +446,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Veridian" })).toBeVisible();
     await expect(page.getByTestId("exhibit-lede")).toContainText(/Intercepts Terraform/);
     await expect(page.getByTestId("exhibit-why")).toContainText(/\(MCP\) here means/);
-    await expect(page.getByTestId("exhibit-host")).toContainText(/no live host to sleep/);
+    await expect(page.getByTestId("exhibit-host")).toContainText(/No live host/);
     await expect(page.getByText("Clipping · Exhibit")).toBeVisible();
     await expect(page.getByTestId("halftone-plate")).toBeVisible();
     await expect(page.locator("[data-plate='/plates/plate-veridian.jpg']")).toBeVisible();

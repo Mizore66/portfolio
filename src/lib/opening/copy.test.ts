@@ -56,13 +56,13 @@ describe("SEO identity", () => {
     expect(ld.name).toBe(PERSON_NAME);
     expect(ld.alternateName).toBe(PERSON_ALT_NAME);
     expect(ld.alumniOf).toEqual({ "@type": "CollegeOrUniversity", name: "Monash University" });
-    expect(ld.jobTitle).toMatch(/payment, laboratory, and retrieval/);
+    expect(ld.jobTitle).toMatch(/ML infrastructure and data-intensive systems/);
     expect(ld.homeLocation.address.addressLocality).toBe("Bandar Sunway");
     expect(ld.sameAs).toContain("https://github.com/Mizore66");
     expect(ld.sameAs).toContain("https://linkedin.com/in/anasqumhiyeh");
     expect(META_DESCRIPTION.length).toBeLessThanOrEqual(160);
     expect(META_DESCRIPTION).toMatch(/annotated career of Anas T\. Qumhiyeh/);
-    expect(META_DESCRIPTION).toMatch(/payment, laboratory, and retrieval/);
+    expect(META_DESCRIPTION).toMatch(/ML infrastructure and data-intensive systems/);
   });
 
   it("also hands machines a WebSite node", () => {
@@ -108,7 +108,7 @@ describe("SEO identity", () => {
     expect(resumeData.projects.find((p) => p.slug === "slm-distillation-engine")?.why).toMatch(
       /I used QLoRA to distil traces from a 70B teacher into a deployable 3B student/,
     );
-    expect(BROADSHEET.exhibitHost).toMatch(/no live host to sleep/);
+    expect(BROADSHEET.exhibitHost).toMatch(/No live host/);
     expect(BROADSHEET.exhibitGithub).toMatch(/GitHub is blocked/);
   });
 
@@ -139,7 +139,7 @@ describe("SEO identity", () => {
       true,
     );
     const lab = map.find((e) => e.url.endsWith("/lab/learned-evaluator"));
-    expect(lab?.lastModified instanceof Date && lab.lastModified.toISOString().startsWith("2026-08-29")).toBe(true);
+    expect(lab?.lastModified instanceof Date && lab.lastModified.toISOString().startsWith("2026-09-03")).toBe(true);
   });
 });
 
@@ -158,9 +158,17 @@ describe("image sizes", () => {
 });
 
 describe("bfcache", () => {
-  it("registers no unload listeners in the opening app", () => {
+  it("does not register unload listeners in the opening app", () => {
     const src = readFileSync(join(process.cwd(), "src/components/opening/OpeningApp.tsx"), "utf8");
     expect(src).not.toMatch(/onunload|beforeunload|addEventListener\(\s*["']unload/);
+  });
+
+  it("scopes arrow keys to a focusable opening board, not the hero board", () => {
+    const sticky = readFileSync(join(process.cwd(), "src/components/opening/StickyBoardStatic.tsx"), "utf8");
+    const keys = readFileSync(join(process.cwd(), "src/lib/chess/keys.ts"), "utf8");
+    expect(sticky).toMatch(/tabIndex=\{planeId === "hero-board" \? undefined : 0\}/);
+    expect(keys).toMatch(/#play-board/);
+    expect(BROADSHEET.readHintDesktop).toMatch(/Tab to the board/);
   });
 
   it("does not ship a custom cursor or disable selection on copyable text", () => {

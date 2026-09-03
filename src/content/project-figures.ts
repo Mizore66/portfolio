@@ -164,14 +164,14 @@ export const LEADS_HALL: ApparatusSpec = {
   review: {
     status: "validated",
     notes:
-      "Architecture 1:1. Hopper=100M+ events; pigeonholes=PySpark feature engineering; belt=the hall; millwheel=PyTorch DDP / DIN; stamp=checkpointing; gauge=conversion. Not relabeled to fit the picture.",
+      "Architecture 1:1. Hopper=capacity-benchmarked at 100M events/day; pigeonholes=PySpark feature engineering; belt=the hall; millwheel=PyTorch DDP / DIN; stamp=checkpoint resume; gauge=conversion. Not relabeled to fit the picture.",
   },
   parts: [
-    { n: 1, glyph: "hopper", label: "HOPPER", mapsTo: "100M+ events a day", confidence: "confirmed" },
+    { n: 1, glyph: "hopper", label: "HOPPER", mapsTo: "capacity-benchmarked at 100M events/day", confidence: "confirmed" },
     { n: 2, glyph: "pigeonhole", label: "PIGEONHOLES", mapsTo: "PySpark — the sort", confidence: "confirmed" },
     { n: 3, glyph: "belt", label: "BELT", mapsTo: "the hall", confidence: "presumed" },
     { n: 4, glyph: "millwheel", label: "MILLWHEEL", mapsTo: "PyTorch DDP — Deep Interest Network", confidence: "confirmed" },
-    { n: 5, glyph: "seal", label: "STAMP", mapsTo: "checkpointing — zero loss", confidence: "confirmed" },
+    { n: 5, glyph: "seal", label: "STAMP", mapsTo: "checkpointed resume from the last completed slice", confidence: "confirmed" },
     { n: 6, glyph: "gauge", label: "GAUGE", mapsTo: "conversion", confidence: "presumed" },
     { n: 7, glyph: "ledger", label: "LEDGER", mapsTo: "the run log", confidence: "presumed" },
   ],
@@ -259,7 +259,7 @@ export const VERIDIAN_STILL: ApparatusSpec = {
   review: {
     status: "validated",
     notes:
-      "Sheet 3 of the Veridian filing. Kettle=teacher traces; furnace=training compute; column=what transfers; condenser=compression into weights; cask=the 3B SLM; hydrometer=eval parity; twin gauges=−50% latency and 12× inference. Kettle-to-cask size is the mapping.",
+      "Sheet 3 of the Veridian filing. Kettle=teacher traces; furnace=training compute; column=what transfers; condenser=compression into weights; cask=the 3B SLM; hydrometer=eval parity. Speed claims stay unpublished. Kettle-to-cask size is the mapping.",
   },
   parts: [
     { n: 1, glyph: "crucible", label: "KETTLE", mapsTo: "teacher traces — GraphRAG outputs", confidence: "confirmed" },
@@ -268,7 +268,7 @@ export const VERIDIAN_STILL: ApparatusSpec = {
     { n: 4, glyph: "tube", label: "CONDENSER", mapsTo: "compression into the student", confidence: "confirmed" },
     { n: 5, glyph: "capsule", label: "CASK", mapsTo: "the 3B SLM", confidence: "confirmed" },
     { n: 6, glyph: "gauge", label: "HYDROMETER", mapsTo: "quality-parity eval", confidence: "confirmed" },
-    { n: 7, glyph: "gaugepanel", label: "GAUGES", mapsTo: "−50% latency · 12× inference", confidence: "confirmed" },
+    { n: 7, glyph: "gaugepanel", label: "GAUGES", mapsTo: "speed-up unfiled", confidence: "confirmed" },
   ],
   numerals: [
     { mark: "1", x: 3.0, y: 18.0, fromX: 22.0, fromY: 38.0, glyph: "crucible" },

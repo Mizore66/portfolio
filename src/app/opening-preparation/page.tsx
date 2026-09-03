@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { PaperMasthead } from "@/components/opening/Masthead";
 import { NewspaperPieceSprite } from "@/components/opening/NewspaperPiece";
-import { OpeningApp } from "@/components/opening/OpeningApp";
 import { StickyBoardStatic } from "@/components/opening/StickyBoardStatic";
 import { BROADSHEET } from "@/content/opening";
 import { BRAND_TITLE, getNode, isOpeningId, selectionTitle } from "@/lib/opening/tree";
 import { SITE_URL } from "@/lib/site";
+
+const OpeningApp = dynamic(
+  () => import("@/components/opening/OpeningApp").then((mod) => mod.OpeningApp),
+  { ssr: true },
+);
 
 const PAPER_META = {
   alternates: { canonical: BROADSHEET.paperHref },

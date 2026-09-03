@@ -27,7 +27,7 @@ export const DESKS = {
       "Checkout and capture documented so a new developer could follow the path without a walkthrough.",
     ],
     headline: "SETEL RECRUITS NEW HANDS ON THE PAYMENT ENGINE",
-    collaboration: "Internship. Owned authorization and capture on the payment engine.",
+    collaboration: "Internship. Owned authorization and capture on the payment engine. Concurrent with the Western Digital contract (Jul–Dec 2025).",
   },
   westernDigital: {
     organization: "Western Digital",
@@ -43,17 +43,17 @@ export const DESKS = {
     latency:
       "shortest path between stations in under 100 ms of UI-visible latency on that dashboard path",
     headline: "WESTERN DIGITAL ADDS NEW HANDS ON THE LAB FLOOR",
-    collaboration: "Contract. Owned the lab dashboard used by 50+ lab staff.",
+    collaboration: "Contract. Owned the lab dashboard used by 50+ lab staff. Concurrent with the Setel internship from July 2025.",
   },
   monash: {
     organization: "Monash University",
-    role: "Full-stack AI Engineer",
+    role: "Contract Full-stack AI Engineer",
     period: "Nov 2025 – Feb 2026",
     employmentKind: "Contract",
     cypher:
       "self-correcting Text-to-Cypher — generated graph queries, checked failures, and retried malformed Cypher automatically",
     contradictions:
-      "inconsistencies between rules in the graph surfaced for administrators",
+      "inconsistencies between rules in the graph surfaced for administrators (examples confidential)",
     collaboration:
       "Contract. Owned the GraphRAG retrieval path and the distilled graph-logic SLM; surrounding function was university administration tools.",
   },

@@ -18,7 +18,14 @@ import {
 } from "@/lib/cms/session";
 import { applyFormToDocument } from "@/lib/cms/form";
 import { parseImportedDocument } from "@/lib/cms/import-document";
-import { getDraftDocument, publishDocument, restoreRevision, saveDraft } from "@/lib/cms/store";
+import { CmsStoreError } from "@/lib/cms/errors";
+import {
+  getDraftDocument,
+  publishDocument,
+  restoreRevision,
+  saveDraft,
+  uploadMediaBlob,
+} from "@/lib/cms/store";
 import { validateDocument } from "@/lib/cms/validate";
 
 function previewCookieOptions() {
@@ -79,12 +86,24 @@ function revalidatePublicSurfaces() {
   revalidatePath("/lab/learned-evaluator");
 }
 
+function failTo(path: string, error: unknown): never {
+  const message =
+    error instanceof CmsStoreError
+      ? error.message
+      : "Could not write the CMS store. Set POSTGRES_URL or BLOB_READ_WRITE_TOKEN.";
+  redirect(`${path}?error=${encodeURIComponent(message)}`);
+}
+
 export async function saveDraftAction(formData: FormData): Promise<void> {
   await assertSameOrigin();
   await requireAdmin();
   const current = await getDraftDocument();
   const next = applyFormToDocument(formData, current);
-  await saveDraft(next);
+  try {
+    await saveDraft(next);
+  } catch (error) {
+    failTo("/admin", error);
+  }
   redirect("/admin?saved=1");
 }
 
@@ -97,7 +116,11 @@ export async function publishAction(formData: FormData): Promise<void> {
   if (errors.length) {
     redirect(`/admin?error=${encodeURIComponent(errors[0] ?? "invalid")}`);
   }
-  await publishDocument(next);
+  try {
+    await publishDocument(next);
+  } catch (error) {
+    failTo("/admin", error);
+  }
   revalidatePublicSurfaces();
   redirect("/admin?published=1");
 }
@@ -107,7 +130,11 @@ export async function restoreRevisionAction(formData: FormData): Promise<void> {
   await requireAdmin();
   const id = String(formData.get("revisionId") ?? "");
   if (!id) redirect("/admin/history?error=missing");
-  await restoreRevision(id);
+  try {
+    await restoreRevision(id);
+  } catch (error) {
+    failTo("/admin/history", error);
+  }
   redirect("/admin/history?restored=1");
 }
 
@@ -116,12 +143,12 @@ export async function restoreAndPublishAction(formData: FormData): Promise<void>
   await requireAdmin();
   const id = String(formData.get("revisionId") ?? "");
   if (!id) redirect("/admin/history?error=missing");
-  const draft = await restoreRevision(id);
+  const draft = await restoreRevision(id).catch((error) => failTo("/admin/history", error));
   const errors = validateDocument(draft);
   if (errors.length) {
     redirect(`/admin/history?error=${encodeURIComponent(errors[0] ?? "invalid")}`);
   }
-  await publishDocument(draft);
+  await publishDocument(draft).catch((error) => failTo("/admin/history", error));
   revalidatePublicSurfaces();
   redirect("/admin/history?published=1");
 }
@@ -142,8 +169,27 @@ export async function importDocumentAction(formData: FormData): Promise<void> {
   if (errors.length) {
     redirect(`/admin/settings?error=${encodeURIComponent(errors[0] ?? "invalid")}`);
   }
-  await saveDraft({ ...parsed.doc, note: parsed.doc.note || "Imported JSON" });
+  try {
+    await saveDraft({ ...parsed.doc, note: parsed.doc.note || "Imported JSON" });
+  } catch (error) {
+    failTo("/admin/settings", error);
+  }
   redirect("/admin?saved=1");
+}
+
+export async function uploadMediaAction(formData: FormData): Promise<void> {
+  await assertSameOrigin();
+  await requireAdmin();
+  const file = formData.get("media");
+  if (!(file instanceof File) || file.size === 0) {
+    redirect("/admin/settings?error=Choose%20a%20file%20to%20upload.");
+  }
+  try {
+    await uploadMediaBlob(file);
+  } catch (error) {
+    failTo("/admin/settings", error);
+  }
+  redirect("/admin/settings?uploaded=1");
 }
 
 export async function enablePreviewAction(): Promise<void> {

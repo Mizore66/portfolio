@@ -18,6 +18,8 @@ function hydrateClaim(seed: CmsClaim, row: Partial<CmsClaim> | undefined): CmsCl
     archived: bool(row.archived, seed.archived ?? false),
     heroEligible: bool(row.heroEligible, seed.heroEligible),
     surfaces: Array.isArray(row.surfaces) ? row.surfaces : seed.surfaces,
+    denominator: str(row.denominator, seed.denominator),
+    source: str(row.source, seed.source),
   };
 }
 
@@ -28,6 +30,8 @@ function hydrateProject(seed: CmsProjectCopy, row: Partial<CmsProjectCopy> | und
     ...row,
     slug: seed.slug,
     archived: bool(row.archived, seed.archived ?? false),
+    rejected: str(row.rejected, seed.rejected),
+    retrospective: str(row.retrospective, seed.retrospective),
   };
 }
 

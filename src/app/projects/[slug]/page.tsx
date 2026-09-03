@@ -5,6 +5,7 @@ import { ApparatusSchematic } from "@/components/opening/ApparatusSchematic";
 import { EvidencePanel } from "@/components/opening/EvidencePanel";
 import { ExhibitNav } from "@/components/opening/ExhibitNav";
 import { ExhibitSection } from "@/components/opening/ExhibitSection";
+import { ExternalLink } from "@/components/opening/ExternalLink";
 import { HalftonePlate } from "@/components/opening/HalftonePlate";
 import { PatentFigure } from "@/components/opening/PatentFigure";
 import { RecruiterNav } from "@/components/opening/RecruiterNav";
@@ -22,6 +23,7 @@ import {
   projectSourceLabel,
   workHomeHref,
   workPathFromQuery,
+  EVIDENCE_TIER,
   type EvidenceKind,
 } from "@/lib/metrics";
 import { projectJsonLd } from "@/lib/person";
@@ -104,7 +106,7 @@ export default async function ProjectPage({
     contextLabel,
   });
   const evidence = projectEvidence(project);
-  const kicker = exhibitKicker(origin);
+  const kicker = exhibitKicker(origin, project.slug);
   const illustration =
     project.patent.dateKind === "illustration"
       ? `The patent sheet is a later illustration (${project.patent.filed}), not this project's filing date.`
@@ -126,7 +128,24 @@ export default async function ProjectPage({
         <main id="exhibit">
           <article className="exhibit-clip sheet" aria-labelledby="exhibit-title">
             <header className="border-b-2 border-ink px-6 py-4">
-              <div className="flex items-center justify-between gap-3">
+              <nav aria-label="Breadcrumb" className="exhibit-breadcrumb font-mono text-[12px] uppercase tracking-widest">
+                <ol className="flex flex-wrap items-center gap-2">
+                  <li>
+                    <Link href="/" className="text-book-blue underline decoration-2 underline-offset-4">
+                      Home
+                    </Link>
+                  </li>
+                  <li aria-hidden="true">/</li>
+                  <li>
+                    <Link href={workHref} className="text-book-blue underline decoration-2 underline-offset-4">
+                      Work
+                    </Link>
+                  </li>
+                  <li aria-hidden="true">/</li>
+                  <li aria-current="page">{project.name}</li>
+                </ol>
+              </nav>
+              <div className="mt-3 flex items-center justify-between gap-3">
                 <Link
                   href={workHref}
                   className="exhibit-back font-mono text-[12px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4"
@@ -177,6 +196,12 @@ export default async function ProjectPage({
                     <dt>Source</dt>
                     <dd>{projectSourceLabel(project.github)}</dd>
                   </div>
+                  {evidenceKind ? (
+                    <div>
+                      <dt>Evidence</dt>
+                      <dd>{EVIDENCE_TIER[evidenceKind]}</dd>
+                    </div>
+                  ) : null}
                 </dl>
                 <ExhibitSection id="measurement" title="Evidence">
                   <EvidencePanel
@@ -218,24 +243,16 @@ export default async function ProjectPage({
                     <p className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug text-ink">{example}</p>
                   </ExhibitSection>
                 ) : null}
-                {rejected ? (
+                  {rejected ? (
                   <ExhibitSection id="rejected" title="Considered / rejected">
-                    <p
-                      data-testid="exhibit-rejected"
-                      className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug text-ink"
-                    >
-                      {rejected}
-                    </p>
-                  </ExhibitSection>
-                ) : null}
-                {retrospective ? (
-                  <ExhibitSection id="retrospective" title="What I would change now" prominent>
-                    <p
-                      data-testid="exhibit-retrospective"
-                      className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug text-ink"
-                    >
-                      {retrospective}
-                    </p>
+                    <div className="rejected-split">
+                      <p
+                        data-testid="exhibit-rejected"
+                        className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug text-ink"
+                      >
+                        {rejected}
+                      </p>
+                    </div>
                   </ExhibitSection>
                 ) : null}
                 <p className="mt-4 max-w-[68ch] font-lora text-[16px] leading-[1.7] italic text-faded">
@@ -293,16 +310,25 @@ export default async function ProjectPage({
                 </ExhibitSection>
               ) : null}
 
+              {retrospective ? (
+                <ExhibitSection id="retrospective" title="What I would change now" prominent>
+                  <p
+                    data-testid="exhibit-retrospective"
+                    className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug text-ink"
+                  >
+                    {retrospective}
+                  </p>
+                </ExhibitSection>
+              ) : null}
+
               <nav className="mt-10 flex flex-wrap gap-4" aria-label="Exhibit links">
                 {project.github ? (
-                  <a
+                  <ExternalLink
                     href={project.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="external-mark exhibit-repo border-2 border-ink bg-book-blue px-4 py-2 font-mono text-[12px] uppercase tracking-widest text-paper"
+                    className="exhibit-repo border-2 border-ink bg-book-blue px-4 py-2 font-mono text-[12px] uppercase tracking-widest text-paper"
                   >
                     View {project.name} source
-                  </a>
+                  </ExternalLink>
                 ) : null}
                 {inspectNote ? (
                   <p className="w-full font-mono text-[12px] leading-relaxed text-faded">{inspectNote}</p>

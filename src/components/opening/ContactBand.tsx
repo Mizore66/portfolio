@@ -1,4 +1,5 @@
 import { CopyEmail } from "@/components/opening/CopyEmail";
+import { ExternalLink } from "@/components/opening/ExternalLink";
 import { BROADSHEET } from "@/content/opening";
 import { getRenderableDocument } from "@/lib/cms/store";
 import { activeAvailability } from "@/lib/cms/ledger";
@@ -42,14 +43,13 @@ export async function ContactBand() {
           <CopyEmail email={resumeData.email} />
         </li>
         <li>
-          <a
-            className="masthead-chip external-mark"
+          <ExternalLink
+            className="masthead-chip"
             href={`https://${resumeData.linkedin}`}
-            target="_blank"
             rel="me noopener noreferrer"
           >
             LinkedIn
-          </a>
+          </ExternalLink>
         </li>
         <li>
           <a className="masthead-chip" href={BROADSHEET.printHref}>

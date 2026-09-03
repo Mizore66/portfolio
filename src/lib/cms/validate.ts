@@ -29,14 +29,28 @@ export function claimEvidenceReady(claim: CmsClaim): string[] {
   return missing;
 }
 
+export function projectSchemaReady(project: { constraint: string; rejected: string; judgment: string }): string[] {
+  const missing: string[] = [];
+  if (!project.constraint.trim()) missing.push("constraint");
+  if (!project.rejected.trim()) missing.push("considered/rejected");
+  if (!project.judgment.trim()) missing.push("decision");
+  return missing;
+}
+
+const DATE = /^\d{4}(?:-\d{2}(?:-\d{2})?)?$/;
+
 export function validateDocument(doc: SiteDocument): string[] {
   const errors: string[] = [];
   if (!doc.profile.dek) errors.push("Profile role line is required.");
   if (!doc.profile.tagline) errors.push("Profile tagline is required.");
+  if (doc.profile.dek.length > 240) errors.push("Profile role line is too long.");
   const ids = new Set<string>();
   for (const claim of doc.claims) {
     if (ids.has(claim.id)) errors.push(`Duplicate claim id ${claim.id}.`);
     ids.add(claim.id);
+    if (claim.date && !DATE.test(claim.date)) {
+      errors.push(`${claim.id} date must be YYYY, YYYY-MM, or YYYY-MM-DD.`);
+    }
     if (claim.heroEligible) {
       const missing = claimHeroReady(claim);
       if (missing.length) {

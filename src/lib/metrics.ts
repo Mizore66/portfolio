@@ -38,6 +38,9 @@ export const METRICS = {
     display: "+45% retrieval vs vector-only",
     impact: "+45% retrieval accuracy",
     note: "vs vector-only RAG · university regulations",
+    sample:
+      "Query set size, scoring rule, and denominator were not filed. Filed as retrieval accuracy versus vector-only RAG on university regulations, contract ending Feb 2026.",
+    denominator: "Unfiled — query count and scoring rule were not published.",
     kind: "evaluation" as const,
   },
   graphragRetrieval: {
@@ -69,6 +72,8 @@ export const METRICS = {
     owner: "Setel",
     display: "−40% production defects",
     note: "Separate from 92.5% coverage; not claimed as coverage's effect.",
+    denominator:
+      "Count/rate denominator and measurement window were not filed. Observed on checkout and capture during the Jul–Dec 2025 internship.",
     kind: "production" as const,
   },
   wdOversight: {
@@ -79,8 +84,12 @@ export const METRICS = {
     oversight:
       "manual station-checking on the lab dashboard — operators verifying station status by hand rather than reading it on the board",
     latency: "under 100 ms of UI-visible latency on the dashboard path",
+    socket:
+      "WebSocket carried station-status and model-inference updates so operators could read the board instead of walking stations",
     display: "−40% manual oversight",
     note: "lab dashboard · 50+ staff",
+    denominator:
+      "Baseline window and measurement method were not filed beyond dashboard observation for 50+ staff during the Feb–Dec 2025 contract.",
     kind: "evaluation" as const,
   },
   veridianUptime: {
@@ -108,32 +117,35 @@ export const METRICS = {
     owner: "Distributed Lead Scorer",
     display: "100M-event capacity benchmark",
     note: "PySpark pipeline capacity. Not claimed as sustained traffic.",
+    denominator:
+      "Cluster size, input distribution, runtime, checkpoint interval, and failure-injection procedure were not filed.",
     kind: "pipeline" as const,
   },
   slmInference: {
-    value: "12×",
-    unit: "inference (unit unfiled)",
+    value: "70B → 3B",
+    unit: "teacher-to-student compression (speed unfiled)",
     owner: "SLM Distillation Engine",
     path: "70B → 3B",
-    display: "12× inference",
+    display: "70B → 3B student",
     impact: "70B → 3B student",
-    note: "70B → 3B student. Tokens/second, hardware, and batch size were not filed. Not claimed as a measured throughput.",
+    note: "Tokens/second, hardware, and batch size were not filed. A 12× figure is not claimed as measured request latency or throughput.",
     kind: "evaluation" as const,
   },
   riskAuc: {
     value: "0.87",
     unit: "AUC-ROC",
     owner: "Financial Risk Predictor",
-    vs: "15% over an unnamed baseline",
+    vs: "no published comparator",
     display: "0.87 AUC-ROC",
-    note: "The 15% lift names an unnamed baseline; that comparison is not independently interpretable.",
+    note: "An unnamed 15% lift was withdrawn until a comparator and method can be filed. Dataset size, split, leakage controls, and positive-class prevalence were not filed.",
     kind: "evaluation" as const,
   },
   slmLatency: {
     value: "−50%",
     unit: "inference latency",
-    owner: "Monash GraphRAG SLM / SLM Distillation",
-    display: "−50% inference latency",
+    owner: "Monash GraphRAG SLM",
+    display: "−50% inference latency (Monash GraphRAG SLM)",
+    note: "Monash contract SLM, not the independent SLM Distillation Engine exhibit.",
     kind: "evaluation" as const,
   },
   gateC: {
@@ -196,8 +208,9 @@ export const YEAR_INDEX = [
 
 export const POSITIONING = {
   tagline: "I like systems that have to survive measurement.",
-  dek: "Software engineer building payment, laboratory, and retrieval systems.",
-  identity: "Software engineer building payment, laboratory, and retrieval systems.",
+  dek: "Software engineer building ML infrastructure and data-intensive systems for payments, laboratory operations, and retrieval.",
+  identity:
+    "Software engineer building ML infrastructure and data-intensive systems for payments, laboratory operations, and retrieval.",
   seniority:
     "Internships and contract roles across production systems, plus independent experiments that include a published loss.",
   howIWork:
@@ -205,8 +218,8 @@ export const POSITIONING = {
   availability:
     "Open to software engineering roles across fintech, ML infrastructure, and data platforms.",
   graduateNote: "Graduate and junior opportunities welcome.",
-  contactHed: "Hiring for infrastructure that has to survive measurement? Write to me.",
-  replies: "Replies within two days (MYT).",
+  contactHed: "Hiring for software engineering across backend, product, ML infrastructure, or data platforms? Write to me.",
+  replies: "Usually replies within two business days (MYT).",
   closer:
     "I'm interested in teams building reliable ML and data systems in fintech or infrastructure-heavy products.",
   next: "The next line I want to play: measured systems in fintech infrastructure.",
@@ -215,9 +228,11 @@ export const POSITIONING = {
   independentKicker: "Independent projects",
   deskNote:
     "Professional work is summarized here; internal screenshots remain private. I joined existing teams on internships and contracts; independent flagships are solo.",
+  ownershipBridge:
+    "Production at Setel and Western Digital, contract work at Monash, solo flagships.",
   nameNote: "Anas T. Qumhiyeh on the masthead; Anas Tarek Qumhiyeh on the résumé.",
   desksLine:
-    "Built production payments at Setel, then laboratory and retrieval systems at Western Digital, Petronas, and Monash University.",
+    "Built production payments at Setel, then laboratory operations systems and retrieval at Western Digital, Petronas, and Monash University.",
   throughLine: "The through-line is systems that have to keep working after they ship.",
   deskSummaries: [
     {
@@ -226,7 +241,7 @@ export const POSITIONING = {
     },
     {
       desk: "Western Digital",
-      line: "Lab dashboard for 50+ staff; WebSocket to the lab model.",
+      line: "Lab dashboard for 50+ staff; WebSocket carried station-status and model-inference updates to the board.",
     },
     {
       desk: "Setel",
@@ -238,7 +253,7 @@ export const POSITIONING = {
     },
   ],
   recruiterBio:
-    "Software engineer building payment, laboratory, and retrieval systems. Production payments at Setel; laboratory telemetry at Western Digital; retrieval over university regulations at Monash.",
+    "Software engineer building ML infrastructure and data-intensive systems for payments, laboratory operations, and retrieval. Production payments at Setel; laboratory operations software at Western Digital; retrieval over university regulations at Monash.",
   followerBio:
     "I've played chess since I was a teenager, which is why this portfolio is a scoresheet: moves are facts, annotations are voice. I like systems that have to survive measurement — at Petronas I presented usability findings to department leadership; at Western Digital I built for 50+ lab staff. I joined existing teams on internships and contracts; independent flagships are solo.",
   aboutHeading: "About the annotator",
@@ -307,7 +322,10 @@ export function projectSourceLabel(github: string): string {
   return github ? "Public repository" : "Private project archive";
 }
 
-export function exhibitKicker(origin: ProjectOrigin): string {
+export function exhibitKicker(origin: ProjectOrigin, slug?: string): string {
+  const featured = slug ? (FEATURED_PROJECT_SLUGS as readonly string[]).includes(slug) : false;
+  const lab = slug ? (LAB_PROJECT_SLUGS as readonly string[]).includes(slug) : origin === "Laboratory";
+  if (slug && !featured && !lab) return "Archive / supporting work";
   if (origin === "Hackathon") return "Prize clipping";
   if (origin === "Laboratory") return "Laboratory note";
   return "Clipping · Exhibit";
@@ -339,7 +357,7 @@ export function projectEvidence(project: {
         method: "Cloud Run scheduling versus the default unscheduled Cloud Run service. Carbon ledger off the request path.",
         baseline: "Emissions versus the default unscheduled Cloud Run service. Uptime is not a named production SLO.",
         environment: METRICS.veridianUptime.runtime,
-        alsoFiled: `${METRICS.veridianUptime.display} and ${METRICS.veridianEmissions.display} were recorded as Cloud Run evaluations. Evaluation period, sample size, and the emissions calculation source were not filed.`,
+        alsoFiled: `${METRICS.veridianUptime.display} and ${METRICS.veridianEmissions.display} were recorded as Cloud Run evaluations of the implemented recommendation path — not a named production SLO. Evaluation period, sample size, and the emissions calculation source were not filed.`,
       };
     case "multi-agent-graphrag":
       return {
@@ -368,7 +386,7 @@ export function projectEvidence(project: {
         environment: "PySpark pipeline",
         sample: "Capacity benchmark. Not claimed as sustained traffic.",
         alsoFiled:
-          "Checkpoints resume a failed hour from the last written slice. Cluster size, input distribution, checkpoint interval, and a failure-injection record were not filed.",
+          "Checkpoints resume a failed hour from the last completed slice. Cluster size, input distribution, checkpoint interval, and a failure-injection record were not filed.",
       };
     case "slm-distillation-engine":
       return {
@@ -377,15 +395,15 @@ export function projectEvidence(project: {
         environment: project.apparatus.runtime,
         sample: "Tokens/second, hardware, and batch size were not filed. Quality parity was not supported by a named filed evaluation.",
         alsoFiled:
-          "−40% memory and 98% pass were also noted; hardware, batch size, and a named evaluation for quality parity were not filed.",
+          "−40% memory and 98% pass were also noted; hardware, batch size, and a named evaluation for quality parity were not filed. −50% latency belongs to the Monash GraphRAG SLM, not this exhibit.",
       };
     case "circuitmindai":
       return {
         result: project.impact,
         capability:
-          "Detects PCB faults from images and returns voice-guided inspection steps, with cached results for network loss. Detection quality was not filed.",
+          "Detector capability implemented; precision/recall not yet filed. Cached results cover network loss. Detection quality was not filed.",
         environment: project.apparatus.runtime,
-        sample: "Detection quality (precision, latency, confusion) was not filed. This is a capability, not a measured detector.",
+        sample: "Detector capability implemented; precision/recall not yet filed. This is a capability, not a measured detector.",
       };
     case "mirrorfi":
       return {

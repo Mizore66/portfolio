@@ -7,19 +7,19 @@ The paper can ship the UI. These surfaces are still yours. Paste them as written
 **Headline** (identity first; the clever line lives in About):
 
 ```
-Software engineer building payment, laboratory, and retrieval systems.
+Software engineer building ML infrastructure and data-intensive systems for payments, laboratory operations, and retrieval.
 ```
 
 **About** (quotes the paper, does not contradict it):
 
 ```
-Software engineer building payment, laboratory, and retrieval systems.
+Software engineer building ML infrastructure and data-intensive systems for payments, laboratory operations, and retrieval.
 
 I like systems that have to survive measurement.
 
 The annotated career of Anas T. Qumhiyeh — a chess-opening portfolio with a live engine, patent drawings, and measured claims.
 
-The desks compound. Petronas was converting a licensed MATLAB back-end to Python, then presenting usability findings to department leadership. Western Digital put full-stack work behind roles for 50+ staff, with a WebSocket to the lab's deep-learning model. Setel was payments in production: authorization, capture, and tests on that path. Monash was retrieval over a graph of university regulations. The through-line is systems that have to keep working after they ship.
+The desks compound. Petronas was converting a licensed MATLAB back-end to Python, then presenting usability findings to department leadership. Western Digital put full-stack work behind roles for 50+ staff, with a WebSocket carrying station-status and model-inference updates to the dashboard. Setel was payments in production: authorization, capture, and tests on that path. Monash was retrieval over a graph of university regulations. The through-line is systems that have to keep working after they ship.
 
 Opening Preparation: https://anasqumhiyeh.dev
 
@@ -40,7 +40,7 @@ Recruiters will see the site and LinkedIn within five minutes of each other. The
 
 ```
 Anas Tarek Qumhiyeh
-Software engineer building payment, laboratory, and retrieval systems.
+Software engineer building ML infrastructure and data-intensive systems for payments, laboratory operations, and retrieval.
 https://anasqumhiyeh.dev
 anasqumhiyeh@gmail.com
 ```
