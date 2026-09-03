@@ -286,10 +286,12 @@ export const GlassEngine = memo(function GlassEngine({
       data-eval-mode={usingLearned ? "learned" : "handcrafted"}
       data-engine-down={down ? "true" : undefined}
       data-compact={compact ? "true" : undefined}
-      aria-live="off"
+      aria-live="polite"
+      aria-atomic="true"
+      aria-busy={!settled && !down}
       aria-label="Live engine search"
     >
-      <p className="sr-only" aria-live="polite" aria-atomic="true" data-testid="engine-announce">
+      <p className="sr-only" data-testid="engine-announce">
         {announcement}
       </p>
       <div className="engine-readout" data-testid="engine-readout">
@@ -336,6 +338,7 @@ export const GlassEngine = memo(function GlassEngine({
           className="mt-2 min-h-4 font-mono text-[12px] text-faded"
           data-testid="engine-settling"
           aria-busy={!settled && !down}
+          aria-hidden="true"
         >
           {down ? "\u00a0" : line.settling || !info ? BROADSHEET.settling : "\u00a0"}
         </p>

@@ -20,11 +20,21 @@ export function overlayProject<T extends { slug: string }>(project: T, doc: Site
   const copy = doc.projects.find((row) => row.slug === project.slug);
   if (copy?.archived) return null;
   if (!copy) return project;
-  const patch: Record<string, string> = {};
+  const patch: Record<string, unknown> = {};
   for (const key of COPY_KEYS) {
     const value = String(copy[key] ?? "").trim();
     if (value) patch[key] = value;
   }
+  if (copy.title.trim()) patch.name = copy.title.trim();
+  if (copy.subtitle.trim()) patch.subtitle = copy.subtitle.trim();
+  if (copy.date.trim()) patch.date = copy.date.trim();
+  if (copy.github.trim()) patch.github = copy.github.trim();
+  if (copy.tech.trim()) {
+    patch.tech = copy.tech.split(",").map((part) => part.trim()).filter(Boolean);
+  }
+  if (copy.seoDescription.trim()) patch.meta = copy.seoDescription.trim();
+  if (copy.seoTitle.trim()) patch.seoTitle = copy.seoTitle.trim();
+  if (copy.category.trim()) patch.category = copy.category.trim();
   return { ...project, ...patch };
 }
 

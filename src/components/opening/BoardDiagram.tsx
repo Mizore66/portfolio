@@ -253,7 +253,7 @@ export const BoardDiagram = memo(function BoardDiagram({
   }
 
   return (
-    <figure aria-describedby={`${planeId}-occ`}>
+    <figure aria-describedby={planeId === "hero-board" ? `${planeId}-occ` : `${planeId}-occ board-keys`}>
       <p className="sr-only" id={`${planeId}-occ`} data-testid="board-position">
         Occupancy {occupancyFen(pieces)}. {caption}.
       </p>
@@ -303,7 +303,7 @@ export const BoardDiagram = memo(function BoardDiagram({
                   role={playable ? "application" : "img"}
                   aria-label={caption}
                   aria-roledescription={playable ? "chessboard" : undefined}
-                  aria-describedby={`${planeId}-occ`}
+                  aria-describedby={playable ? `${planeId}-occ board-keys` : `${planeId}-occ`}
                   data-testid="board-plane"
                   data-play-side={playSide}
                   data-from={fromSq ?? undefined}

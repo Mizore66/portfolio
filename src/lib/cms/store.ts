@@ -3,11 +3,11 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { cmsBackendKind, cmsStoreStatus } from "@/lib/cms/backend";
 import { postgresNeedsSsl, postgresUrl } from "@/lib/cms/env";
-import { CMS_UNWRITABLE, CmsStoreError } from "@/lib/cms/errors";
+import { CMS_STALE, CMS_UNWRITABLE, CmsStoreError } from "@/lib/cms/errors";
 import { hydrateDocument } from "@/lib/cms/hydrate";
 import { ledgerDocument } from "@/lib/cms/ledger";
 import { PREVIEW_COOKIE, SESSION_COOKIE, verifySession } from "@/lib/cms/session";
-import type { CmsStoreFile, SiteDocument } from "@/lib/cms/types";
+import type { CmsMediaAsset, CmsStoreFile, SiteDocument } from "@/lib/cms/types";
 
 const FILE = join(process.cwd(), "data", "cms.json");
 const BLOB_PATH = "cms/store.json";
@@ -15,7 +15,7 @@ const STORE_ID = "site";
 export const HISTORY_CAP = 40;
 
 function emptyStore(): CmsStoreFile {
-  return { draft: null, published: null, revisions: [], audit: [] };
+  return { draft: null, published: null, revisions: [], audit: [], media: [] };
 }
 
 function asStore(raw: unknown): CmsStoreFile {
@@ -26,6 +26,7 @@ function asStore(raw: unknown): CmsStoreFile {
     published: row.published ?? null,
     revisions: Array.isArray(row.revisions) ? row.revisions : [],
     audit: Array.isArray(row.audit) ? row.audit : [],
+    media: Array.isArray(row.media) ? row.media : [],
   };
 }
 
@@ -146,6 +147,7 @@ async function readPostgresStore(): Promise<CmsStoreFile | null> {
       draft: draft[0]?.document ?? null,
       revisions: history.map((row) => row.document),
       audit: [],
+      media: [],
     };
   } catch {
     return null;
@@ -238,9 +240,11 @@ export async function getRevision(id: string): Promise<SiteDocument | null> {
 export async function restoreRevision(id: string): Promise<SiteDocument> {
   const found = await getRevision(id);
   if (!found) throw new CmsStoreError("Revision not found.");
+  const published = await getPublishedDocument();
   return saveDraft({
     ...found,
-    note: `Restored ${id}`,
+    note: published.note,
+    restoredFrom: id,
   });
 }
 
@@ -278,18 +282,30 @@ function remember(store: CmsStoreFile, next: SiteDocument, action: string, at: s
     draft: next,
     published: action === "publish" ? next : store.published,
     revisions: [next, ...store.revisions.filter((row) => row.revisionId !== next.revisionId)].slice(0, HISTORY_CAP),
-    audit: [{ at, action, note: next.note }, ...store.audit].slice(0, HISTORY_CAP),
+    audit: [{ at, action, note: next.note, actor: "owner" }, ...store.audit].slice(0, HISTORY_CAP),
   };
 }
 
-export async function saveDraft(doc: SiteDocument): Promise<SiteDocument> {
+export async function saveDraft(
+  doc: SiteDocument,
+  opts: { expectedRevisionId?: string } = {},
+): Promise<SiteDocument> {
+  const store = await readStore();
+  if (opts.expectedRevisionId) {
+    const currentId = store.draft?.revisionId ?? store.published?.revisionId ?? "ledger";
+    if (currentId !== opts.expectedRevisionId) {
+      throw new CmsStoreError(CMS_STALE);
+    }
+  }
+  const now = new Date().toISOString();
   const next: SiteDocument = {
     ...doc,
     revisionId: `draft-${Date.now()}`,
     status: "draft",
+    savedAt: now,
   };
-  const store = remember(await readStore(), next, "draft", new Date().toISOString());
-  await writeStore(store, next, "draft");
+  const remembered = remember(store, next, "draft", now);
+  await writeStore(remembered, next, "draft");
   return next;
 }
 
@@ -299,31 +315,56 @@ export async function publishDocument(doc: SiteDocument): Promise<SiteDocument> 
     revisionId: `pub-${Date.now()}`,
     status: "published",
     publishedAt: new Date().toISOString(),
+    savedAt: new Date().toISOString(),
+    restoredFrom: "",
   };
   const store = remember(await readStore(), next, "publish", next.publishedAt);
   await writeStore(store, next, "publish");
   return next;
 }
 
-export async function listMediaBlobs(): Promise<{ pathname: string; url: string; uploadedAt: string }[]> {
-  if (!cmsStoreStatus().durable && cmsBackendKind() !== "blob") {
-    if (!process.env.BLOB_READ_WRITE_TOKEN) return [];
-  }
-  if (!process.env.BLOB_READ_WRITE_TOKEN) return [];
+export async function discardDraft(): Promise<void> {
+  const store = await readStore();
+  if (!store.draft) return;
+  const at = new Date().toISOString();
+  const next: CmsStoreFile = {
+    ...store,
+    draft: null,
+    audit: [{ at, action: "discard", note: "Reset to published", actor: "owner" }, ...store.audit].slice(0, HISTORY_CAP),
+  };
+  await writeStore(next, store.published ?? ledgerDocument(), "discard");
+}
+
+export async function listMediaBlobs(): Promise<CmsMediaAsset[]> {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) return (await readStore()).media;
   try {
     const { list } = await import("@vercel/blob");
     const result = await list({ prefix: "cms/media/", limit: 40 });
-    return result.blobs.map((blob) => ({
-      pathname: blob.pathname,
-      url: blob.url,
-      uploadedAt: blob.uploadedAt.toISOString(),
-    }));
+    const store = await readStore();
+    const meta = new Map(store.media.map((item) => [item.pathname, item]));
+    return result.blobs.map((blob) => {
+      const existing = meta.get(blob.pathname);
+      return {
+        pathname: blob.pathname,
+        url: blob.url,
+        uploadedAt: blob.uploadedAt.toISOString(),
+        alt: existing?.alt ?? "",
+        caption: existing?.caption ?? "",
+        contentType: existing?.contentType ?? "",
+        size: existing?.size ?? blob.size ?? 0,
+        usage: existing?.usage ?? "",
+        focalPoint: existing?.focalPoint ?? "50% 50%",
+      };
+    });
   } catch {
-    return [];
+    return (await readStore()).media;
   }
 }
 
-export async function uploadMediaBlob(file: File): Promise<{ pathname: string; url: string }> {
+export async function uploadMediaBlob(
+  file: File,
+  meta: { alt?: string; caption?: string; usage?: string; focalPoint?: string } = {},
+): Promise<CmsMediaAsset> {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
     throw new CmsStoreError("Set BLOB_READ_WRITE_TOKEN before uploading media.");
   }
@@ -334,5 +375,63 @@ export async function uploadMediaBlob(file: File): Promise<{ pathname: string; u
     addRandomSuffix: false,
     contentType: file.type || "application/octet-stream",
   });
-  return { pathname: stored.pathname, url: stored.url };
+  const asset: CmsMediaAsset = {
+    pathname: stored.pathname,
+    url: stored.url,
+    uploadedAt: new Date().toISOString(),
+    alt: meta.alt ?? "",
+    caption: meta.caption ?? "",
+    contentType: file.type || "application/octet-stream",
+    size: file.size,
+    usage: meta.usage ?? "",
+    focalPoint: meta.focalPoint ?? "50% 50%",
+  };
+  const store = await readStore();
+  store.media = [asset, ...store.media.filter((item) => item.pathname !== asset.pathname)].slice(0, 80);
+  await writeStore(store, store.published ?? ledgerDocument(), "media");
+  return asset;
+}
+
+export async function updateMediaAsset(pathname: string, patch: Partial<CmsMediaAsset>): Promise<void> {
+  const store = await readStore();
+  store.media = store.media.map((item) => (item.pathname === pathname ? { ...item, ...patch, pathname } : item));
+  await writeStore(store, store.published ?? ledgerDocument(), "media");
+}
+
+export async function replaceMediaBlob(pathname: string, file: File): Promise<CmsMediaAsset> {
+  const store = await readStore();
+  const existing = store.media.find((item) => item.pathname === pathname);
+  if (!existing) throw new CmsStoreError("File not found.");
+  const uploaded = await uploadMediaBlob(file, {
+    alt: existing.alt,
+    caption: existing.caption,
+    usage: existing.usage,
+    focalPoint: existing.focalPoint,
+  });
+  const next = await readStore();
+  next.media = next.media.filter((item) => item.pathname !== pathname);
+  await writeStore(next, next.published ?? ledgerDocument(), "media");
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    try {
+      const { del } = await import("@vercel/blob");
+      await del(pathname);
+    } catch {
+      /* replacement already stored */
+    }
+  }
+  return uploaded;
+}
+
+export async function deleteMediaAsset(pathname: string): Promise<void> {
+  const store = await readStore();
+  const item = store.media.find((row) => row.pathname === pathname);
+  if (item?.usage.trim()) {
+    throw new CmsStoreError("This file is referenced. Clear usage before deleting.");
+  }
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    const { del } = await import("@vercel/blob");
+    await del(pathname);
+  }
+  store.media = store.media.filter((row) => row.pathname !== pathname);
+  await writeStore(store, store.published ?? ledgerDocument(), "media");
 }

@@ -44,7 +44,11 @@ export async function generateMetadata({
   const doc = await getPublishedDocument();
   const overlaid = overlayProject(project, doc);
   if (!overlaid) return { title: "Correction — A. T. Qumhiyeh" };
-  const title = `${exhibitTitle(overlaid)} · A. T. Qumhiyeh`;
+  const titleBase =
+    "seoTitle" in overlaid && typeof overlaid.seoTitle === "string" && overlaid.seoTitle.trim()
+      ? overlaid.seoTitle.trim()
+      : exhibitTitle(overlaid);
+  const title = `${titleBase} · A. T. Qumhiyeh`;
   const description = overlaid.meta;
   return {
     title,

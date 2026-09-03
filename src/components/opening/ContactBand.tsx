@@ -29,6 +29,7 @@ export async function ContactBand() {
       <p className="mt-1 font-mono text-[12px] text-faded" data-testid="contact-location">
         {site.profile.location} · open to remote
       </p>
+      <p className="mt-1 font-mono text-[12px] text-faded">{POSITIONING.workAuth}</p>
       <p className="mt-2 font-mono text-[12px] text-faded">{POSITIONING.replies}</p>
       <p className="mt-4 font-mono text-[14px] text-ink" data-testid="contact-email">
         {resumeData.email}

@@ -63,7 +63,7 @@ export const resumeData = {
       scope: DESKS.westernDigital.collaboration,
       bullets: [
         `${METRICS.wdOversight.display} — ${METRICS.wdOversight.oversight} for 50+ staff.`,
-        "CRUD and analytics behind those roles.",
+        "Role-backed station records and the dashboards operators used to decide which stations to visit.",
         `WebSocket carried station-status and model-inference updates so operators could read the board instead of walking stations; ${METRICS.wdOversight.latency}.`,
       ],
       impact: METRICS.wdOversight.display,
@@ -73,7 +73,7 @@ export const resumeData = {
       type: "Intern",
       company: "Setel",
       period: "Jul 2025 – Dec 2025",
-      tech: ["Docker", "Kubernetes", "MERN Stack", "Swagger", "NestJS"],
+      tech: ["Docker", "Kubernetes", "React", "Node.js", "MongoDB", "Swagger", "NestJS"],
       scope: DESKS.setel.collaboration,
       bullets: [
         ...DESKS.setel.facts,
@@ -98,7 +98,7 @@ export const resumeData = {
       name: "Veridian",
       slug: "veridian",
       subtitle: "MLOps Tradeoff Engine",
-      purpose: "Intercepts Terraform and Kubernetes and recommends a lower-carbon compute configuration before the spike.",
+      purpose: "Intercepts Terraform and Kubernetes and recommends a lower-carbon compute configuration before provisioning or a demand-driven scale event.",
       date: "Apr 2026",
       tech: ["Python", "Terraform", "BigQuery", "GCP Vertex AI", "GitLab Duo", "MCP"],
       bullets: [
@@ -106,8 +106,8 @@ export const resumeData = {
         "Vertex AI recommends a quantized, lower-carbon compute configuration for the model on the desk.",
         "BigQuery holds the ESG ledger; it is not on the request.",
       ],
-      impact: "Automatic lower-carbon infrastructure recommendation",
-      why: "Selecting compute after a demand spike means remediation arrives after the expensive decision has already been made. Model Context Protocol (MCP) here means the Terraform change is read as it is written, before that box is already running.",
+      impact: "Implemented recommendation engine; −15% emissions is a separate Cloud Run evaluation",
+      why: "Selecting compute after provisioning or a demand-driven scale event means remediation arrives after the expensive decision has already been made. Model Context Protocol (MCP) here means the Terraform change is read as it is written, before that box is already running.",
       constraint: "The ledger had to stay off the request path so a slow or missing carbon number could not stall a provision.",
       limitation: "Private project archive. 99.9% observed uptime and −15% emissions are Cloud Run evaluations; evaluation period, sample size, and the emissions calculation source were not filed — not a named production SLO.",
       example: "Input: a Terraform intent. Output: a recommended compute configuration, with the carbon ledger written beside the request, not on it.",
@@ -163,8 +163,8 @@ export const resumeData = {
       description:
         "CircuitMindAI inspects circuit boards: Nova Pro reads the copper, Nova Sonic talks the operator through the fault. Next.js and Express sit on ECS Fargate; GitHub Actions stamps the image.",
       judgment: "Vision on the copper and voice for the operator: Nova Pro reads the board image, Nova Sonic speaks the inspection steps, and results are cached locally so the floor can keep working when the network drops.",
-      constraint: "The inspection has to survive a dropped network. There is no live host after the exhibit.",
-      limitation: "No live host. Detection quality (precision, latency, confusion) was not filed. Detector capability implemented; precision/recall not yet filed.",
+      constraint: "The inspection has to survive a dropped network.",
+      limitation: "Detection quality (precision, latency, confusion) was not filed. Detector capability implemented; precision/recall not yet filed.",
       rejected:
         "I considered a server-only detector. A detector that fails with connectivity loss is not dependable enough for the inspection floor, so results are cached locally.",
       retrospective:
@@ -209,10 +209,10 @@ export const resumeData = {
       plateAlt: "Halftone photograph: a vault door and lock-work, lit like a bank interior.",
       description:
         "A Next.js desk draws the vault line; Node.js talks to Drift, Jupiter, and Meteora; MongoDB stores the copy so another desk can run it.",
-      why: "Two vault desks, two chains, and a hand-off that lived in a document. The failure is the gap between the schematic and the desk that has to fire it.",
+      why: "Two vault desks on Solana — Drift, Jupiter, and Meteora — and a hand-off that lived in a document. The failure is the gap between the schematic and the desk that has to fire it.",
       judgment: "One schematic that draws, shares, and fires — so the hand-off is the same object the operator sees.",
-      constraint: "A Megahack weekend: one schematic had to ship, without a live host after the prize.",
-      limitation: "No live host. Source is the public Megahack repository.",
+      constraint: "A Megahack weekend: one schematic had to ship.",
+      limitation: "Source is the public Megahack repository.",
       rejected:
         "I considered wiring each protocol desk (Drift, Jupiter, Meteora) as its own UI. A weekend prize cannot keep three hand-offs in sync, so one schematic draws, shares, and fires.",
       retrospective:
@@ -284,7 +284,7 @@ export const resumeData = {
       date: "Jul 2025",
       tech: ["TensorFlow", "XGBoost", "LightGBM", "BentoML", "SHAP"],
       bullets: [
-        `${METRICS.riskAuc.display} on that sample.`,
+        `${METRICS.riskAuc.display} on the unpublished evaluation sample.`,
         "SHAP names the drivers on the score.",
         "Daily retrain from Kafka so the score is this morning's tape.",
       ],
@@ -306,13 +306,13 @@ export const resumeData = {
       plateAlt: "Halftone photograph: an open ledger with ruled columns, a pen resting on the page.",
       description:
         "Kafka feeds the daily tape; LightGBM and XGBoost score it; SHAP writes why; BentoML serves the number.",
-      meta: "Kafka feeds the daily tape. LightGBM and XGBoost score it at 0.87 AUC. SHAP writes why. BentoML serves the number.",
+      meta: "Kafka feeds the daily tape. LightGBM and XGBoost score it at 0.87 AUC-ROC. SHAP writes why. BentoML serves the number.",
       patent: RISK_ENGINE satisfies ApparatusSpec,
       apparatus: {
         name: "Financial Risk Predictor",
         path: [
           { name: "Kafka", role: "daily retrain" },
-          { name: "LightGBM / XGBoost", role: "0.87 AUC" },
+          { name: "LightGBM / XGBoost", role: "0.87 AUC-ROC" },
           { name: "BentoML", role: "serving API" },
         ],
         beside: [{ name: "SHAP", role: "why the score" }],
@@ -326,7 +326,7 @@ export const resumeData = {
       date: "May 2025",
       tech: ["PyTorch DDP", "PySpark", "Deep Interest Network", "Distributed Computing"],
       bullets: [
-        `${METRICS.leadThroughput.display} on PySpark; hours of latency cut to minutes. Pipeline capacity, not sustained traffic.`,
+        `${METRICS.leadThroughput.display} on PySpark; hours of pipeline latency cut to minutes on that capacity-benchmark desk. Exact clocks were not filed. Pipeline capacity, not sustained traffic.`,
         "Deep Interest Network on PyTorch DDP across the GPU cluster.",
         "Automated evaluation so a bad net does not ship.",
         "Checkpoints resume a failed hour from the last written slice.",
@@ -363,7 +363,7 @@ export const resumeData = {
       name: "SLM Distillation Engine",
       slug: "slm-distillation-engine",
       subtitle: "Knowledge Distillation & Fine-Tuning",
-      purpose: "A 70B teacher compressed into a 3B student that keeps the same job.",
+      purpose: "A 70B teacher compressed into a 3B student that still answers the GraphRAG retrieval questions on a smaller model.",
       date: "Jul 2025",
       tech: ["PyTorch", "QLoRA", "DeepSpeed", "FlashAttention"],
       bullets: [
@@ -374,14 +374,14 @@ export const resumeData = {
       impact: METRICS.slmInference.impact,
       why: "I used QLoRA to distil traces from a 70B teacher into a deployable 3B student.",
       judgment:
-        "Keep the same job on a 3B student via QLoRA, DeepSpeed, and FlashAttention. Speed-up claims stay unpublished until tokens/second, hardware, and batch size are filed.",
+        "Keep the GraphRAG retrieval questions on a 3B student via QLoRA, DeepSpeed, and FlashAttention. Speed-up claims stay unpublished until tokens/second, hardware, and batch size are filed.",
       constraint: "The goal was to preserve task behavior in a 3B student while reducing serving cost and latency. Quality parity was not supported by a named filed evaluation.",
-      limitation: "70B → 3B is the filed path. A 12× inference figure is not claimed as measured request latency. −40% memory and 98% pass were also noted; hardware, batch size, and the named evaluation were not filed. −50% latency belongs to the Monash GraphRAG SLM.",
+      limitation: "70B → 3B is the filed path. Hardware, batch size, tokens/second, and a named quality evaluation were not filed. A 98% test-pass note was also recorded; it is not a named task-success evaluation. −50% latency belongs to the Monash GraphRAG SLM.",
       rejected:
-        "I considered serving the 70B teacher. That cost does not survive a desk that has to keep the same job on cheaper hardware, so the student is the exhibit — without a speed claim that was not measured.",
+        "I considered serving the 70B teacher. That cost does not survive a desk that has to keep GraphRAG retrieval on cheaper hardware, so the student is the exhibit — without a speed claim that was not measured.",
       retrospective:
         "I would file tokens/second, hardware, batch size, and a named evaluation for quality parity.",
-      example: "Input: traces from a 70B teacher. Output: a 3B student on the same job. Tokens/second were not filed.",
+      example: "Input: traces from a 70B teacher. Output: a 3B student that still answers the GraphRAG retrieval questions. Tokens/second were not filed.",
       evidenceNote: METRICS.slmInference.note,
       evidenceKind: METRICS.slmInference.kind,
       github: "",
@@ -389,7 +389,7 @@ export const resumeData = {
       plateCaption: "SLM Distillation — teacher and student machines, halftone plate, illustrative.",
       plateAlt: "Halftone photograph: two machines side by side, the smaller one cabled to the larger.",
       description:
-        "A 70B teacher writes the traces; QLoRA, DeepSpeed and FlashAttention compress them into a 3B student that keeps the same job.",
+        "A 70B teacher writes the traces; QLoRA, DeepSpeed and FlashAttention compress them into a 3B student that still answers the GraphRAG retrieval questions.",
       meta: "A 70B teacher writes the traces; QLoRA, DeepSpeed and FlashAttention compress them into a 3B student. Speed-up unfiled.",
       patent: VERIDIAN_STILL satisfies ApparatusSpec,
       apparatus: {

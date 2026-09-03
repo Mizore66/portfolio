@@ -7,13 +7,13 @@ The paper can ship the UI. These surfaces are still yours. Paste them as written
 **Headline** (identity first; the clever line lives in About):
 
 ```
-Software engineer building ML infrastructure and data-intensive systems for payments, laboratory operations, and retrieval.
+Software engineer building ML infrastructure and data-intensive systems for payments, lab operations, and retrieval.
 ```
 
 **About** (quotes the paper, does not contradict it):
 
 ```
-Software engineer building ML infrastructure and data-intensive systems for payments, laboratory operations, and retrieval.
+Software engineer building ML infrastructure and data-intensive systems for payments, lab operations, and retrieval.
 
 I like systems that have to survive measurement.
 
@@ -29,7 +29,7 @@ Monash University, Bachelor of Engineering (Honours), software. First Class. Gra
 
 LEARNED is the masthead eval. Gate C at 50 000 nodes printed −143.3 ±35.4 Elo, 128 games, LLR −2.99 (h0). A loss at the spec cap is still a result. The match report lives at https://anasqumhiyeh.dev/lab/learned-evaluator
 
-Open to early-career software engineering roles in fintech and AI infrastructure.
+Open to software engineering roles across fintech, ML infrastructure, and data platforms.
 
 The next line I want to play: measured systems in fintech infrastructure.
 ```
@@ -40,7 +40,7 @@ Recruiters will see the site and LinkedIn within five minutes of each other. The
 
 ```
 Anas Tarek Qumhiyeh
-Software engineer building ML infrastructure and data-intensive systems for payments, laboratory operations, and retrieval.
+Software engineer building ML infrastructure and data-intensive systems for payments, lab operations, and retrieval.
 https://anasqumhiyeh.dev
 anasqumhiyeh@gmail.com
 ```

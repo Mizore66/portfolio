@@ -3,6 +3,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { DeskCollage } from "@/components/opening/DeskCollage";
 import { FontLoader } from "@/components/opening/FontLoader";
 import { NewspaperPieceSprite } from "@/components/opening/NewspaperPiece";
+import { PreviewBanner } from "@/components/opening/PreviewBanner";
 import { getPublishedDocument } from "@/lib/cms/store";
 import { personJsonLd, websiteJsonLd, META_DESCRIPTION } from "@/lib/person";
 import { HOME_TITLE } from "@/lib/opening/tree";
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
     "ML infrastructure",
     "data-intensive systems",
     "payments",
-    "laboratory operations",
+    "lab operations",
     "retrieval",
     "Anas Qumhiyeh",
     "Opening Preparation",
@@ -66,6 +67,7 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd()) }}
         />
+        <PreviewBanner />
         <FontLoader />
         <NewspaperPieceSprite />
         <DeskCollage />

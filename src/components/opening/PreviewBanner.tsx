@@ -9,7 +9,7 @@ export async function PreviewBanner() {
   if (!preview || !authed) return null;
   return (
     <div className="preview-banner" data-testid="preview-banner" role="status">
-      <p className="font-mono text-[12px] uppercase tracking-[0.14em]">Draft preview — not the published plate</p>
+      <p className="font-mono text-[12px] uppercase tracking-[0.14em]">Draft preview — not the live site</p>
       <form action={disablePreviewAction}>
         <button type="submit" className="masthead-chip">
           Exit preview

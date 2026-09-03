@@ -1,13 +1,31 @@
 import { AdminFrame } from "@/app/admin/layout";
 import { AdminActions, AdminDirtyForm } from "@/components/admin/AdminForm";
 import { publishAction, saveDraftAction } from "@/lib/cms/actions";
-import { getDraftDocument } from "@/lib/cms/store";
+import { editorBar } from "@/lib/cms/editor-state";
+import { getDraftDocument, getPublishedDocument } from "@/lib/cms/store";
 
-export default async function AspirationsEditor() {
-  const doc = await getDraftDocument();
+export default async function AspirationsEditor({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; saved?: string; invalid?: string }>;
+}) {
+  const q = await searchParams;
+  const [doc, published] = await Promise.all([getDraftDocument(), getPublishedDocument()]);
+  const bar = editorBar(published, doc);
   return (
-    <AdminFrame title="Aspirations">
-      <AdminDirtyForm>
+    <AdminFrame
+      title="Aspirations"
+      status={
+        q.saved ? (
+          <p className="mt-2 font-display text-[16px] text-book-blue" role="status">
+            Draft saved.
+          </p>
+        ) : q.error ? (
+          <p className="admin-error mt-2">{q.error}</p>
+        ) : null
+      }
+    >
+      <AdminDirtyForm expectedRevisionId={bar.expectedRevisionId} returnTo="/admin/aspirations">
         <input type="hidden" name="aspirations-present" value="1" />
         {doc.aspirations.map((item) => (
           <fieldset key={item.id} className="border-2 border-ink p-4">
@@ -29,7 +47,19 @@ export default async function AspirationsEditor() {
             </label>
           </fieldset>
         ))}
-        <AdminActions save={saveDraftAction} publish={publishAction} />
+        <label>
+          Revision note
+          <input name="note" defaultValue={doc.note} />
+        </label>
+        <AdminActions
+          save={saveDraftAction}
+          publish={publishAction}
+          canPublish={bar.canPublish}
+          changeCount={bar.changeCount}
+          changeSummary={bar.changeSummary}
+          surfaces={bar.surfaces}
+          blockedReason={bar.blockedReason}
+        />
       </AdminDirtyForm>
     </AdminFrame>
   );

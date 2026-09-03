@@ -8,8 +8,9 @@ import { applyFormToDocument } from "@/lib/cms/form";
 import { parseImportedDocument } from "@/lib/cms/import-document";
 import { ledgerDocument } from "@/lib/cms/ledger";
 import { overlayProject } from "@/lib/cms/overlay";
-import { documentDiff, groupedDocumentDiff } from "@/lib/cms/diff";
+import { documentDiff, groupedDocumentDiff, wordDiff } from "@/lib/cms/diff";
 import { claimHeroReady, validateDocument } from "@/lib/cms/validate";
+import { draftHealth, draftStatus, revisionInstant } from "@/lib/cms/health";
 import { parseSessionToken } from "@/lib/cms/session-mac";
 import { resumeData } from "@/lib/data";
 
@@ -62,7 +63,27 @@ describe("cms ledger", () => {
     expect(validateDocument(missing).join(" ")).toMatch(/setelDefects/);
     const ghost = {
       ...doc,
-      projects: [{ slug: "not-a-project", purpose: "", impact: "", why: "", judgment: "", constraint: "", limitation: "", example: "", rejected: "", retrospective: "", archived: false }],
+      projects: [{
+        slug: "not-a-project",
+        title: "",
+        subtitle: "",
+        date: "",
+        category: "",
+        tech: "",
+        github: "",
+        seoTitle: "",
+        seoDescription: "",
+        purpose: "",
+        impact: "",
+        why: "",
+        judgment: "",
+        constraint: "",
+        limitation: "",
+        example: "",
+        rejected: "",
+        retrospective: "",
+        archived: false,
+      }],
     };
     expect(validateDocument(ghost).join(" ")).toMatch(/Unknown project slug/);
     const dated = {
@@ -211,11 +232,89 @@ describe("cms session token", () => {
 });
 
 describe("cms ledger caveats", () => {
+  it("counts missing hero method on the draft health packet", () => {
+    const published = ledgerDocument();
+    expect(draftHealth(published).heroMissing).toHaveLength(0);
+    const draft = {
+      ...published,
+      claims: published.claims.map((claim) =>
+        claim.id === "gateC" ? { ...claim, method: "", heroEligible: true } : claim,
+      ),
+    };
+    expect(claimHeroReady(draft.claims.find((c) => c.id === "gateC")!)).toContain("method");
+    expect(draftHealth(draft).heroMissing.map((c) => c.id)).toContain("gateC");
+    expect(draftHealth(draft).blocking).toBe(true);
+    expect(validateDocument(draft).join(" ")).toMatch(/method/);
+  });
+
+  it("labels draft state from the diff, not an In hand stamp", () => {
+    const published = ledgerDocument();
+    expect(draftStatus(published, null).label).toBe("No draft");
+    expect(draftStatus(published, published).label).toBe("Draft matches live");
+    const draft = { ...published, profile: { ...published.profile, dek: "Changed dek" } };
+    expect(draftStatus(published, draft).label).toMatch(/unpublished change/);
+  });
+
+  it("reads draft timestamps from the revision id, not the copied publishedAt", () => {
+    const now = Date.now();
+    expect(revisionInstant({ revisionId: `draft-${now}`, publishedAt: "2020-01-01T00:00:00.000Z" })).toBe(
+      new Date(now).toISOString(),
+    );
+  });
+
+  it("composes a measurement date from year/month/day parts", () => {
+    const published = ledgerDocument();
+    const form = new FormData();
+    form.set("claims-present", "1");
+    form.set("claim-gateC-year", "2026");
+    form.set("claim-gateC-month", "09");
+    form.set("claim-gateC-day", "03");
+    const next = applyFormToDocument(form, published);
+    expect(next.claims.find((c) => c.id === "gateC")?.date).toBe("2026-09-03");
+  });
+
   it("gives every hero claim a caveat or baseline", () => {
     const doc = ledgerDocument();
     const setel = doc.claims.find((c) => c.id === "setelDefects")!;
     expect(setel.caveat).toMatch(/not claimed as coverage/i);
     const slm = doc.claims.find((c) => c.id === "slmInference")!;
     expect(slm.caveat).toMatch(/Not claimed as a measured throughput/);
+    for (const claim of doc.claims.filter((row) => row.heroEligible)) {
+      expect(claimHeroReady(claim), claim.id).toEqual([]);
+    }
+  });
+
+  it("keeps a restored snapshot's note off the published-vs-draft diff", () => {
+    const published = ledgerDocument();
+    const snapshot = {
+      ...published,
+      note: "Snapshot note that must not rewrite Profile.note",
+      profile: { ...published.profile, dek: "Older dek" },
+    };
+    const restored = { ...snapshot, note: published.note, restoredFrom: "pub-1" };
+    const rows = documentDiff(published, restored);
+    expect(rows.some((row) => row.path === "note")).toBe(false);
+    expect(rows.some((row) => row.path === "profile.dek" && row.to === "Older dek")).toBe(true);
+  });
+
+  it("marks word-level insertions and deletions", () => {
+    const marks = wordDiff("hello world", "hello there");
+    expect(marks.some((mark) => mark.type === "del" && mark.text === "world")).toBe(true);
+    expect(marks.some((mark) => mark.type === "ins" && mark.text === "there")).toBe(true);
+  });
+});
+
+describe("cms totp", () => {
+  it("accepts the current window when a secret is configured", async () => {
+    const { totpCode, verifyTotp } = await import("@/lib/cms/totp");
+    const secret = "JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP";
+    const previous = process.env.ADMIN_TOTP_SECRET;
+    process.env.ADMIN_TOTP_SECRET = secret;
+    const at = Date.parse("2026-09-03T10:00:00.000Z");
+    expect(verifyTotp(totpCode(secret, at), at)).toBe(true);
+    expect(verifyTotp("000000", at)).toBe(false);
+    expect(verifyTotp("not-a-code", at)).toBe(false);
+    if (previous === undefined) delete process.env.ADMIN_TOTP_SECRET;
+    else process.env.ADMIN_TOTP_SECRET = previous;
   });
 });

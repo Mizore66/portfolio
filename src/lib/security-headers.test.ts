@@ -11,6 +11,7 @@ describe("security headers", () => {
         "Referrer-Policy",
         "X-Frame-Options",
         "Permissions-Policy",
+        "Strict-Transport-Security",
       ]),
     );
     expect(CONTENT_SECURITY_POLICY).toMatch(/frame-ancestors 'none'/);
@@ -19,5 +20,6 @@ describe("security headers", () => {
     expect(SECURITY_HEADERS.find((row) => row.key === "Referrer-Policy")?.value).toBe(
       "strict-origin-when-cross-origin",
     );
+    expect(SECURITY_HEADERS.find((row) => row.key === "Strict-Transport-Security")?.value).toMatch(/max-age=/);
   });
 });

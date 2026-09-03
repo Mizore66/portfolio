@@ -111,6 +111,7 @@ function Chapter({
 
       <div className="chapter-copy">
         {node.clipping ? (
+          <div className="scoresheet-secondary">
           <NewsClipping
             kicker={node.clipping.kicker}
             headline={node.clipping.headline}
@@ -121,14 +122,17 @@ function Chapter({
             alt={node.clipping.alt}
             inset={!node.clipping.inset}
           />
+          </div>
         ) : null}
         {node.plate ? (
+          <div className="scoresheet-secondary">
           <HalftonePlate
             src={node.plate.src}
             caption={node.plate.caption}
             alt={node.plate.alt}
             inset
           />
+          </div>
         ) : null}
         {node.fact ? (
           <p className="drop-cap chapter-fact max-w-prose font-display text-[16px] leading-[1.65] text-ink">
@@ -146,7 +150,7 @@ function Chapter({
       </div>
 
       {node.figure ? (
-        <div className="mt-4">
+        <div className="mt-4 scoresheet-secondary">
           <PatentFigure spec={node.figure} />
         </div>
       ) : null}

@@ -1,7 +1,10 @@
+import Link from "next/link";
 import { AdminFrame } from "@/app/admin/layout";
+import { RestoreButtons } from "@/components/admin/DangerActions";
 import { restoreAndPublishAction, restoreRevisionAction } from "@/lib/cms/actions";
-import { getCmsState, HISTORY_CAP } from "@/lib/cms/store";
+import { formatLocalTime, revisionInstant } from "@/lib/cms/health";
 import { formatRelativeTime } from "@/lib/filed";
+import { getCmsState, HISTORY_CAP } from "@/lib/cms/store";
 
 export default async function HistoryEditor({
   searchParams,
@@ -20,12 +23,21 @@ export default async function HistoryEditor({
   });
   return (
     <AdminFrame title="Version history">
-      {q.restored ? <p className="font-display text-[16px] text-book-blue" role="status">Restored into draft.</p> : null}
-      {q.published ? <p className="font-display text-[16px] text-book-blue" role="status">Restored and published.</p> : null}
+      {q.restored ? (
+        <p className="font-display text-[16px] text-book-blue" role="status">
+          Restored into draft. The snapshot’s revision note was kept.
+        </p>
+      ) : null}
+      {q.published ? (
+        <p className="font-display text-[16px] text-book-blue" role="status">
+          Restored and published.
+        </p>
+      ) : null}
       {q.error ? <p className="admin-error">{q.error}</p> : null}
       <p className="max-w-[62ch] font-display text-[16px] text-ink">
-        Every save and publish keeps a snapshot. The desk keeps the most recent {HISTORY_CAP} revisions;
-        older plates are dropped. Restore copies a snapshot into draft; publish to put it on the public plate.
+        Every save and publish keeps a snapshot. The desk keeps the most recent {HISTORY_CAP} revisions.
+        Restore copies a snapshot into draft without rewriting its revision note. Restore and publish asks for
+        confirmation and replaces the live site.
       </p>
       <form className="admin-form mt-6" method="get">
         <label>
@@ -52,32 +64,42 @@ export default async function HistoryEditor({
         ) : rows.length === 0 ? (
           <li className="font-mono text-[12px] text-faded">No revisions match that filter.</li>
         ) : (
-          rows.map((row) => (
-            <li key={row.revisionId} className="border-2 border-ink p-4">
-              <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-faded">
-                {row.status} · {row.revisionId}
-              </p>
-              <p className="mt-2 font-display text-[16px]">
-                {formatRelativeTime(row.publishedAt || row.revisionId.replace(/^draft-/, ""))}
-                <span className="ml-2 font-mono text-[12px] text-faded">
-                  {row.publishedAt ? row.publishedAt.slice(0, 10) : ""}
-                </span>
-              </p>
-              <p className="mt-1 font-mono text-[12px] text-faded">{row.note}</p>
-              <form action={restoreRevisionAction} className="mt-3">
-                <input type="hidden" name="revisionId" value={row.revisionId} aria-hidden="true" />
-                <button type="submit" className="masthead-chip">
-                  Restore to draft
-                </button>
-              </form>
-              <form action={restoreAndPublishAction} className="mt-2">
-                <input type="hidden" name="revisionId" value={row.revisionId} aria-hidden="true" />
-                <button type="submit" className="masthead-chip masthead-chip-primary">
-                  Restore and publish
-                </button>
-              </form>
-            </li>
-          ))
+          rows.map((row) => {
+            const instant = revisionInstant(row);
+            return (
+              <li key={row.revisionId} className="border-2 border-ink p-4">
+                <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-faded">
+                  {row.status} · {row.revisionId}
+                </p>
+                <p className="mt-2 font-display text-[16px]" title={instant ? formatLocalTime(instant) : ""}>
+                  {instant ? formatRelativeTime(instant) : "Unknown time"}
+                  <span className="ml-2 font-mono text-[12px] text-faded">
+                    {instant ? formatLocalTime(instant) : ""}
+                  </span>
+                </p>
+                <p className="mt-1 font-mono text-[12px] text-faded">{row.note}</p>
+                {row.restoredFrom ? (
+                  <p className="mt-1 font-mono text-[12px] text-faded">Restored from {row.restoredFrom}</p>
+                ) : null}
+                <p className="mt-3 flex flex-wrap gap-3">
+                  <Link href={`/admin/history/${row.revisionId}`} className="masthead-chip">
+                    Preview snapshot
+                  </Link>
+                  <Link
+                    href={`/admin/diff?from=${encodeURIComponent(state.published?.revisionId ?? "ledger")}&to=${encodeURIComponent(row.revisionId)}`}
+                    className="masthead-chip"
+                  >
+                    Compare to live
+                  </Link>
+                </p>
+                <RestoreButtons
+                  revisionId={row.revisionId}
+                  restore={restoreRevisionAction}
+                  restoreAndPublish={restoreAndPublishAction}
+                />
+              </li>
+            );
+          })
         )}
       </ol>
     </AdminFrame>

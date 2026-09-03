@@ -36,7 +36,7 @@ export const DESKS = {
     employmentKind: "Contract",
     facts: [
       "Lab dashboard with role-based access for 50+ staff.",
-      "CRUD and analytics behind those roles.",
+        "Role-backed station records and the dashboards operators used to decide which stations to visit.",
     ],
     oversight:
       "Manual station-checking on the lab dashboard — operators verifying station status by hand rather than reading it on the board.",
@@ -55,7 +55,7 @@ export const DESKS = {
     contradictions:
       "inconsistencies between rules in the graph surfaced for administrators (examples confidential)",
     collaboration:
-      "Contract. Owned the GraphRAG retrieval path and the distilled graph-logic SLM; surrounding function was university administration tools.",
+      "Contract. Owned the GraphRAG retrieval path and the distilled graph-logic SLM. That path sat beside the faculty's existing administration tools; I did not own those tools.",
   },
 } as const;
 

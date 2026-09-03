@@ -8,13 +8,14 @@ import { FooterStrip } from "@/components/opening/FooterStrip";
 import { HeroEngine } from "@/components/opening/HeroEngine";
 import { LabFilings, LabTeaser } from "@/components/opening/LabTeaser";
 import { EditionKicker, HeroIdentity } from "@/components/opening/Masthead";
-import { PreviewBanner } from "@/components/opening/PreviewBanner";
 import { RecruiterNav } from "@/components/opening/RecruiterNav";
 import { SelectedWork } from "@/components/opening/SelectedWork";
 import { StickyBoardStatic } from "@/components/opening/StickyBoardStatic";
 import { BROADSHEET } from "@/content/opening";
 import { workPathFromQuery } from "@/lib/metrics";
 import { HOME_TITLE, isOpeningId } from "@/lib/opening/tree";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: HOME_TITLE,
@@ -42,7 +43,6 @@ export default async function Home({
       <div className="relative z-[1] flex justify-center px-2 py-3 sm:px-3">
         <div data-testid="newspaper-spread" className="sheet sheet-page">
           <header>
-            <PreviewBanner />
             <EditionKicker />
             <RecruiterNav />
           </header>

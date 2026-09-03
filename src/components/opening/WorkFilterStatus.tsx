@@ -9,20 +9,23 @@ export function WorkFilterStatus({
   path: string;
   count: number;
 }) {
-  const heading = useRef<HTMLParagraphElement>(null);
+  const ready = useRef(false);
 
   useEffect(() => {
-    const node = document.getElementById("work-heading");
-    if (path !== "all" && node instanceof HTMLElement) {
-      node.focus();
+    if (!ready.current) {
+      ready.current = true;
+      return;
     }
+    const chip = document.querySelector<HTMLElement>(".path-chip-current");
+    chip?.focus();
   }, [path]);
 
-  const label =
-    path === "all" ? `${count} projects` : `${count} projects in ${path}`;
+  if (path === "all") return null;
+
+  const label = `${count} projects in ${path}`;
 
   return (
-    <p ref={heading} className="sr-only" role="status" aria-live="polite" data-testid="work-filter-status">
+    <p className="sr-only" role="status" aria-live="polite" data-testid="work-filter-status">
       {label}
     </p>
   );

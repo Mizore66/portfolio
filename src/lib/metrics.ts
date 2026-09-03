@@ -55,6 +55,8 @@ export const METRICS = {
     impact: "+35% retrieval accuracy",
     gauge: "+35% retrieval vs vector-only (project · handbook / policy archive)",
     note: "vs vector-only · independent handbook / policy archive, not Monash regulations",
+    sample:
+      "Query set size, scoring rule, and Recall@k were not filed. Filed as retrieval accuracy versus vector-only on that handbook and policy archive.",
     kind: "evaluation" as const,
   },
   setelCoverage: {
@@ -73,7 +75,7 @@ export const METRICS = {
     display: "−40% production defects",
     note: "Separate from 92.5% coverage; not claimed as coverage's effect.",
     denominator:
-      "Count/rate denominator and measurement window were not filed. Observed on checkout and capture during the Jul–Dec 2025 internship.",
+      "Count denominator on checkout and capture was not filed. Filed as a production defect-count change during the Jul–Dec 2025 internship, not a rate or severity-weighted index.",
     kind: "production" as const,
   },
   wdOversight: {
@@ -108,7 +110,7 @@ export const METRICS = {
     unit: "cloud emissions",
     owner: "Veridian",
     display: "−15% cloud emissions",
-    note: "Cloud Run scheduling vs the default unscheduled Cloud Run service",
+    note: "Cloud Run scheduling vs the default unscheduled Cloud Run service. Evaluation period, sample size, and the emissions calculation source were not filed.",
     kind: "evaluation" as const,
   },
   leadThroughput: {
@@ -128,7 +130,7 @@ export const METRICS = {
     path: "70B → 3B",
     display: "70B → 3B student",
     impact: "70B → 3B student",
-    note: "Tokens/second, hardware, and batch size were not filed. A 12× figure is not claimed as measured request latency or throughput.",
+    note: "Tokens/second, hardware, and batch size were not filed. Speed-up is unpublished until those are measured.",
     kind: "evaluation" as const,
   },
   riskAuc: {
@@ -155,6 +157,8 @@ export const METRICS = {
     condition: "50 000 nodes/move, 128 games",
     display: "−143 Elo @ 50k nodes",
     note: "128 games · 50 000 nodes/move · SPRT h0",
+    denominator: "128 games. SPRT terminated for H0 (LLR −2.99).",
+    source: "matches/gate-c-v1-50000-sprt.json · training/GUARDS.md",
     kind: "benchmark" as const,
   },
 } as const;
@@ -208,9 +212,9 @@ export const YEAR_INDEX = [
 
 export const POSITIONING = {
   tagline: "I like systems that have to survive measurement.",
-  dek: "Software engineer building ML infrastructure and data-intensive systems for payments, laboratory operations, and retrieval.",
+  dek: "Software engineer building ML infrastructure and data-intensive systems for payments, lab operations, and retrieval.",
   identity:
-    "Software engineer building ML infrastructure and data-intensive systems for payments, laboratory operations, and retrieval.",
+    "Software engineer building ML infrastructure and data-intensive systems for payments, lab operations, and retrieval.",
   seniority:
     "Internships and contract roles across production systems, plus independent experiments that include a published loss.",
   howIWork:
@@ -218,7 +222,8 @@ export const POSITIONING = {
   availability:
     "Open to software engineering roles across fintech, ML infrastructure, and data platforms.",
   graduateNote: "Graduate and junior opportunities welcome.",
-  contactHed: "Hiring for software engineering across backend, product, ML infrastructure, or data platforms? Write to me.",
+  workAuth: "Work authorization and relocation constraints are not filed here.",
+  contactHed: "Hiring a software engineer for backend, product, ML infrastructure, or data-platform work? Write to me.",
   replies: "Usually replies within two business days (MYT).",
   closer:
     "I'm interested in teams building reliable ML and data systems in fintech or infrastructure-heavy products.",
@@ -229,10 +234,10 @@ export const POSITIONING = {
   deskNote:
     "Professional work is summarized here; internal screenshots remain private. I joined existing teams on internships and contracts; independent flagships are solo.",
   ownershipBridge:
-    "Production at Setel and Western Digital, contract work at Monash, solo flagships.",
+    "I built production payments at Setel, lab operations at Western Digital, retrieval at Monash, and the flagship exhibits independently.",
   nameNote: "Anas T. Qumhiyeh on the masthead; Anas Tarek Qumhiyeh on the résumé.",
   desksLine:
-    "Built production payments at Setel, then laboratory operations systems and retrieval at Western Digital, Petronas, and Monash University.",
+    "Built production payments at Setel, then lab operations and retrieval at Western Digital, Petronas, and Monash University.",
   throughLine: "The through-line is systems that have to keep working after they ship.",
   deskSummaries: [
     {
@@ -253,7 +258,7 @@ export const POSITIONING = {
     },
   ],
   recruiterBio:
-    "Software engineer building ML infrastructure and data-intensive systems for payments, laboratory operations, and retrieval. Production payments at Setel; laboratory operations software at Western Digital; retrieval over university regulations at Monash.",
+    "Software engineer building ML infrastructure and data-intensive systems for payments, lab operations, and retrieval. Production payments at Setel; lab operations at Western Digital; retrieval over university regulations at Monash.",
   followerBio:
     "I've played chess since I was a teenager, which is why this portfolio is a scoresheet: moves are facts, annotations are voice. I like systems that have to survive measurement — at Petronas I presented usability findings to department leadership; at Western Digital I built for 50+ lab staff. I joined existing teams on internships and contracts; independent flagships are solo.",
   aboutHeading: "About the annotator",
@@ -382,7 +387,7 @@ export function projectEvidence(project: {
     case "distributed-lead-scorer":
       return {
         result: METRICS.leadThroughput.display,
-        method: "PySpark pipeline. Hours of latency were cut to minutes as filed; the exact before/after clocks were not named.",
+        method: "PySpark pipeline. Hours of pipeline latency were cut to minutes on that capacity-benchmark desk; exact clocks were not filed.",
         environment: "PySpark pipeline",
         sample: "Capacity benchmark. Not claimed as sustained traffic.",
         alsoFiled:
@@ -395,7 +400,7 @@ export function projectEvidence(project: {
         environment: project.apparatus.runtime,
         sample: "Tokens/second, hardware, and batch size were not filed. Quality parity was not supported by a named filed evaluation.",
         alsoFiled:
-          "−40% memory and 98% pass were also noted; hardware, batch size, and a named evaluation for quality parity were not filed. −50% latency belongs to the Monash GraphRAG SLM, not this exhibit.",
+          "A 98% test-pass note was also recorded; it is not a named task-success evaluation. −50% latency belongs to the Monash GraphRAG SLM, not this exhibit.",
       };
     case "circuitmindai":
       return {
@@ -408,7 +413,7 @@ export function projectEvidence(project: {
     case "mirrorfi":
       return {
         result: project.impact,
-        environment: "Hackathon desk. No live host.",
+        environment: "Hackathon desk on Solana.",
         sample: "Prize clipping. No production traffic was filed.",
       };
     default:

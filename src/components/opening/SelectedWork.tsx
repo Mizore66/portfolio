@@ -137,7 +137,7 @@ export async function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }
       {archive.length > 0 ? (
         <section className="mt-8" aria-labelledby="archive-heading">
           <h3 id="archive-heading" className="archive-heading">
-            Archive
+            Archive / supporting work
           </h3>
           <p className="mt-1 font-mono text-[12px] uppercase tracking-[0.14em] text-faded">
             Further independent filings

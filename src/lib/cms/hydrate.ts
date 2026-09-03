@@ -10,7 +10,7 @@ function bool(value: unknown, fallback = false): boolean {
 }
 
 function hydrateClaim(seed: CmsClaim, row: Partial<CmsClaim> | undefined): CmsClaim {
-  if (!row) return { ...seed, archived: seed.archived ?? false };
+  if (!row) return { ...seed, archived: seed.archived ?? false, sourceUrl: seed.sourceUrl ?? "" };
   return {
     ...seed,
     ...row,
@@ -20,6 +20,7 @@ function hydrateClaim(seed: CmsClaim, row: Partial<CmsClaim> | undefined): CmsCl
     surfaces: Array.isArray(row.surfaces) ? row.surfaces : seed.surfaces,
     denominator: str(row.denominator, seed.denominator),
     source: str(row.source, seed.source),
+    sourceUrl: str(row.sourceUrl, seed.sourceUrl),
   };
 }
 
@@ -30,6 +31,14 @@ function hydrateProject(seed: CmsProjectCopy, row: Partial<CmsProjectCopy> | und
     ...row,
     slug: seed.slug,
     archived: bool(row.archived, seed.archived ?? false),
+    title: str(row.title, seed.title),
+    subtitle: str(row.subtitle, seed.subtitle),
+    date: str(row.date, seed.date),
+    category: str(row.category, seed.category),
+    tech: str(row.tech, seed.tech),
+    github: str(row.github, seed.github),
+    seoTitle: str(row.seoTitle, seed.seoTitle),
+    seoDescription: str(row.seoDescription, seed.seoDescription),
     rejected: str(row.rejected, seed.rejected),
     retrospective: str(row.retrospective, seed.retrospective),
   };
@@ -74,10 +83,12 @@ export function hydrateDocument(doc: SiteDocument): SiteDocument {
   const extraAsp = doc.aspirations.filter((item) => !ledger.aspirations.some((seed) => seed.id === item.id));
   return {
     ...doc,
+    savedAt: str(doc.savedAt, doc.publishedAt),
+    restoredFrom: str(doc.restoredFrom, ""),
     profile: hydrateProfile(ledger.profile, doc.profile),
     claims: [
       ...ledger.claims.map((seed) => hydrateClaim(seed, claimsById.get(seed.id))),
-      ...extraClaims.map((claim) => hydrateClaim(claim, claim)),
+      ...extraClaims.map((claim) => hydrateClaim({ ...claim, sourceUrl: claim.sourceUrl ?? "" }, claim)),
     ],
     projects: [
       ...ledger.projects.map((seed) => hydrateProject(seed, projectsBySlug.get(seed.slug))),
