@@ -295,9 +295,7 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
         </div>
       </div>
       <div className="patent-reference" data-testid="patent-legend">
-        <p className="patent-sheet-mark font-mono text-[12px] text-faded">
-          (No Model.) {`${spec.sheets ?? 2} Sheets—Sheet ${spec.sheet ?? 1}.`}
-        </p>
+        <p className="patent-sheet-mark font-mono text-[12px] text-faded">(No Model.)</p>
         <p className="patent-reference-kicker">Reference</p>
         <ol className="patent-reference-grid">
           {spec.parts.map((part) => (
