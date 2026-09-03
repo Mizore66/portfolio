@@ -172,15 +172,9 @@ export function OpeningApp({
     const top = window.scrollY + el.getBoundingClientRect().top - stack - 12;
     const reduced = reducedMotion();
     window.scrollTo({ top: Math.max(0, top), behavior: reduced ? "auto" : "smooth" });
-    const release = () => {
+    skipSpyTimer.current = window.setTimeout(() => {
       skipSpy.current = false;
-      window.removeEventListener("scrollend", release);
-      // Keep the chapter the reader just chose. Re-running the spy here
-      // was overwriting ArrowRight (d4 → exd4) with whichever heading sat
-      // on the 28% line — often the previous White chapter.
-    };
-    window.addEventListener("scrollend", release, { once: true });
-    skipSpyTimer.current = window.setTimeout(release, reduced ? 80 : 1000);
+    }, reduced ? 80 : 1000);
   }, []);
 
   const userSelect = useCallback(
@@ -284,7 +278,12 @@ export function OpeningApp({
       if (!isChessKeyTarget(e.target)) return;
       e.preventDefault();
       const next = stepMainline(selectedRef.current, e.key === "ArrowRight" ? 1 : -1);
+      skipSpy.current = true;
+      window.clearTimeout(skipSpyTimer.current);
       onSelect(next);
+      skipSpyTimer.current = window.setTimeout(() => {
+        skipSpy.current = false;
+      }, 1000);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
