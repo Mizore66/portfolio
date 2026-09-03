@@ -511,7 +511,7 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("broadsheet-filler")).toContainText("Situations Wanted");
     await expect(page.getByTestId("broadsheet-filler")).toContainText("Errata");
     await expect(page.getByTestId("broadsheet-filler")).not.toContainText(/anasqumhiyeh@/i);
-    await expect(page.getByTestId("recruiter-nav").locator('a[href="/print-edition"]')).toBeVisible();
+    await expect(page.getByTestId("recruiter-nav").locator('a[href="/opening-preparation"]')).toBeVisible();
     await expect(page.getByTestId("play-the-position")).toBeVisible();
     await expect(page.getByTestId("pv-arrow")).toBeVisible({ timeout: 5000 });
 
