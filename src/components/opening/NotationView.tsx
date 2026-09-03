@@ -15,9 +15,9 @@ import {
   collectPlies,
   FLAGSHIP_ID,
   formatLine,
+  issueChapters,
   moveHeading,
   spokenChapter,
-  stepMainline,
   type NotationBlock,
 } from "@/lib/opening/tree";
 import type { OpeningNode } from "@/lib/opening/types";
@@ -114,8 +114,10 @@ function Chapter({
   const { node } = block;
   const selected = node.id === selectedId;
   const flagship = node.id === FLAGSHIP_ID;
-  const prevId = node.type === "mainline" ? stepMainline(node.id, -1) : node.id;
-  const nextId = node.type === "mainline" ? stepMainline(node.id, 1) : node.id;
+  const career = issueChapters();
+  const careerIndex = career.findIndex((row) => row.id === node.id);
+  const prevCareer = careerIndex > 0 ? career[careerIndex - 1] : null;
+  const nextCareer = careerIndex >= 0 && careerIndex < career.length - 1 ? career[careerIndex + 1] : null;
 
   return (
     <section
@@ -256,19 +258,19 @@ function Chapter({
           <span className="text-ink">{formatLine(node.id)}</span>
         </p>
       ) : null}
-      {node.type === "mainline" ? (
-        <p className="mt-6 flex flex-wrap gap-3">
-          {prevId !== node.id ? (
-            <button type="button" className="paper-hit" onClick={() => onSelect(prevId)}>
+      {careerIndex >= 0 ? (
+        <nav className="mt-6 flex flex-wrap gap-3" aria-label="Career chapters">
+          {prevCareer ? (
+            <button type="button" className="paper-hit" onClick={() => onSelect(prevCareer.id)}>
               Previous chapter
             </button>
           ) : null}
-          {nextId !== node.id ? (
-            <button type="button" className="paper-hit" onClick={() => onSelect(nextId)}>
+          {nextCareer ? (
+            <button type="button" className="paper-hit" onClick={() => onSelect(nextCareer.id)}>
               Next chapter
             </button>
           ) : null}
-        </p>
+        </nav>
       ) : null}
     </section>
   );

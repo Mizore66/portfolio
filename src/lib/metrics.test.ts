@@ -76,7 +76,7 @@ describe("measured claims have one owner each", () => {
     expect(POSITIONING.deskSummaries[0]?.line).toMatch(/department leadership/);
     expect(POSITIONING.desksLine).toMatch(/payment systems at Setel/);
     expect(POSITIONING.independentDek).toMatch(/Independent/);
-    expect(POSITIONING.professionalDek).toMatch(/payments, lab operations, and university-policy retrieval/);
+    expect(POSITIONING.professionalDek).toMatch(/payments, lab operations, and university-policy retrieval/i);
     expect(POSITIONING.next).toMatch(/fintech infrastructure/);
     expect(RETRIEVAL_SPLIT).toMatch(/\+45%/);
     expect(RETRIEVAL_SPLIT).toMatch(/\+35%/);

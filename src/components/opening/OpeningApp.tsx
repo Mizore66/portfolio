@@ -90,7 +90,6 @@ export function OpeningApp({
   const hoverTimer = useRef<number>(0);
   const skipSpy = useRef(false);
   const skipSpyTimer = useRef<number>(0);
-  const pickRef = useRef<() => void>(() => {});
   const [engineApi, setEngineApi] = useState<EngineApi | null>(null);
   const engineApiRef = useRef(engineApi);
   engineApiRef.current = engineApi;
@@ -105,6 +104,7 @@ export function OpeningApp({
     };
   }, []);
   const selectedRef = useRef(selectedId);
+  selectedRef.current = selectedId;
   const [ready, setReady] = useState(false);
   useEffect(() => {
     setReady(true);
@@ -173,7 +173,9 @@ export function OpeningApp({
     const release = () => {
       skipSpy.current = false;
       window.removeEventListener("scrollend", release);
-      pickRef.current();
+      // Keep the chapter the reader just chose. Re-running the spy here
+      // was overwriting ArrowRight (d4 → exd4) with whichever heading sat
+      // on the 28% line — often the previous White chapter.
     };
     window.addEventListener("scrollend", release, { once: true });
     skipSpyTimer.current = window.setTimeout(release, reduced ? 80 : 1000);
@@ -279,16 +281,12 @@ export function OpeningApp({
       if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
       if (!isChessKeyTarget(e.target)) return;
       e.preventDefault();
-      const next = stepMainline(selectedId, e.key === "ArrowRight" ? 1 : -1);
-      userSelect(next);
+      const next = stepMainline(selectedRef.current, e.key === "ArrowRight" ? 1 : -1);
+      onSelect(next);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [userSelect, selectedId]);
-
-  useEffect(() => {
-    selectedRef.current = selectedId;
-  }, [selectedId]);
+  }, [onSelect]);
 
   useEffect(() => {
     extraLenRef.current = extra.length;
@@ -362,7 +360,6 @@ export function OpeningApp({
       }
       if (best && best.id !== selectedRef.current) onSelect(best.id);
     };
-    pickRef.current = pick;
     const schedule = () => {
       if (skipSpy.current) return;
       if (!frame) frame = window.requestAnimationFrame(pick);
@@ -377,7 +374,6 @@ export function OpeningApp({
       io.disconnect();
       window.removeEventListener("scroll", schedule);
       if (frame) window.cancelAnimationFrame(frame);
-      pickRef.current = () => {};
     };
   }, [onSelect]);
 

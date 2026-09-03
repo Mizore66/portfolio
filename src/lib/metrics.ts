@@ -228,7 +228,7 @@ export const POSITIONING = {
   closer:
     "I'm interested in teams building reliable ML and data systems in fintech or infrastructure-heavy products.",
   next: "The next line I want to play: measured systems in fintech infrastructure.",
-  professionalDek: "Internships and contract roles in payments, lab operations, and university-policy retrieval.",
+  professionalDek: "Payments, lab operations, and university-policy retrieval.",
   independentDek: "Independent projects. Production and contract work is under Experience.",
   independentKicker: "Independent projects",
   deskNote:
