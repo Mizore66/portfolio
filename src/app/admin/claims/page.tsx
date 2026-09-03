@@ -88,6 +88,17 @@ export default async function ClaimsEditor({
                     <input name={`claim-${claim.id}-owner`} defaultValue={claim.owner} />
                   </label>
                   <label>
+                    Primary linked project
+                    <select name={`claim-${claim.id}-linkedProject`} defaultValue={claim.linkedProject}>
+                      <option value="">None</option>
+                      {doc.projects.map((project) => (
+                        <option key={project.slug} value={project.slug}>
+                          {project.title || project.slug}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
                     How it was measured
                     <input name={`claim-${claim.id}-method`} defaultValue={claim.method} />
                   </label>

@@ -11,6 +11,8 @@ const LINKS = [
   { href: "/admin/claims", label: "Claims" },
   { href: "/admin/experience", label: "Experience" },
   { href: "/admin/education", label: "Education" },
+  { href: "/admin/chess", label: "Chess" },
+  { href: "/admin/lab", label: "Lab" },
   { href: "/admin/aspirations", label: "Aspirations" },
   { href: "/admin/projects", label: "Projects" },
   { href: "/admin/diff", label: "Diff" },

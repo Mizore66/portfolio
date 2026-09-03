@@ -8,7 +8,10 @@ import { applyFormToDocument } from "@/lib/cms/form";
 import { hydrateDocument } from "@/lib/cms/hydrate";
 import { parseImportedDocument } from "@/lib/cms/import-document";
 import { ledgerDocument } from "@/lib/cms/ledger";
-import { overlayProject, overlayProjects, resolveExhibit } from "@/lib/cms/overlay";
+import { compiledMainlinePgn, pgnMatchesRepertoire } from "@/lib/cms/chess-notes";
+import { overlayLab } from "@/lib/cms/lab-copy";
+import { mediaUsedBy } from "@/lib/cms/media-usage";
+import { claimsForExhibit, overlayProject, overlayProjects, publicEvidenceHref, resolveExhibit } from "@/lib/cms/overlay";
 import { documentDiff, groupedDocumentDiff, wordDiff } from "@/lib/cms/diff";
 import { claimHeroReady, validateDocument } from "@/lib/cms/validate";
 import { draftHealth, draftStatus, revisionInstant } from "@/lib/cms/health";
@@ -404,6 +407,61 @@ describe("cms ledger caveats", () => {
     const marks = wordDiff("hello world", "hello there");
     expect(marks.some((mark) => mark.type === "del" && mark.text === "world")).toBe(true);
     expect(marks.some((mark) => mark.type === "ins" && mark.text === "there")).toBe(true);
+  });
+
+  it("keeps the compiled Italian Game PGN and hydrates missing chess notes", () => {
+    const ledger = ledgerDocument();
+    expect(pgnMatchesRepertoire(compiledMainlinePgn())).toBe(true);
+    expect(pgnMatchesRepertoire("1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. O-O Nf6 5. d5")).toBe(false);
+    expect(validateDocument({ ...ledger, chessPgn: "1. d4 d5" }).join(" ")).toMatch(/Italian Game/);
+    expect(ledger.projects.find((project) => project.slug === "veridian")?.claimIds).toContain("veridianUptime");
+    expect(ledger.claims.find((claim) => claim.id === "leadThroughput")?.linkedProject).toBe(
+      "distributed-lead-scorer",
+    );
+    const hydrated = hydrateDocument({
+      revisionId: "pub-old",
+      status: "published",
+      profile: ledger.profile,
+      claims: ledger.claims,
+    });
+    expect(hydrated.chess.length).toBe(ledger.chess.length);
+    expect(hydrated.chessPgn).toBe(ledger.chessPgn);
+    expect(hydrated.lab.hed).toMatch(/underperformed PeSTO/);
+    expect(overlayLab({ lab: { ...ledger.lab, hed: "" } }).hed).toBe(ledger.lab.hed);
+    expect(validateDocument({ ...ledger, lab: { ...ledger.lab, hed: "The net won" } }).join(" ")).toMatch(
+      /underperformed PeSTO/,
+    );
+  });
+
+  it("unions claim ids with linkedProject and blocks media still used by a plate", () => {
+    const ledger = ledgerDocument();
+    expect(claimsForExhibit("veridian", ledger).map((claim) => claim.id)).toEqual(
+      expect.arrayContaining(["veridianUptime", "veridianEmissions"]),
+    );
+    expect(publicEvidenceHref("/admin/claims")).toBeNull();
+    expect(publicEvidenceHref("/lab/learned-evaluator")).toBe("/lab/learned-evaluator");
+    const asset = {
+      pathname: "plates/plate-veridian.jpg",
+      url: "/plates/plate-veridian.jpg",
+      uploadedAt: "2026-09-03T00:00:00.000Z",
+      alt: "",
+      caption: "",
+      contentType: "image/jpeg",
+      size: 12,
+      usage: "",
+      focalPoint: "50% 50%",
+    };
+    expect(mediaUsedBy(asset, [ledger])).toContain("/projects/veridian");
+    const form = new FormData();
+    form.set("chess-present", "1");
+    form.set("chess-pgn", compiledMainlinePgn());
+    form.set("chess-d4-fact", "CMS flagship sentence.");
+    form.set("chess-d4-commentary", ledger.chess.find((note) => note.id === "d4")?.commentary ?? "");
+    form.set("chess-d4-entityKind", "experience");
+    form.set("chess-d4-entityId", "monash-university");
+    const next = applyFormToDocument(form, ledger);
+    expect(next.chess.find((note) => note.id === "d4")?.fact).toBe("CMS flagship sentence.");
+    expect(next.chessPgn).toBe(compiledMainlinePgn());
   });
 });
 

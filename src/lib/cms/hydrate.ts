@@ -1,9 +1,11 @@
 import { ledgerDocument } from "@/lib/cms/ledger";
 import type {
   CmsAspiration,
+  CmsChessNote,
   CmsClaim,
   CmsEducation,
   CmsExperience,
+  CmsLabCopy,
   CmsProfile,
   CmsProjectCopy,
   SiteDocument,
@@ -34,7 +36,7 @@ function surfaces(value: unknown, fallback: CmsClaim["surfaces"]): CmsClaim["sur
 }
 
 function hydrateClaim(seed: CmsClaim, row: Partial<CmsClaim> | undefined): CmsClaim {
-  if (!row) return { ...seed, archived: seed.archived ?? false, sourceUrl: seed.sourceUrl ?? "" };
+  if (!row) return { ...seed, archived: seed.archived ?? false, sourceUrl: seed.sourceUrl ?? "", linkedProject: seed.linkedProject ?? "" };
   return {
     ...seed,
     ...row,
@@ -51,6 +53,7 @@ function hydrateClaim(seed: CmsClaim, row: Partial<CmsClaim> | undefined): CmsCl
     denominator: filed(row.denominator, seed.denominator),
     source: filed(row.source, seed.source),
     sourceUrl: str(row.sourceUrl, seed.sourceUrl),
+    linkedProject: str(row.linkedProject, seed.linkedProject ?? ""),
   };
 }
 
@@ -68,6 +71,7 @@ function hydrateProject(seed: CmsProjectCopy, row: Partial<CmsProjectCopy> | und
       apparatusRuntime: seed.apparatusRuntime ?? "",
       apparatusPath: seed.apparatusPath ?? "",
       apparatusBeside: seed.apparatusBeside ?? "",
+      claimIds: seed.claimIds ?? [],
     };
   }
   return {
@@ -94,6 +98,9 @@ function hydrateProject(seed: CmsProjectCopy, row: Partial<CmsProjectCopy> | und
     apparatusRuntime: str(row.apparatusRuntime, seed.apparatusRuntime ?? ""),
     apparatusPath: str(row.apparatusPath, seed.apparatusPath ?? ""),
     apparatusBeside: str(row.apparatusBeside, seed.apparatusBeside ?? ""),
+    claimIds: Array.isArray(row.claimIds)
+      ? row.claimIds.filter((id): id is string => typeof id === "string" && Boolean(id.trim()))
+      : (seed.claimIds ?? []),
   };
 }
 
@@ -160,6 +167,41 @@ function hydrateEducation(seed: CmsEducation, row: Partial<CmsEducation> | undef
   };
 }
 
+function hydrateChessNote(seed: CmsChessNote, row: Partial<CmsChessNote> | undefined): CmsChessNote {
+  if (!row) return { ...seed };
+  const kinds: CmsChessNote["entityKind"][] = ["experience", "education", "project", "lab", "outlook", ""];
+  const entityKind = kinds.includes(row.entityKind as CmsChessNote["entityKind"])
+    ? (row.entityKind as CmsChessNote["entityKind"])
+    : seed.entityKind;
+  return {
+    ...seed,
+    fact: str(row.fact, seed.fact),
+    commentary: str(row.commentary, seed.commentary),
+    featured: bool(row.featured, seed.featured),
+    entityKind,
+    entityId: str(row.entityId, seed.entityId),
+  };
+}
+
+function hydrateLab(seed: CmsLabCopy, row: Partial<CmsLabCopy> | undefined): CmsLabCopy {
+  if (!row) return { ...seed };
+  return {
+    hed: filed(row.hed, seed.hed),
+    dek: filed(row.dek, seed.dek),
+    teaser: filed(row.teaser, seed.teaser),
+    meta: filed(row.meta, seed.meta),
+    resultJoke: filed(row.resultJoke, seed.resultJoke),
+    hypothesisHed: filed(row.hypothesisHed, seed.hypothesisHed),
+    hypothesis: filed(row.hypothesis, seed.hypothesis),
+    experimentHed: filed(row.experimentHed, seed.experimentHed),
+    experiment: filed(row.experiment, seed.experiment),
+    failedHed: filed(row.failedHed, seed.failedHed),
+    failed: filed(row.failed, seed.failed),
+    learnedHed: filed(row.learnedHed, seed.learnedHed),
+    learned: filed(row.learned, seed.learned),
+  };
+}
+
 function fallbackDocument(raw: unknown, ledger: SiteDocument): SiteDocument {
   const row = raw && typeof raw === "object" ? (raw as Partial<SiteDocument>) : {};
   return {
@@ -214,6 +256,9 @@ export function hydrateDocument(input: unknown): SiteDocument {
     );
     const educationById = new Map(education.map((row) => [row.id, row]));
     const extraEducation = education.filter((row) => row?.id && !ledger.education.some((seed) => seed.id === row.id));
+    const chessById = new Map(
+      (Array.isArray(doc.chess) ? doc.chess : []).map((row) => [row.id, row] as const),
+    );
     return {
       ...ledger,
       ...doc,
@@ -232,6 +277,7 @@ export function hydrateDocument(input: unknown): SiteDocument {
               ...claim,
               surfaces: surfaces(claim.surfaces, ["exhibit"]),
               sourceUrl: claim.sourceUrl ?? "",
+              linkedProject: claim.linkedProject ?? "",
               archived: claim.archived ?? false,
             },
             claim,
@@ -258,6 +304,9 @@ export function hydrateDocument(input: unknown): SiteDocument {
         ...ledger.education.map((seed) => hydrateEducation(seed, educationById.get(seed.id))),
         ...extraEducation.map((row) => hydrateEducation(row, row)),
       ],
+      chess: ledger.chess.map((seed) => hydrateChessNote(seed, chessById.get(seed.id))),
+      chessPgn: filed(doc.chessPgn, ledger.chessPgn),
+      lab: hydrateLab(ledger.lab, doc.lab),
     };
   } catch {
     return fallbackDocument(input, ledger);

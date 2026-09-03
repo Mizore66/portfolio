@@ -19,6 +19,7 @@ export type CmsClaim = {
   denominator: string;
   source: string;
   sourceUrl: string;
+  linkedProject: string;
   heroEligible: boolean;
   archived: boolean;
   surfaces: ("home" | "opening" | "resume" | "exhibit" | "lab")[];
@@ -101,6 +102,33 @@ export const PROJECT_STRUCTURE_KEYS = [
   "apparatusBeside",
 ] as const;
 
+export type ChessEntityKind = "experience" | "education" | "project" | "lab" | "outlook" | "";
+
+export type CmsChessNote = {
+  id: string;
+  fact: string;
+  commentary: string;
+  featured: boolean;
+  entityKind: ChessEntityKind;
+  entityId: string;
+};
+
+export type CmsLabCopy = {
+  hed: string;
+  dek: string;
+  teaser: string;
+  meta: string;
+  resultJoke: string;
+  hypothesisHed: string;
+  hypothesis: string;
+  experimentHed: string;
+  experiment: string;
+  failedHed: string;
+  failed: string;
+  learnedHed: string;
+  learned: string;
+};
+
 export type CmsProjectCopy = {
   slug: string;
   title: string;
@@ -129,6 +157,7 @@ export type CmsProjectCopy = {
   apparatusRuntime: string;
   apparatusPath: string;
   apparatusBeside: string;
+  claimIds: string[];
   archived: boolean;
 };
 
@@ -145,6 +174,9 @@ export type SiteDocument = {
   projects: CmsProjectCopy[];
   experience: CmsExperience[];
   education: CmsEducation[];
+  chess: CmsChessNote[];
+  chessPgn: string;
+  lab: CmsLabCopy;
 };
 
 export type CmsMediaAsset = {

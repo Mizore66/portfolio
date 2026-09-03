@@ -24,6 +24,9 @@ export function documentDiff(published: SiteDocument, draft: SiteDocument): Fiel
     aspirations: Array.isArray(published?.aspirations) ? published.aspirations : [],
     experience: Array.isArray(published?.experience) ? published.experience : [],
     education: Array.isArray(published?.education) ? published.education : [],
+    chess: Array.isArray(published?.chess) ? published.chess : [],
+    chessPgn: published?.chessPgn ?? "",
+    lab: published?.lab ?? ({} as SiteDocument["lab"]),
     profile: published?.profile ?? ({} as SiteDocument["profile"]),
   };
   const next = {
@@ -33,6 +36,9 @@ export function documentDiff(published: SiteDocument, draft: SiteDocument): Fiel
     aspirations: Array.isArray(draft?.aspirations) ? draft.aspirations : [],
     experience: Array.isArray(draft?.experience) ? draft.experience : [],
     education: Array.isArray(draft?.education) ? draft.education : [],
+    chess: Array.isArray(draft?.chess) ? draft.chess : [],
+    chessPgn: draft?.chessPgn ?? "",
+    lab: draft?.lab ?? ({} as SiteDocument["lab"]),
     profile: draft?.profile ?? ({} as SiteDocument["profile"]),
   };
 
@@ -72,6 +78,7 @@ export function documentDiff(published: SiteDocument, draft: SiteDocument): Fiel
     push(`claims.${id}.denominator`, a.denominator, b.denominator);
     push(`claims.${id}.source`, a.source, b.source);
     push(`claims.${id}.sourceUrl`, a.sourceUrl, b.sourceUrl);
+    push(`claims.${id}.linkedProject`, a.linkedProject, b.linkedProject);
     push(`claims.${id}.heroEligible`, a.heroEligible, b.heroEligible);
     push(`claims.${id}.archived`, a.archived, b.archived);
     push(`claims.${id}.surfaces`, (a.surfaces ?? []).join(","), (b.surfaces ?? []).join(","));
@@ -133,6 +140,7 @@ export function documentDiff(published: SiteDocument, draft: SiteDocument): Fiel
     push(`projects.${slug}.apparatusRuntime`, a.apparatusRuntime, b.apparatusRuntime);
     push(`projects.${slug}.apparatusPath`, a.apparatusPath, b.apparatusPath);
     push(`projects.${slug}.apparatusBeside`, a.apparatusBeside, b.apparatusBeside);
+    push(`projects.${slug}.claimIds`, (a.claimIds ?? []).join(","), (b.claimIds ?? []).join(","));
     push(`projects.${slug}.archived`, a.archived, b.archived);
   }
 
@@ -179,6 +187,40 @@ export function documentDiff(published: SiteDocument, draft: SiteDocument): Fiel
     push(`education.${id}.location`, a.location, b.location);
     push(`education.${id}.archived`, a.archived, b.archived);
   }
+
+  push("chessPgn", pub.chessPgn, next.chessPgn);
+  const chessIds = new Set([...pub.chess.map((row) => row.id), ...next.chess.map((row) => row.id)]);
+  for (const id of chessIds) {
+    const a = pub.chess.find((row) => row.id === id);
+    const b = next.chess.find((row) => row.id === id);
+    if (!a) {
+      push(`chess.${id}`, "", b);
+      continue;
+    }
+    if (!b) {
+      push(`chess.${id}`, a, "");
+      continue;
+    }
+    push(`chess.${id}.fact`, a.fact, b.fact);
+    push(`chess.${id}.commentary`, a.commentary, b.commentary);
+    push(`chess.${id}.featured`, a.featured, b.featured);
+    push(`chess.${id}.entityKind`, a.entityKind, b.entityKind);
+    push(`chess.${id}.entityId`, a.entityId, b.entityId);
+  }
+
+  push("lab.hed", pub.lab.hed, next.lab.hed);
+  push("lab.dek", pub.lab.dek, next.lab.dek);
+  push("lab.teaser", pub.lab.teaser, next.lab.teaser);
+  push("lab.meta", pub.lab.meta, next.lab.meta);
+  push("lab.resultJoke", pub.lab.resultJoke, next.lab.resultJoke);
+  push("lab.hypothesisHed", pub.lab.hypothesisHed, next.lab.hypothesisHed);
+  push("lab.hypothesis", pub.lab.hypothesis, next.lab.hypothesis);
+  push("lab.experimentHed", pub.lab.experimentHed, next.lab.experimentHed);
+  push("lab.experiment", pub.lab.experiment, next.lab.experiment);
+  push("lab.failedHed", pub.lab.failedHed, next.lab.failedHed);
+  push("lab.failed", pub.lab.failed, next.lab.failed);
+  push("lab.learnedHed", pub.lab.learnedHed, next.lab.learnedHed);
+  push("lab.learned", pub.lab.learned, next.lab.learned);
 
   return rows;
 }
@@ -261,6 +303,11 @@ export function groupedDocumentDiff(published: SiteDocument, draft: SiteDocument
     } else if (row.path.startsWith("education.")) {
       const id = row.path.split(".")[1] ?? "education";
       take(`education.${id}`, `Education · ${id}`).rows.push(row);
+    } else if (row.path.startsWith("chess") || row.path === "chessPgn") {
+      const id = row.path.split(".")[1] ?? "line";
+      take(`chess.${id}`, `Chess · ${id}`).rows.push(row);
+    } else if (row.path.startsWith("lab.")) {
+      take("lab", "Laboratory").rows.push(row);
     } else {
       take("profile", "Profile").rows.push(row);
     }

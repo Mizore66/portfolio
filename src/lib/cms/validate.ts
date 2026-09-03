@@ -1,3 +1,4 @@
+import { pgnMatchesRepertoire } from "@/lib/cms/chess-notes";
 import type { CmsClaim, SiteDocument } from "@/lib/cms/types";
 import { resumeData } from "@/lib/data";
 
@@ -117,6 +118,27 @@ export function validateDocument(doc: SiteDocument): string[] {
     }
     if (slugs.has(project.slug)) errors.push(`Duplicate project slug ${project.slug}.`);
     slugs.add(project.slug);
+  }
+  if (doc.chessPgn && !pgnMatchesRepertoire(doc.chessPgn)) {
+    errors.push("Chess PGN must keep the Italian Game mainline already compiled on Opening Preparation.");
+  }
+  if (doc.lab?.hed && !/underperformed PeSTO/.test(doc.lab.hed)) {
+    errors.push("Lab headline must keep “underperformed PeSTO” so Gate C cannot be rewritten as a win.");
+  }
+  if (doc.lab?.teaser && !/underperformed PeSTO/.test(doc.lab.teaser)) {
+    errors.push("Lab teaser must keep “underperformed PeSTO” so Gate C cannot be rewritten as a win.");
+  }
+  const projectSlugs = new Set(doc.projects.map((project) => project.slug));
+  const claimIdSet = new Set(doc.claims.map((claim) => claim.id));
+  for (const claim of doc.claims) {
+    if (claim.linkedProject && !projectSlugs.has(claim.linkedProject)) {
+      errors.push(`${claim.id} linked project ${claim.linkedProject} is missing.`);
+    }
+  }
+  for (const project of doc.projects) {
+    for (const id of project.claimIds ?? []) {
+      if (!claimIdSet.has(id)) errors.push(`${project.slug} references missing claim ${id}.`);
+    }
   }
   return errors;
 }

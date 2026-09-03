@@ -1,23 +1,25 @@
 import Link from "next/link";
-import { LAB_ARTICLE } from "@/content/learned-evaluator";
+import { overlayLab } from "@/lib/cms/lab-copy";
+import { getRenderableDocument } from "@/lib/cms/store";
 import { resumeData } from "@/lib/data";
 import { LAB_PROJECT_SLUGS, METRICS, exhibitTitle } from "@/lib/metrics";
 
-export function LabTeaser() {
+export async function LabTeaser() {
+  const article = overlayLab(await getRenderableDocument());
   return (
     <Link
-      href={LAB_ARTICLE.href}
+      href={article.href}
       data-testid="lab-teaser"
       className="lab-teaser mt-8 block p-6 text-ink no-underline sm:p-8"
     >
       <p className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
-        {LAB_ARTICLE.kicker}
-        <span className="ml-2 text-score-red">{LAB_ARTICLE.resultGlyph}</span>
+        {article.kicker}
+        <span className="ml-2 text-score-red">{article.resultGlyph}</span>
       </p>
-      <p className="mt-2 font-display text-[22px] leading-tight text-ink">{LAB_ARTICLE.teaser}</p>
+      <p className="mt-2 font-display text-[22px] leading-tight text-ink">{article.teaser}</p>
       <p className="metric-row mt-3">{METRICS.gateC.display}</p>
       <p className="mt-1 font-mono text-[12px] text-faded">{METRICS.gateC.note}</p>
-      <p className="mt-3 font-display text-[16px] italic text-score-red">{LAB_ARTICLE.resultJoke}</p>
+      <p className="mt-3 font-display text-[16px] italic text-score-red">{article.resultJoke}</p>
     </Link>
   );
 }

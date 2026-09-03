@@ -26,14 +26,21 @@ export function claimConsumers(claim: CmsClaim): ClaimConsumer[] {
   if (claim.surfaces.includes("lab") || claim.id === "gateC") {
     rows.push({ label: "Laboratory", href: "/lab/learned-evaluator" });
   }
-  const linked = OWNER_PROJECT[claim.owner];
-  if (linked) {
+  if (claim.linkedProject) {
     rows.push({
-      label: linked.label,
-      href: linked.slug ? `/projects/${linked.slug}` : "/lab/learned-evaluator",
+      label: `Exhibit · ${claim.linkedProject}`,
+      href: `/projects/${claim.linkedProject}`,
     });
-  } else if (claim.surfaces.includes("exhibit")) {
-    rows.push({ label: "Linked exhibit", href: "/#work" });
+  } else {
+    const linked = OWNER_PROJECT[claim.owner];
+    if (linked) {
+      rows.push({
+        label: linked.label,
+        href: linked.slug ? `/projects/${linked.slug}` : "/lab/learned-evaluator",
+      });
+    } else if (claim.surfaces.includes("exhibit")) {
+      rows.push({ label: "Linked exhibit", href: "/#work" });
+    }
   }
   const unique = new Map(rows.map((row) => [row.href, row]));
   return [...unique.values()];

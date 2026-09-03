@@ -90,6 +90,7 @@ export function exhibitFromCopy(copy: CmsProjectCopy) {
       path: parseApparatusLayers(copy.apparatusPath),
       beside: parseApparatusLayers(copy.apparatusBeside),
     } satisfies Apparatus,
+    claimIds: copy.claimIds ?? [],
   };
 }
 
@@ -118,6 +119,7 @@ export function overlayProject<T extends { slug: string }>(project: T, doc: Site
   if (copy.plateCaption.trim()) patch.plateCaption = copy.plateCaption.trim();
   if (copy.plateAlt.trim()) patch.plateAlt = copy.plateAlt.trim();
   if (copy.description.trim()) patch.description = copy.description.trim();
+  if (copy.claimIds?.length) patch.claimIds = copy.claimIds;
   if (copy.bullets.trim()) {
     patch.bullets = copy.bullets.split("\n").map((line) => line.trim()).filter(Boolean);
   }
@@ -154,6 +156,28 @@ export function resolveExhibit(slug: string, doc: SiteDocument) {
   const copy = doc.projects.find((project) => project.slug === slug);
   if (!copy || copy.archived) return null;
   return exhibitFromCopy(copy);
+}
+
+/** Public evidence links only. Admin routes and javascript: URLs stay off the exhibit. */
+export function publicEvidenceHref(url: string): string | null {
+  const value = url.trim();
+  if (!value || value.startsWith("/admin")) return null;
+  if (value.startsWith("/")) return value;
+  try {
+    const parsed = new URL(value);
+    if (parsed.protocol === "http:" || parsed.protocol === "https:") return parsed.href;
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+export function claimsForExhibit(slug: string, doc: SiteDocument): CmsClaim[] {
+  const ids = new Set(doc.projects.find((project) => project.slug === slug)?.claimIds ?? []);
+  for (const claim of doc.claims) {
+    if (claim.linkedProject === slug) ids.add(claim.id);
+  }
+  return doc.claims.filter((claim) => ids.has(claim.id) && !claim.archived);
 }
 
 export type HeroProofRow = {

@@ -101,10 +101,14 @@ export function changedSurfaces(paths: string[]): string[] {
       surfaces.add("Homepage");
       surfaces.add("Sitemap");
     }
-    if (path.startsWith("experience") || path.startsWith("education")) {
+    if (path.startsWith("experience") || path.startsWith("education") || path.startsWith("chess")) {
       surfaces.add("Homepage");
       surfaces.add("Résumé");
       surfaces.add("Opening Preparation");
+    }
+    if (path.startsWith("lab")) {
+      surfaces.add("Laboratory");
+      surfaces.add("Homepage");
     }
   }
   if (paths.length) surfaces.add("Sitemap");

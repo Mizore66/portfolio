@@ -10,7 +10,7 @@ import { HalftonePlate } from "@/components/opening/HalftonePlate";
 import { PatentFigure } from "@/components/opening/PatentFigure";
 import { RecruiterNav } from "@/components/opening/RecruiterNav";
 import { BROADSHEET } from "@/content/opening";
-import { resolveExhibit } from "@/lib/cms/overlay";
+import { claimsForExhibit, publicEvidenceHref, resolveExhibit } from "@/lib/cms/overlay";
 import { getPublishedDocument, getRenderableDocument } from "@/lib/cms/store";
 import { resumeData } from "@/lib/data";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
@@ -121,6 +121,7 @@ export default async function ProjectPage({
     patent?.dateKind === "illustration"
       ? `The patent sheet is a later illustration (${patent.filed}), not this project's filing date.`
       : null;
+  const linkedClaims = claimsForExhibit(slug, doc);
 
   return (
     <div className="min-h-screen text-ink">
@@ -220,6 +221,24 @@ export default async function ProjectPage({
                     note={evidenceNote}
                     date={project.date}
                   />
+                  {linkedClaims.length ? (
+                    <ul className="mt-4 font-display text-[16px]" data-testid="exhibit-claims">
+                      {linkedClaims.map((claim) => {
+                        const href = publicEvidenceHref(claim.sourceUrl);
+                        return (
+                          <li key={claim.id}>
+                            {href ? (
+                              <a href={href} className="text-book-blue underline">
+                                {claim.display}
+                              </a>
+                            ) : (
+                              claim.display
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  ) : null}
                 </ExhibitSection>
                 {split ? (
                   <p className="mt-4 max-w-[68ch] font-mono text-[12px] leading-relaxed text-faded" data-testid="retrieval-split">
@@ -326,11 +345,20 @@ export default async function ProjectPage({
                 </ol>
               </ExhibitSection>
 
-              {limitation ? (
-                <ExhibitSection id="limitations" title="Limitations">
+              <ExhibitSection id="limitations" title="Limitations">
+                {limitation ? (
                   <p className="mt-2 max-w-[68ch] font-display text-[16px] leading-snug text-ink">{limitation}</p>
-                </ExhibitSection>
-              ) : null}
+                ) : null}
+                {limitation?.includes("No live host") ? null : (
+                  <p
+                    className="mt-3 max-w-[68ch] font-mono text-[12px] leading-relaxed text-faded"
+                    data-testid="exhibit-host"
+                  >
+                    {BROADSHEET.exhibitHost}
+                    {project.github ? ` ${BROADSHEET.exhibitGithub}` : null}
+                  </p>
+                )}
+              </ExhibitSection>
 
               {retrospective ? (
                 <ExhibitSection id="retrospective" title="What I would change now" prominent>
@@ -355,13 +383,6 @@ export default async function ProjectPage({
                 {inspectNote ? (
                   <p className="w-full font-mono text-[12px] leading-relaxed text-faded">{inspectNote}</p>
                 ) : null}
-                <p
-                  className="w-full font-mono text-[12px] leading-relaxed text-faded"
-                  data-testid="exhibit-host"
-                >
-                  {BROADSHEET.exhibitHost}
-                  {project.github ? ` ${BROADSHEET.exhibitGithub}` : null}
-                </p>
                 <Link
                   href={workHref}
                   className="exhibit-back border-2 border-ink px-4 py-2 font-mono text-[12px] uppercase tracking-widest text-ink"

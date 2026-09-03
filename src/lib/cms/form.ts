@@ -1,5 +1,6 @@
 import { LEDGER_EXPERIENCE_IDS, LEDGER_PROJECT_SLUGS, REQUIRED_CLAIM_IDS } from "@/lib/cms/validate";
-import type { ClaimKind, CmsAspiration, CmsClaim, CmsEducation, CmsExperience, CmsProjectCopy, SiteDocument } from "@/lib/cms/types";
+import { ledgerLab } from "@/lib/cms/lab-copy";
+import type { ChessEntityKind, ClaimKind, CmsAspiration, CmsClaim, CmsEducation, CmsExperience, CmsProjectCopy, SiteDocument } from "@/lib/cms/types";
 
 const KINDS: ClaimKind[] = ["production", "benchmark", "evaluation", "pipeline", "capability"];
 const SURFACES: CmsClaim["surfaces"][number][] = ["home", "opening", "resume", "exhibit", "lab"];
@@ -51,6 +52,7 @@ function blankClaim(id: string): CmsClaim {
     denominator: "Unfiled.",
     source: "Unfiled.",
     sourceUrl: "",
+    linkedProject: "",
     heroEligible: false,
     archived: false,
     surfaces: ["exhibit"],
@@ -86,6 +88,7 @@ function blankProject(slug: string): CmsProjectCopy {
     apparatusRuntime: "",
     apparatusPath: "",
     apparatusBeside: "",
+    claimIds: [],
     archived: true,
   };
 }
@@ -183,6 +186,7 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
         denominator: text(formData, `claim-${claim.id}-denominator`, claim.denominator),
         source: text(formData, `claim-${claim.id}-source`, claim.source),
         sourceUrl: text(formData, `claim-${claim.id}-sourceUrl`, claim.sourceUrl),
+        linkedProject: text(formData, `claim-${claim.id}-linkedProject`, claim.linkedProject),
         heroEligible: on(formData, `claim-${claim.id}-hero`),
         archived: on(formData, `claim-${claim.id}-archived`),
         surfaces: claimSurfaces(formData, claim.id, claim.surfaces),
@@ -355,6 +359,11 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
         apparatusRuntime: text(formData, `project-${project.slug}-apparatusRuntime`, project.apparatusRuntime),
         apparatusPath: text(formData, `project-${project.slug}-apparatusPath`, project.apparatusPath),
         apparatusBeside: text(formData, `project-${project.slug}-apparatusBeside`, project.apparatusBeside),
+        claimIds: formData.has(`project-${project.slug}-claims-present`)
+          ? current.claims
+              .filter((claim) => on(formData, `project-${project.slug}-claim-${claim.id}`))
+              .map((claim) => claim.id)
+          : project.claimIds,
         archived: on(formData, `project-${project.slug}-archived`),
       }))
     : current.projects;
@@ -380,6 +389,43 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
     projects = sortByOrder(projects, text(formData, "project-order", ""), (project) => project.slug);
   }
 
+  const ENTITY_KINDS: ChessEntityKind[] = ["experience", "education", "project", "lab", "outlook", ""];
+  const chess = formData.has("chess-present")
+    ? current.chess.map((note) => {
+        const kind = text(formData, `chess-${note.id}-entityKind`, note.entityKind) as ChessEntityKind;
+        return {
+          ...note,
+          fact: text(formData, `chess-${note.id}-fact`, note.fact),
+          commentary: text(formData, `chess-${note.id}-commentary`, note.commentary),
+          featured: on(formData, `chess-${note.id}-featured`),
+          entityKind: ENTITY_KINDS.includes(kind) ? kind : note.entityKind,
+          entityId: text(formData, `chess-${note.id}-entityId`, note.entityId),
+        };
+      })
+    : current.chess;
+  const chessPgn = formData.has("chess-present")
+    ? text(formData, "chess-pgn", current.chessPgn).trim() || current.chessPgn
+    : current.chessPgn;
+
+  const currentLab = current.lab ?? ledgerLab();
+  const lab = formData.has("lab-present")
+    ? {
+        hed: text(formData, "lab-hed", currentLab.hed),
+        dek: text(formData, "lab-dek", currentLab.dek),
+        teaser: text(formData, "lab-teaser", currentLab.teaser),
+        meta: text(formData, "lab-meta", currentLab.meta),
+        resultJoke: text(formData, "lab-resultJoke", currentLab.resultJoke),
+        hypothesisHed: text(formData, "lab-hypothesisHed", currentLab.hypothesisHed),
+        hypothesis: text(formData, "lab-hypothesis", currentLab.hypothesis),
+        experimentHed: text(formData, "lab-experimentHed", currentLab.experimentHed),
+        experiment: text(formData, "lab-experiment", currentLab.experiment),
+        failedHed: text(formData, "lab-failedHed", currentLab.failedHed),
+        failed: text(formData, "lab-failed", currentLab.failed),
+        learnedHed: text(formData, "lab-learnedHed", currentLab.learnedHed),
+        learned: text(formData, "lab-learned", currentLab.learned),
+      }
+    : currentLab;
+
   return {
     ...current,
     note: text(formData, "note", current.note),
@@ -389,6 +435,9 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
     projects,
     experience,
     education,
+    chess,
+    chessPgn,
+    lab,
   };
 }
 

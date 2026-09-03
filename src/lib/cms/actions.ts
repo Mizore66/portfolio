@@ -150,6 +150,8 @@ export async function saveDraftAction(formData: FormData): Promise<void> {
   revalidatePath("/admin/history");
   revalidatePath("/admin/experience");
   revalidatePath("/admin/education");
+  revalidatePath("/admin/chess");
+  revalidatePath("/admin/lab");
   revalidatePath("/admin/release");
   updateTag(CMS_TAG);
   if (errors.length) {

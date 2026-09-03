@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Fragment, memo, useState } from "react";
+import { Fragment, memo, useEffect, useState, type ReactNode } from "react";
 import { ArtifactLinks } from "@/components/opening/ArtifactLinks";
 import { ArtistsImpression } from "@/components/opening/ArtistsImpression";
 import { GlyphStamp } from "@/components/opening/GlyphStamp";
@@ -32,10 +32,12 @@ export const NotationView = memo(function NotationView({
   selectedId,
   onSelect,
   onPreview,
+  chessNotes,
 }: {
   selectedId: string;
   onSelect: (id: string) => void;
   onPreview?: (id: string | null) => void;
+  chessNotes?: Record<string, { fact: string; commentary: string; entityLabel: string }>;
 }) {
   const blocks = buildNotation();
   const [view, setView] = useState<"full" | "career" | "projects">("full");
@@ -91,6 +93,7 @@ export const NotationView = memo(function NotationView({
             onSelect={onSelect}
             onPreview={onPreview}
             hideVariations={view === "career"}
+            chessNotes={chessNotes}
           />
         ))}
       </div>
@@ -104,12 +107,14 @@ function Chapter({
   onSelect,
   onPreview,
   hideVariations,
+  chessNotes,
 }: {
   block: NotationBlock;
   selectedId: string;
   onSelect: (id: string) => void;
   onPreview?: (id: string | null) => void;
   hideVariations?: boolean;
+  chessNotes?: Record<string, { fact: string; commentary: string; entityLabel: string }>;
 }) {
   const { node } = block;
   const selected = node.id === selectedId;
@@ -118,6 +123,10 @@ function Chapter({
   const careerIndex = career.findIndex((row) => row.id === node.id);
   const prevCareer = careerIndex > 0 ? career[careerIndex - 1] : null;
   const nextCareer = careerIndex >= 0 && careerIndex < career.length - 1 ? career[careerIndex + 1] : null;
+  const note = chessNotes?.[node.id];
+  const fact = note?.fact?.trim() ? note.fact : node.fact;
+  const commentary = note?.commentary?.trim() ? note.commentary : node.commentary;
+  const entityLabel = note?.entityLabel;
 
   return (
     <section
@@ -174,16 +183,19 @@ function Chapter({
           />
           </div>
         ) : null}
-        {node.fact ? (
+        {fact ? (
           <p className="drop-cap chapter-fact max-w-prose font-display text-[16px] leading-[1.65] text-ink">
-            {node.fact}
+            {fact}
           </p>
         ) : null}
-        {node.commentary ? (
+        {entityLabel ? (
+          <p className="mt-2 font-mono text-[12px] uppercase tracking-[0.14em] text-faded">{entityLabel}</p>
+        ) : null}
+        {commentary ? (
           <details className="annotation mt-4">
             <summary className="annotation-summary">Annotation</summary>
             <p className="mt-2 max-w-prose font-lora text-[16px] leading-[1.7] italic text-faded">
-              {node.commentary}
+              {commentary}
             </p>
           </details>
         ) : null}
@@ -204,7 +216,7 @@ function Chapter({
       </div>
 
       {!hideVariations && block.variations.length > 0 ? (
-        <div className="mt-3">
+        <VariationsPanel>
           {block.variations.map((line) => {
             const head = line[0]?.node;
             return (
@@ -223,6 +235,7 @@ function Chapter({
                     selectedId={selectedId}
                     onSelect={onSelect}
                     onPreview={onPreview}
+                    chessNotes={chessNotes}
                   />
                 </p>
                 {head?.impression && head.commentary ? (
@@ -248,7 +261,7 @@ function Chapter({
               </div>
             );
           })}
-        </div>
+        </VariationsPanel>
       ) : null}
 
       {selected ? (
@@ -276,16 +289,39 @@ function Chapter({
   );
 }
 
+function VariationsPanel({ children }: { children: ReactNode }) {
+  const [open, setOpen] = useState(true);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 699px)");
+    const apply = () => setOpen(!mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+  return (
+    <details
+      className="scoresheet-variations mt-3"
+      open={open}
+      onToggle={(event) => setOpen(event.currentTarget.open)}
+    >
+      <summary className="annotation-summary">Variations</summary>
+      <div className="scoresheet-variations-body">{children}</div>
+    </details>
+  );
+}
+
 function VariationRun({
   line,
   selectedId,
   onSelect,
   onPreview,
+  chessNotes,
 }: {
   line: NotationBlock[];
   selectedId: string;
   onSelect: (id: string) => void;
   onPreview?: (id: string | null) => void;
+  chessNotes?: Record<string, { fact: string; commentary: string; entityLabel: string }>;
 }) {
   return (
     <>
@@ -303,7 +339,9 @@ function VariationRun({
           {child.node.title ? (
             <span className="not-italic text-faded"> — {child.node.title}</span>
           ) : null}
-          {child.node.fact ? <span> {child.node.fact}</span> : null}
+          {child.node.fact ? (
+            <span> {chessNotes?.[child.node.id]?.fact?.trim() || child.node.fact}</span>
+          ) : null}
           {child.variations.map((nested) => (
             <VariationRun
               key={nested[0]?.node.id}
@@ -311,6 +349,7 @@ function VariationRun({
               selectedId={selectedId}
               onSelect={onSelect}
               onPreview={onPreview}
+              chessNotes={chessNotes}
             />
           ))}
         </Fragment>

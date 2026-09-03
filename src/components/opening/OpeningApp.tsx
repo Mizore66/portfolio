@@ -62,8 +62,10 @@ function reducedMotion(): boolean {
 
 export function OpeningApp({
   staticBoard,
+  chessNotes,
 }: {
   staticBoard?: ReactNode;
+  chessNotes?: Record<string, { fact: string; commentary: string; entityLabel: string }>;
 } = {}) {
   const selection = useSyncExternalStore(
     subscribeSelection,
@@ -657,6 +659,7 @@ export function OpeningApp({
                 selectedId={selectedId}
                 onSelect={userSelect}
                 onPreview={onPreview}
+                chessNotes={chessNotes}
               />
             </section>
           </div>

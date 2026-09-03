@@ -162,6 +162,22 @@ export default async function ProjectsEditor({
                   <p className="font-mono text-[12px] normal-case tracking-normal text-faded">
                     Supporting components do not sit on the synchronous request path.
                   </p>
+                  <input type="hidden" name={`project-${project.slug}-claims-present`} value="1" />
+                  <p className="font-mono text-[12px] uppercase tracking-[0.12em]">Claims</p>
+                  <p className="flex flex-wrap gap-3">
+                    {doc.claims
+                      .filter((claim) => !claim.archived)
+                      .map((claim) => (
+                        <label key={claim.id} className="flex-row items-center gap-2 normal-case tracking-normal">
+                          <input
+                            type="checkbox"
+                            name={`project-${project.slug}-claim-${claim.id}`}
+                            defaultChecked={project.claimIds?.includes(claim.id)}
+                          />
+                          {claim.display || claim.id}
+                        </label>
+                      ))}
+                  </p>
                   <label className="flex-row items-center gap-2 normal-case tracking-normal">
                     <input
                       type="checkbox"
