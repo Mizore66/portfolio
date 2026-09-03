@@ -118,3 +118,44 @@ test.describe("round four artifacts", () => {
     expect(pdf.headers().etag).toMatch(/resume-/);
   });
 });
+
+test.describe("homepage diagram and band layout", () => {
+  test("the hero board mounts newspaper pieces from the sprite", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto("/");
+    const board = page.locator("#hero-board");
+    await expect(board).toBeVisible();
+    await expect(board.locator("[data-piece-id]")).toHaveCount(32);
+    await expect(page.locator("svg.piece-sprite symbol#np-wP")).toHaveCount(1);
+    await expect(board.locator('[data-piece-id="wPd2"] use')).toHaveAttribute("href", "#np-wP");
+    await expect(board.locator('[data-piece-id="wNb1"] use')).toHaveAttribute("href", "#np-wN");
+  });
+
+  test("the intro proof box is closed on all four sides", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto("/");
+    const borders = await page.locator(".hero-proof").evaluate((el) => {
+      const s = getComputedStyle(el);
+      return {
+        top: parseFloat(s.borderTopWidth),
+        right: parseFloat(s.borderRightWidth),
+        bottom: parseFloat(s.borderBottomWidth),
+        left: parseFloat(s.borderLeftWidth),
+      };
+    });
+    expect(borders.top).toBeGreaterThan(0);
+    expect(borders.right).toBeGreaterThan(0);
+    expect(borders.bottom).toBeGreaterThan(0);
+    expect(borders.left).toBeGreaterThan(0);
+  });
+
+  test("section kickers sit near the rule instead of in a 72px void", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto("/");
+    for (const testId of ["education-band", "lab-band", "about-band", "contact-band"]) {
+      const paddingTop = await page.getByTestId(testId).evaluate((el) => parseFloat(getComputedStyle(el).paddingTop));
+      expect(paddingTop, testId).toBeLessThanOrEqual(40);
+      expect(paddingTop, testId).toBeGreaterThanOrEqual(24);
+    }
+  });
+});
