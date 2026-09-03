@@ -65,6 +65,8 @@ describe("document integrity", () => {
     expect(projectRole({ slug: "slm-distillation-engine" })).toBe(
       "Laboratory experiment — design, training, and evaluation.",
     );
+    expect(veridian.rejected).toMatch(/after provisioning or a demand-driven scale event/);
+    expect(veridian.rejected).not.toMatch(/after the spike/);
   });
 
   it("does not ship JQuery, OracleSQL, or A-prefixed framework drop-caps", () => {
@@ -144,6 +146,6 @@ describe("document integrity", () => {
     expect(METRICS.setelDefects.denominator).toMatch(/not filed/);
     expect(METRICS.wdOversight.denominator).toMatch(/not filed/);
     expect(METRICS.leadThroughput.denominator).toMatch(/not filed/);
-    expect(POSITIONING.ownershipBridge).toMatch(/Production at Setel/);
+    expect(POSITIONING.ownershipBridge).toMatch(/I built production payments at Setel/);
   });
 });

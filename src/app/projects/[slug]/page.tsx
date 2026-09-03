@@ -10,7 +10,7 @@ import { HalftonePlate } from "@/components/opening/HalftonePlate";
 import { PatentFigure } from "@/components/opening/PatentFigure";
 import { RecruiterNav } from "@/components/opening/RecruiterNav";
 import { BROADSHEET } from "@/content/opening";
-import { overlayProject } from "@/lib/cms/overlay";
+import { resolveExhibit } from "@/lib/cms/overlay";
 import { getPublishedDocument, getRenderableDocument } from "@/lib/cms/store";
 import { resumeData } from "@/lib/data";
 import { IMAGE_SIZES } from "@/lib/image-sizes";
@@ -29,9 +29,16 @@ import {
 import { projectJsonLd } from "@/lib/person";
 import { SITE_URL } from "@/lib/site";
 
-export function generateStaticParams() {
-  return resumeData.projects.map((p) => ({ slug: p.slug }));
+export async function generateStaticParams() {
+  const published = await getPublishedDocument();
+  const slugs = new Set(resumeData.projects.map((project) => project.slug));
+  for (const project of published.projects) {
+    if (!project.archived) slugs.add(project.slug);
+  }
+  return [...slugs].map((slug) => ({ slug }));
 }
+
+export const dynamicParams = true;
 
 export async function generateMetadata({
   params,
@@ -39,13 +46,16 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const project = resumeData.projects.find((p) => p.slug === slug);
-  if (!project) return { title: "Correction — A. T. Qumhiyeh" };
   const doc = await getPublishedDocument();
-  const overlaid = overlayProject(project, doc);
+  const overlaid = resolveExhibit(slug, doc);
   if (!overlaid) return { title: "Correction — A. T. Qumhiyeh" };
-  const title = `${exhibitTitle(overlaid)} · A. T. Qumhiyeh`;
+  const titleBase =
+    "seoTitle" in overlaid && typeof overlaid.seoTitle === "string" && overlaid.seoTitle.trim()
+      ? overlaid.seoTitle.trim()
+      : exhibitTitle(overlaid);
+  const title = `${titleBase} · A. T. Qumhiyeh`;
   const description = overlaid.meta;
+  const plate = "plate" in overlaid ? overlaid.plate : "";
   return {
     title,
     description,
@@ -55,7 +65,7 @@ export async function generateMetadata({
       description,
       url: `${SITE_URL}/projects/${slug}`,
       type: "article",
-      images: project.plate ? [{ url: project.plate }] : undefined,
+      images: plate ? [{ url: plate }] : undefined,
     },
     twitter: {
       card: "summary_large_image",
@@ -76,9 +86,8 @@ export default async function ProjectPage({
   const q = await searchParams;
   const path = workPathFromQuery(q.path);
   const workHref = workHomeHref(path);
-  const filed = resumeData.projects.find((p) => p.slug === slug);
   const doc = await getRenderableDocument();
-  const project = filed ? overlayProject(filed, doc) : null;
+  const project = resolveExhibit(slug, doc);
 
   if (!project) {
     notFound();
@@ -107,9 +116,10 @@ export default async function ProjectPage({
   });
   const evidence = projectEvidence(project);
   const kicker = exhibitKicker(origin, project.slug);
+  const patent = "patent" in project ? project.patent : undefined;
   const illustration =
-    project.patent.dateKind === "illustration"
-      ? `The patent sheet is a later illustration (${project.patent.filed}), not this project's filing date.`
+    patent?.dateKind === "illustration"
+      ? `The patent sheet is a later illustration (${patent.filed}), not this project's filing date.`
       : null;
 
   return (
@@ -260,6 +270,7 @@ export default async function ProjectPage({
                 </p>
               </section>
 
+              {project.plate ? (
               <section className="decoration-plate mt-8" aria-label="Halftone plate">
                 <p className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">
                   Decoration · illustrative plate
@@ -274,7 +285,9 @@ export default async function ProjectPage({
                   />
                 </div>
               </section>
+              ) : null}
 
+              {project.apparatus.path.length || patent ? (
               <div className="proof-plate">
               <ExhibitSection id="apparatus" title="Proof · apparatus">
                 {illustration ? (
@@ -282,14 +295,23 @@ export default async function ProjectPage({
                     {illustration}
                   </p>
                 ) : null}
+                {project.apparatus.path.length ? (
                 <div className="mt-3">
                   <ApparatusSchematic apparatus={project.apparatus} />
                 </div>
+                ) : null}
+                {patent ? (
                 <div className="mt-4">
-                  <PatentFigure spec={project.patent} />
+                  <PatentFigure spec={patent} />
                 </div>
+                ) : (
+                  <p className="mt-3 font-mono text-[12px] leading-relaxed text-faded">
+                    Patent drawings still compile from the TypeScript ledger. This exhibit has no filed sheet.
+                  </p>
+                )}
               </ExhibitSection>
               </div>
+              ) : null}
 
               <ExhibitSection id="line" title="The line">
                 <ol className="mt-3 space-y-3">

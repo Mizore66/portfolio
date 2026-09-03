@@ -98,6 +98,7 @@ describe("measured claims have one owner each", () => {
     expect(POSITIONING.deskNote).toMatch(/internal screenshots remain private/);
     expect(POSITIONING.nameNote).toMatch(/Anas Tarek Qumhiyeh on the résumé/);
     expect(POSITIONING.availability).not.toMatch(/visa|relocat|work authorization/i);
+    expect(POSITIONING.workAuth).toMatch(/not filed/);
     expect(exhibitTitle({ name: "Veridian", subtitle: "MLOps Tradeoff Engine" })).toBe(
       "Veridian — MLOps Tradeoff Engine",
     );

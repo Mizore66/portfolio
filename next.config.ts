@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
         source: "/:path*",
         headers: SECURITY_HEADERS,
       },
+      {
+        source: "/((?!admin|_next|print-edition|api/).*)",
+        headers: [{ key: "Cache-Control", value: "public, s-maxage=60, stale-while-revalidate=600" }],
+      },
     ];
   },
 };

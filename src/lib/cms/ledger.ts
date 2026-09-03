@@ -29,6 +29,7 @@ function claim(
     caveat: extra.caveat ?? metric.note ?? "",
     denominator: extra.denominator ?? "",
     source: extra.source ?? "",
+    sourceUrl: extra.sourceUrl ?? "",
     heroEligible: extra.heroEligible ?? false,
     archived: extra.archived ?? false,
     surfaces: extra.surfaces ?? (extra.heroEligible ? ["home", "opening", "resume"] : ["opening", "resume", "exhibit"]),
@@ -41,9 +42,21 @@ function field(project: (typeof resumeData.projects)[number], key: keyof CmsProj
     : "";
 }
 
+function formatLayers(layers?: { name: string; role: string }[]): string {
+  return (layers ?? []).map((layer) => `${layer.name} — ${layer.role}`).join("\n");
+}
+
 function projectCopies(): CmsProjectCopy[] {
   return resumeData.projects.map((project) => ({
     slug: project.slug,
+    title: project.name,
+    subtitle: project.subtitle,
+    date: project.date,
+    category: project.slug === "circuitmindai" || project.slug === "mirrorfi" ? "Product / backend" : "ML / data systems",
+    tech: project.tech.join(", "),
+    github: project.github,
+    seoTitle: `${project.name} — ${project.subtitle}`,
+    seoDescription: project.meta,
     purpose: project.purpose,
     impact: project.impact,
     why: field(project, "why"),
@@ -53,6 +66,15 @@ function projectCopies(): CmsProjectCopy[] {
     example: field(project, "example"),
     rejected: field(project, "rejected"),
     retrospective: field(project, "retrospective"),
+    bullets: project.bullets.join("\n"),
+    description: project.description,
+    plate: project.plate,
+    plateCaption: project.plateCaption,
+    plateAlt: project.plateAlt,
+    apparatusName: project.apparatus.name,
+    apparatusRuntime: project.apparatus.runtime ?? "",
+    apparatusPath: formatLayers(project.apparatus.path),
+    apparatusBeside: formatLayers(project.apparatus.beside),
     archived: false,
   }));
 }
@@ -62,6 +84,8 @@ export function ledgerDocument(): SiteDocument {
     revisionId: "ledger",
     status: "published",
     publishedAt: SITE_REVISED,
+    savedAt: SITE_REVISED,
+    restoredFrom: "",
     note: "TypeScript ledger. Publish from /admin to replace this snapshot.",
     profile: {
       displayName: "Anas T. Qumhiyeh",
@@ -119,7 +143,11 @@ export function ledgerDocument(): SiteDocument {
         sample: METRICS.gateC.note,
         environment: "50 000 nodes/move",
         date: "2026-09-03",
+        denominator: METRICS.gateC.denominator,
+        source: METRICS.gateC.source,
+        sourceUrl: "/lab/learned-evaluator",
         heroEligible: true,
+        surfaces: ["home", "opening", "resume", "lab"],
       }),
       claim("graphragRetrieval", METRICS.graphragRetrieval, {
         method: METRICS.graphragRetrieval.method,
@@ -127,18 +155,24 @@ export function ledgerDocument(): SiteDocument {
         sample: METRICS.graphragRetrieval.note,
         environment: METRICS.graphragRetrieval.corpus,
         date: "2025-10",
+        denominator: "Unfiled — query count, scoring rule, and Recall@k were not published.",
+        source: "Independent handbook / policy archive exhibit",
       }),
       claim("veridianUptime", METRICS.veridianUptime, {
         method: "Cloud Run evaluation",
         environment: METRICS.veridianUptime.runtime,
         sample: METRICS.veridianUptime.note,
         date: "2026-04",
+        denominator: "Unfiled — evaluation period and sample size were not published.",
+        source: "Cloud Run evaluation filing",
       }),
       claim("veridianEmissions", METRICS.veridianEmissions, {
         method: METRICS.veridianEmissions.note,
         sample: "Evaluation period and emissions source were not filed.",
         environment: "Cloud Run",
         date: "2026-04",
+        denominator: "Unfiled — evaluation period, sample size, and emissions calculation source were not published.",
+        source: "Cloud Run scheduling evaluation",
       }),
       claim("riskAuc", METRICS.riskAuc, {
         method: "AUC-ROC",
@@ -146,6 +180,8 @@ export function ledgerDocument(): SiteDocument {
         sample: METRICS.riskAuc.note,
         environment: "Offline evaluation",
         date: "2025",
+        denominator: "Unfiled — dataset size, split, leakage controls, and positive-class prevalence were not published.",
+        source: "Offline evaluation filing",
       }),
       claim("slmInference", METRICS.slmInference, {
         method: METRICS.slmInference.path,
@@ -153,16 +189,22 @@ export function ledgerDocument(): SiteDocument {
         caveat: "Not claimed as a measured throughput.",
         environment: "DeepSpeed distillation path",
         date: "2025-07",
+        denominator: "Unfiled — hardware, batch size, tokens/second, and named quality evaluation were not published.",
+        source: "Distillation exhibit filing",
       }),
       claim("setelCoverage", METRICS.setelCoverage, {
         method: "Unit tests",
         environment: METRICS.setelCoverage.scope,
         date: "2025-12",
+        denominator: "Unfiled — checkout and capture test count was not published.",
+        source: "Internship observation on checkout and capture, Jul–Dec 2025",
       }),
       claim("wdOversight", METRICS.wdOversight, {
         method: "Lab dashboard observation",
         environment: METRICS.wdOversight.context,
         date: "2025-12",
+        denominator: METRICS.wdOversight.denominator,
+        source: "Western Digital lab dashboard contract, Feb–Dec 2025",
       }),
     ],
     projects: projectCopies(),

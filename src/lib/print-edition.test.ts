@@ -70,7 +70,7 @@ describe("print edition", () => {
       expect(text).toContain(p.name);
     }
     expect(FEATURED_PROJECT_SLUGS).toContain("veridian");
-    expect(text).toContain("Automatic lower-carbon");
+    expect(text).toContain("lower-carbon");
     expect(text).toContain("70B-to-3B");
     expect(text).not.toContain("12x inference speedup");
     expect(text).toContain("Monash University");
@@ -83,5 +83,9 @@ describe("print edition", () => {
     expect(text).toContain(`/URI (${SITE_URL}/opening-preparation)`);
     expect(HERO_PROOF).toHaveLength(3);
     expect(POSITIONING.availability).toMatch(/Open to/);
+    const experienceAt = text.indexOf("EXPERIENCE");
+    const educationAt = text.indexOf("EDUCATION");
+    expect(experienceAt).toBeGreaterThan(0);
+    expect(educationAt).toBeGreaterThan(experienceAt);
   });
 });

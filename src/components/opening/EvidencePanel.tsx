@@ -1,17 +1,28 @@
-import { EvidenceMeta } from "@/components/opening/EvidenceMeta";
-import type { EvidenceCard, EvidenceKind } from "@/lib/metrics";
+import { EVIDENCE_TIER, type EvidenceCard, type EvidenceKind } from "@/lib/metrics";
+
+function noteWithoutKind(note: string | undefined, kind?: EvidenceKind): string | undefined {
+  if (!note || !kind) return note;
+  const label = EVIDENCE_TIER[kind];
+  return note
+    .replace(new RegExp(`^${label}\\s*[·•,]\\s*`, "i"), "")
+    .replace(/^evaluation\s*[·•,]\s*/i, "");
+}
 
 export function EvidencePanel({
   evidence,
   kind,
   note,
   date,
+  source,
 }: {
   evidence: EvidenceCard;
   kind?: EvidenceKind;
   note?: string;
   date: string;
+  source?: string;
 }) {
+  const cleaned = noteWithoutKind(note, kind);
+  const gap = evidence.sample || evidence.alsoFiled;
   return (
     <dl className="evidence-card" data-testid="evidence-card">
       <div className="evidence-result">
@@ -28,7 +39,9 @@ export function EvidencePanel({
         <div className="evidence-method">
           <dt>Kind</dt>
           <dd>
-            <EvidenceMeta note={note} kind={kind} />
+            <span className="evidence-badge" data-testid="evidence-badge">
+              {EVIDENCE_TIER[kind]}
+            </span>
           </dd>
         </div>
       ) : (
@@ -37,6 +50,24 @@ export function EvidencePanel({
           <dd>Capability as filed — not a numbered experiment</dd>
         </div>
       )}
+      {cleaned ? (
+        <div className="evidence-method">
+          <dt>Note</dt>
+          <dd className="evidence-meta-note">{cleaned}</dd>
+        </div>
+      ) : null}
+      {source ? (
+        <div className="evidence-method">
+          <dt>Source</dt>
+          <dd>{source}</dd>
+        </div>
+      ) : null}
+      {gap ? (
+        <div className="evidence-limitation">
+          <dt>Gap</dt>
+          <dd>{gap}</dd>
+        </div>
+      ) : null}
       {evidence.method ? (
         <div className="evidence-method">
           <dt>Method</dt>
@@ -53,18 +84,6 @@ export function EvidencePanel({
         <div className="evidence-method">
           <dt>Environment</dt>
           <dd>{evidence.environment}</dd>
-        </div>
-      ) : null}
-      {evidence.sample ? (
-        <div className="evidence-limitation">
-          <dt>Evidence gap</dt>
-          <dd>{evidence.sample}</dd>
-        </div>
-      ) : null}
-      {evidence.alsoFiled ? (
-        <div className="evidence-limitation">
-          <dt>Evidence gap</dt>
-          <dd>{evidence.alsoFiled}</dd>
         </div>
       ) : null}
       <div className="evidence-method">

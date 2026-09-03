@@ -158,7 +158,7 @@ function OverlayFigLabel({
   );
 }
 
-function Overlay({ spec }: { spec: ApparatusSpec; caption: string }) {
+function Overlay({ spec }: { spec: ApparatusSpec }) {
   return (
     <svg
       viewBox="0 0 100 100"
@@ -181,13 +181,13 @@ function Engraving({ spec, labeled }: { spec: ApparatusSpec; labeled?: boolean }
     <div className="patent-engraving" data-testid={labeled ? "patent-engraving" : undefined}>
       <Image
         src={spec.engraving.src}
-        alt={spec.engraving.alt}
+        alt=""
         width={spec.engraving.width}
         height={spec.engraving.height}
         className="patent-engraving-img"
         sizes={IMAGE_SIZES.patentSheet}
       />
-      <Overlay spec={spec} caption={`APPARATUS FOR ${spec.function}. ${patentDateLine(spec)}`} />
+      <Overlay spec={spec} />
     </div>
   );
 }
@@ -265,12 +265,13 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
   }, [close]);
 
   return (
-    <figure
+      <figure
       className="patent-figure"
       data-testid="patent-figure"
       data-fig={spec.fig}
       data-layout={spec.layout}
       data-move={spec.move}
+      aria-label={spec.engraving.alt}
     >
       <div className="patent-figure-mat">
         <SheetHeader spec={spec} />
@@ -298,6 +299,17 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
             </li>
           ))}
         </ol>
+        <details className="patent-transcript" open>
+          <summary>Diagram description</summary>
+          <p className="mt-2 font-display text-[16px] leading-snug">{spec.engraving.alt}</p>
+          <ol className="mt-2">
+            {spec.parts.map((part) => (
+              <li key={`t-${part.n}`}>
+                {part.n}. {part.label} — {part.mapsTo}
+              </li>
+            ))}
+          </ol>
+        </details>
         {showDagger ? (
           <p className="patent-dagger" data-testid="patent-dagger">
             {DAGGER}

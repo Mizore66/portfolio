@@ -377,10 +377,10 @@
 
 .artifact-link {
   display: inline-flex;
-  min-height: 24px;
-  min-width: 24px;
+  min-height: 44px;
+  min-width: 44px;
   align-items: center;
-  padding-block: 4px;
+  padding-block: 12px;
   padding-inline: 2px;
   transition:
     background var(--motion-fast) ease,
@@ -1590,29 +1590,30 @@
 }
 
 .paper-toc {
-  display: none;
+  display: block;
+  margin: 0 0 var(--space-3);
+  border: 1px solid var(--ink);
+  padding: var(--space-2);
 }
-@media (max-width: 767px) {
+.paper-toc summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.paper-toc ol {
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 768px) {
   .paper-toc {
-    display: block;
-    margin: 0 0 var(--space-3);
-    border: 1px solid var(--ink);
-    padding: var(--space-2);
-  }
-  .paper-toc summary {
-    display: flex;
-    align-items: center;
-    min-height: 44px;
-    font-family: var(--font-mono), ui-monospace, monospace;
-    font-size: 12px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    cursor: pointer;
-  }
-  .paper-toc ol {
-    margin: var(--space-2) 0 0;
-    padding: 0;
-    list-style: none;
+    max-height: 40vh;
+    overflow: auto;
   }
 }
 
@@ -2353,7 +2354,7 @@ h1, h2, h3 {
   font-size: 12px;
   letter-spacing: 0.08em;
 }
-@media (max-width: 979px) {
+@media (max-width: 767px) {
   .hero-left,
   .hero-proof-wrap {
     display: contents;
@@ -2374,10 +2375,10 @@ h1, h2, h3 {
     order: 5;
   }
 }
-@media (min-width: 980px) {
+@media (min-width: 768px) {
   .home-desk {
     display: grid;
-    grid-template-columns: minmax(0, 62fr) minmax(0, 38fr);
+    grid-template-columns: minmax(0, 60fr) minmax(0, 40fr);
     grid-template-areas:
       "hero board"
       "work work";
@@ -2756,4 +2757,215 @@ h1, h2, h3 {
     box-shadow: none;
   }
 }
+
+.preview-banner {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.claim-dagger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  vertical-align: middle;
+}
+.claim-dagger sup {
+  font-size: 0.75em;
+  line-height: 1;
+}
+.claim-note-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-display), serif;
+  font-size: 16px;
+  color: var(--book-blue);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.lab-filing-link,
+.exhibit-hit,
+.exhibit-repo {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.admin-nav .recruiter-nav-list {
+  flex-wrap: wrap;
+  overflow: visible;
+}
+.admin-nav {
+  flex-wrap: wrap;
+  row-gap: 0;
+}
+.recruiter-nav-link[aria-current="page"] {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-weight: 700;
+}
+.admin-list-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: end;
+}
+.admin-date-parts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+.admin-confirm {
+  width: 100%;
+  border: 2px solid var(--ink);
+  padding: var(--space-4);
+  background: var(--paper);
+}
+.admin-actions-status {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.evidence-meta dt {
+  margin: 0 0.4em 0 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+.evidence-meta > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.5rem;
+  margin-right: 1rem;
+  margin-top: 0.35rem;
+}
+@media (max-width: 699px) {
+  .scoresheet-secondary {
+    display: none;
+  }
+}
+#play-board:focus-visible,
+[data-testid="board-diagram"] #play-board:focus-visible,
+.newspaper-board:focus-visible {
+  outline: 3px solid var(--score-red);
+  outline-offset: 3px;
+}
+.board-step:focus-visible:not(:disabled) {
+  outline: 3px solid var(--score-red);
+  outline-offset: 2px;
+  background: var(--ink);
+  color: var(--paper);
+}
+.exhibit-section#rejected {
+  border-top: 3px solid var(--ink);
+}
+.exhibit-section-prominent + .exhibit-section#rejected,
+.exhibit-section#rejected + .exhibit-section-prominent {
+  margin-top: var(--space-10);
+}
+@media (max-width: 479px) {
+  .exhibit-clip header {
+    padding-top: 0.5rem;
+  }
+  .exhibit-title {
+    font-size: clamp(1.85rem, 10vw, 2.4rem);
+  }
+  .masthead-kicker {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+  }
+}
+@media (forced-colors: active) {
+  .preview-banner {
+    border: 2px solid CanvasText;
+  }
+  .claim-dagger,
+  .claim-note-link,
+  .artifact-link {
+    outline: 1px solid CanvasText;
+  }
+}
+.scoresheet-progress {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.diff-del {
+  text-decoration: line-through;
+  background: color-mix(in srgb, var(--score-red) 18%, var(--paper));
+}
+.diff-ins {
+  background: color-mix(in srgb, var(--book-blue) 16%, var(--paper));
+}
+
+.admin-reorder ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-2);
+}
+.admin-reorder li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.patent-transcript {
+  display: none;
+  margin-top: var(--space-3);
+  font-size: 14px;
+  line-height: 1.4;
+}
+@media (max-width: 639px) {
+  .patent-transcript {
+    display: block;
+  }
+}
+
+.evidence-meta dt {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+@media (max-width: 699px) {
+  [data-sticky-board].board-left-controls {
+    min-height: 0;
+    padding-bottom: 0;
+  }
+  [data-sticky-board].board-left-controls [data-testid="board-diagram"] {
+    max-height: 148px;
+    overflow: hidden;
+  }
+}
+
+.nav-more {
+  position: relative;
+}
+.nav-more > div {
+  position: relative;
+}
+
+@media (min-width: 640px) {
+  .patent-figure {
+    max-width: none;
+  }
+}
+@media (max-width: 639px) {
+  .patent-figure-mat {
+    width: 100%;
+  }
+}
+
 

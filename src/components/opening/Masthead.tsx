@@ -75,7 +75,7 @@ export async function HeroIdentity() {
         </p>
       </div>
       <div data-testid="masthead-proof" className="hero-proof-wrap">
-        <ul className="hero-proof px-4 sm:px-6" aria-label="Filed proof">
+        <ul id="proof" className="hero-proof px-4 sm:px-6" aria-label="Filed proof">
           {proof.map((item, index) => {
             const caveat = item.note;
             const date = item.date ? formatClaimDate(item.date) : "";
@@ -93,6 +93,11 @@ export async function HeroIdentity() {
                     aria-label={`Method for ${item.label}`}
                   >
                     <sup>{index + 1}</sup>
+                  </a>
+                </p>
+                <p className="mt-2">
+                  <a href={`#claim-note-${item.id}`} className="claim-note-link">
+                    Method note {index + 1}
                   </a>
                 </p>
                 <EvidenceMeta note={note} kind={item.kind} />

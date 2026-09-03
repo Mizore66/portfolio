@@ -5,11 +5,13 @@ import { originMatchesHost } from "@/lib/cms/origin";
 import { postgresNeedsSsl, postgresUrl, postgresUrlSource } from "@/lib/cms/env";
 import { clientIpFrom, nextAttempt, rateLimitKey } from "@/lib/cms/auth-store";
 import { applyFormToDocument } from "@/lib/cms/form";
+import { hydrateDocument } from "@/lib/cms/hydrate";
 import { parseImportedDocument } from "@/lib/cms/import-document";
 import { ledgerDocument } from "@/lib/cms/ledger";
-import { overlayProject } from "@/lib/cms/overlay";
-import { documentDiff, groupedDocumentDiff } from "@/lib/cms/diff";
+import { overlayProject, overlayProjects, resolveExhibit } from "@/lib/cms/overlay";
+import { documentDiff, groupedDocumentDiff, wordDiff } from "@/lib/cms/diff";
 import { claimHeroReady, validateDocument } from "@/lib/cms/validate";
+import { draftHealth, draftStatus, revisionInstant } from "@/lib/cms/health";
 import { parseSessionToken } from "@/lib/cms/session-mac";
 import { resumeData } from "@/lib/data";
 
@@ -56,15 +58,20 @@ describe("cms ledger", () => {
     expect(rows.some((row) => row.path === "profile.dek" && row.to === "Draft dek")).toBe(true);
   });
 
-  it("refuses to drop a required claim or invent a project slug", () => {
+  it("refuses to drop a required claim and accepts a CMS-created project slug", () => {
     const doc = ledgerDocument();
     const missing = { ...doc, claims: doc.claims.filter((claim) => claim.id !== "setelDefects") };
     expect(validateDocument(missing).join(" ")).toMatch(/setelDefects/);
-    const ghost = {
+    const created = {
       ...doc,
-      projects: [{ slug: "not-a-project", purpose: "", impact: "", why: "", judgment: "", constraint: "", limitation: "", example: "", rejected: "", retrospective: "", archived: false }],
+      projects: [...doc.projects, { ...doc.projects[0]!, slug: "new-desk", title: "New desk", archived: true }],
     };
-    expect(validateDocument(ghost).join(" ")).toMatch(/Unknown project slug/);
+    expect(validateDocument(created)).toEqual([]);
+    const invalid = {
+      ...doc,
+      projects: [{ ...doc.projects[0]!, slug: "Not A Project" }],
+    };
+    expect(validateDocument(invalid).join(" ")).toMatch(/Invalid project slug/);
     const dated = {
       ...doc,
       claims: doc.claims.map((claim) => (claim.id === "gateC" ? { ...claim, date: "3 Sept" } : claim)),
@@ -211,11 +218,170 @@ describe("cms session token", () => {
 });
 
 describe("cms ledger caveats", () => {
+  it("counts missing hero method on the draft health packet", () => {
+    const published = ledgerDocument();
+    expect(draftHealth(published).heroMissing).toHaveLength(0);
+    const draft = {
+      ...published,
+      claims: published.claims.map((claim) =>
+        claim.id === "gateC" ? { ...claim, method: "", heroEligible: true } : claim,
+      ),
+    };
+    expect(claimHeroReady(draft.claims.find((c) => c.id === "gateC")!)).toContain("method");
+    expect(draftHealth(draft).heroMissing.map((c) => c.id)).toContain("gateC");
+    expect(draftHealth(draft).blocking).toBe(true);
+    expect(validateDocument(draft).join(" ")).toMatch(/method/);
+  });
+
+  it("labels draft state from the diff, not an In hand stamp", () => {
+    const published = ledgerDocument();
+    expect(draftStatus(published, null).label).toBe("No draft");
+    expect(draftStatus(published, published).label).toBe("Draft matches live");
+    const draft = { ...published, profile: { ...published.profile, dek: "Changed dek" } };
+    expect(draftStatus(published, draft).label).toMatch(/unpublished change/);
+  });
+
+  it("reads draft timestamps from the revision id, not the copied publishedAt", () => {
+    const now = Date.now();
+    expect(revisionInstant({ revisionId: `draft-${now}`, publishedAt: "2020-01-01T00:00:00.000Z" })).toBe(
+      new Date(now).toISOString(),
+    );
+  });
+
+  it("composes a measurement date from year/month/day parts", () => {
+    const published = ledgerDocument();
+    const form = new FormData();
+    form.set("claims-present", "1");
+    form.set("claim-gateC-year", "2026");
+    form.set("claim-gateC-month", "09");
+    form.set("claim-gateC-day", "03");
+    const next = applyFormToDocument(form, published);
+    expect(next.claims.find((c) => c.id === "gateC")?.date).toBe("2026-09-03");
+  });
+
   it("gives every hero claim a caveat or baseline", () => {
     const doc = ledgerDocument();
     const setel = doc.claims.find((c) => c.id === "setelDefects")!;
     expect(setel.caveat).toMatch(/not claimed as coverage/i);
     const slm = doc.claims.find((c) => c.id === "slmInference")!;
     expect(slm.caveat).toMatch(/Not claimed as a measured throughput/);
+    for (const claim of doc.claims.filter((row) => row.heroEligible)) {
+      expect(claimHeroReady(claim), claim.id).toEqual([]);
+    }
+  });
+
+  it("keeps a restored snapshot's note off the published-vs-draft diff", () => {
+    const published = ledgerDocument();
+    const snapshot = {
+      ...published,
+      note: "Snapshot note that must not rewrite Profile.note",
+      profile: { ...published.profile, dek: "Older dek" },
+    };
+    const restored = { ...snapshot, note: published.note, restoredFrom: "pub-1" };
+    const rows = documentDiff(published, restored);
+    expect(rows.some((row) => row.path === "note")).toBe(false);
+    expect(rows.some((row) => row.path === "profile.dek" && row.to === "Older dek")).toBe(true);
+  });
+
+  it("creates, duplicates, and deletes CMS aspirations and exhibits", () => {
+    const published = ledgerDocument();
+    const aspForm = new FormData();
+    aspForm.set("aspirations-present", "1");
+    aspForm.set("asp-new-id", "next-desk");
+    aspForm.set("asp-create", "1");
+    const withAsp = applyFormToDocument(aspForm, published);
+    expect(withAsp.aspirations.some((item) => item.id === "next-desk")).toBe(true);
+
+    const dupAsp = new FormData();
+    dupAsp.set("aspirations-present", "1");
+    dupAsp.set("asp-duplicate", "next-desk");
+    const copiedAsp = applyFormToDocument(dupAsp, withAsp);
+    expect(copiedAsp.aspirations.some((item) => item.id === "next-desk-copy")).toBe(true);
+
+    const delLedgerAsp = new FormData();
+    delLedgerAsp.set("aspirations-present", "1");
+    delLedgerAsp.set("asp-delete", "swe-fintech-ml");
+    const withoutLedgerAsp = applyFormToDocument(delLedgerAsp, published);
+    expect(withoutLedgerAsp.aspirations.some((item) => item.id === "swe-fintech-ml")).toBe(false);
+    expect(hydrateDocument(withoutLedgerAsp).aspirations.some((item) => item.id === "swe-fintech-ml")).toBe(false);
+
+    const projectForm = new FormData();
+    projectForm.set("projects-present", "1");
+    projectForm.set("project-new-slug", "new-desk");
+    projectForm.set("project-create", "1");
+    const withProject = applyFormToDocument(projectForm, published);
+    const created = withProject.projects.find((project) => project.slug === "new-desk");
+    expect(created?.archived).toBe(true);
+    expect(validateDocument(withProject)).toEqual([]);
+
+    const dupProject = new FormData();
+    dupProject.set("projects-present", "1");
+    dupProject.set("project-duplicate", "veridian");
+    const copiedProject = applyFormToDocument(dupProject, withProject);
+    expect(copiedProject.projects.some((project) => project.slug === "veridian-copy")).toBe(true);
+
+    const delLedger = new FormData();
+    delLedger.set("projects-present", "1");
+    delLedger.set("project-delete", "veridian");
+    expect(applyFormToDocument(delLedger, copiedProject).projects.some((project) => project.slug === "veridian")).toBe(
+      true,
+    );
+
+    const delCreated = new FormData();
+    delCreated.set("projects-present", "1");
+    delCreated.set("project-delete", "new-desk");
+    expect(applyFormToDocument(delCreated, copiedProject).projects.some((project) => project.slug === "new-desk")).toBe(
+      false,
+    );
+  });
+
+  it("overlays apparatus layers and renders a CMS-only exhibit", () => {
+    const published = ledgerDocument();
+    const draft = {
+      ...published,
+      projects: [
+        ...published.projects.map((project) =>
+          project.slug === "veridian"
+            ? { ...project, apparatusRuntime: "Cloud Run preview", apparatusPath: "MCP — intercepts Terraform" }
+            : project,
+        ),
+        {
+          ...published.projects[0]!,
+          slug: "new-desk",
+          title: "New desk",
+          purpose: "A CMS-only filing.",
+          archived: false,
+          apparatusName: "New desk",
+          apparatusPath: "Editor — writes copy",
+        },
+      ],
+    };
+    const veridian = overlayProject(resumeData.projects[0]!, draft);
+    expect(veridian && "apparatus" in veridian ? veridian.apparatus.runtime : "").toBe("Cloud Run preview");
+    const extras = overlayProjects(resumeData.projects, draft);
+    expect(extras.some((project) => project.slug === "new-desk")).toBe(true);
+    expect(resolveExhibit("new-desk", draft)?.name).toBe("New desk");
+    expect(validateDocument(draft)).toEqual([]);
+  });
+
+  it("marks word-level insertions and deletions", () => {
+    const marks = wordDiff("hello world", "hello there");
+    expect(marks.some((mark) => mark.type === "del" && mark.text === "world")).toBe(true);
+    expect(marks.some((mark) => mark.type === "ins" && mark.text === "there")).toBe(true);
+  });
+});
+
+describe("cms totp", () => {
+  it("accepts the current window when a secret is configured", async () => {
+    const { totpCode, verifyTotp } = await import("@/lib/cms/totp");
+    const secret = "JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP";
+    const previous = process.env.ADMIN_TOTP_SECRET;
+    process.env.ADMIN_TOTP_SECRET = secret;
+    const at = Date.parse("2026-09-03T10:00:00.000Z");
+    expect(verifyTotp(totpCode(secret, at), at)).toBe(true);
+    expect(verifyTotp("000000", at)).toBe(false);
+    expect(verifyTotp("not-a-code", at)).toBe(false);
+    if (previous === undefined) delete process.env.ADMIN_TOTP_SECRET;
+    else process.env.ADMIN_TOTP_SECRET = previous;
   });
 });

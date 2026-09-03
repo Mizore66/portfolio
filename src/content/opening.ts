@@ -37,7 +37,8 @@ export const BROADSHEET = {
   weatherKicker: "Weather",
   weather: "Outlook: shipping",
   stamp: "C50",
-  playInvite: "Play the position",
+  playInvite: "Play this line",
+  playInviteOff: "Stop playing",
   playMainline: "Play mainline",
   playHint: "The annotator will respond",
   lampshade: "Annotators and engines have disagreed since 1997.",
@@ -582,7 +583,7 @@ export const OPENING_NODES: OpeningNode[] = [
     title: "Tucking the Bishop",
     fact: `${slm.name} — ${slm.subtitle}. The goal was to preserve task behavior in a 3B student while reducing serving cost and latency. Quality parity was not supported by a named filed evaluation. 70B teacher via QLoRA; DeepSpeed and FlashAttention so the distillation fit; ${METRICS.slmLatency.display}, ${classifiedShort(METRICS.slmInference)}.`,
     commentary:
-      "Distillation keeps the same job on a smaller piece, cheaper to keep on the board. The Italian bishop steps back to b6 and still looks at the same diagonal.",
+      "Distillation keeps GraphRAG retrieval on a smaller piece, cheaper to keep on the board. The Italian bishop steps back to b6 and still looks at the same diagonal.",
     eval: 0.5,
     evalText: "+0.50",
     artifacts: [

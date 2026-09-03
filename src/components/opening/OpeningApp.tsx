@@ -23,9 +23,11 @@ import {
   BRAND_TITLE,
   collectPlies,
   FLAGSHIP_ID,
+  formatLine,
   getNode,
   isOpeningId,
   lastPly,
+  moveHeading,
   nextMainlineBook,
   ROOT_ID,
   selectionTitle,
@@ -402,6 +404,25 @@ export function OpeningApp({
 
   useEffect(() => {
     const el = document.querySelector<HTMLElement>("[data-sticky-board]");
+    const keys = document.getElementById("board-keys");
+    if (!el || !keys) return;
+    const mq = window.matchMedia("(max-width: 699px)");
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!mq.matches || !entry) {
+          el.classList.remove("board-left-controls");
+          return;
+        }
+        el.classList.toggle("board-left-controls", !entry.isIntersecting);
+      },
+      { threshold: 0 },
+    );
+    io.observe(keys);
+    return () => io.disconnect();
+  }, [ready]);
+
+  useEffect(() => {
+    const el = document.querySelector<HTMLElement>("[data-sticky-board]");
     if (!el) return;
     const apply = () => {
       const rect = el.getBoundingClientRect();
@@ -489,8 +510,11 @@ export function OpeningApp({
   }
 
   function onPlayThePosition() {
-    setPlayHint(true);
-    document.getElementById("play-board")?.focus();
+    setPlayHint((on) => {
+      const next = !on;
+      if (next) document.getElementById("play-board")?.focus();
+      return next;
+    });
   }
 
   return (
@@ -601,15 +625,18 @@ export function OpeningApp({
                     )}
                   >
                     <span aria-hidden>♟</span>
-                    {BROADSHEET.playInvite}
+                    {playHint ? BROADSHEET.playInviteOff : BROADSHEET.playInvite}
                   </button>
                 </div>
-                <p data-testid="board-keys" className="font-mono text-[12px] text-faded">
+                <p data-testid="board-keys" id="board-keys" className="font-mono text-[12px] text-faded">
                   {playing
                     ? BROADSHEET.boardAutoplay
                     : playHint
                       ? BROADSHEET.boardPlayable
                       : BROADSHEET.boardKeys}
+                </p>
+                <p className="scoresheet-progress font-mono text-[12px] text-ink" aria-live="polite">
+                  Now: {moveHeading(node)} · {formatLine(selectedId)}
                 </p>
                 {playHint ? (
                   <p className="font-display text-[16px] italic text-ink">{BROADSHEET.playHint}</p>

@@ -119,7 +119,7 @@ export const RISK_ENGINE: ApparatusSpec = {
   review: {
     status: "validated",
     notes:
-      "Architecture 1:1. Hopper=Kafka; millwheels=LightGBM/XGBoost ensemble; stamp=BentoML; loupe beside the mill=SHAP; belt=the daily pipeline; gauge=0.87 AUC. Not relabeled to fit the picture.",
+      "Architecture 1:1. Hopper=Kafka; millwheels=LightGBM/XGBoost ensemble; stamp=BentoML; loupe beside the mill=SHAP; belt=the daily pipeline; gauge=0.87 AUC-ROC. Not relabeled to fit the picture.",
   },
   parts: [
     { n: 1, glyph: "hopper", label: "HOPPER", mapsTo: "Kafka — daily market signals", confidence: "confirmed" },

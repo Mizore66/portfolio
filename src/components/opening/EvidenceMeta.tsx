@@ -11,17 +11,21 @@ function noteWithoutKind(note: string | undefined, kind?: EvidenceKind): string 
 export function EvidenceMeta({
   note,
   kind,
+  source,
+  gap,
 }: {
   note?: string;
   kind?: EvidenceKind;
+  source?: string;
+  gap?: string;
 }) {
   const cleaned = noteWithoutKind(note, kind);
-  if (!cleaned && !kind) return null;
+  if (!cleaned && !kind && !source && !gap) return null;
   return (
     <dl className="evidence-meta">
       {kind ? (
         <div>
-          <dt className="sr-only">Kind</dt>
+          <dt>Kind</dt>
           <dd>
             <span className="evidence-badge" data-testid="evidence-badge">
               {EVIDENCE_TIER[kind]}
@@ -31,8 +35,20 @@ export function EvidenceMeta({
       ) : null}
       {cleaned ? (
         <div>
-          <dt className="sr-only">Note</dt>
-          <dd className={kind ? "evidence-meta-note" : undefined}>{kind ? ` · ${cleaned}` : cleaned}</dd>
+          <dt>Note</dt>
+          <dd className={kind ? "evidence-meta-note" : undefined}>{cleaned}</dd>
+        </div>
+      ) : null}
+      {source ? (
+        <div>
+          <dt>Source</dt>
+          <dd>{source}</dd>
+        </div>
+      ) : null}
+      {gap ? (
+        <div>
+          <dt>Gap</dt>
+          <dd>{gap}</dd>
         </div>
       ) : null}
     </dl>

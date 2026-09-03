@@ -55,7 +55,7 @@ type Mark = { role: "H1" | "H2" | "P" | "Link"; mcid: number };
 
 /**
  * One-page tagged résumé. Single column, no chessboard: ATS and screen
- * readers should not meet the Italian Game before Education.
+ * readers should not meet the Italian Game before Experience.
  */
 export function buildPrintEditionPdf(overlay?: { dek?: string; availability?: string }): Uint8Array {
   const d = resumeData;
@@ -138,18 +138,6 @@ export function buildPrintEditionPdf(overlay?: { dek?: string; availability?: st
     y -= 16;
   };
 
-  heading("Education");
-  marked("P", () => txt("F2", 9, M, y, d.education.degree));
-  y -= 11;
-  marked("P", () =>
-    txt("F1", 8, M, y, ascii(`${d.education.school}, ${d.education.location}. ${d.education.honours}.`)),
-  );
-  y -= 10;
-  marked("P", () =>
-    txt("F1", 8, M, y, ascii(`Graduated ${d.education.graduation}. WAM ${d.education.wam}  |  CGPA ${d.education.cgpa}.`)),
-  );
-  y -= 14;
-
   heading("Experience");
   for (const job of d.experience) {
     const who = job.company ? `${job.title}, ${job.company}` : job.title;
@@ -170,12 +158,24 @@ export function buildPrintEditionPdf(overlay?: { dek?: string; availability?: st
     y -= 6;
   }
 
+  heading("Education");
+  marked("P", () => txt("F2", 9, M, y, d.education.degree));
+  y -= 11;
+  marked("P", () =>
+    txt("F1", 8, M, y, ascii(`${d.education.school}, ${d.education.location}. ${d.education.honours}.`)),
+  );
+  y -= 10;
+  marked("P", () =>
+    txt("F1", 8, M, y, ascii(`Graduated ${d.education.graduation}. WAM ${d.education.wam}  |  CGPA ${d.education.cgpa}.`)),
+  );
+  y -= 14;
+
   heading("Selected work");
   const featuredSet = new Set<string>(FEATURED_PROJECT_SLUGS);
   for (const p of d.projects.filter((proj) => featuredSet.has(proj.slug))) {
     const extra =
       p.slug === "veridian"
-        ? " Intercepts Terraform before the spike; recommends a lower-carbon compute configuration."
+        ? " Intercepts Terraform before provisioning or a demand-driven scale event; recommends a lower-carbon compute configuration."
         : p.slug === "circuitmindai"
           ? " Detector capability implemented; precision/recall not yet filed. Cached inspection steps for network loss."
           : p.slug === "multi-agent-graphrag"

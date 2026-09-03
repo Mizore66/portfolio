@@ -18,6 +18,7 @@ export type CmsClaim = {
   caveat: string;
   denominator: string;
   source: string;
+  sourceUrl: string;
   heroEligible: boolean;
   archived: boolean;
   surfaces: ("home" | "opening" | "resume" | "exhibit" | "lab")[];
@@ -56,8 +57,36 @@ export const PROJECT_COPY_KEYS = [
   "retrospective",
 ] as const;
 
+export const PROJECT_STRUCTURE_KEYS = [
+  "title",
+  "subtitle",
+  "date",
+  "category",
+  "tech",
+  "github",
+  "seoTitle",
+  "seoDescription",
+  "bullets",
+  "description",
+  "plate",
+  "plateCaption",
+  "plateAlt",
+  "apparatusName",
+  "apparatusRuntime",
+  "apparatusPath",
+  "apparatusBeside",
+] as const;
+
 export type CmsProjectCopy = {
   slug: string;
+  title: string;
+  subtitle: string;
+  date: string;
+  category: string;
+  tech: string;
+  github: string;
+  seoTitle: string;
+  seoDescription: string;
   purpose: string;
   impact: string;
   why: string;
@@ -67,6 +96,15 @@ export type CmsProjectCopy = {
   example: string;
   rejected: string;
   retrospective: string;
+  bullets: string;
+  description: string;
+  plate: string;
+  plateCaption: string;
+  plateAlt: string;
+  apparatusName: string;
+  apparatusRuntime: string;
+  apparatusPath: string;
+  apparatusBeside: string;
   archived: boolean;
 };
 
@@ -74,6 +112,8 @@ export type SiteDocument = {
   revisionId: string;
   status: "draft" | "published";
   publishedAt: string;
+  savedAt: string;
+  restoredFrom: string;
   note: string;
   profile: CmsProfile;
   aspirations: CmsAspiration[];
@@ -81,9 +121,22 @@ export type SiteDocument = {
   projects: CmsProjectCopy[];
 };
 
+export type CmsMediaAsset = {
+  pathname: string;
+  url: string;
+  uploadedAt: string;
+  alt: string;
+  caption: string;
+  contentType: string;
+  size: number;
+  usage: string;
+  focalPoint: string;
+};
+
 export type CmsStoreFile = {
   draft: SiteDocument | null;
   published: SiteDocument | null;
   revisions: SiteDocument[];
-  audit: { at: string; action: string; note: string }[];
+  audit: { at: string; action: string; note: string; actor?: string }[];
+  media: CmsMediaAsset[];
 };

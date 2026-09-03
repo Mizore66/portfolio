@@ -56,7 +56,7 @@ export function StickyBoardStatic({ planeId = "play-board" }: { planeId?: string
   }
 
   return (
-    <figure aria-describedby={`${planeId}-occ`}>
+    <figure aria-describedby={planeId === "hero-board" ? `${planeId}-occ` : `${planeId}-occ board-keys`}>
       <p className="sr-only" id={`${planeId}-occ`} data-testid="board-position">
         Occupancy {occupancyFen(pieces)}. {node.cap}.
       </p>

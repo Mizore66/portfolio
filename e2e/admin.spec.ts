@@ -6,7 +6,7 @@ test.describe("admin editor", () => {
     expect(response?.status()).toBe(200);
     await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
     await expect(page.getByTestId("correction")).toHaveCount(0);
-    await expect(page).toHaveTitle(/Editor/);
+    await expect(page).toHaveTitle(/Portfolio CMS/);
   });
 
   test("/admin without a session is sent to login", async ({ page }) => {

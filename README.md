@@ -2,7 +2,7 @@
 
 A recruiter-first portfolio: an annotated Italian Game mapped onto a career, not a chess puzzle. Moves are facts. Annotations are voice. Chess is the content, never a lock.
 
-This is the public scoresheet of [Anas Tarek Qumhiyeh](https://github.com/Mizore66) — software engineer building ML infrastructure and data-intensive systems for payments, laboratory operations, and retrieval.
+This is the public scoresheet of [Anas Tarek Qumhiyeh](https://github.com/Mizore66) — software engineer building ML infrastructure and data-intensive systems for payments, lab operations, and retrieval.
 
 ## What you are looking at
 

@@ -126,4 +126,16 @@ test.describe("round five invariants", () => {
       expect(overflow, `${width}px`).toBe(false);
     }
   });
+
+  test("400% zoom proxy and forced colors keep the homepage readable", async ({ page }) => {
+    await page.emulateMedia({ forcedColors: "active" });
+    await page.setViewportSize({ width: 320, height: 200 });
+    await page.goto("/");
+    await expect(page.getByTestId("masthead-role")).toBeVisible();
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 2,
+    );
+    expect(overflow).toBe(false);
+    await expect(page.getByTestId("masthead-proof")).toContainText(/−40%/);
+  });
 });

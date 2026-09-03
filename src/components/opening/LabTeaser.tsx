@@ -30,7 +30,7 @@ export function LabFilings() {
       {filings.map((p, i) => (
         <span key={p.slug}>
           {i > 0 ? " · " : null}
-          <Link href={`/projects/${p.slug}`} className="text-book-blue underline decoration-2 underline-offset-4">
+          <Link href={`/projects/${p.slug}`} className="lab-filing-link text-book-blue underline decoration-2 underline-offset-4">
             {exhibitTitle(p)}
           </Link>
         </span>

@@ -9,27 +9,46 @@ export const REQUIRED_CLAIM_IDS = [
   "veridianUptime",
 ] as const;
 
+export const HERO_REQUIRED_FIELDS = [
+  "method",
+  "source",
+  "denominator",
+  "environment",
+  "date",
+] as const;
+
+function present(value: string): boolean {
+  return value.trim().length > 0;
+}
+
+/** Required packet for a homepage proof card. Blank fields fail; “Unfiled …” counts as filed. */
 export function claimHeroReady(claim: CmsClaim): string[] {
   const missing: string[] = [];
-  if (!claim.method) missing.push("method");
-  if (!claim.baseline && !claim.caveat) missing.push("baseline or caveat");
-  if (!claim.sample && !claim.caveat) missing.push("sample or caveat");
-  if (!claim.environment) missing.push("environment");
-  if (!claim.date) missing.push("date");
+  if (!present(claim.method)) missing.push("method");
+  if (!present(claim.source)) missing.push("source");
+  if (!present(claim.denominator)) missing.push("denominator");
+  if (!present(claim.environment)) missing.push("environment");
+  if (!present(claim.date)) missing.push("date");
+  if (!present(claim.baseline) && !present(claim.caveat)) missing.push("baseline or caveat");
+  if (!present(claim.sample) && !present(claim.caveat)) missing.push("sample or caveat");
   return missing;
 }
 
 export function claimEvidenceReady(claim: CmsClaim): string[] {
   const missing: string[] = [];
   if (claim.kind === "evaluation" || claim.kind === "benchmark") {
-    if (!claim.baseline && !claim.caveat) missing.push("baseline or caveat");
-    if (!claim.environment) missing.push("environment");
-    if (!claim.caveat) missing.push("limitations");
+    if (!present(claim.baseline) && !present(claim.caveat)) missing.push("baseline or caveat");
+    if (!present(claim.environment)) missing.push("environment");
+    if (!present(claim.caveat)) missing.push("limitations");
   }
   return missing;
 }
 
-export function projectSchemaReady(project: { constraint: string; rejected: string; judgment: string }): string[] {
+export function projectSchemaReady(project: {
+  constraint: string;
+  rejected: string;
+  judgment: string;
+}): string[] {
   const missing: string[] = [];
   if (!project.constraint.trim()) missing.push("constraint");
   if (!project.rejected.trim()) missing.push("considered/rejected");
@@ -37,7 +56,10 @@ export function projectSchemaReady(project: { constraint: string; rejected: stri
   return missing;
 }
 
+export const LEDGER_PROJECT_SLUGS = new Set(resumeData.projects.map((project) => project.slug));
+
 const DATE = /^\d{4}(?:-\d{2}(?:-\d{2})?)?$/;
+const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export function validateDocument(doc: SiteDocument): string[] {
   const errors: string[] = [];
@@ -73,14 +95,19 @@ export function validateDocument(doc: SiteDocument): string[] {
       errors.push(`Required claim ${id} cannot be archived.`);
     }
   }
-  const knownSlugs = new Set(resumeData.projects.map((p) => p.slug));
   const slugs = new Set<string>();
   for (const project of doc.projects) {
-    if (!knownSlugs.has(project.slug)) {
-      errors.push(`Unknown project slug ${project.slug}.`);
+    if (!project.slug || !SLUG.test(project.slug)) {
+      errors.push(`Invalid project slug ${project.slug || "(empty)"}.`);
     }
     if (slugs.has(project.slug)) errors.push(`Duplicate project slug ${project.slug}.`);
     slugs.add(project.slug);
   }
   return errors;
+}
+
+export function heroPublishBlocked(doc: SiteDocument): string[] {
+  return validateDocument(doc).filter(
+    (error) => error.includes("heroEligible") || error.includes("Required claim") || error.includes("date must"),
+  );
 }

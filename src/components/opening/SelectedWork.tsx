@@ -26,18 +26,18 @@ export async function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }
   const doc = await getRenderableDocument();
   const projects = overlayProjects(resumeData.projects, doc);
   const visibleFor = (workPath: WorkPath | "all") =>
-    projects.filter((p) => !LAB.has(p.slug) && (workPath === "all" || projectPath(p.slug) === workPath));
+    projects.filter((p) => !LAB.has(p.slug) && (workPath === "all" || projectPath(p.slug, "category" in p ? String(p.category) : undefined) === workPath));
   const featured = FEATURED_PROJECT_SLUGS.map((slug) => projects.find((p) => p.slug === slug)).filter(
     (project): project is NonNullable<typeof project> => {
       if (!project) return false;
-      return path === "all" || projectPath(project.slug) === path;
+      return path === "all" || projectPath(project.slug, "category" in project ? String(project.category) : undefined) === path;
     },
   );
   const archive = projects.filter(
     (p) =>
       !FEATURED_PROJECT_SLUGS.includes(p.slug as (typeof FEATURED_PROJECT_SLUGS)[number]) &&
       !LAB.has(p.slug) &&
-      (path === "all" || projectPath(p.slug) === path),
+      (path === "all" || projectPath(p.slug, "category" in p ? String(p.category) : undefined) === path),
   );
   const mlCount = visibleFor("ML / data systems").length;
   const productCount = visibleFor("Product / backend").length;
@@ -91,7 +91,7 @@ export async function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }
                 slug: project.slug,
                 contextLabel: "contextLabel" in project ? project.contextLabel : undefined,
               })}{" "}
-              · {project.date} · {projectPath(project.slug)}
+              · {project.date} · {projectPath(project.slug, "category" in project ? String(project.category) : undefined)}
             </p>
             {"evidenceKind" in project && project.evidenceKind ? (
               <p
@@ -137,7 +137,7 @@ export async function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }
       {archive.length > 0 ? (
         <section className="mt-8" aria-labelledby="archive-heading">
           <h3 id="archive-heading" className="archive-heading">
-            Archive
+            Archive / supporting work
           </h3>
           <p className="mt-1 font-mono text-[12px] uppercase tracking-[0.14em] text-faded">
             Further independent filings

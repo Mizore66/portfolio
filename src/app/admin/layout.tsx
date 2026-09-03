@@ -3,7 +3,7 @@ import { AdminNav } from "@/components/admin/AdminNav";
 import { requireAdmin } from "@/lib/cms/actions";
 
 export const metadata: Metadata = {
-  title: "Editor — Opening Preparation",
+  title: "Portfolio CMS — Opening Preparation",
   robots: { index: false, follow: false },
 };
 
@@ -32,7 +32,7 @@ export async function AdminFrame({
   return (
     <>
       <header className="border-b-2 border-ink px-4 py-3 sm:px-6">
-        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-faded">Editor</p>
+        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-faded">Portfolio CMS</p>
         <h1 className="mt-1 font-display text-[22px] leading-tight text-ink">{title}</h1>
         {status}
       </header>
