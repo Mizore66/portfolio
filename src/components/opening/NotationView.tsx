@@ -272,7 +272,7 @@ function Chapter({
         </p>
       ) : null}
       {careerIndex >= 0 ? (
-        <nav className="mt-6 flex flex-wrap gap-3" aria-label="Career chapters">
+        <nav className="mt-6 flex flex-wrap gap-3" aria-label={`Career chapters, ${moveHeading(node)}`}>
           {prevCareer ? (
             <button type="button" className="paper-hit" onClick={() => onSelect(prevCareer.id)}>
               Previous chapter

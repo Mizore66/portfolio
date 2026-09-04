@@ -1,6 +1,5 @@
 "use client";
 
-import { BROADSHEET } from "@/content/opening";
 import { issueChapters, moveHeading } from "@/lib/opening/tree";
 import { cn } from "@/lib/utils";
 
@@ -14,7 +13,7 @@ export function PaperToc({
   const chapters = issueChapters();
 
   return (
-    <nav className="paper-toc paper-toc-sticky" data-testid="paper-toc" aria-label={BROADSHEET.issueKicker}>
+    <nav className="paper-toc paper-toc-sticky" data-testid="paper-toc" aria-label="Contents">
       <details>
         <summary>
           <span>

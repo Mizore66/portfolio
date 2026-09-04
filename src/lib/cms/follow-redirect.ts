@@ -1,11 +1,9 @@
 import { redirect, permanentRedirect } from "next/navigation";
-import { matchRedirect } from "@/lib/cms/redirects";
-import { getPublishedDocument } from "@/lib/cms/store";
+import { lookupPublishedRedirect } from "@/lib/cms/load-redirects";
 import type { CmsRedirect } from "@/lib/cms/types";
 
 export async function publishedRedirectFor(pathname: string): Promise<CmsRedirect | null> {
-  const doc = await getPublishedDocument();
-  return matchRedirect(pathname, doc.redirects ?? []);
+  return lookupPublishedRedirect(pathname);
 }
 
 export function followRedirect(hit: CmsRedirect): never {

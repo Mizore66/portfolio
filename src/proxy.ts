@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { wwwToApex } from "@/lib/canonical-host";
+import { lookupPublishedRedirect } from "@/lib/cms/load-redirects";
 import { SESSION_COOKIE, verifySessionMac } from "@/lib/cms/session-mac";
 import { contentSecurityPolicy, createNonce } from "@/lib/csp";
 import { applySecurityHeaders } from "@/lib/security-headers";
@@ -31,6 +32,12 @@ export async function proxy(request: NextRequest) {
   if (dest) return finish(NextResponse.redirect(dest, 301));
 
   const path = request.nextUrl.pathname;
+  if (!path.startsWith("/admin") && !path.startsWith("/_next") && !path.startsWith("/api")) {
+    const hit = await lookupPublishedRedirect(path);
+    if (hit) {
+      return finish(NextResponse.redirect(new URL(hit.to, request.url), hit.status));
+    }
+  }
   if (path.startsWith("/admin") || path.startsWith("/api/cms-health")) {
     const response = (() => {
       const requestHeaders = new Headers(request.headers);
