@@ -77,6 +77,7 @@ export function exhibitFromCopy(copy: CmsProjectCopy) {
     retrospective: copy.retrospective,
     github: copy.github,
     plate: copy.plate,
+    plateMedia: copy.plateMedia,
     plateCaption: copy.plateCaption,
     plateAlt: copy.plateAlt,
     description: copy.description || copy.seoDescription || copy.purpose,
@@ -116,6 +117,7 @@ export function overlayProject<T extends { slug: string }>(project: T, doc: Site
   if (copy.seoTitle.trim()) patch.seoTitle = copy.seoTitle.trim();
   if (copy.category.trim()) patch.category = copy.category.trim();
   if (copy.plate.trim()) patch.plate = copy.plate.trim();
+  if (copy.plateMedia?.trim()) patch.plateMedia = copy.plateMedia.trim();
   if (copy.plateCaption.trim()) patch.plateCaption = copy.plateCaption.trim();
   if (copy.plateAlt.trim()) patch.plateAlt = copy.plateAlt.trim();
   if (copy.description.trim()) patch.description = copy.description.trim();

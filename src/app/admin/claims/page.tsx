@@ -1,10 +1,10 @@
 import { AdminFrame } from "@/app/admin/layout";
-import { AdminActions, AdminDirtyForm, ClaimDateFields, EditorSearch, ReorderList } from "@/components/admin/AdminForm";
+import { AdminActions, AdminDirtyForm, ClaimDateFields, EditorSearch, MediaPicker, ReorderList } from "@/components/admin/AdminForm";
 import { publishAction, saveDraftAction } from "@/lib/cms/actions";
 import { claimConsumers } from "@/lib/cms/consumers";
 import { editorBar } from "@/lib/cms/editor-state";
 import { HERO_EVIDENCE_RULE } from "@/lib/cms/health";
-import { getDraftDocument, getPublishedDocument } from "@/lib/cms/store";
+import { getDraftDocument, getPublishedDocument, listMediaBlobs } from "@/lib/cms/store";
 import { claimCompleteness } from "@/lib/cms/health";
 import { REQUIRED_CLAIM_IDS, claimHeroReady } from "@/lib/cms/validate";
 
@@ -14,7 +14,11 @@ export default async function ClaimsEditor({
   searchParams: Promise<{ error?: string; saved?: string; invalid?: string }>;
 }) {
   const q = await searchParams;
-  const [doc, published] = await Promise.all([getDraftDocument(), getPublishedDocument()]);
+  const [doc, published, media] = await Promise.all([
+    getDraftDocument(),
+    getPublishedDocument(),
+    listMediaBlobs(),
+  ]);
   const bar = editorBar(published, doc);
   return (
     <AdminFrame
@@ -144,6 +148,15 @@ export default async function ClaimsEditor({
                   <label>
                     Public evidence URL
                     <input name={`claim-${claim.id}-sourceUrl`} defaultValue={claim.sourceUrl} />
+                  </label>
+                  <label>
+                    Evidence file
+                    <MediaPicker
+                      name={`claim-${claim.id}-mediaPathname`}
+                      defaultValue={claim.mediaPathname}
+                      assets={media}
+                      valueKind="pathname"
+                    />
                   </label>
                   <div>
                     <p className="font-mono text-[12px] uppercase tracking-[0.12em]">Measurement date</p>

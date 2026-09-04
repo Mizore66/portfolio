@@ -158,4 +158,15 @@ test.describe("round five invariants", () => {
     await page.goto("/archive");
     await expect(page).toHaveURL(/\/#work$/);
   });
+
+  test("document CSP carries a nonce and wasm-unsafe-eval without script unsafe-inline", async ({
+    page,
+  }) => {
+    const response = await page.goto("/");
+    const csp = response?.headers()["content-security-policy"] ?? "";
+    expect(csp).toMatch(/script-src[^;]*nonce-/);
+    expect(csp).toMatch(/wasm-unsafe-eval/);
+    expect(csp).not.toMatch(/script-src[^;]*unsafe-inline/);
+    await expect(page.getByTestId("masthead-role")).toBeVisible();
+  });
 });

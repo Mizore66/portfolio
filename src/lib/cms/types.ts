@@ -20,6 +20,7 @@ export type CmsClaim = {
   source: string;
   sourceUrl: string;
   linkedProject: string;
+  mediaPathname: string;
   heroEligible: boolean;
   archived: boolean;
   surfaces: ("home" | "opening" | "resume" | "exhibit" | "lab")[];
@@ -94,6 +95,7 @@ export const PROJECT_STRUCTURE_KEYS = [
   "bullets",
   "description",
   "plate",
+  "plateMedia",
   "plateCaption",
   "plateAlt",
   "apparatusName",
@@ -111,6 +113,29 @@ export type CmsChessNote = {
   featured: boolean;
   entityKind: ChessEntityKind;
   entityId: string;
+  mediaPathname: string;
+};
+
+export type CmsRedirect = {
+  id: string;
+  from: string;
+  to: string;
+  status: 301 | 302 | 307 | 308;
+  enabled: boolean;
+};
+
+export type CmsArticle = {
+  slug: string;
+  kicker: string;
+  body: string;
+  honestyKicker: string;
+  honesty: string;
+  witnessKicker: string;
+  witnesses: string;
+  plate: string;
+  plateCaption: string;
+  plateAlt: string;
+  plateMedia: string;
 };
 
 export type CmsLabCopy = {
@@ -151,6 +176,7 @@ export type CmsProjectCopy = {
   bullets: string;
   description: string;
   plate: string;
+  plateMedia: string;
   plateCaption: string;
   plateAlt: string;
   apparatusName: string;
@@ -177,6 +203,8 @@ export type SiteDocument = {
   chess: CmsChessNote[];
   chessPgn: string;
   lab: CmsLabCopy;
+  redirects: CmsRedirect[];
+  articles: CmsArticle[];
 };
 
 export type CmsMediaAsset = {

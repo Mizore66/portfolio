@@ -14,6 +14,7 @@ export function EvalBar({
       className="eval-bar relative h-full w-full overflow-hidden border-2 border-ink bg-ink"
       role="meter"
       aria-label="Engine evaluation"
+      aria-valuetext={label}
       title="Engine evaluation"
       aria-valuemin={-8}
       aria-valuemax={8}

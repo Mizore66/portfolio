@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Colophon } from "@/components/opening/Colophon";
 import { RecruiterNav } from "@/components/opening/RecruiterNav";
+import { overlayArticle } from "@/lib/cms/articles";
+import { getRenderableDocument } from "@/lib/cms/store";
 import { BROADSHEET } from "@/content/opening";
 import { SITE_URL } from "@/lib/site";
 
@@ -18,9 +20,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ColophonPage() {
+export default async function ColophonPage() {
+  const article = overlayArticle("colophon", await getRenderableDocument());
   return (
     <div className="min-h-screen text-ink">
+      <a href="#colophon-heading" className="skip-link">
+        Skip to how this paper was set
+      </a>
       <div className="relative z-[1] mx-auto max-w-2xl px-3 py-8 sm:px-5 sm:py-12">
         <div className="sheet mb-4">
           <RecruiterNav />
@@ -28,9 +34,9 @@ export default function ColophonPage() {
         <main>
           <article className="sheet px-6 py-10" aria-labelledby="colophon-heading">
             <h1 id="colophon-heading" className="sr-only">
-              {BROADSHEET.colophonKicker}
+              {article.kicker}
             </h1>
-            <Colophon />
+            <Colophon article={article} />
             <p className="mt-8">
               <Link
                 href="/"

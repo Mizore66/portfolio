@@ -110,6 +110,12 @@ export function changedSurfaces(paths: string[]): string[] {
       surfaces.add("Laboratory");
       surfaces.add("Homepage");
     }
+    if (path.startsWith("articles")) {
+      surfaces.add("Colophon");
+    }
+    if (path.startsWith("redirects")) {
+      surfaces.add("Redirects");
+    }
   }
   if (paths.length) surfaces.add("Sitemap");
   return [...surfaces];

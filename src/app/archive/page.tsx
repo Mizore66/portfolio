@@ -1,5 +1,8 @@
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { followRedirect, publishedRedirectFor } from "@/lib/cms/follow-redirect";
 
-export default function ArchiveRedirect() {
-  redirect("/#work");
+export default async function ArchiveRedirect() {
+  const hit = await publishedRedirectFor("/archive");
+  if (!hit) notFound();
+  followRedirect(hit);
 }

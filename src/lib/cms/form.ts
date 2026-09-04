@@ -1,6 +1,8 @@
 import { LEDGER_EXPERIENCE_IDS, LEDGER_PROJECT_SLUGS, REQUIRED_CLAIM_IDS } from "@/lib/cms/validate";
 import { ledgerLab } from "@/lib/cms/lab-copy";
-import type { ChessEntityKind, ClaimKind, CmsAspiration, CmsClaim, CmsEducation, CmsExperience, CmsProjectCopy, SiteDocument } from "@/lib/cms/types";
+import { mergePgnComments } from "@/lib/cms/chess-notes";
+import { LEDGER_REDIRECT_IDS, isRedirectStatus, isSafeRedirectPath } from "@/lib/cms/redirects";
+import type { ChessEntityKind, ClaimKind, CmsAspiration, CmsClaim, CmsEducation, CmsExperience, CmsProjectCopy, CmsRedirect, SiteDocument } from "@/lib/cms/types";
 
 const KINDS: ClaimKind[] = ["production", "benchmark", "evaluation", "pipeline", "capability"];
 const SURFACES: CmsClaim["surfaces"][number][] = ["home", "opening", "resume", "exhibit", "lab"];
@@ -53,6 +55,7 @@ function blankClaim(id: string): CmsClaim {
     source: "Unfiled.",
     sourceUrl: "",
     linkedProject: "",
+    mediaPathname: "",
     heroEligible: false,
     archived: false,
     surfaces: ["exhibit"],
@@ -82,6 +85,7 @@ function blankProject(slug: string): CmsProjectCopy {
     bullets: "",
     description: "",
     plate: "",
+    plateMedia: "",
     plateCaption: "",
     plateAlt: "",
     apparatusName: "",
@@ -187,6 +191,7 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
         source: text(formData, `claim-${claim.id}-source`, claim.source),
         sourceUrl: text(formData, `claim-${claim.id}-sourceUrl`, claim.sourceUrl),
         linkedProject: text(formData, `claim-${claim.id}-linkedProject`, claim.linkedProject),
+        mediaPathname: text(formData, `claim-${claim.id}-mediaPathname`, claim.mediaPathname ?? ""),
         heroEligible: on(formData, `claim-${claim.id}-hero`),
         archived: on(formData, `claim-${claim.id}-archived`),
         surfaces: claimSurfaces(formData, claim.id, claim.surfaces),
@@ -353,6 +358,7 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
         bullets: text(formData, `project-${project.slug}-bullets`, project.bullets),
         description: text(formData, `project-${project.slug}-description`, project.description),
         plate: text(formData, `project-${project.slug}-plate`, project.plate),
+        plateMedia: text(formData, `project-${project.slug}-plateMedia`, project.plateMedia ?? ""),
         plateCaption: text(formData, `project-${project.slug}-plateCaption`, project.plateCaption),
         plateAlt: text(formData, `project-${project.slug}-plateAlt`, project.plateAlt),
         apparatusName: text(formData, `project-${project.slug}-apparatusName`, project.apparatusName),
@@ -390,7 +396,7 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
   }
 
   const ENTITY_KINDS: ChessEntityKind[] = ["experience", "education", "project", "lab", "outlook", ""];
-  const chess = formData.has("chess-present")
+  let chess = formData.has("chess-present")
     ? current.chess.map((note) => {
         const kind = text(formData, `chess-${note.id}-entityKind`, note.entityKind) as ChessEntityKind;
         return {
@@ -400,12 +406,16 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
           featured: on(formData, `chess-${note.id}-featured`),
           entityKind: ENTITY_KINDS.includes(kind) ? kind : note.entityKind,
           entityId: text(formData, `chess-${note.id}-entityId`, note.entityId),
+          mediaPathname: text(formData, `chess-${note.id}-mediaPathname`, note.mediaPathname ?? ""),
         };
       })
     : current.chess;
   const chessPgn = formData.has("chess-present")
     ? text(formData, "chess-pgn", current.chessPgn).trim() || current.chessPgn
     : current.chessPgn;
+  if (formData.has("chess-present") && on(formData, "chess-import-comments")) {
+    chess = mergePgnComments(chess, chessPgn);
+  }
 
   const currentLab = current.lab ?? ledgerLab();
   const lab = formData.has("lab-present")
@@ -426,6 +436,55 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
       }
     : currentLab;
 
+  function blankRedirect(id: string): CmsRedirect {
+    return { id, from: `/${id}`, to: "/", status: 308, enabled: true };
+  }
+
+  let redirects = formData.has("redirects-present")
+    ? (current.redirects ?? []).map((row) => {
+        const rawStatus = Number(text(formData, `redirect-${row.id}-status`, String(row.status)));
+        return {
+          ...row,
+          from: text(formData, `redirect-${row.id}-from`, row.from).trim(),
+          to: text(formData, `redirect-${row.id}-to`, row.to).trim(),
+          status: isRedirectStatus(rawStatus) ? rawStatus : row.status,
+          enabled: on(formData, `redirect-${row.id}-enabled`),
+        };
+      })
+    : (current.redirects ?? []);
+
+  if (formData.has("redirects-present")) {
+    const createFrom = text(formData, "redirect-new-from", "").trim();
+    const createId = slugify(text(formData, "redirect-new-id", "") || createFrom).toLowerCase();
+    if (formData.get("redirect-create") === "1" && createId && !redirects.some((row) => row.id === createId)) {
+      const created = blankRedirect(createId);
+      created.from = isSafeRedirectPath(createFrom, "from") ? createFrom : created.from;
+      created.to = text(formData, "redirect-new-to", created.to).trim() || created.to;
+      redirects = [...redirects, created];
+    }
+    const deleteRedirect = String(formData.get("redirect-delete") ?? "");
+    if (deleteRedirect && !LEDGER_REDIRECT_IDS.has(deleteRedirect)) {
+      redirects = redirects.filter((row) => row.id !== deleteRedirect);
+    }
+    redirects = sortByOrder(redirects, text(formData, "redirect-order", ""), (row) => row.id);
+  }
+
+  const articles = formData.has("articles-present")
+    ? (current.articles ?? []).map((row) => ({
+        ...row,
+        kicker: text(formData, `article-${row.slug}-kicker`, row.kicker),
+        body: text(formData, `article-${row.slug}-body`, row.body),
+        honestyKicker: text(formData, `article-${row.slug}-honestyKicker`, row.honestyKicker),
+        honesty: text(formData, `article-${row.slug}-honesty`, row.honesty),
+        witnessKicker: text(formData, `article-${row.slug}-witnessKicker`, row.witnessKicker),
+        witnesses: text(formData, `article-${row.slug}-witnesses`, row.witnesses),
+        plate: text(formData, `article-${row.slug}-plate`, row.plate),
+        plateCaption: text(formData, `article-${row.slug}-plateCaption`, row.plateCaption),
+        plateAlt: text(formData, `article-${row.slug}-plateAlt`, row.plateAlt),
+        plateMedia: text(formData, `article-${row.slug}-plateMedia`, row.plateMedia),
+      }))
+    : (current.articles ?? []);
+
   return {
     ...current,
     note: text(formData, "note", current.note),
@@ -438,6 +497,8 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
     chess,
     chessPgn,
     lab,
+    redirects,
+    articles,
   };
 }
 

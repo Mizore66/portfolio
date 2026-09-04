@@ -1,4 +1,5 @@
 import { pgnMatchesRepertoire } from "@/lib/cms/chess-notes";
+import { LEDGER_REDIRECT_IDS, isRedirectStatus, isSafeRedirectPath, normalizeRedirectFrom } from "@/lib/cms/redirects";
 import type { CmsClaim, SiteDocument } from "@/lib/cms/types";
 import { resumeData } from "@/lib/data";
 
@@ -138,6 +139,25 @@ export function validateDocument(doc: SiteDocument): string[] {
   for (const project of doc.projects) {
     for (const id of project.claimIds ?? []) {
       if (!claimIdSet.has(id)) errors.push(`${project.slug} references missing claim ${id}.`);
+    }
+  }
+  const froms = new Set<string>();
+  for (const row of doc.redirects ?? []) {
+    if (!row.id.trim()) errors.push("Redirect is missing an id.");
+    if (!isSafeRedirectPath(row.from, "from")) {
+      errors.push(`Redirect ${row.id} source must be a same-origin path, not /admin or protocol-relative.`);
+    }
+    if (!isSafeRedirectPath(row.to, "to")) {
+      errors.push(`Redirect ${row.id} target must be a same-origin path, not /admin or an external URL.`);
+    }
+    if (!isRedirectStatus(row.status)) errors.push(`Redirect ${row.id} status is not 301, 302, 307, or 308.`);
+    const key = normalizeRedirectFrom(row.from);
+    if (froms.has(key)) errors.push(`Duplicate redirect from ${row.from}.`);
+    froms.add(key);
+  }
+  for (const id of LEDGER_REDIRECT_IDS) {
+    if (!(doc.redirects ?? []).some((row) => row.id === id)) {
+      errors.push(`Required redirect ${id} is missing.`);
     }
   }
   return errors;

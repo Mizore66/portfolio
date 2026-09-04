@@ -27,6 +27,8 @@ export function documentDiff(published: SiteDocument, draft: SiteDocument): Fiel
     chess: Array.isArray(published?.chess) ? published.chess : [],
     chessPgn: published?.chessPgn ?? "",
     lab: published?.lab ?? ({} as SiteDocument["lab"]),
+    redirects: Array.isArray(published?.redirects) ? published.redirects : [],
+    articles: Array.isArray(published?.articles) ? published.articles : [],
     profile: published?.profile ?? ({} as SiteDocument["profile"]),
   };
   const next = {
@@ -39,6 +41,8 @@ export function documentDiff(published: SiteDocument, draft: SiteDocument): Fiel
     chess: Array.isArray(draft?.chess) ? draft.chess : [],
     chessPgn: draft?.chessPgn ?? "",
     lab: draft?.lab ?? ({} as SiteDocument["lab"]),
+    redirects: Array.isArray(draft?.redirects) ? draft.redirects : [],
+    articles: Array.isArray(draft?.articles) ? draft.articles : [],
     profile: draft?.profile ?? ({} as SiteDocument["profile"]),
   };
 
@@ -79,6 +83,7 @@ export function documentDiff(published: SiteDocument, draft: SiteDocument): Fiel
     push(`claims.${id}.source`, a.source, b.source);
     push(`claims.${id}.sourceUrl`, a.sourceUrl, b.sourceUrl);
     push(`claims.${id}.linkedProject`, a.linkedProject, b.linkedProject);
+    push(`claims.${id}.mediaPathname`, a.mediaPathname ?? "", b.mediaPathname ?? "");
     push(`claims.${id}.heroEligible`, a.heroEligible, b.heroEligible);
     push(`claims.${id}.archived`, a.archived, b.archived);
     push(`claims.${id}.surfaces`, (a.surfaces ?? []).join(","), (b.surfaces ?? []).join(","));
@@ -134,6 +139,7 @@ export function documentDiff(published: SiteDocument, draft: SiteDocument): Fiel
     push(`projects.${slug}.bullets`, a.bullets, b.bullets);
     push(`projects.${slug}.description`, a.description, b.description);
     push(`projects.${slug}.plate`, a.plate, b.plate);
+    push(`projects.${slug}.plateMedia`, a.plateMedia ?? "", b.plateMedia ?? "");
     push(`projects.${slug}.plateCaption`, a.plateCaption, b.plateCaption);
     push(`projects.${slug}.plateAlt`, a.plateAlt, b.plateAlt);
     push(`projects.${slug}.apparatusName`, a.apparatusName, b.apparatusName);
@@ -206,6 +212,7 @@ export function documentDiff(published: SiteDocument, draft: SiteDocument): Fiel
     push(`chess.${id}.featured`, a.featured, b.featured);
     push(`chess.${id}.entityKind`, a.entityKind, b.entityKind);
     push(`chess.${id}.entityId`, a.entityId, b.entityId);
+    push(`chess.${id}.mediaPathname`, a.mediaPathname ?? "", b.mediaPathname ?? "");
   }
 
   push("lab.hed", pub.lab.hed, next.lab.hed);
@@ -221,6 +228,48 @@ export function documentDiff(published: SiteDocument, draft: SiteDocument): Fiel
   push("lab.failed", pub.lab.failed, next.lab.failed);
   push("lab.learnedHed", pub.lab.learnedHed, next.lab.learnedHed);
   push("lab.learned", pub.lab.learned, next.lab.learned);
+
+  const redirectIds = new Set([...pub.redirects.map((row) => row.id), ...next.redirects.map((row) => row.id)]);
+  for (const id of redirectIds) {
+    const a = pub.redirects.find((row) => row.id === id);
+    const b = next.redirects.find((row) => row.id === id);
+    if (!a) {
+      push(`redirects.${id}`, "", b);
+      continue;
+    }
+    if (!b) {
+      push(`redirects.${id}`, a, "");
+      continue;
+    }
+    push(`redirects.${id}.from`, a.from, b.from);
+    push(`redirects.${id}.to`, a.to, b.to);
+    push(`redirects.${id}.status`, a.status, b.status);
+    push(`redirects.${id}.enabled`, a.enabled, b.enabled);
+  }
+
+  const articleSlugs = new Set([...pub.articles.map((row) => row.slug), ...next.articles.map((row) => row.slug)]);
+  for (const slug of articleSlugs) {
+    const a = pub.articles.find((row) => row.slug === slug);
+    const b = next.articles.find((row) => row.slug === slug);
+    if (!a) {
+      push(`articles.${slug}`, "", b);
+      continue;
+    }
+    if (!b) {
+      push(`articles.${slug}`, a, "");
+      continue;
+    }
+    push(`articles.${slug}.kicker`, a.kicker, b.kicker);
+    push(`articles.${slug}.body`, a.body, b.body);
+    push(`articles.${slug}.honestyKicker`, a.honestyKicker, b.honestyKicker);
+    push(`articles.${slug}.honesty`, a.honesty, b.honesty);
+    push(`articles.${slug}.witnessKicker`, a.witnessKicker, b.witnessKicker);
+    push(`articles.${slug}.witnesses`, a.witnesses, b.witnesses);
+    push(`articles.${slug}.plate`, a.plate, b.plate);
+    push(`articles.${slug}.plateMedia`, a.plateMedia, b.plateMedia);
+    push(`articles.${slug}.plateCaption`, a.plateCaption, b.plateCaption);
+    push(`articles.${slug}.plateAlt`, a.plateAlt, b.plateAlt);
+  }
 
   return rows;
 }
@@ -272,6 +321,10 @@ export function editorHrefForPath(path: string): string {
   if (path.startsWith("aspirations.")) return "/admin/aspirations";
   if (path.startsWith("experience.")) return "/admin/experience";
   if (path.startsWith("education.")) return "/admin/education";
+  if (path.startsWith("chess") || path === "chessPgn") return "/admin/chess";
+  if (path.startsWith("lab.")) return "/admin/lab";
+  if (path.startsWith("redirects.")) return "/admin/redirects";
+  if (path.startsWith("articles.")) return "/admin/articles";
   return "/admin/profile";
 }
 
@@ -308,6 +361,12 @@ export function groupedDocumentDiff(published: SiteDocument, draft: SiteDocument
       take(`chess.${id}`, `Chess · ${id}`).rows.push(row);
     } else if (row.path.startsWith("lab.")) {
       take("lab", "Laboratory").rows.push(row);
+    } else if (row.path.startsWith("redirects.")) {
+      const id = row.path.split(".")[1] ?? "redirect";
+      take(`redirects.${id}`, `Redirect · ${id}`).rows.push(row);
+    } else if (row.path.startsWith("articles.")) {
+      const slug = row.path.split(".")[1] ?? "article";
+      take(`articles.${slug}`, `Article · ${slug}`).rows.push(row);
     } else {
       take("profile", "Profile").rows.push(row);
     }

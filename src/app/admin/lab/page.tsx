@@ -29,7 +29,8 @@ export default async function LabEditor({
     >
       <p className="max-w-[62ch] font-display text-[16px] text-ink">
         Copy overlays the Gate C lab article and homepage teaser. Elo, WDL, and SPRT lines stay compiled from the
-        match report. The headline and teaser must keep “underperformed PeSTO”.
+        match report. The headline and teaser must keep “underperformed PeSTO”. Colophon body editing is on{" "}
+        <a href="/admin/articles">Articles</a>.
       </p>
       <AdminDirtyForm expectedRevisionId={bar.expectedRevisionId} returnTo="/admin/lab">
         <input type="hidden" name="lab-present" value="1" />

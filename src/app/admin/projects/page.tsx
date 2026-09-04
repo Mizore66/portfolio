@@ -128,7 +128,13 @@ export default async function ProjectsEditor({
                   </label>
                   <label>
                     Article image
-                    <MediaPicker name={`project-${project.slug}-plate`} defaultValue={project.plate} assets={media} />
+                    <MediaPicker
+                      name={`project-${project.slug}-plate`}
+                      mediaName={`project-${project.slug}-plateMedia`}
+                      defaultValue={project.plate}
+                      defaultMedia={project.plateMedia}
+                      assets={media}
+                    />
                   </label>
                   <label>
                     Caption

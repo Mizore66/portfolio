@@ -162,7 +162,9 @@ export default async function SettingsEditor({
                         {usedBy.length ? (
                           <p className="mt-2 font-mono text-[12px] text-faded">Used by {usedBy.join(" · ")}</p>
                         ) : (
-                          <p className="mt-2 font-mono text-[12px] text-faded">Not referenced by a project plate.</p>
+                          <p className="mt-2 font-mono text-[12px] text-faded">
+                            Not referenced by a claim, project plate, chess note, or article.
+                          </p>
                         )}
                         <form action={updateMediaAction} className="admin-form mt-3">
                           <input type="hidden" name="pathname" value={item.pathname} />

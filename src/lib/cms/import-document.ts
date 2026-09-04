@@ -45,6 +45,8 @@ export function parseImportedDocument(raw: string): ImportResult {
     chess: Array.isArray(candidate.chess) ? candidate.chess : ledger.chess,
     chessPgn: typeof candidate.chessPgn === "string" ? candidate.chessPgn : ledger.chessPgn,
     lab: candidate.lab && typeof candidate.lab === "object" ? { ...ledger.lab, ...candidate.lab } : ledger.lab,
+    redirects: Array.isArray(candidate.redirects) ? candidate.redirects : ledger.redirects,
+    articles: Array.isArray(candidate.articles) ? candidate.articles : ledger.articles,
     note: typeof candidate.note === "string" && candidate.note ? candidate.note : "Imported JSON",
     revisionId: "import",
     status: "draft",

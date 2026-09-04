@@ -13,6 +13,8 @@ const LINKS = [
   { href: "/admin/education", label: "Education" },
   { href: "/admin/chess", label: "Chess" },
   { href: "/admin/lab", label: "Lab" },
+  { href: "/admin/articles", label: "Articles" },
+  { href: "/admin/redirects", label: "Redirects" },
   { href: "/admin/aspirations", label: "Aspirations" },
   { href: "/admin/projects", label: "Projects" },
   { href: "/admin/diff", label: "Diff" },

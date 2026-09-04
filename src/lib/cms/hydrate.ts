@@ -1,5 +1,6 @@
 import { ledgerDocument } from "@/lib/cms/ledger";
 import type {
+  CmsArticle,
   CmsAspiration,
   CmsChessNote,
   CmsClaim,
@@ -8,8 +9,10 @@ import type {
   CmsLabCopy,
   CmsProfile,
   CmsProjectCopy,
+  CmsRedirect,
   SiteDocument,
 } from "@/lib/cms/types";
+import { ledgerArticles } from "@/lib/cms/articles";
 
 const SURFACES: CmsClaim["surfaces"][number][] = ["home", "opening", "resume", "exhibit", "lab"];
 
@@ -54,6 +57,7 @@ function hydrateClaim(seed: CmsClaim, row: Partial<CmsClaim> | undefined): CmsCl
     source: filed(row.source, seed.source),
     sourceUrl: str(row.sourceUrl, seed.sourceUrl),
     linkedProject: str(row.linkedProject, seed.linkedProject ?? ""),
+    mediaPathname: str(row.mediaPathname, seed.mediaPathname ?? ""),
   };
 }
 
@@ -65,6 +69,7 @@ function hydrateProject(seed: CmsProjectCopy, row: Partial<CmsProjectCopy> | und
       bullets: seed.bullets ?? "",
       description: seed.description ?? "",
       plate: seed.plate ?? "",
+      plateMedia: seed.plateMedia ?? "",
       plateCaption: seed.plateCaption ?? "",
       plateAlt: seed.plateAlt ?? "",
       apparatusName: seed.apparatusName ?? "",
@@ -92,6 +97,7 @@ function hydrateProject(seed: CmsProjectCopy, row: Partial<CmsProjectCopy> | und
     bullets: str(row.bullets, seed.bullets ?? ""),
     description: str(row.description, seed.description ?? ""),
     plate: str(row.plate, seed.plate ?? ""),
+    plateMedia: str(row.plateMedia, seed.plateMedia ?? ""),
     plateCaption: str(row.plateCaption, seed.plateCaption ?? ""),
     plateAlt: str(row.plateAlt, seed.plateAlt ?? ""),
     apparatusName: str(row.apparatusName, seed.apparatusName ?? ""),
@@ -180,6 +186,36 @@ function hydrateChessNote(seed: CmsChessNote, row: Partial<CmsChessNote> | undef
     featured: bool(row.featured, seed.featured),
     entityKind,
     entityId: str(row.entityId, seed.entityId),
+    mediaPathname: str(row.mediaPathname, seed.mediaPathname ?? ""),
+  };
+}
+
+function hydrateRedirect(seed: CmsRedirect, row: Partial<CmsRedirect> | undefined): CmsRedirect {
+  if (!row) return { ...seed };
+  const status = row.status === 301 || row.status === 302 || row.status === 307 || row.status === 308 ? row.status : seed.status;
+  return {
+    ...seed,
+    from: str(row.from, seed.from),
+    to: str(row.to, seed.to),
+    status,
+    enabled: bool(row.enabled, seed.enabled),
+  };
+}
+
+function hydrateArticle(seed: CmsArticle, row: Partial<CmsArticle> | undefined): CmsArticle {
+  if (!row) return { ...seed };
+  return {
+    slug: seed.slug,
+    kicker: str(row.kicker, seed.kicker),
+    body: str(row.body, seed.body),
+    honestyKicker: str(row.honestyKicker, seed.honestyKicker),
+    honesty: str(row.honesty, seed.honesty),
+    witnessKicker: str(row.witnessKicker, seed.witnessKicker),
+    witnesses: str(row.witnesses, seed.witnesses),
+    plate: str(row.plate, seed.plate),
+    plateCaption: str(row.plateCaption, seed.plateCaption),
+    plateAlt: str(row.plateAlt, seed.plateAlt),
+    plateMedia: str(row.plateMedia, seed.plateMedia),
   };
 }
 
@@ -278,6 +314,7 @@ export function hydrateDocument(input: unknown): SiteDocument {
               surfaces: surfaces(claim.surfaces, ["exhibit"]),
               sourceUrl: claim.sourceUrl ?? "",
               linkedProject: claim.linkedProject ?? "",
+              mediaPathname: claim.mediaPathname ?? "",
               archived: claim.archived ?? false,
             },
             claim,
@@ -307,6 +344,35 @@ export function hydrateDocument(input: unknown): SiteDocument {
       chess: ledger.chess.map((seed) => hydrateChessNote(seed, chessById.get(seed.id))),
       chessPgn: filed(doc.chessPgn, ledger.chessPgn),
       lab: hydrateLab(ledger.lab, doc.lab),
+      redirects: (() => {
+        const rows = Array.isArray(doc.redirects) ? doc.redirects : [];
+        const byId = new Map(rows.map((row) => [row.id, row]));
+        const extras = rows.filter((row) => row?.id && !ledger.redirects.some((seed) => seed.id === row.id));
+        return [
+          ...ledger.redirects.map((seed) => hydrateRedirect(seed, byId.get(seed.id))),
+          ...extras.map((row) =>
+            hydrateRedirect(
+              {
+                id: row.id,
+                from: row.from || "/",
+                to: row.to || "/",
+                status: row.status === 301 || row.status === 302 || row.status === 307 || row.status === 308 ? row.status : 308,
+                enabled: row.enabled ?? true,
+              },
+              row,
+            ),
+          ),
+        ];
+      })(),
+      articles: (() => {
+        const rows = Array.isArray(doc.articles) ? doc.articles : [];
+        const bySlug = new Map(rows.map((row) => [row.slug, row]));
+        const extras = rows.filter((row) => row?.slug && !ledger.articles.some((seed) => seed.slug === row.slug));
+        return [
+          ...ledger.articles.map((seed) => hydrateArticle(seed, bySlug.get(seed.slug))),
+          ...extras.map((row) => hydrateArticle({ ...ledgerArticles()[0]!, ...row, slug: row.slug }, row)),
+        ];
+      })(),
     };
   } catch {
     return fallbackDocument(input, ledger);

@@ -10,6 +10,7 @@ import { parseImportedDocument } from "@/lib/cms/import-document";
 import { ledgerDocument } from "@/lib/cms/ledger";
 import { compiledMainlinePgn, pgnMatchesRepertoire } from "@/lib/cms/chess-notes";
 import { overlayLab } from "@/lib/cms/lab-copy";
+import { overlayArticle } from "@/lib/cms/articles";
 import { mediaUsedBy } from "@/lib/cms/media-usage";
 import { claimsForExhibit, overlayProject, overlayProjects, publicEvidenceHref, resolveExhibit } from "@/lib/cms/overlay";
 import { documentDiff, groupedDocumentDiff, wordDiff } from "@/lib/cms/diff";
@@ -462,6 +463,69 @@ describe("cms ledger caveats", () => {
     const next = applyFormToDocument(form, ledger);
     expect(next.chess.find((note) => note.id === "d4")?.fact).toBe("CMS flagship sentence.");
     expect(next.chessPgn).toBe(compiledMainlinePgn());
+  });
+
+  it("imports PGN comments onto annotations without changing compiled SANs", () => {
+    const ledger = ledgerDocument();
+    const d4 = ledger.chess.find((note) => note.id === "d4")!;
+    const withComment = compiledMainlinePgn().replace("5. d4", "5. d4 {Central Break filing.}");
+    expect(pgnMatchesRepertoire(withComment)).toBe(true);
+    const form = new FormData();
+    form.set("chess-present", "1");
+    form.set("chess-pgn", withComment);
+    form.set("chess-import-comments", "on");
+    form.set("chess-d4-fact", d4.fact);
+    form.set("chess-d4-commentary", d4.commentary);
+    form.set("chess-d4-entityKind", d4.entityKind);
+    form.set("chess-d4-entityId", d4.entityId);
+    const next = applyFormToDocument(form, ledger);
+    expect(next.chess.find((note) => note.id === "d4")?.commentary).toBe("Central Break filing.");
+    expect(pgnMatchesRepertoire(next.chessPgn)).toBe(true);
+  });
+
+  it("keeps path-only redirects, typed media refs, and colophon overlay", () => {
+    const ledger = ledgerDocument();
+    expect(ledger.redirects.map((row) => row.from)).toEqual(["/about", "/archive"]);
+    expect(validateDocument({ ...ledger, redirects: [...ledger.redirects, { ...ledger.redirects[0]!, id: "evil", from: "//evil.example", to: "https://evil.example", status: 308, enabled: true }] }).join(" ")).toMatch(/same-origin/);
+    const form = new FormData();
+    form.set("redirects-present", "1");
+    form.set("redirect-new-id", "old-desk");
+    form.set("redirect-new-from", "/old-desk");
+    form.set("redirect-new-to", "/#work");
+    form.set("redirect-create", "1");
+    const withRedirect = applyFormToDocument(form, ledger);
+    expect(withRedirect.redirects.some((row) => row.id === "old-desk" && row.from === "/old-desk")).toBe(true);
+
+    const delLedger = new FormData();
+    delLedger.set("redirects-present", "1");
+    delLedger.set("redirect-delete", "about");
+    expect(applyFormToDocument(delLedger, ledger).redirects.some((row) => row.id === "about")).toBe(true);
+
+    const mediaForm = new FormData();
+    mediaForm.set("projects-present", "1");
+    mediaForm.set("project-veridian-plate", "https://blob.example/veridian.jpg");
+    mediaForm.set("project-veridian-plateMedia", "cms/media/veridian.jpg");
+    const withPlate = applyFormToDocument(mediaForm, ledger);
+    expect(withPlate.projects.find((project) => project.slug === "veridian")?.plateMedia).toBe("cms/media/veridian.jpg");
+    const typed = {
+      pathname: "cms/media/veridian.jpg",
+      url: "https://blob.example/veridian.jpg",
+      uploadedAt: "2026-09-03T00:00:00.000Z",
+      alt: "",
+      caption: "",
+      contentType: "image/jpeg",
+      size: 12,
+      usage: "",
+      focalPoint: "50% 50%",
+    };
+    expect(mediaUsedBy(typed, [withPlate])).toContain("/projects/veridian");
+
+    const articleForm = new FormData();
+    articleForm.set("articles-present", "1");
+    articleForm.set("article-colophon-body", "Type: still the compiled receipt.");
+    const withArticle = applyFormToDocument(articleForm, ledger);
+    expect(overlayArticle("colophon", withArticle).body).toBe("Type: still the compiled receipt.");
+    expect(overlayArticle("colophon", { articles: [] }).body).toMatch(/Libre Baskerville/);
   });
 });
 

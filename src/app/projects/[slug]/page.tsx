@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { JsonLd } from "@/components/JsonLd";
 import { ApparatusSchematic } from "@/components/opening/ApparatusSchematic";
 import { EvidencePanel } from "@/components/opening/EvidencePanel";
 import { ExhibitNav } from "@/components/opening/ExhibitNav";
@@ -125,10 +126,7 @@ export default async function ProjectPage({
 
   return (
     <div className="min-h-screen text-ink">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(projectJsonLd(project)) }}
-      />
+      <JsonLd data={projectJsonLd(project)} />
       <a href="#exhibit" className="skip-link">
         {BROADSHEET.skipExhibit}
       </a>

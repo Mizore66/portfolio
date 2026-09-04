@@ -311,29 +311,55 @@ export function EditorSearch({
 
 export function MediaPicker({
   name,
+  mediaName,
   defaultValue,
+  defaultMedia,
   assets,
+  valueKind = "url",
 }: {
   name: string;
+  mediaName?: string;
   defaultValue: string;
+  defaultMedia?: string;
   assets: { url: string; alt: string; caption: string; pathname: string }[];
+  valueKind?: "url" | "pathname";
 }) {
   const [value, setValue] = useState(defaultValue);
+  const [media, setMedia] = useState(defaultMedia ?? (valueKind === "pathname" ? defaultValue : ""));
+
+  function pick(asset: { url: string; pathname: string }) {
+    setValue(valueKind === "pathname" ? asset.pathname : asset.url);
+    setMedia(asset.pathname);
+  }
+
+  function onChange(next: string) {
+    const asset = assets.find((item) => item.url === next || item.pathname === next);
+    if (asset) {
+      pick(asset);
+      return;
+    }
+    setValue(next);
+    setMedia(valueKind === "pathname" ? next : "");
+  }
+
+  const preview = assets.find((item) => item.pathname === media || item.url === value || item.pathname === value)?.url || value;
+
   return (
     <div>
-      <input name={name} value={value} onChange={(e) => setValue(e.target.value)} />
+      {mediaName ? <input type="hidden" name={mediaName} value={media} /> : null}
+      <input name={name} value={value} onChange={(e) => onChange(e.target.value)} />
       <p className="mt-2 font-mono text-[12px] normal-case tracking-normal text-faded">
-        Choose an existing asset or paste a path. Upload new files on Settings.
+        Choose a library file (stores its pathname) or paste a public path. Upload new files on Settings.
       </p>
-      {value ? (
+      {preview ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={value} alt="" className="mt-2 max-h-32 border border-ink" />
+        <img src={preview} alt="" className="mt-2 max-h-32 border border-ink" />
       ) : null}
       {assets.length ? (
         <ul className="mt-2 grid gap-1">
           {assets.map((asset) => (
             <li key={asset.pathname}>
-              <button type="button" className="masthead-chip" onClick={() => setValue(asset.url)}>
+              <button type="button" className="masthead-chip" onClick={() => pick(asset)}>
                 Use {asset.alt || asset.pathname}
               </button>
             </li>

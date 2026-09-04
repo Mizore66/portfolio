@@ -1,5 +1,7 @@
+import { ledgerArticles } from "@/lib/cms/articles";
 import { compiledMainlinePgn, ledgerChessNotes } from "@/lib/cms/chess-notes";
 import { ledgerLab } from "@/lib/cms/lab-copy";
+import { ledgerRedirects } from "@/lib/cms/redirects";
 import { companyAnchor } from "@/lib/anchors";
 import { resumeData } from "@/lib/data";
 import { METRICS, POSITIONING } from "@/lib/metrics";
@@ -34,6 +36,7 @@ function claim(
     source: extra.source ?? "",
     sourceUrl: extra.sourceUrl ?? "",
     linkedProject: extra.linkedProject ?? "",
+    mediaPathname: extra.mediaPathname ?? "",
     heroEligible: extra.heroEligible ?? false,
     archived: extra.archived ?? false,
     surfaces: extra.surfaces ?? (extra.heroEligible ? ["home", "opening", "resume"] : ["opening", "resume", "exhibit"]),
@@ -82,6 +85,7 @@ function projectCopies(): CmsProjectCopy[] {
     bullets: project.bullets.join("\n"),
     description: project.description,
     plate: project.plate,
+    plateMedia: "",
     plateCaption: project.plateCaption,
     plateAlt: project.plateAlt,
     apparatusName: project.apparatus.name,
@@ -265,6 +269,8 @@ export function ledgerDocument(): SiteDocument {
     chess: ledgerChessNotes(),
     chessPgn: compiledMainlinePgn(),
     lab: ledgerLab(),
+    redirects: ledgerRedirects(),
+    articles: ledgerArticles(),
   };
 }
 

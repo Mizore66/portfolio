@@ -1,5 +1,8 @@
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { followRedirect, publishedRedirectFor } from "@/lib/cms/follow-redirect";
 
-export default function AboutRedirect() {
-  redirect("/#about");
+export default async function AboutRedirect() {
+  const hit = await publishedRedirectFor("/about");
+  if (!hit) notFound();
+  followRedirect(hit);
 }
