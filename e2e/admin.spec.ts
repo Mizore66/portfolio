@@ -24,4 +24,13 @@ test.describe("admin editor", () => {
     await expect(page.locator("main")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
   });
+
+  test("dashboard loads when signed in", async ({ page }) => {
+    await page.goto("/admin/login");
+    await page.fill('input[name="password"]', process.env.ADMIN_PASSWORD ?? "local-editor");
+    await page.click('button[type=submit]');
+    await page.waitForURL(/\/admin$/);
+    await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
+    await expect(page.getByText(/Content store:/)).toBeVisible();
+  });
 });

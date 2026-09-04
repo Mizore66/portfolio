@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AdminFrame } from "@/app/admin/layout";
+import { AdminFrame } from "@/components/admin/AdminFrame";
 import { RestoreButtons } from "@/components/admin/DangerActions";
 import { restoreAndPublishAction, restoreRevisionAction } from "@/lib/cms/actions";
 import { formatLocalTime, revisionInstant } from "@/lib/cms/health";

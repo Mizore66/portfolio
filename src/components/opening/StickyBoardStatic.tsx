@@ -64,19 +64,14 @@ export function StickyBoardStatic({ planeId = "play-board" }: { planeId?: string
         <div className="flex w-10 shrink-0 self-stretch">
           <EvalBar value={node.eval} label={evalLabel} />
         </div>
-        <div className="flex min-w-0 flex-1 items-start">
-          <div
-            className="flex w-4 shrink-0 flex-col-reverse items-end justify-around pr-1 font-mono text-[12px] leading-none text-faded"
-            data-testid="board-ranks"
-          >
-            {Array.from({ length: 8 }, (_, i) => (
-              <span key={i} className="leading-none">
-                {i + 1}
-              </span>
-            ))}
-          </div>
-          <div className="board-size-wrap min-w-0 flex-1">
-            <div className="flex flex-col" style={{ width: "100%" }}>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <div className="board-coords-row flex min-w-0 items-stretch">
+            <div className="board-ranks" data-testid="board-ranks">
+              {Array.from({ length: 8 }, (_, i) => (
+                <span key={i}>{i + 1}</span>
+              ))}
+            </div>
+            <div className="board-size-wrap min-w-0 flex-1">
               <div className="border-2 border-ink" style={{ width: "100%", aspectRatio: "1" }}>
                 <div
                   role="img"
@@ -117,14 +112,14 @@ export function StickyBoardStatic({ planeId = "play-board" }: { planeId?: string
                   })}
                 </div>
               </div>
-              <div className="board-files" data-testid="board-files">
-                {FILES.split("").map((f) => (
-                  <span key={f} className="block w-full text-center">
-                    {f}
-                  </span>
-                ))}
-              </div>
             </div>
+          </div>
+          <div className="board-files board-files-indented" data-testid="board-files">
+            {FILES.split("").map((f) => (
+              <span key={f} className="block w-full text-center">
+                {f}
+              </span>
+            ))}
           </div>
         </div>
       </div>

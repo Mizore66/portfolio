@@ -1,4 +1,4 @@
-import { AdminFrame } from "@/app/admin/layout";
+import { AdminFrame } from "@/components/admin/AdminFrame";
 import { ChessLinePreview } from "@/components/admin/ChessLinePreview";
 import { AdminActions, AdminDirtyForm, EditorSearch, MediaPicker } from "@/components/admin/AdminForm";
 import { annotatedMainlinePgn, compiledMainlinePgn, pgnMatchesRepertoire } from "@/lib/cms/chess-notes";

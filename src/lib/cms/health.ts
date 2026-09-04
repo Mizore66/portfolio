@@ -1,5 +1,5 @@
 import { documentDiff } from "@/lib/cms/diff";
-import { claimHeroReady, validateDocument } from "@/lib/cms/validate";
+import { claimHeroReady, present, validateDocument } from "@/lib/cms/validate";
 import type { CmsClaim, SiteDocument } from "@/lib/cms/types";
 
 /** One visible rule for homepage proof-card evidence. */
@@ -31,7 +31,9 @@ export function draftHealth(doc: SiteDocument) {
   const heroMissing = doc.claims.filter(
     (claim) => claim.heroEligible && !claim.archived && claimHeroReady(claim).length > 0,
   );
-  const undated = doc.claims.filter((claim) => !claim.archived && !claim.date.trim());
+  const undated = doc.claims.filter(
+    (claim) => !claim.archived && !(typeof claim.date === "string" && claim.date.trim()),
+  );
   const errors = validateDocument(doc);
   return {
     heroMissing,
@@ -51,8 +53,8 @@ export function claimCompleteness(claim: CmsClaim): { label: string; tone: "ok" 
     if (missing.length) return { label: `${missing.length} required fields missing`, tone: "bad" };
     return { label: "Complete", tone: "ok" };
   }
-  if (!claim.source.trim()) return { label: "Missing source", tone: "warn" };
-  if (!claim.date.trim()) return { label: "Missing date", tone: "warn" };
+  if (!present(claim.source)) return { label: "Missing source", tone: "warn" };
+  if (!present(claim.date)) return { label: "Missing date", tone: "warn" };
   return { label: "Complete", tone: "ok" };
 }
 

@@ -157,14 +157,8 @@ export const BoardDiagram = memo(function BoardDiagram({
       if (el.clientWidth < 16) return;
       setEdge(snapInnerEdge(el.clientWidth));
     };
-    let primed = false;
-    const ro = new ResizeObserver(() => {
-      if (!primed) {
-        primed = true;
-        return;
-      }
-      fit();
-    });
+    fit();
+    const ro = new ResizeObserver(() => fit());
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
@@ -277,23 +271,21 @@ export const BoardDiagram = memo(function BoardDiagram({
         >
           <EvalBar value={evalCp ?? 0} label={evalLabel} />
         </div>
-        <div className="flex min-w-0 flex-1 items-start">
+        <div className="flex min-w-0 flex-1 flex-col">
           <div
-            className="flex w-4 shrink-0 flex-col-reverse items-end justify-around pr-1 font-mono text-[12px] leading-none text-faded"
-            data-testid="board-ranks"
+            className="board-coords-row flex min-w-0 items-stretch"
             style={edge ? { height: edge + 4 } : undefined}
           >
-            {Array.from({ length: 8 }, (_, i) => (
-              <span key={i} className="leading-none">
-                {i + 1}
-              </span>
-            ))}
-          </div>
-          <div ref={wrapRef} className="board-size-wrap min-w-0 flex-1">
             <div
-              className="flex flex-col"
-              style={edge ? { width: edge + 4 } : { width: "100%" }}
+              className="board-ranks"
+              data-testid="board-ranks"
+              style={edge ? { height: edge + 4 } : undefined}
             >
+              {Array.from({ length: 8 }, (_, i) => (
+                <span key={i}>{i + 1}</span>
+              ))}
+            </div>
+            <div ref={wrapRef} className="board-size-wrap min-w-0 flex-1">
               <div
                 className="border-2 border-ink"
                 style={edge ? { width: "100%", height: edge + 4 } : { width: "100%", aspectRatio: "1" }}
@@ -349,14 +341,14 @@ export const BoardDiagram = memo(function BoardDiagram({
                   })}
                 </div>
               </div>
-              <div className="board-files" data-testid="board-files">
-                {FILES.split("").map((f) => (
-                  <span key={f} className="block w-full text-center">
-                    {f}
-                  </span>
-                ))}
-              </div>
             </div>
+          </div>
+          <div className="board-files board-files-indented" data-testid="board-files">
+            {FILES.split("").map((f) => (
+              <span key={f} className="block w-full text-center">
+                {f}
+              </span>
+            ))}
           </div>
         </div>
       </div>

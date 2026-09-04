@@ -1,4 +1,4 @@
-import { AdminFrame } from "@/app/admin/layout";
+import { AdminFrame } from "@/components/admin/AdminFrame";
 import { AdminActions, AdminDirtyForm, MediaPicker } from "@/components/admin/AdminForm";
 import { overlayArticle } from "@/lib/cms/articles";
 import { publishAction, saveDraftAction } from "@/lib/cms/actions";

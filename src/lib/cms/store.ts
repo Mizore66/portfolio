@@ -271,10 +271,11 @@ export async function getCmsState(): Promise<
   const revisions = store.revisions.map((row) => hydrateDocument(row));
   const backfill = evidenceBackfillPaths(store.published ?? store.draft, published ?? draft ?? ledgerDocument());
   return {
-    ...store,
-    published,
     draft,
+    published,
     revisions,
+    audit: Array.isArray(store.audit) ? store.audit : [],
+    media: Array.isArray(store.media) ? store.media : [],
     ledger: ledgerDocument(),
     backend: status.backend,
     writable: status.writable,

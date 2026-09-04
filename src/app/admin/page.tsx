@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import Link from "next/link";
-import { AdminFrame } from "@/app/admin/layout";
+import { AdminFrame } from "@/components/admin/AdminFrame";
 import { DiscardDraftButton } from "@/components/admin/DangerActions";
 import { enablePreviewAction } from "@/lib/cms/actions";
 import { draftHealth, draftStatus, formatLocalTime, HERO_EVIDENCE_RULE } from "@/lib/cms/health";

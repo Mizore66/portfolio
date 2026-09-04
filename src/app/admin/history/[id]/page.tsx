@@ -1,4 +1,4 @@
-import { AdminFrame } from "@/app/admin/layout";
+import { AdminFrame } from "@/components/admin/AdminFrame";
 import { RestoreToDraftButton } from "@/components/admin/DangerActions";
 import { getRevision } from "@/lib/cms/store";
 import { notFound } from "next/navigation";
