@@ -1,4 +1,4 @@
-import { AdminFrame } from "@/app/admin/layout";
+import { AdminFrame } from "@/components/admin/AdminFrame";
 import { groupedDocumentDiff, editorHrefForPath, wordDiff } from "@/lib/cms/diff";
 import { getCmsState, getRevision } from "@/lib/cms/store";
 import { ledgerDocument } from "@/lib/cms/ledger";

@@ -1,4 +1,4 @@
-import { AdminFrame } from "@/app/admin/layout";
+import { AdminFrame } from "@/components/admin/AdminFrame";
 import { AdminActions, AdminDirtyForm, ApparatusRows, EditorSearch, MediaPicker, ReorderList } from "@/components/admin/AdminForm";
 import { publishAction, saveDraftAction } from "@/lib/cms/actions";
 import { editorBar } from "@/lib/cms/editor-state";

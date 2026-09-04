@@ -1,4 +1,4 @@
-import { AdminFrame } from "@/app/admin/layout";
+import { AdminFrame } from "@/components/admin/AdminFrame";
 import { AdminDirtyForm } from "@/components/admin/AdminForm";
 import { enablePreviewAction, publishAction } from "@/lib/cms/actions";
 import { groupedDocumentDiff } from "@/lib/cms/diff";

@@ -19,8 +19,8 @@ export const HERO_REQUIRED_FIELDS = [
   "date",
 ] as const;
 
-function present(value: string): boolean {
-  return value.trim().length > 0;
+export function present(value: string | undefined | null): boolean {
+  return typeof value === "string" && value.trim().length > 0;
 }
 
 /** Required packet for a homepage proof card. Blank fields fail; “Unfiled …” counts as filed. */
@@ -72,14 +72,15 @@ function wordCount(value: string): number {
 
 export function validateDocument(doc: SiteDocument): string[] {
   const errors: string[] = [];
-  if (!doc.profile.dek) errors.push("Profile role line is required.");
-  if (!doc.profile.tagline) errors.push("Profile tagline is required.");
-  if (doc.profile.dek.length > 240) errors.push("Profile role line is too long.");
-  const recruiterWords = wordCount(doc.profile.recruiterBio);
+  const profile = doc.profile ?? ({} as SiteDocument["profile"]);
+  if (!profile.dek) errors.push("Profile role line is required.");
+  if (!profile.tagline) errors.push("Profile tagline is required.");
+  if ((profile.dek ?? "").length > 240) errors.push("Profile role line is too long.");
+  const recruiterWords = wordCount(profile.recruiterBio);
   if (recruiterWords < 35 || recruiterWords > 45) {
     errors.push(`Recruiter biography is ${recruiterWords} words; it must be 35–45.`);
   }
-  const followerWords = wordCount(doc.profile.followerBio);
+  const followerWords = wordCount(profile.followerBio);
   if (followerWords < 100 || followerWords > 140) {
     errors.push(`Follower biography is ${followerWords} words; it must be 100–140.`);
   }

@@ -1,4 +1,4 @@
-import { AdminFrame } from "@/app/admin/layout";
+import { AdminFrame } from "@/components/admin/AdminFrame";
 import { deleteMediaAction, importDocumentAction, replaceMediaAction, updateMediaAction, uploadMediaAction } from "@/lib/cms/actions";
 import { cmsStoreStatus } from "@/lib/cms/backend";
 import { postgresUrlSource } from "@/lib/cms/env";

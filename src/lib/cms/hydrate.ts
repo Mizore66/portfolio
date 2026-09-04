@@ -263,7 +263,7 @@ export function evidenceBackfillPaths(raw: unknown, hydrated: SiteDocument): str
     if (!before) continue;
     for (const field of ["source", "denominator", "method", "environment", "date"] as const) {
       const was = typeof before[field] === "string" ? before[field].trim() : "";
-      if (!was && claim[field].trim()) paths.push(`${claim.id}.${field}`);
+      if (!was && typeof claim[field] === "string" && claim[field].trim()) paths.push(`${claim.id}.${field}`);
     }
   }
   return paths;

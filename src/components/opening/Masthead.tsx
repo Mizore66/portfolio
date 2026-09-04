@@ -80,8 +80,8 @@ export async function HeroIdentity() {
       >
         {POSITIONING.ownershipBridge}
       </p>
-      <div data-testid="masthead-proof" className="hero-proof-wrap">
-        <ul id="proof" className="hero-proof px-4 sm:px-6" aria-label="Filed proof">
+      <div data-testid="masthead-proof" className="hero-proof-wrap px-4 sm:px-6">
+        <ul id="proof" className="hero-proof" aria-label="Filed proof">
           {proof.map((item, index) => {
             const caveat = item.note;
             const date = item.date ? formatClaimDate(item.date) : "";
@@ -96,14 +96,9 @@ export async function HeroIdentity() {
                   <a
                     className="claim-dagger"
                     href={`#claim-note-${item.id}`}
-                    aria-label={`Method for ${item.label}`}
+                    aria-label={`How ${item.label} was measured`}
                   >
                     <sup>{index + 1}</sup>
-                  </a>
-                </p>
-                <p className="mt-2">
-                  <a href={`#claim-note-${item.id}`} className="claim-note-link">
-                    Method note {index + 1}
                   </a>
                 </p>
                 <EvidenceMeta note={note} kind={item.kind} />
@@ -111,7 +106,7 @@ export async function HeroIdentity() {
             );
           })}
         </ul>
-        <ol className="hero-claim-notes px-4 sm:px-6" data-testid="hero-claim-notes">
+        <ol className="hero-claim-notes" data-testid="hero-claim-notes">
           {proof.map((item, index) => (
             <li key={item.id} id={`claim-note-${item.id}`}>
               <span className="claim-note-mark">{index + 1}.</span>{" "}
