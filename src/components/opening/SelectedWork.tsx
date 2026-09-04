@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { DeskHover } from "@/components/opening/DeskHover";
-import { EvidenceMeta } from "@/components/opening/EvidenceMeta";
 import { getRenderableDocument } from "@/lib/cms/store";
 import { overlayProjects } from "@/lib/cms/overlay";
 import { resumeData } from "@/lib/data";
@@ -108,12 +107,6 @@ export async function SelectedWork({ path = "all" }: { path?: WorkPath | "all" }
             </h3>
             <p className="mt-2 font-display text-[16px] leading-snug text-ink">{project.purpose}</p>
             <p className="metric-row mt-3">{project.impact}</p>
-            {"evidenceNote" in project && project.evidenceNote ? (
-              <EvidenceMeta
-                note={project.evidenceNote}
-                kind={"evidenceKind" in project ? (project.evidenceKind as EvidenceKind) : undefined}
-              />
-            ) : null}
             <p className="mt-4 flex flex-wrap gap-x-4 gap-y-2 font-mono text-[12px] uppercase tracking-wider project-card-cta">
               <Link
                 href={exhibitHref(project.slug, path)}

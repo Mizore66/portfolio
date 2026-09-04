@@ -203,7 +203,10 @@ export default async function AdminHome({
         </p>
       </details>
       {state.audit[0] ? (
-        <p className="mt-6 font-mono text-[12px] text-faded" title={state.audit[0].at}>
+        <p
+          className="mt-6 font-mono text-[12px] text-faded"
+          title={typeof state.audit[0].at === "string" ? state.audit[0].at : undefined}
+        >
           Last action · {state.audit[0].action} · {state.audit[0].actor ?? "owner"} ·{" "}
           {formatLocalTime(state.audit[0].at)}
         </p>

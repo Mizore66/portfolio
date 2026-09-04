@@ -16,6 +16,7 @@ import {
   sessionConfigured,
   sessionCookieOptions,
   verifySession,
+  verifySessionMac,
 } from "@/lib/cms/session";
 import { applyFormToDocument, expectedRevisionIdFrom } from "@/lib/cms/form";
 import { parseImportedDocument } from "@/lib/cms/import-document";
@@ -49,7 +50,7 @@ function previewCookieOptions() {
 
 export async function requireAdmin(): Promise<void> {
   const jar = await cookies();
-  const ok = await verifySession(jar.get(SESSION_COOKIE)?.value);
+  const ok = await verifySessionMac(jar.get(SESSION_COOKIE)?.value);
   if (!ok) redirect("/admin/login");
 }
 

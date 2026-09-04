@@ -264,24 +264,42 @@ export async function getCmsState(): Promise<
     backfill: string[];
   }
 > {
-  const store = await readStore();
-  const status = cmsStoreStatus();
-  const published = store.published ? hydrateDocument(store.published) : null;
-  const draft = store.draft ? hydrateDocument(store.draft) : null;
-  const revisions = store.revisions.map((row) => hydrateDocument(row));
-  const backfill = evidenceBackfillPaths(store.published ?? store.draft, published ?? draft ?? ledgerDocument());
-  return {
-    draft,
-    published,
-    revisions,
-    audit: Array.isArray(store.audit) ? store.audit : [],
-    media: Array.isArray(store.media) ? store.media : [],
-    ledger: ledgerDocument(),
-    backend: status.backend,
-    writable: status.writable,
-    durable: status.durable,
-    backfill,
-  };
+  try {
+    const store = await readStore();
+    const status = cmsStoreStatus();
+    const published = store.published ? hydrateDocument(store.published) : null;
+    const draft = store.draft ? hydrateDocument(store.draft) : null;
+    const revisions = (Array.isArray(store.revisions) ? store.revisions : [])
+      .slice(0, HISTORY_CAP)
+      .map((row) => hydrateDocument(row));
+    const backfill = evidenceBackfillPaths(store.published ?? store.draft, published ?? draft ?? ledgerDocument());
+    return {
+      draft,
+      published,
+      revisions,
+      audit: Array.isArray(store.audit) ? store.audit : [],
+      media: Array.isArray(store.media) ? store.media : [],
+      ledger: ledgerDocument(),
+      backend: status.backend,
+      writable: status.writable,
+      durable: status.durable,
+      backfill,
+    };
+  } catch {
+    const status = cmsStoreStatus();
+    return {
+      draft: null,
+      published: null,
+      revisions: [],
+      audit: [],
+      media: [],
+      ledger: ledgerDocument(),
+      backend: status.backend,
+      writable: status.writable,
+      durable: status.durable,
+      backfill: [],
+    };
+  }
 }
 
 function remember(store: CmsStoreFile, next: SiteDocument, action: string, at: string): CmsStoreFile {

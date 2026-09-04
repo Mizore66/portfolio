@@ -70,15 +70,25 @@ export function revisionInstant(row: {
   return "";
 }
 
-export function formatLocalTime(iso: string, timeZone = "Asia/Kuala_Lumpur"): string {
-  const then = Date.parse(iso);
-  if (!Number.isFinite(then)) return iso;
-  return new Intl.DateTimeFormat("en-GB", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone,
-    timeZoneName: "short",
-  }).format(new Date(then));
+export function formatLocalTime(iso: unknown, timeZone = "Asia/Kuala_Lumpur"): string {
+  const raw =
+    typeof iso === "string"
+      ? iso
+      : typeof iso === "number" && Number.isFinite(iso)
+        ? new Date(iso).toISOString()
+        : "";
+  const then = Date.parse(raw);
+  if (!Number.isFinite(then)) return raw || "Unknown time";
+  try {
+    return new Intl.DateTimeFormat("en-GB", {
+      dateStyle: "medium",
+      timeStyle: "short",
+      timeZone,
+      timeZoneName: "short",
+    }).format(new Date(then));
+  } catch {
+    return new Date(then).toISOString();
+  }
 }
 
 export function defaultRevisionNote(paths: string[]): string {
