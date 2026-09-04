@@ -7,7 +7,7 @@ import { getDraftDocument, getPublishedDocument } from "@/lib/cms/store";
 export default async function ProfileEditor({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; saved?: string; invalid?: string }>;
+  searchParams: Promise<{ error?: string; saved?: string; invalid?: string; changes?: string }>;
 }) {
   const q = await searchParams;
   const [doc, published] = await Promise.all([getDraftDocument(), getPublishedDocument()]);
@@ -19,9 +19,9 @@ export default async function ProfileEditor({
       status={
         q.invalid ? (
           <p className="admin-error mt-2">{q.error}</p>
-        ) : q.saved ? (
+        ) :         q.saved ? (
           <p className="mt-2 font-display text-[16px] text-book-blue" role="status">
-            Draft saved.
+            Draft saved{q.changes ? ` · ${q.changes} unpublished changes.` : "."}
           </p>
         ) : q.error ? (
           <p className="admin-error mt-2">{q.error}</p>
@@ -39,17 +39,27 @@ export default async function ProfileEditor({
           <input name="tagline" defaultValue={p.tagline} required maxLength={160} />
         </label>
         <label>
-          Desks
+          Homepage employer summary
           <textarea name="desksLine" defaultValue={p.desksLine} />
         </label>
+        <p className="font-mono text-[12px] normal-case tracking-normal text-faded">
+          Appears as supporting employer copy. The identity-bridge sentence on the homepage is still the dedicated
+          ownership line.
+        </p>
         <label>
-          How I work
+          Homepage working principle
           <textarea name="howIWork" defaultValue={p.howIWork} />
         </label>
+        <p className="font-mono text-[12px] normal-case tracking-normal text-faded">
+          Used on the homepage working-principle line, not the role sentence.
+        </p>
         <label>
-          Availability
+          Availability (public role target)
           <input name="availability" defaultValue={p.availability} />
         </label>
+        <p className="font-mono text-[12px] normal-case tracking-normal text-faded">
+          Dated Aspiration rows override this when one is marked active.
+        </p>
         <label>
           Recruiter biography (35–45 words)
           <WordCount name="recruiterBio" defaultValue={p.recruiterBio} min={35} max={45} />

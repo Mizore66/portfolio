@@ -19,6 +19,8 @@ export type CmsClaim = {
   denominator: string;
   source: string;
   sourceUrl: string;
+  linkedProject: string;
+  mediaPathname: string;
   heroEligible: boolean;
   archived: boolean;
   surfaces: ("home" | "opening" | "resume" | "exhibit" | "lab")[];
@@ -45,6 +47,30 @@ export type CmsProfile = {
   location: string;
 };
 
+export type CmsExperience = {
+  id: string;
+  employer: string;
+  role: string;
+  type: string;
+  period: string;
+  tech: string;
+  ownership: string;
+  bullets: string;
+  impact: string;
+  archived: boolean;
+};
+
+export type CmsEducation = {
+  id: string;
+  institution: string;
+  qualification: string;
+  honours: string;
+  grades: string;
+  dates: string;
+  location: string;
+  archived: boolean;
+};
+
 export const PROJECT_COPY_KEYS = [
   "purpose",
   "impact",
@@ -69,6 +95,7 @@ export const PROJECT_STRUCTURE_KEYS = [
   "bullets",
   "description",
   "plate",
+  "plateMedia",
   "plateCaption",
   "plateAlt",
   "apparatusName",
@@ -76,6 +103,56 @@ export const PROJECT_STRUCTURE_KEYS = [
   "apparatusPath",
   "apparatusBeside",
 ] as const;
+
+export type ChessEntityKind = "experience" | "education" | "project" | "lab" | "outlook" | "";
+
+export type CmsChessNote = {
+  id: string;
+  fact: string;
+  commentary: string;
+  featured: boolean;
+  entityKind: ChessEntityKind;
+  entityId: string;
+  mediaPathname: string;
+};
+
+export type CmsRedirect = {
+  id: string;
+  from: string;
+  to: string;
+  status: 301 | 302 | 307 | 308;
+  enabled: boolean;
+};
+
+export type CmsArticle = {
+  slug: string;
+  kicker: string;
+  body: string;
+  honestyKicker: string;
+  honesty: string;
+  witnessKicker: string;
+  witnesses: string;
+  plate: string;
+  plateCaption: string;
+  plateAlt: string;
+  plateMedia: string;
+};
+
+export type CmsLabCopy = {
+  hed: string;
+  dek: string;
+  teaser: string;
+  meta: string;
+  resultJoke: string;
+  hypothesisHed: string;
+  hypothesis: string;
+  experimentHed: string;
+  experiment: string;
+  failedHed: string;
+  failed: string;
+  learnedHed: string;
+  learned: string;
+};
 
 export type CmsProjectCopy = {
   slug: string;
@@ -99,12 +176,14 @@ export type CmsProjectCopy = {
   bullets: string;
   description: string;
   plate: string;
+  plateMedia: string;
   plateCaption: string;
   plateAlt: string;
   apparatusName: string;
   apparatusRuntime: string;
   apparatusPath: string;
   apparatusBeside: string;
+  claimIds: string[];
   archived: boolean;
 };
 
@@ -119,6 +198,13 @@ export type SiteDocument = {
   aspirations: CmsAspiration[];
   claims: CmsClaim[];
   projects: CmsProjectCopy[];
+  experience: CmsExperience[];
+  education: CmsEducation[];
+  chess: CmsChessNote[];
+  chessPgn: string;
+  lab: CmsLabCopy;
+  redirects: CmsRedirect[];
+  articles: CmsArticle[];
 };
 
 export type CmsMediaAsset = {

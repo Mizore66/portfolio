@@ -62,7 +62,7 @@ export async function HeroIdentity() {
 
   return (
     <div className="hero-left" data-testid="hero-identity">
-      <div className="hero-identity px-4 pt-5 sm:px-6">
+      <div className="hero-identity px-4 pt-5 sm:px-6" data-testid="hero-identity-block">
         <h1 className="masthead-title">Anas T. Qumhiyeh</h1>
         <p data-testid="masthead-role" className="mt-4 max-w-[68ch] font-display text-[20px] leading-snug text-ink">
           {dek}
@@ -74,6 +74,12 @@ export async function HeroIdentity() {
           {tagline}
         </p>
       </div>
+      <p
+        data-testid="ownership-bridge"
+        className="hero-bridge mt-4 max-w-[68ch] px-4 font-display text-[16px] leading-snug text-ink sm:px-6"
+      >
+        {POSITIONING.ownershipBridge}
+      </p>
       <div data-testid="masthead-proof" className="hero-proof-wrap">
         <ul id="proof" className="hero-proof px-4 sm:px-6" aria-label="Filed proof">
           {proof.map((item, index) => {
@@ -117,9 +123,6 @@ export async function HeroIdentity() {
             </li>
           ))}
         </ol>
-        <p data-testid="ownership-bridge" className="mt-4 max-w-[68ch] px-4 font-display text-[16px] leading-snug text-ink sm:px-6">
-          {POSITIONING.ownershipBridge}
-        </p>
         <div className="hero-cta-block px-4 pb-5 sm:px-6">
           <p
             data-testid="masthead-availability"
@@ -175,10 +178,7 @@ export function PaperMasthead() {
           </ExternalLink>
         </p>
         <p className="mt-4">
-          <a
-            href="/"
-            className="font-mono text-[12px] uppercase tracking-widest text-book-blue underline decoration-2 underline-offset-4"
-          >
+          <a href="/" className="paper-hit">
             ← {BROADSHEET.homeLink}
           </a>
         </p>

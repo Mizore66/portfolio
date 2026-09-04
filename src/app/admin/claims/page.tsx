@@ -1,10 +1,10 @@
 import { AdminFrame } from "@/app/admin/layout";
-import { AdminActions, AdminDirtyForm, ClaimDateFields, EditorSearch, ReorderList } from "@/components/admin/AdminForm";
+import { AdminActions, AdminDirtyForm, ClaimDateFields, EditorSearch, MediaPicker, ReorderList } from "@/components/admin/AdminForm";
 import { publishAction, saveDraftAction } from "@/lib/cms/actions";
 import { claimConsumers } from "@/lib/cms/consumers";
 import { editorBar } from "@/lib/cms/editor-state";
 import { HERO_EVIDENCE_RULE } from "@/lib/cms/health";
-import { getDraftDocument, getPublishedDocument } from "@/lib/cms/store";
+import { getDraftDocument, getPublishedDocument, listMediaBlobs } from "@/lib/cms/store";
 import { claimCompleteness } from "@/lib/cms/health";
 import { REQUIRED_CLAIM_IDS, claimHeroReady } from "@/lib/cms/validate";
 
@@ -14,7 +14,11 @@ export default async function ClaimsEditor({
   searchParams: Promise<{ error?: string; saved?: string; invalid?: string }>;
 }) {
   const q = await searchParams;
-  const [doc, published] = await Promise.all([getDraftDocument(), getPublishedDocument()]);
+  const [doc, published, media] = await Promise.all([
+    getDraftDocument(),
+    getPublishedDocument(),
+    listMediaBlobs(),
+  ]);
   const bar = editorBar(published, doc);
   return (
     <AdminFrame
@@ -88,6 +92,17 @@ export default async function ClaimsEditor({
                     <input name={`claim-${claim.id}-owner`} defaultValue={claim.owner} />
                   </label>
                   <label>
+                    Primary linked project
+                    <select name={`claim-${claim.id}-linkedProject`} defaultValue={claim.linkedProject}>
+                      <option value="">None</option>
+                      {doc.projects.map((project) => (
+                        <option key={project.slug} value={project.slug}>
+                          {project.title || project.slug}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
                     How it was measured
                     <input name={`claim-${claim.id}-method`} defaultValue={claim.method} />
                   </label>
@@ -96,9 +111,12 @@ export default async function ClaimsEditor({
                     <input name={`claim-${claim.id}-baseline`} defaultValue={claim.baseline} />
                   </label>
                   <label>
-                    Sample/evaluation set
+                    Sample / evaluation set
                     <textarea name={`claim-${claim.id}-sample`} defaultValue={claim.sample} />
                   </label>
+                  <p className="font-mono text-[12px] normal-case tracking-normal text-faded">
+                    Qualitative evidence. Keep the numeric denominator in its own field.
+                  </p>
                   <label>
                     Public caveat
                     <textarea name={`claim-${claim.id}-caveat`} defaultValue={claim.caveat} />
@@ -116,32 +134,50 @@ export default async function ClaimsEditor({
                     <textarea name={`claim-${claim.id}-denominator`} defaultValue={claim.denominator} />
                   </label>
                   <p className="font-mono text-[12px] normal-case tracking-normal text-faded">
-                    Record the count or rate basis here. If it is not publishable, write “Unfiled” rather than
-                    guessing. Sample/evaluation set is the qualitative packet; this field is the numeric basis when
-                    both apply.
+                    Record the count or rate basis here. If it is not publishable, choose Confidential or Not
+                    collected in the internal evidence record rather than guessing a number.
                   </p>
                   <label>
-                    Evidence source or provenance
+                    Internal evidence record
                     <input name={`claim-${claim.id}-source`} defaultValue={claim.source} />
                   </label>
+                  <p className="font-mono text-[12px] normal-case tracking-normal text-faded">
+                    Editorial note of where the packet lives. Mark it Filed, Confidential, or Not collected. This is
+                    not automatically a public URL.
+                  </p>
                   <label>
-                    Source URL
+                    Public evidence URL
                     <input name={`claim-${claim.id}-sourceUrl`} defaultValue={claim.sourceUrl} />
+                  </label>
+                  <label>
+                    Evidence file
+                    <MediaPicker
+                      name={`claim-${claim.id}-mediaPathname`}
+                      defaultValue={claim.mediaPathname}
+                      assets={media}
+                      valueKind="pathname"
+                    />
                   </label>
                   <div>
                     <p className="font-mono text-[12px] uppercase tracking-[0.12em]">Measurement date</p>
                     <ClaimDateFields id={claim.id} value={claim.date} />
                   </div>
-                  <p className="font-mono text-[12px] uppercase tracking-[0.12em]">Consuming surfaces</p>
+                  <p className="font-mono text-[12px] uppercase tracking-[0.12em]">Published on</p>
                   <p className="flex flex-wrap gap-3">
-                    {(["home", "opening", "resume", "exhibit", "lab"] as const).map((surface) => (
+                    {([
+                      ["home", "Homepage"],
+                      ["opening", "Opening Preparation"],
+                      ["resume", "Résumé"],
+                      ["exhibit", "Project"],
+                      ["lab", "Lab"],
+                    ] as const).map(([surface, label]) => (
                       <label key={surface} className="flex-row items-center gap-2 normal-case tracking-normal">
                         <input
                           type="checkbox"
                           name={`claim-${claim.id}-surface-${surface}`}
                           defaultChecked={claim.surfaces.includes(surface)}
                         />
-                        {surface}
+                        {label}
                       </label>
                     ))}
                   </p>

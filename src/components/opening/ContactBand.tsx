@@ -60,6 +60,11 @@ export async function ContactBand() {
             </span>
           </a>
         </li>
+        <li>
+          <a className="masthead-chip" href={`${BROADSHEET.printHref}?paper=a4`}>
+            A4 résumé
+          </a>
+        </li>
       </ul>
     </section>
   );

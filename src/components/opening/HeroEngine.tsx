@@ -139,20 +139,23 @@ export function HeroEngine({ staticBoard }: { staticBoard: ReactNode }) {
         {BROADSHEET.heroResultChip}
       </p>
       {ready ? (
-        <div className="mt-3" data-chess-keys>
-          <GlassEngine
-            info={info}
-            book={book}
-            side={side}
-            moveNumber={moveNumber}
-            lampshade=""
-            evalMode={evalMode}
-            onEvalMode={setEvalMode}
-            weightsStatus={weightsStatus}
-            down={down}
-            compact
-          />
-        </div>
+        <details className="hero-engine-diagnostics mt-3">
+          <summary className="masthead-chip">Engine diagnostics</summary>
+          <div className="mt-3" data-chess-keys>
+            <GlassEngine
+              info={info}
+              book={book}
+              side={side}
+              moveNumber={moveNumber}
+              lampshade=""
+              evalMode={evalMode}
+              onEvalMode={setEvalMode}
+              weightsStatus={weightsStatus}
+              down={down}
+              compact
+            />
+          </div>
+        </details>
       ) : null}
       <p
         className="mt-3 max-w-[42ch] font-display text-[15px] leading-snug text-ink"

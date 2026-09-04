@@ -1,26 +1,63 @@
 import { ledgerDocument } from "@/lib/cms/ledger";
-import type { CmsAspiration, CmsClaim, CmsProjectCopy, CmsProfile, SiteDocument } from "@/lib/cms/types";
+import type {
+  CmsArticle,
+  CmsAspiration,
+  CmsChessNote,
+  CmsClaim,
+  CmsEducation,
+  CmsExperience,
+  CmsLabCopy,
+  CmsProfile,
+  CmsProjectCopy,
+  CmsRedirect,
+  SiteDocument,
+} from "@/lib/cms/types";
+import { ledgerArticles } from "@/lib/cms/articles";
+
+const SURFACES: CmsClaim["surfaces"][number][] = ["home", "opening", "resume", "exhibit", "lab"];
 
 function str(value: unknown, fallback = ""): string {
   return typeof value === "string" ? value : fallback;
+}
+
+/** Empty strings are missing fields. Hero packets fall back to the TypeScript ledger. */
+function filed(value: unknown, fallback = ""): string {
+  if (typeof value !== "string") return fallback;
+  return value.trim() ? value : fallback;
 }
 
 function bool(value: unknown, fallback = false): boolean {
   return typeof value === "boolean" ? value : fallback;
 }
 
+function surfaces(value: unknown, fallback: CmsClaim["surfaces"]): CmsClaim["surfaces"] {
+  if (!Array.isArray(value)) return fallback;
+  const next = value.filter((item): item is CmsClaim["surfaces"][number] =>
+    SURFACES.includes(item as CmsClaim["surfaces"][number]),
+  );
+  return next.length ? next : fallback;
+}
+
 function hydrateClaim(seed: CmsClaim, row: Partial<CmsClaim> | undefined): CmsClaim {
-  if (!row) return { ...seed, archived: seed.archived ?? false, sourceUrl: seed.sourceUrl ?? "" };
+  if (!row) return { ...seed, archived: seed.archived ?? false, sourceUrl: seed.sourceUrl ?? "", linkedProject: seed.linkedProject ?? "" };
   return {
     ...seed,
     ...row,
     id: seed.id,
     archived: bool(row.archived, seed.archived ?? false),
     heroEligible: bool(row.heroEligible, seed.heroEligible),
-    surfaces: Array.isArray(row.surfaces) ? row.surfaces : seed.surfaces,
-    denominator: str(row.denominator, seed.denominator),
-    source: str(row.source, seed.source),
+    surfaces: surfaces(row.surfaces, seed.surfaces),
+    method: filed(row.method, seed.method),
+    baseline: str(row.baseline, seed.baseline),
+    sample: str(row.sample, seed.sample),
+    environment: filed(row.environment, seed.environment),
+    date: filed(row.date, seed.date),
+    caveat: str(row.caveat, seed.caveat),
+    denominator: filed(row.denominator, seed.denominator),
+    source: filed(row.source, seed.source),
     sourceUrl: str(row.sourceUrl, seed.sourceUrl),
+    linkedProject: str(row.linkedProject, seed.linkedProject ?? ""),
+    mediaPathname: str(row.mediaPathname, seed.mediaPathname ?? ""),
   };
 }
 
@@ -32,12 +69,14 @@ function hydrateProject(seed: CmsProjectCopy, row: Partial<CmsProjectCopy> | und
       bullets: seed.bullets ?? "",
       description: seed.description ?? "",
       plate: seed.plate ?? "",
+      plateMedia: seed.plateMedia ?? "",
       plateCaption: seed.plateCaption ?? "",
       plateAlt: seed.plateAlt ?? "",
       apparatusName: seed.apparatusName ?? "",
       apparatusRuntime: seed.apparatusRuntime ?? "",
       apparatusPath: seed.apparatusPath ?? "",
       apparatusBeside: seed.apparatusBeside ?? "",
+      claimIds: seed.claimIds ?? [],
     };
   }
   return {
@@ -58,12 +97,16 @@ function hydrateProject(seed: CmsProjectCopy, row: Partial<CmsProjectCopy> | und
     bullets: str(row.bullets, seed.bullets ?? ""),
     description: str(row.description, seed.description ?? ""),
     plate: str(row.plate, seed.plate ?? ""),
+    plateMedia: str(row.plateMedia, seed.plateMedia ?? ""),
     plateCaption: str(row.plateCaption, seed.plateCaption ?? ""),
     plateAlt: str(row.plateAlt, seed.plateAlt ?? ""),
     apparatusName: str(row.apparatusName, seed.apparatusName ?? ""),
     apparatusRuntime: str(row.apparatusRuntime, seed.apparatusRuntime ?? ""),
     apparatusPath: str(row.apparatusPath, seed.apparatusPath ?? ""),
     apparatusBeside: str(row.apparatusBeside, seed.apparatusBeside ?? ""),
+    claimIds: Array.isArray(row.claimIds)
+      ? row.claimIds.filter((id): id is string => typeof id === "string" && Boolean(id.trim()))
+      : (seed.claimIds ?? []),
   };
 }
 
@@ -90,36 +133,248 @@ function hydrateAspiration(seed: CmsAspiration, row: Partial<CmsAspiration> | un
     ...row,
     id: seed.id,
     active: bool(row.active, seed.active),
+    label: str(row.label, seed.label),
+    start: str(row.start, seed.start),
+    end: str(row.end, seed.end),
   };
 }
 
-/** Fill missing rows/flags from the TypeScript ledger so older revisions stay editable. */
-export function hydrateDocument(doc: SiteDocument): SiteDocument {
-  const ledger = ledgerDocument();
-  const claimsById = new Map(doc.claims.map((claim) => [claim.id, claim]));
-  const extraClaims = doc.claims.filter((claim) => !ledger.claims.some((seed) => seed.id === claim.id));
-  const projectsBySlug = new Map(doc.projects.map((project) => [project.slug, project]));
-  const extraProjects = doc.projects.filter(
-    (project) => !ledger.projects.some((seed) => seed.slug === project.slug),
-  );
+function hydrateExperience(seed: CmsExperience, row: Partial<CmsExperience> | undefined): CmsExperience {
+  if (!row) return { ...seed };
   return {
-    ...doc,
-    savedAt: str(doc.savedAt, doc.publishedAt),
-    restoredFrom: str(doc.restoredFrom, ""),
-    profile: hydrateProfile(ledger.profile, doc.profile),
-    claims: [
-      ...ledger.claims.map((seed) => hydrateClaim(seed, claimsById.get(seed.id))),
-      ...extraClaims.map((claim) => hydrateClaim({ ...claim, sourceUrl: claim.sourceUrl ?? "" }, claim)),
-    ],
-    projects: [
-      ...ledger.projects.map((seed) => hydrateProject(seed, projectsBySlug.get(seed.slug))),
-      ...extraProjects.map((project) => hydrateProject(project, project)),
-    ],
-    aspirations: Array.isArray(doc.aspirations)
-      ? doc.aspirations.map((item) => {
-          const seed = ledger.aspirations.find((row) => row.id === item.id);
-          return hydrateAspiration(seed ?? item, item);
-        })
-      : ledger.aspirations,
+    ...seed,
+    ...row,
+    id: seed.id,
+    employer: str(row.employer, seed.employer),
+    role: str(row.role, seed.role),
+    type: str(row.type, seed.type),
+    period: str(row.period, seed.period),
+    tech: str(row.tech, seed.tech),
+    ownership: str(row.ownership, seed.ownership),
+    bullets: str(row.bullets, seed.bullets),
+    impact: str(row.impact, seed.impact),
+    archived: bool(row.archived, seed.archived),
   };
+}
+
+function hydrateEducation(seed: CmsEducation, row: Partial<CmsEducation> | undefined): CmsEducation {
+  if (!row) return { ...seed };
+  return {
+    ...seed,
+    ...row,
+    id: seed.id,
+    institution: str(row.institution, seed.institution),
+    qualification: str(row.qualification, seed.qualification),
+    honours: str(row.honours, seed.honours),
+    grades: str(row.grades, seed.grades),
+    dates: str(row.dates, seed.dates),
+    location: str(row.location, seed.location),
+    archived: bool(row.archived, seed.archived),
+  };
+}
+
+function hydrateChessNote(seed: CmsChessNote, row: Partial<CmsChessNote> | undefined): CmsChessNote {
+  if (!row) return { ...seed };
+  const kinds: CmsChessNote["entityKind"][] = ["experience", "education", "project", "lab", "outlook", ""];
+  const entityKind = kinds.includes(row.entityKind as CmsChessNote["entityKind"])
+    ? (row.entityKind as CmsChessNote["entityKind"])
+    : seed.entityKind;
+  return {
+    ...seed,
+    fact: str(row.fact, seed.fact),
+    commentary: str(row.commentary, seed.commentary),
+    featured: bool(row.featured, seed.featured),
+    entityKind,
+    entityId: str(row.entityId, seed.entityId),
+    mediaPathname: str(row.mediaPathname, seed.mediaPathname ?? ""),
+  };
+}
+
+function hydrateRedirect(seed: CmsRedirect, row: Partial<CmsRedirect> | undefined): CmsRedirect {
+  if (!row) return { ...seed };
+  const status = row.status === 301 || row.status === 302 || row.status === 307 || row.status === 308 ? row.status : seed.status;
+  return {
+    ...seed,
+    from: str(row.from, seed.from),
+    to: str(row.to, seed.to),
+    status,
+    enabled: bool(row.enabled, seed.enabled),
+  };
+}
+
+function hydrateArticle(seed: CmsArticle, row: Partial<CmsArticle> | undefined): CmsArticle {
+  if (!row) return { ...seed };
+  return {
+    slug: seed.slug,
+    kicker: str(row.kicker, seed.kicker),
+    body: str(row.body, seed.body),
+    honestyKicker: str(row.honestyKicker, seed.honestyKicker),
+    honesty: str(row.honesty, seed.honesty),
+    witnessKicker: str(row.witnessKicker, seed.witnessKicker),
+    witnesses: str(row.witnesses, seed.witnesses),
+    plate: str(row.plate, seed.plate),
+    plateCaption: str(row.plateCaption, seed.plateCaption),
+    plateAlt: str(row.plateAlt, seed.plateAlt),
+    plateMedia: str(row.plateMedia, seed.plateMedia),
+  };
+}
+
+function hydrateLab(seed: CmsLabCopy, row: Partial<CmsLabCopy> | undefined): CmsLabCopy {
+  if (!row) return { ...seed };
+  return {
+    hed: filed(row.hed, seed.hed),
+    dek: filed(row.dek, seed.dek),
+    teaser: filed(row.teaser, seed.teaser),
+    meta: filed(row.meta, seed.meta),
+    resultJoke: filed(row.resultJoke, seed.resultJoke),
+    hypothesisHed: filed(row.hypothesisHed, seed.hypothesisHed),
+    hypothesis: filed(row.hypothesis, seed.hypothesis),
+    experimentHed: filed(row.experimentHed, seed.experimentHed),
+    experiment: filed(row.experiment, seed.experiment),
+    failedHed: filed(row.failedHed, seed.failedHed),
+    failed: filed(row.failed, seed.failed),
+    learnedHed: filed(row.learnedHed, seed.learnedHed),
+    learned: filed(row.learned, seed.learned),
+  };
+}
+
+function fallbackDocument(raw: unknown, ledger: SiteDocument): SiteDocument {
+  const row = raw && typeof raw === "object" ? (raw as Partial<SiteDocument>) : {};
+  return {
+    ...ledger,
+    revisionId: str(row.revisionId, "unreadable"),
+    status: row.status === "draft" || row.status === "published" ? row.status : ledger.status,
+    publishedAt: str(row.publishedAt, ledger.publishedAt),
+    savedAt: str(row.savedAt, ledger.savedAt),
+    note: `Unreadable snapshot (${str(row.revisionId, "unknown")}). Showing the TypeScript ledger for this row.`,
+  };
+}
+
+/** Paths filled from the TypeScript ledger because the stored snapshot left them blank. */
+export function evidenceBackfillPaths(raw: unknown, hydrated: SiteDocument): string[] {
+  if (!raw || typeof raw !== "object") return [];
+  const claims = (raw as { claims?: unknown }).claims;
+  if (!Array.isArray(claims)) return [];
+  const paths: string[] = [];
+  for (const claim of hydrated.claims) {
+    const before = claims.find((row) => row && typeof row === "object" && (row as CmsClaim).id === claim.id) as
+      | Partial<CmsClaim>
+      | undefined;
+    if (!before) continue;
+    for (const field of ["source", "denominator", "method", "environment", "date"] as const) {
+      const was = typeof before[field] === "string" ? before[field].trim() : "";
+      if (!was && claim[field].trim()) paths.push(`${claim.id}.${field}`);
+    }
+  }
+  return paths;
+}
+
+/** Fill missing rows/flags from the TypeScript ledger so older revisions stay editable. */
+export function hydrateDocument(input: unknown): SiteDocument {
+  const ledger = ledgerDocument();
+  try {
+    if (!input || typeof input !== "object") return { ...ledger };
+    const doc = input as Partial<SiteDocument>;
+    const claims = Array.isArray(doc.claims) ? doc.claims : [];
+    const projects = Array.isArray(doc.projects) ? doc.projects : [];
+    const aspirations = Array.isArray(doc.aspirations) ? doc.aspirations : [];
+    const experience = Array.isArray(doc.experience) ? doc.experience : [];
+    const education = Array.isArray(doc.education) ? doc.education : [];
+    const claimsById = new Map(claims.map((claim) => [claim.id, claim]));
+    const extraClaims = claims.filter((claim) => claim?.id && !ledger.claims.some((seed) => seed.id === claim.id));
+    const projectsBySlug = new Map(projects.map((project) => [project.slug, project]));
+    const extraProjects = projects.filter(
+      (project) => project?.slug && !ledger.projects.some((seed) => seed.slug === project.slug),
+    );
+    const experienceById = new Map(experience.map((row) => [row.id, row]));
+    const extraExperience = experience.filter(
+      (row) => row?.id && !ledger.experience.some((seed) => seed.id === row.id),
+    );
+    const educationById = new Map(education.map((row) => [row.id, row]));
+    const extraEducation = education.filter((row) => row?.id && !ledger.education.some((seed) => seed.id === row.id));
+    const chessById = new Map(
+      (Array.isArray(doc.chess) ? doc.chess : []).map((row) => [row.id, row] as const),
+    );
+    return {
+      ...ledger,
+      ...doc,
+      revisionId: str(doc.revisionId, ledger.revisionId),
+      status: doc.status === "draft" || doc.status === "published" ? doc.status : ledger.status,
+      publishedAt: str(doc.publishedAt, ledger.publishedAt),
+      savedAt: filed(doc.savedAt, str(doc.publishedAt, ledger.savedAt)),
+      restoredFrom: str(doc.restoredFrom, ""),
+      note: str(doc.note, ledger.note),
+      profile: hydrateProfile(ledger.profile, doc.profile),
+      claims: [
+        ...ledger.claims.map((seed) => hydrateClaim(seed, claimsById.get(seed.id))),
+        ...extraClaims.map((claim) =>
+          hydrateClaim(
+            {
+              ...claim,
+              surfaces: surfaces(claim.surfaces, ["exhibit"]),
+              sourceUrl: claim.sourceUrl ?? "",
+              linkedProject: claim.linkedProject ?? "",
+              mediaPathname: claim.mediaPathname ?? "",
+              archived: claim.archived ?? false,
+            },
+            claim,
+          ),
+        ),
+      ],
+      projects: [
+        ...ledger.projects.map((seed) => hydrateProject(seed, projectsBySlug.get(seed.slug))),
+        ...extraProjects.map((project) => hydrateProject(project, project)),
+      ],
+      aspirations: Array.isArray(doc.aspirations)
+        ? aspirations
+            .filter((item) => item?.id)
+            .map((item) => {
+              const seed = ledger.aspirations.find((row) => row.id === item.id);
+              return hydrateAspiration(seed ?? item, item);
+            })
+        : ledger.aspirations,
+      experience: [
+        ...ledger.experience.map((seed) => hydrateExperience(seed, experienceById.get(seed.id))),
+        ...extraExperience.map((row) => hydrateExperience(row, row)),
+      ],
+      education: [
+        ...ledger.education.map((seed) => hydrateEducation(seed, educationById.get(seed.id))),
+        ...extraEducation.map((row) => hydrateEducation(row, row)),
+      ],
+      chess: ledger.chess.map((seed) => hydrateChessNote(seed, chessById.get(seed.id))),
+      chessPgn: filed(doc.chessPgn, ledger.chessPgn),
+      lab: hydrateLab(ledger.lab, doc.lab),
+      redirects: (() => {
+        const rows = Array.isArray(doc.redirects) ? doc.redirects : [];
+        const byId = new Map(rows.map((row) => [row.id, row]));
+        const extras = rows.filter((row) => row?.id && !ledger.redirects.some((seed) => seed.id === row.id));
+        return [
+          ...ledger.redirects.map((seed) => hydrateRedirect(seed, byId.get(seed.id))),
+          ...extras.map((row) =>
+            hydrateRedirect(
+              {
+                id: row.id,
+                from: row.from || "/",
+                to: row.to || "/",
+                status: row.status === 301 || row.status === 302 || row.status === 307 || row.status === 308 ? row.status : 308,
+                enabled: row.enabled ?? true,
+              },
+              row,
+            ),
+          ),
+        ];
+      })(),
+      articles: (() => {
+        const rows = Array.isArray(doc.articles) ? doc.articles : [];
+        const bySlug = new Map(rows.map((row) => [row.slug, row]));
+        const extras = rows.filter((row) => row?.slug && !ledger.articles.some((seed) => seed.slug === row.slug));
+        return [
+          ...ledger.articles.map((seed) => hydrateArticle(seed, bySlug.get(seed.slug))),
+          ...extras.map((row) => hydrateArticle({ ...ledgerArticles()[0]!, ...row, slug: row.slug }, row)),
+        ];
+      })(),
+    };
+  } catch {
+    return fallbackDocument(input, ledger);
+  }
 }

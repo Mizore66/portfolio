@@ -1,8 +1,8 @@
 import { AdminFrame } from "@/app/admin/layout";
-import { AdminActions, AdminDirtyForm, EditorSearch, ReorderList } from "@/components/admin/AdminForm";
+import { AdminActions, AdminDirtyForm, ApparatusRows, EditorSearch, MediaPicker, ReorderList } from "@/components/admin/AdminForm";
 import { publishAction, saveDraftAction } from "@/lib/cms/actions";
 import { editorBar } from "@/lib/cms/editor-state";
-import { getDraftDocument, getPublishedDocument } from "@/lib/cms/store";
+import { getDraftDocument, getPublishedDocument, listMediaBlobs } from "@/lib/cms/store";
 import { LEDGER_PROJECT_SLUGS, projectSchemaReady } from "@/lib/cms/validate";
 
 export default async function ProjectsEditor({
@@ -11,7 +11,7 @@ export default async function ProjectsEditor({
   searchParams: Promise<{ error?: string; saved?: string; invalid?: string }>;
 }) {
   const q = await searchParams;
-  const [doc, published] = await Promise.all([getDraftDocument(), getPublishedDocument()]);
+  const [doc, published, media] = await Promise.all([getDraftDocument(), getPublishedDocument(), listMediaBlobs()]);
   const bar = editorBar(published, doc);
   return (
     <AdminFrame
@@ -29,9 +29,9 @@ export default async function ProjectsEditor({
       }
     >
       <p className="max-w-[62ch] font-display text-[16px] text-ink">
-        Title, slug, date, category, source, technologies, apparatus layers, plate captions, and SEO overlay the
-        public exhibits. New exhibits start archived. Ledger filings can be archived, not permanently deleted.
-        Patent drawings still compile from the TypeScript ledger.
+        New projects start archived and unpublished. Ledger exhibits compiled from TypeScript can be archived, not
+        permanently deleted. CMS-created projects can be deleted while they remain unpublished. Patent drawings still
+        compile from the TypeScript ledger.
       </p>
       <AdminDirtyForm expectedRevisionId={bar.expectedRevisionId} returnTo="/admin/projects">
         <input type="hidden" name="projects-present" value="1" />
@@ -59,7 +59,7 @@ export default async function ProjectsEditor({
                     <input name={`project-${project.slug}-subtitle`} defaultValue={project.subtitle} />
                   </label>
                   <label>
-                    Date
+                    Display publication date
                     <input name={`project-${project.slug}-date`} defaultValue={project.date} />
                   </label>
                   <label>
@@ -67,7 +67,7 @@ export default async function ProjectsEditor({
                     <input name={`project-${project.slug}-category`} defaultValue={project.category} />
                   </label>
                   <label>
-                    Technologies (comma-separated)
+                    Technologies
                     <input name={`project-${project.slug}-tech`} defaultValue={project.tech} />
                   </label>
                   <label>
@@ -119,7 +119,7 @@ export default async function ProjectsEditor({
                     <textarea name={`project-${project.slug}-retrospective`} defaultValue={project.retrospective} />
                   </label>
                   <label>
-                    The line (one bullet per line)
+                    Case-study takeaways (one per line)
                     <textarea name={`project-${project.slug}-bullets`} defaultValue={project.bullets} rows={4} />
                   </label>
                   <label>
@@ -127,17 +127,26 @@ export default async function ProjectsEditor({
                     <textarea name={`project-${project.slug}-description`} defaultValue={project.description} />
                   </label>
                   <label>
-                    Plate image URL
-                    <input name={`project-${project.slug}-plate`} defaultValue={project.plate} />
+                    Article image
+                    <MediaPicker
+                      name={`project-${project.slug}-plate`}
+                      mediaName={`project-${project.slug}-plateMedia`}
+                      defaultValue={project.plate}
+                      defaultMedia={project.plateMedia}
+                      assets={media}
+                    />
                   </label>
                   <label>
-                    Plate caption
+                    Caption
                     <input name={`project-${project.slug}-plateCaption`} defaultValue={project.plateCaption} />
                   </label>
                   <label>
-                    Plate alt text
+                    Image description
                     <input name={`project-${project.slug}-plateAlt`} defaultValue={project.plateAlt} />
                   </label>
+                  <p className="font-mono text-[12px] normal-case tracking-normal text-faded">
+                    Describe information that is not already in the caption.
+                  </p>
                   <label>
                     Apparatus name
                     <input name={`project-${project.slug}-apparatusName`} defaultValue={project.apparatusName} />
@@ -146,14 +155,35 @@ export default async function ProjectsEditor({
                     Apparatus runtime
                     <input name={`project-${project.slug}-apparatusRuntime`} defaultValue={project.apparatusRuntime} />
                   </label>
-                  <label>
-                    Apparatus path (one `name — role` per line)
-                    <textarea name={`project-${project.slug}-apparatusPath`} defaultValue={project.apparatusPath} rows={4} />
-                  </label>
-                  <label>
-                    Beside the path (one `name — role` per line)
-                    <textarea name={`project-${project.slug}-apparatusBeside`} defaultValue={project.apparatusBeside} rows={3} />
-                  </label>
+                  <ApparatusRows
+                    name={`project-${project.slug}-apparatusPath`}
+                    defaultValue={project.apparatusPath}
+                    legend="Main request path"
+                  />
+                  <ApparatusRows
+                    name={`project-${project.slug}-apparatusBeside`}
+                    defaultValue={project.apparatusBeside}
+                    legend="Supporting components"
+                  />
+                  <p className="font-mono text-[12px] normal-case tracking-normal text-faded">
+                    Supporting components do not sit on the synchronous request path.
+                  </p>
+                  <input type="hidden" name={`project-${project.slug}-claims-present`} value="1" />
+                  <p className="font-mono text-[12px] uppercase tracking-[0.12em]">Claims</p>
+                  <p className="flex flex-wrap gap-3">
+                    {doc.claims
+                      .filter((claim) => !claim.archived)
+                      .map((claim) => (
+                        <label key={claim.id} className="flex-row items-center gap-2 normal-case tracking-normal">
+                          <input
+                            type="checkbox"
+                            name={`project-${project.slug}-claim-${claim.id}`}
+                            defaultChecked={project.claimIds?.includes(claim.id)}
+                          />
+                          {claim.display || claim.id}
+                        </label>
+                      ))}
+                  </p>
                   <label className="flex-row items-center gap-2 normal-case tracking-normal">
                     <input
                       type="checkbox"
@@ -163,10 +193,9 @@ export default async function ProjectsEditor({
                     Archive this exhibit
                   </label>
                   <p className="font-mono text-[12px] normal-case tracking-normal text-faded">
-                    Archiving removes the homepage card and the public exhibit URL in preview and after publish.
                     {LEDGER_PROJECT_SLUGS.has(project.slug)
-                      ? " This slug is compiled from TypeScript, so archive it instead of deleting."
-                      : " This slug exists only in the CMS and can be permanently deleted."}
+                      ? "Removes this project from the homepage, public route, Opening Preparation references, résumé, and sitemap after publish. The TypeScript ledger keeps a copy, so this row cannot be permanently deleted."
+                      : "Removes this project from the homepage, public route, Opening Preparation references, résumé, and sitemap after publish. Unpublished CMS-only rows can be deleted."}
                   </p>
                   <p className="flex flex-wrap gap-2">
                     <button
@@ -199,12 +228,12 @@ export default async function ProjectsEditor({
           })}
         </EditorSearch>
         <label>
-          New exhibit slug
-          <input name="project-new-slug" placeholder="kebab-case-slug" />
+          Create project
+          <input name="project-new-title" placeholder="Title — a unique slug is generated" />
         </label>
         <p>
           <button type="submit" name="project-create" value="1" className="masthead-chip" formAction={saveDraftAction}>
-            Create exhibit
+            Create project
           </button>
         </p>
         <label>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { BROADSHEET } from "@/content/opening";
 
@@ -35,6 +35,7 @@ export function RecruiterNav({ stamp = "resume" }: { stamp?: "resume" | "c50" })
   const [compact, setCompact] = useState(false);
   const [hash, setHash] = useState("");
   const [moreOpen, setMoreOpen] = useState(false);
+  const moreButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 479px)");
@@ -53,7 +54,10 @@ export function RecruiterNav({ stamp = "resume" }: { stamp?: "resume" | "c50" })
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setMoreOpen(false);
+      if (e.key === "Escape") {
+        setMoreOpen(false);
+        moreButton.current?.focus();
+      }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -89,6 +93,7 @@ export function RecruiterNav({ stamp = "resume" }: { stamp?: "resume" | "c50" })
           <li className="nav-more">
             <div>
               <button
+                ref={moreButton}
                 type="button"
                 className="recruiter-nav-link"
                 aria-expanded={moreOpen}
@@ -98,19 +103,28 @@ export function RecruiterNav({ stamp = "resume" }: { stamp?: "resume" | "c50" })
                 More
               </button>
               {moreOpen ? (
-                <ul id="nav-more-menu">
+                <div id="nav-more-menu" className="nav-more-panel">
+                  <p className="px-2 pb-1 font-mono text-[11px] uppercase tracking-[0.16em] text-faded">More pages</p>
+                  <p className="px-2 pb-2 font-mono text-[11px] text-faded">
+                    Current: {ALL.find((link) => currentFor(pathname, hash, link.match))?.label ?? "Home"}
+                  </p>
+                  <ul>
                   {MORE.map((link) => (
                     <li key={link.href}>
                       <a
                         {...linkProps(link.href, link.match)}
                         className="recruiter-nav-link"
-                        onClick={() => setMoreOpen(false)}
+                        onClick={() => {
+                          setMoreOpen(false);
+                          moreButton.current?.focus();
+                        }}
                       >
                         {link.label}
                       </a>
                     </li>
                   ))}
-                </ul>
+                  </ul>
+                </div>
               ) : null}
             </div>
           </li>

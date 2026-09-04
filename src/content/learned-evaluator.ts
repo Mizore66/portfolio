@@ -9,9 +9,9 @@ import { METRICS } from "@/lib/metrics";
 export const LAB_ARTICLE = {
   href: "/lab/learned-evaluator",
   kicker: "Laboratory",
-  hed: "The learned evaluator lost −143.3 ±35.4 Elo",
+  hed: "The learned evaluator underperformed PeSTO by 143.3 ±35.4 Elo at 50,000 nodes/move across 128 games",
   dek: "N = 128 games. SPRT terminated for H0. The result makes data quality the leading hypothesis.",
-  teaser: "Chess engine → learned evaluator lost −143.3 ±35.4 Elo. Here's why.",
+  teaser: "The learned evaluator underperformed PeSTO by 143.3 ±35.4 Elo at 50,000 nodes/move across 128 games.",
   resultGlyph: "?!",
   resultJoke: "Result: Black was unconvinced.",
   filed: "Filed against the 2026-08-29 net; SPRT continued 2026-09-03",

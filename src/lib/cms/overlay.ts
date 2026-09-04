@@ -1,5 +1,6 @@
 import type { CmsClaim, CmsProjectCopy, SiteDocument } from "@/lib/cms/types";
 import { PROJECT_COPY_KEYS } from "@/lib/cms/types";
+import { companyAnchor } from "@/lib/anchors";
 import { resumeData } from "@/lib/data";
 import { HERO_PROOF } from "@/lib/metrics";
 import type { Apparatus, ApparatusLayer } from "@/lib/opening/types";
@@ -76,6 +77,7 @@ export function exhibitFromCopy(copy: CmsProjectCopy) {
     retrospective: copy.retrospective,
     github: copy.github,
     plate: copy.plate,
+    plateMedia: copy.plateMedia,
     plateCaption: copy.plateCaption,
     plateAlt: copy.plateAlt,
     description: copy.description || copy.seoDescription || copy.purpose,
@@ -89,6 +91,7 @@ export function exhibitFromCopy(copy: CmsProjectCopy) {
       path: parseApparatusLayers(copy.apparatusPath),
       beside: parseApparatusLayers(copy.apparatusBeside),
     } satisfies Apparatus,
+    claimIds: copy.claimIds ?? [],
   };
 }
 
@@ -114,9 +117,11 @@ export function overlayProject<T extends { slug: string }>(project: T, doc: Site
   if (copy.seoTitle.trim()) patch.seoTitle = copy.seoTitle.trim();
   if (copy.category.trim()) patch.category = copy.category.trim();
   if (copy.plate.trim()) patch.plate = copy.plate.trim();
+  if (copy.plateMedia?.trim()) patch.plateMedia = copy.plateMedia.trim();
   if (copy.plateCaption.trim()) patch.plateCaption = copy.plateCaption.trim();
   if (copy.plateAlt.trim()) patch.plateAlt = copy.plateAlt.trim();
   if (copy.description.trim()) patch.description = copy.description.trim();
+  if (copy.claimIds?.length) patch.claimIds = copy.claimIds;
   if (copy.bullets.trim()) {
     patch.bullets = copy.bullets.split("\n").map((line) => line.trim()).filter(Boolean);
   }
@@ -155,6 +160,28 @@ export function resolveExhibit(slug: string, doc: SiteDocument) {
   return exhibitFromCopy(copy);
 }
 
+/** Public evidence links only. Admin routes and javascript: URLs stay off the exhibit. */
+export function publicEvidenceHref(url: string): string | null {
+  const value = url.trim();
+  if (!value || value.startsWith("/admin")) return null;
+  if (value.startsWith("/")) return value;
+  try {
+    const parsed = new URL(value);
+    if (parsed.protocol === "http:" || parsed.protocol === "https:") return parsed.href;
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+export function claimsForExhibit(slug: string, doc: SiteDocument): CmsClaim[] {
+  const ids = new Set(doc.projects.find((project) => project.slug === slug)?.claimIds ?? []);
+  for (const claim of doc.claims) {
+    if (claim.linkedProject === slug) ids.add(claim.id);
+  }
+  return doc.claims.filter((claim) => ids.has(claim.id) && !claim.archived);
+}
+
 export type HeroProofRow = {
   id: (typeof HERO_PROOF)[number]["id"];
   label: string;
@@ -188,4 +215,55 @@ export function heroProofRows(doc: SiteDocument): HeroProofRow[] {
       },
     ];
   });
+}
+
+export type OverlayJob = {
+  title: string;
+  type?: string;
+  company: string;
+  period: string;
+  tech: string[];
+  scope?: string;
+  bullets: string[];
+  impact: string;
+};
+
+export function overlayJobs(doc: SiteDocument): OverlayJob[] {
+  const rows = Array.isArray(doc.experience) ? doc.experience.filter((row) => !row.archived) : [];
+  if (!rows.length) return resumeData.experience.map((job) => ({ ...job }));
+  const seeds = new Map(resumeData.experience.map((job) => [companyAnchor(job.company), job]));
+  return rows.map((row) => {
+    const seed = seeds.get(row.id);
+    return {
+      title: row.role || seed?.title || row.employer,
+      type: row.type || ("type" in (seed ?? {}) ? seed?.type : undefined),
+      company: row.employer || seed?.company || row.id,
+      period: row.period || seed?.period || "",
+      tech: row.tech
+        ? row.tech.split(",").map((part) => part.trim()).filter(Boolean)
+        : (seed?.tech ?? []),
+      scope: row.ownership || ("scope" in (seed ?? {}) ? seed?.scope : undefined),
+      bullets: row.bullets
+        ? row.bullets.split("\n").map((line) => line.trim()).filter(Boolean)
+        : (seed?.bullets ?? []),
+      impact: row.impact || seed?.impact || "",
+    };
+  });
+}
+
+export function overlayEducation(doc: SiteDocument) {
+  const seed = resumeData.education;
+  const row = (doc.education ?? []).find((item) => !item.archived) ?? doc.education?.[0];
+  if (!row) return seed;
+  const wam = row.grades.match(/WAM\s+([\d.]+)/i)?.[1] ?? seed.wam;
+  const cgpa = row.grades.match(/CGPA\s+([\d.]+)/i)?.[1] ?? seed.cgpa;
+  return {
+    school: row.institution || seed.school,
+    location: row.location || seed.location,
+    degree: row.qualification || seed.degree,
+    honours: row.honours || seed.honours,
+    graduation: row.dates || seed.graduation,
+    wam,
+    cgpa,
+  };
 }

@@ -3,7 +3,8 @@ import { deleteMediaAction, importDocumentAction, replaceMediaAction, updateMedi
 import { cmsStoreStatus } from "@/lib/cms/backend";
 import { postgresUrlSource } from "@/lib/cms/env";
 import { formatLocalTime } from "@/lib/cms/health";
-import { getPublishedDocument, listMediaBlobs } from "@/lib/cms/store";
+import { mediaUsedBy } from "@/lib/cms/media-usage";
+import { getDraftDocument, getPublishedDocument, listMediaBlobs } from "@/lib/cms/store";
 
 export default async function SettingsEditor({
   searchParams,
@@ -18,9 +19,12 @@ export default async function SettingsEditor({
   }>;
 }) {
   const q = await searchParams;
-  const published = await getPublishedDocument();
+  const [published, draft, media] = await Promise.all([
+    getPublishedDocument(),
+    getDraftDocument(),
+    listMediaBlobs(),
+  ]);
   const status = cmsStoreStatus();
-  const media = await listMediaBlobs();
   const needle = (q.q ?? "").trim().toLowerCase();
   const shown = needle
     ? media.filter((item) => `${item.pathname} ${item.alt} ${item.caption} ${item.usage}`.toLowerCase().includes(needle))
@@ -138,7 +142,9 @@ export default async function SettingsEditor({
                       </p>
                     </form>
                     <ul className="mt-4 grid gap-4 sm:grid-cols-2">
-                    {shown.map((item) => (
+                    {shown.map((item) => {
+                      const usedBy = mediaUsedBy(item, [draft, published]);
+                      return (
                       <li key={item.pathname} className="border-2 border-ink p-3">
                         {item.contentType.startsWith("image/") || /\.(png|jpe?g|webp|gif|svg)$/i.test(item.pathname) ? (
                           // eslint-disable-next-line @next/next/no-img-element
@@ -153,6 +159,13 @@ export default async function SettingsEditor({
                           {item.contentType || "file"} · {item.size ? `${Math.round(item.size / 1024)} KB` : "size unknown"}{" "}
                           · {formatLocalTime(item.uploadedAt)}
                         </p>
+                        {usedBy.length ? (
+                          <p className="mt-2 font-mono text-[12px] text-faded">Used by {usedBy.join(" · ")}</p>
+                        ) : (
+                          <p className="mt-2 font-mono text-[12px] text-faded">
+                            Not referenced by a claim, project plate, chess note, or article.
+                          </p>
+                        )}
                         <form action={updateMediaAction} className="admin-form mt-3">
                           <input type="hidden" name="pathname" value={item.pathname} />
                           <label>
@@ -191,12 +204,13 @@ export default async function SettingsEditor({
                         </form>
                         <form action={deleteMediaAction} className="mt-2">
                           <input type="hidden" name="pathname" value={item.pathname} />
-                          <button type="submit" className="masthead-chip" disabled={Boolean(item.usage.trim())}>
-                            {item.usage.trim() ? "Delete protected while in use" : "Delete"}
+                          <button type="submit" className="masthead-chip" disabled={usedBy.length > 0}>
+                            {usedBy.length ? "Delete protected while in use" : "Delete"}
                           </button>
                         </form>
                       </li>
-                    ))}
+                      );
+                    })}
                     </ul>
                     {!shown.length ? (
                       <p className="mt-2 text-faded">No files match that search.</p>

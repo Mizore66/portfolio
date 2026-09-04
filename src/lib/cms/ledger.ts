@@ -1,6 +1,11 @@
+import { ledgerArticles } from "@/lib/cms/articles";
+import { compiledMainlinePgn, ledgerChessNotes } from "@/lib/cms/chess-notes";
+import { ledgerLab } from "@/lib/cms/lab-copy";
+import { ledgerRedirects } from "@/lib/cms/redirects";
+import { companyAnchor } from "@/lib/anchors";
 import { resumeData } from "@/lib/data";
 import { METRICS, POSITIONING } from "@/lib/metrics";
-import { SITE_REVISED, type CmsClaim, type CmsProjectCopy, type SiteDocument } from "@/lib/cms/types";
+import { SITE_REVISED, type CmsClaim, type CmsEducation, type CmsExperience, type CmsProjectCopy, type SiteDocument } from "@/lib/cms/types";
 
 function claim(
   id: string,
@@ -30,6 +35,8 @@ function claim(
     denominator: extra.denominator ?? "",
     source: extra.source ?? "",
     sourceUrl: extra.sourceUrl ?? "",
+    linkedProject: extra.linkedProject ?? "",
+    mediaPathname: extra.mediaPathname ?? "",
     heroEligible: extra.heroEligible ?? false,
     archived: extra.archived ?? false,
     surfaces: extra.surfaces ?? (extra.heroEligible ? ["home", "opening", "resume"] : ["opening", "resume", "exhibit"]),
@@ -44,6 +51,15 @@ function field(project: (typeof resumeData.projects)[number], key: keyof CmsProj
 
 function formatLayers(layers?: { name: string; role: string }[]): string {
   return (layers ?? []).map((layer) => `${layer.name} — ${layer.role}`).join("\n");
+}
+
+function claimsForProject(slug: string): string[] {
+  if (slug === "veridian") return ["veridianUptime", "veridianEmissions"];
+  if (slug === "distributed-lead-scorer") return ["leadThroughput"];
+  if (slug === "slm-distillation-engine") return ["slmInference"];
+  if (slug === "financial-risk-predictor") return ["riskAuc"];
+  if (slug === "multi-agent-graphrag") return ["graphragRetrieval"];
+  return [];
 }
 
 function projectCopies(): CmsProjectCopy[] {
@@ -69,14 +85,47 @@ function projectCopies(): CmsProjectCopy[] {
     bullets: project.bullets.join("\n"),
     description: project.description,
     plate: project.plate,
+    plateMedia: "",
     plateCaption: project.plateCaption,
     plateAlt: project.plateAlt,
     apparatusName: project.apparatus.name,
     apparatusRuntime: project.apparatus.runtime ?? "",
     apparatusPath: formatLayers(project.apparatus.path),
     apparatusBeside: formatLayers(project.apparatus.beside),
+    claimIds: claimsForProject(project.slug),
     archived: false,
   }));
+}
+
+function experienceCopies(): CmsExperience[] {
+  return resumeData.experience.map((job) => ({
+    id: companyAnchor(job.company),
+    employer: job.company,
+    role: job.title,
+    type: "type" in job && job.type ? String(job.type) : "",
+    period: job.period,
+    tech: job.tech.join(", "),
+    ownership: "scope" in job && job.scope ? String(job.scope) : "",
+    bullets: job.bullets.join("\n"),
+    impact: job.impact,
+    archived: false,
+  }));
+}
+
+function educationCopies(): CmsEducation[] {
+  const edu = resumeData.education;
+  return [
+    {
+      id: "monash-beng",
+      institution: edu.school,
+      qualification: edu.degree,
+      honours: edu.honours,
+      grades: `WAM ${edu.wam} · CGPA ${edu.cgpa}`,
+      dates: edu.graduation,
+      location: edu.location,
+      archived: false,
+    },
+  ];
 }
 
 export function ledgerDocument(): SiteDocument {
@@ -86,7 +135,7 @@ export function ledgerDocument(): SiteDocument {
     publishedAt: SITE_REVISED,
     savedAt: SITE_REVISED,
     restoredFrom: "",
-    note: "TypeScript ledger. Publish from /admin to replace this snapshot.",
+    note: "Published snapshot from the TypeScript ledger.",
     profile: {
       displayName: "Anas T. Qumhiyeh",
       legalName: "Anas Tarek Qumhiyeh",
@@ -135,6 +184,7 @@ export function ledgerDocument(): SiteDocument {
         date: "2025-05",
         denominator: METRICS.leadThroughput.denominator,
         source: "Capacity benchmark filing",
+        linkedProject: "distributed-lead-scorer",
         heroEligible: true,
       }),
       claim("gateC", METRICS.gateC, {
@@ -146,6 +196,7 @@ export function ledgerDocument(): SiteDocument {
         denominator: METRICS.gateC.denominator,
         source: METRICS.gateC.source,
         sourceUrl: "/lab/learned-evaluator",
+        linkedProject: "",
         heroEligible: true,
         surfaces: ["home", "opening", "resume", "lab"],
       }),
@@ -157,6 +208,7 @@ export function ledgerDocument(): SiteDocument {
         date: "2025-10",
         denominator: "Unfiled — query count, scoring rule, and Recall@k were not published.",
         source: "Independent handbook / policy archive exhibit",
+        linkedProject: "multi-agent-graphrag",
       }),
       claim("veridianUptime", METRICS.veridianUptime, {
         method: "Cloud Run evaluation",
@@ -165,6 +217,7 @@ export function ledgerDocument(): SiteDocument {
         date: "2026-04",
         denominator: "Unfiled — evaluation period and sample size were not published.",
         source: "Cloud Run evaluation filing",
+        linkedProject: "veridian",
       }),
       claim("veridianEmissions", METRICS.veridianEmissions, {
         method: METRICS.veridianEmissions.note,
@@ -173,6 +226,7 @@ export function ledgerDocument(): SiteDocument {
         date: "2026-04",
         denominator: "Unfiled — evaluation period, sample size, and emissions calculation source were not published.",
         source: "Cloud Run scheduling evaluation",
+        linkedProject: "veridian",
       }),
       claim("riskAuc", METRICS.riskAuc, {
         method: "AUC-ROC",
@@ -182,6 +236,7 @@ export function ledgerDocument(): SiteDocument {
         date: "2025",
         denominator: "Unfiled — dataset size, split, leakage controls, and positive-class prevalence were not published.",
         source: "Offline evaluation filing",
+        linkedProject: "financial-risk-predictor",
       }),
       claim("slmInference", METRICS.slmInference, {
         method: METRICS.slmInference.path,
@@ -191,6 +246,7 @@ export function ledgerDocument(): SiteDocument {
         date: "2025-07",
         denominator: "Unfiled — hardware, batch size, tokens/second, and named quality evaluation were not published.",
         source: "Distillation exhibit filing",
+        linkedProject: "slm-distillation-engine",
       }),
       claim("setelCoverage", METRICS.setelCoverage, {
         method: "Unit tests",
@@ -208,6 +264,13 @@ export function ledgerDocument(): SiteDocument {
       }),
     ],
     projects: projectCopies(),
+    experience: experienceCopies(),
+    education: educationCopies(),
+    chess: ledgerChessNotes(),
+    chessPgn: compiledMainlinePgn(),
+    lab: ledgerLab(),
+    redirects: ledgerRedirects(),
+    articles: ledgerArticles(),
   };
 }
 

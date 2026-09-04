@@ -35,7 +35,7 @@ test.describe("round five invariants", () => {
   test("Petronas facts stay canonical on the scoresheet", async ({ page }) => {
     await page.goto("/opening-preparation?move=nf3");
     await expect(page.locator("#chapter-nf3")).toContainText(
-      "Replaced MATLAB-dependent back-end functionality with Python packages",
+      "Replaced MATLAB-dependent back-end calculation and reporting functions with Python packages",
     );
     await expect(page.locator("#chapter-nf3")).toContainText("post-release acceptance cases");
     await expect(page.locator("#chapter-nf3")).not.toContainText(/converting paid MATLAB licences/i);
@@ -137,5 +137,36 @@ test.describe("round five invariants", () => {
     );
     expect(overflow).toBe(false);
     await expect(page.getByTestId("masthead-proof")).toContainText(/−40%/);
+  });
+
+  test("mobile homepage puts identity before proof notes", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    const name = await page.getByRole("heading", { level: 1, name: "Anas T. Qumhiyeh" }).boundingBox();
+    const bridge = await page.getByTestId("ownership-bridge").boundingBox();
+    const proof = await page.getByTestId("masthead-proof").boundingBox();
+    const notes = await page.getByTestId("hero-claim-notes").boundingBox();
+    expect(name && bridge && proof && notes).toBeTruthy();
+    expect(name!.y).toBeLessThan(bridge!.y);
+    expect(bridge!.y).toBeLessThan(proof!.y);
+    expect(proof!.y).toBeLessThan(notes!.y);
+  });
+
+  test("legacy about and archive routes redirect onto the homepage", async ({ page }) => {
+    await page.goto("/about");
+    await expect(page).toHaveURL(/\/#about$/);
+    await page.goto("/archive");
+    await expect(page).toHaveURL(/\/#work$/);
+  });
+
+  test("document CSP carries a nonce and wasm-unsafe-eval without script unsafe-inline", async ({
+    page,
+  }) => {
+    const response = await page.goto("/");
+    const csp = response?.headers()["content-security-policy"] ?? "";
+    expect(csp).toMatch(/script-src[^;]*nonce-/);
+    expect(csp).toMatch(/wasm-unsafe-eval/);
+    expect(csp).not.toMatch(/script-src[^;]*unsafe-inline/);
+    await expect(page.getByTestId("masthead-role")).toBeVisible();
   });
 });

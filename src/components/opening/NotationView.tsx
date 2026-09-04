@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Fragment, memo } from "react";
+import { Fragment, memo, useEffect, useState, type ReactNode } from "react";
 import { ArtifactLinks } from "@/components/opening/ArtifactLinks";
 import { ArtistsImpression } from "@/components/opening/ArtistsImpression";
 import { GlyphStamp } from "@/components/opening/GlyphStamp";
@@ -15,6 +15,7 @@ import {
   collectPlies,
   FLAGSHIP_ID,
   formatLine,
+  issueChapters,
   moveHeading,
   spokenChapter,
   type NotationBlock,
@@ -31,12 +32,20 @@ export const NotationView = memo(function NotationView({
   selectedId,
   onSelect,
   onPreview,
+  chessNotes,
 }: {
   selectedId: string;
   onSelect: (id: string) => void;
   onPreview?: (id: string | null) => void;
+  chessNotes?: Record<string, { fact: string; commentary: string; entityLabel: string }>;
 }) {
   const blocks = buildNotation();
+  const [view, setView] = useState<"full" | "career" | "projects">("full");
+  const visible = blocks.filter((block) => {
+    if (view === "full") return true;
+    if (view === "career") return block.node.type === "mainline";
+    return block.node.type === "variation" || /project|exhibit|lab|hack/i.test(block.node.kind);
+  });
 
   return (
     <article aria-label="Scoresheet" className="p-0" data-testid="notation-view">
@@ -46,17 +55,45 @@ export const NotationView = memo(function NotationView({
       <p className="mb-2 font-mono text-[12px] uppercase tracking-[0.25em] text-faded">
         {BROADSHEET.gameKicker} · every node, in order
       </p>
-      <p className="mb-8 max-w-[68ch] font-display text-[16px] italic text-faded">
+      <p className="mb-4 max-w-[68ch] font-display text-[16px] italic text-faded">
         {BROADSHEET.gameDek}
       </p>
+      <p className="path-filter mb-8" data-testid="scoresheet-filter">
+        <button
+          type="button"
+          className={cn("path-chip", view === "career" && "path-chip-current")}
+          aria-pressed={view === "career"}
+          onClick={() => setView("career")}
+        >
+          Career only
+        </button>
+        <button
+          type="button"
+          className={cn("path-chip", view === "projects" && "path-chip-current")}
+          aria-pressed={view === "projects"}
+          onClick={() => setView("projects")}
+        >
+          Projects
+        </button>
+        <button
+          type="button"
+          className={cn("path-chip", view === "full" && "path-chip-current")}
+          aria-pressed={view === "full"}
+          onClick={() => setView("full")}
+        >
+          Full scoresheet
+        </button>
+      </p>
       <div className="m-0">
-        {blocks.map((block) => (
+        {visible.map((block) => (
           <Chapter
             key={block.node.id}
             block={block}
             selectedId={selectedId}
             onSelect={onSelect}
             onPreview={onPreview}
+            hideVariations={view === "career"}
+            chessNotes={chessNotes}
           />
         ))}
       </div>
@@ -69,15 +106,27 @@ function Chapter({
   selectedId,
   onSelect,
   onPreview,
+  hideVariations,
+  chessNotes,
 }: {
   block: NotationBlock;
   selectedId: string;
   onSelect: (id: string) => void;
   onPreview?: (id: string | null) => void;
+  hideVariations?: boolean;
+  chessNotes?: Record<string, { fact: string; commentary: string; entityLabel: string }>;
 }) {
   const { node } = block;
   const selected = node.id === selectedId;
   const flagship = node.id === FLAGSHIP_ID;
+  const career = issueChapters();
+  const careerIndex = career.findIndex((row) => row.id === node.id);
+  const prevCareer = careerIndex > 0 ? career[careerIndex - 1] : null;
+  const nextCareer = careerIndex >= 0 && careerIndex < career.length - 1 ? career[careerIndex + 1] : null;
+  const note = chessNotes?.[node.id];
+  const fact = note?.fact?.trim() ? note.fact : node.fact;
+  const commentary = note?.commentary?.trim() ? note.commentary : node.commentary;
+  const entityLabel = note?.entityLabel;
 
   return (
     <section
@@ -134,16 +183,19 @@ function Chapter({
           />
           </div>
         ) : null}
-        {node.fact ? (
+        {fact ? (
           <p className="drop-cap chapter-fact max-w-prose font-display text-[16px] leading-[1.65] text-ink">
-            {node.fact}
+            {fact}
           </p>
         ) : null}
-        {node.commentary ? (
+        {entityLabel ? (
+          <p className="mt-2 font-mono text-[12px] uppercase tracking-[0.14em] text-faded">{entityLabel}</p>
+        ) : null}
+        {commentary ? (
           <details className="annotation mt-4">
             <summary className="annotation-summary">Annotation</summary>
             <p className="mt-2 max-w-prose font-lora text-[16px] leading-[1.7] italic text-faded">
-              {node.commentary}
+              {commentary}
             </p>
           </details>
         ) : null}
@@ -163,8 +215,8 @@ function Chapter({
         <ArtifactLinks artifacts={node.artifacts} />
       </div>
 
-      {block.variations.length > 0 ? (
-        <div className="mt-3">
+      {!hideVariations && block.variations.length > 0 ? (
+        <VariationsPanel>
           {block.variations.map((line) => {
             const head = line[0]?.node;
             return (
@@ -183,6 +235,7 @@ function Chapter({
                     selectedId={selectedId}
                     onSelect={onSelect}
                     onPreview={onPreview}
+                    chessNotes={chessNotes}
                   />
                 </p>
                 {head?.impression && head.commentary ? (
@@ -208,7 +261,7 @@ function Chapter({
               </div>
             );
           })}
-        </div>
+        </VariationsPanel>
       ) : null}
 
       {selected ? (
@@ -218,7 +271,42 @@ function Chapter({
           <span className="text-ink">{formatLine(node.id)}</span>
         </p>
       ) : null}
+      {careerIndex >= 0 ? (
+        <nav className="mt-6 flex flex-wrap gap-3" aria-label={`Career chapters, ${moveHeading(node)}`}>
+          {prevCareer ? (
+            <button type="button" className="paper-hit" onClick={() => onSelect(prevCareer.id)}>
+              Previous chapter
+            </button>
+          ) : null}
+          {nextCareer ? (
+            <button type="button" className="paper-hit" onClick={() => onSelect(nextCareer.id)}>
+              Next chapter
+            </button>
+          ) : null}
+        </nav>
+      ) : null}
     </section>
+  );
+}
+
+function VariationsPanel({ children }: { children: ReactNode }) {
+  const [open, setOpen] = useState(true);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 699px)");
+    const apply = () => setOpen(!mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+  return (
+    <details
+      className="scoresheet-variations mt-3"
+      open={open}
+      onToggle={(event) => setOpen(event.currentTarget.open)}
+    >
+      <summary className="annotation-summary">Variations</summary>
+      <div className="scoresheet-variations-body">{children}</div>
+    </details>
   );
 }
 
@@ -227,11 +315,13 @@ function VariationRun({
   selectedId,
   onSelect,
   onPreview,
+  chessNotes,
 }: {
   line: NotationBlock[];
   selectedId: string;
   onSelect: (id: string) => void;
   onPreview?: (id: string | null) => void;
+  chessNotes?: Record<string, { fact: string; commentary: string; entityLabel: string }>;
 }) {
   return (
     <>
@@ -249,7 +339,9 @@ function VariationRun({
           {child.node.title ? (
             <span className="not-italic text-faded"> — {child.node.title}</span>
           ) : null}
-          {child.node.fact ? <span> {child.node.fact}</span> : null}
+          {child.node.fact ? (
+            <span> {chessNotes?.[child.node.id]?.fact?.trim() || child.node.fact}</span>
+          ) : null}
           {child.variations.map((nested) => (
             <VariationRun
               key={nested[0]?.node.id}
@@ -257,6 +349,7 @@ function VariationRun({
               selectedId={selectedId}
               onSelect={onSelect}
               onPreview={onPreview}
+              chessNotes={chessNotes}
             />
           ))}
         </Fragment>
@@ -299,7 +392,7 @@ function ChapterButton({
       onBlur={() => onPreview?.(null)}
       className={cn(
         "move-tint inline text-left font-[inherit] text-[1em] leading-[inherit] focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2",
-        compact && "notation-hit font-display text-[12px] not-italic",
+        compact && "notation-hit font-display text-[12px] not-italic min-w-[44px]",
         node.type === "not-taken" && "border border-dashed border-ink px-1",
         selected && !flagship && "is-selected underline decoration-score-red/50 decoration-2 underline-offset-4",
         selected && flagship && "is-selected",

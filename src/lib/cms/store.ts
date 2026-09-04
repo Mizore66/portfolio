@@ -4,8 +4,9 @@ import { dirname, join } from "node:path";
 import { cmsBackendKind, cmsStoreStatus } from "@/lib/cms/backend";
 import { postgresNeedsSsl, postgresUrl } from "@/lib/cms/env";
 import { CMS_STALE, CMS_UNWRITABLE, CmsStoreError } from "@/lib/cms/errors";
-import { hydrateDocument } from "@/lib/cms/hydrate";
+import { hydrateDocument, evidenceBackfillPaths } from "@/lib/cms/hydrate";
 import { ledgerDocument } from "@/lib/cms/ledger";
+import { mediaUsedBy } from "@/lib/cms/media-usage";
 import { PREVIEW_COOKIE, SESSION_COOKIE, verifySession } from "@/lib/cms/session";
 import type { CmsMediaAsset, CmsStoreFile, SiteDocument } from "@/lib/cms/types";
 
@@ -260,19 +261,25 @@ export async function getCmsState(): Promise<
     backend: string;
     writable: boolean;
     durable: boolean;
+    backfill: string[];
   }
 > {
   const store = await readStore();
   const status = cmsStoreStatus();
+  const published = store.published ? hydrateDocument(store.published) : null;
+  const draft = store.draft ? hydrateDocument(store.draft) : null;
+  const revisions = store.revisions.map((row) => hydrateDocument(row));
+  const backfill = evidenceBackfillPaths(store.published ?? store.draft, published ?? draft ?? ledgerDocument());
   return {
     ...store,
-    published: store.published ? hydrateDocument(store.published) : null,
-    draft: store.draft ? hydrateDocument(store.draft) : null,
-    revisions: store.revisions.map((row) => hydrateDocument(row)),
+    published,
+    draft,
+    revisions,
     ledger: ledgerDocument(),
     backend: status.backend,
     writable: status.writable,
     durable: status.durable,
+    backfill,
   };
 }
 
@@ -425,8 +432,10 @@ export async function replaceMediaBlob(pathname: string, file: File): Promise<Cm
 export async function deleteMediaAsset(pathname: string): Promise<void> {
   const store = await readStore();
   const item = store.media.find((row) => row.pathname === pathname);
-  if (item?.usage.trim()) {
-    throw new CmsStoreError("This file is referenced. Clear usage before deleting.");
+  if (!item) return;
+  const refs = mediaUsedBy(item, [store.draft, store.published].filter((row): row is SiteDocument => Boolean(row)));
+  if (refs.length) {
+    throw new CmsStoreError(`This file is still used by ${refs.join(", ")}. Replace or remove those references first.`);
   }
   if (process.env.BLOB_READ_WRITE_TOKEN) {
     const { del } = await import("@vercel/blob");

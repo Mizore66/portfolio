@@ -733,11 +733,15 @@ test.describe("Opening Preparation", () => {
     await page.goto(PAPER);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     await page.locator('[data-testid="tree-view"] [data-node-id="d4"]').click();
+    await expect(page.locator('[data-testid="tree-view"] [data-node-id="d4"]')).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
     await page.locator("#chapter-d4").evaluate((el) => el.scrollIntoView({ block: "start" }));
     const y0 = await page.evaluate(() => window.scrollY);
     expect(y0).toBeGreaterThan(400);
 
-    await page.getByTestId("board-plane").focus();
+    await page.locator("#play-board").focus();
     await page.keyboard.press("ArrowRight");
     await expect
       .poll(async () => page.evaluate(() => window.location.search), { timeout: 2500 })
@@ -1000,7 +1004,7 @@ test.describe("Opening Preparation", () => {
     expect(Math.abs(board.x - engine.x)).toBeLessThanOrEqual(2);
 
     await page.goto("/lab/learned-evaluator");
-    await expect(page.getByRole("heading", { level: 1, name: /lost −143\.3 ±35\.4 Elo/i })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: /underperformed PeSTO by 143\.3 ±35\.4 Elo/i })).toBeVisible();
     await expect(page.getByTestId("evaluations-column")).toBeVisible();
     await expect(page.getByTestId("evaluations-column")).toContainText(/50 000 nodes|50000 nodes/i);
     await expect(page.getByTestId("evaluations-net")).toContainText(/768x2x256/);
@@ -1324,11 +1328,12 @@ test.describe("Opening Preparation", () => {
     await page.goto("/projects/circuitmindai");
     await expect(page.getByRole("heading", { level: 1, name: "CircuitMindAI" })).toBeVisible();
     await expect(page.locator("body")).toContainText(/Nova Pro reads the copper/);
+    await expect(page.locator("body")).toContainText(/Nova Pro analyses the PCB image/);
     await expect(page.locator("body")).not.toContainText(/GenAI-powered/);
     await expect(page).toHaveTitle(/CircuitMindAI — PCB Inspection/);
     await expect(page.locator('meta[name="description"]')).toHaveAttribute(
       "content",
-      /Nova Pro reads the copper/,
+      /Nova Pro analyses the PCB image/,
     );
     await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
       "content",

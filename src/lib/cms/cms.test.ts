@@ -8,7 +8,11 @@ import { applyFormToDocument } from "@/lib/cms/form";
 import { hydrateDocument } from "@/lib/cms/hydrate";
 import { parseImportedDocument } from "@/lib/cms/import-document";
 import { ledgerDocument } from "@/lib/cms/ledger";
-import { overlayProject, overlayProjects, resolveExhibit } from "@/lib/cms/overlay";
+import { compiledMainlinePgn, pgnMatchesRepertoire } from "@/lib/cms/chess-notes";
+import { overlayLab } from "@/lib/cms/lab-copy";
+import { overlayArticle } from "@/lib/cms/articles";
+import { mediaUsedBy } from "@/lib/cms/media-usage";
+import { claimsForExhibit, overlayProject, overlayProjects, publicEvidenceHref, resolveExhibit } from "@/lib/cms/overlay";
 import { documentDiff, groupedDocumentDiff, wordDiff } from "@/lib/cms/diff";
 import { claimHeroReady, validateDocument } from "@/lib/cms/validate";
 import { draftHealth, draftStatus, revisionInstant } from "@/lib/cms/health";
@@ -364,10 +368,164 @@ describe("cms ledger caveats", () => {
     expect(validateDocument(draft)).toEqual([]);
   });
 
+  it("creates a project from a title and overlays experience from the ledger", () => {
+    const published = ledgerDocument();
+    const form = new FormData();
+    form.set("projects-present", "1");
+    form.set("project-new-title", "New Desk Filing");
+    form.set("project-create", "1");
+    const next = applyFormToDocument(form, published);
+    expect(next.projects.some((project) => project.slug === "new-desk-filing" && project.archived)).toBe(true);
+    expect(next.experience.some((row) => row.id === "setel")).toBe(true);
+    expect(next.education.some((row) => row.id === "monash-beng")).toBe(true);
+  });
+
+  it("hydrates incomplete revisions without throwing and backfills blank Gate C evidence", () => {
+    const ledger = ledgerDocument();
+    const raw = {
+      revisionId: "pub-old",
+      status: "published" as const,
+      publishedAt: "2026-09-01T00:00:00.000Z",
+      note: "old",
+      profile: { dek: "Role" },
+      claims: [
+        { id: "gateC", display: "Gate C", heroEligible: true, source: "", denominator: "" },
+      ],
+    };
+    const hydrated = hydrateDocument(raw);
+    expect(hydrated.claims.find((claim) => claim.id === "gateC")?.source).toBe(
+      ledger.claims.find((claim) => claim.id === "gateC")?.source,
+    );
+    expect(hydrated.claims.find((claim) => claim.id === "gateC")?.denominator).toMatch(/128 games/);
+    expect(claimHeroReady(hydrated.claims.find((claim) => claim.id === "gateC")!)).toEqual([]);
+    expect(validateDocument(hydrated).filter((error) => error.includes("gateC"))).toEqual([]);
+    const history = [raw, null, { revisionId: "broken" }, ledger].map((row) => hydrateDocument(row));
+    expect(history).toHaveLength(4);
+    expect(documentDiff({ ...hydrated, claims: [] } as typeof hydrated, hydrated).length).toBeGreaterThan(0);
+  });
+
   it("marks word-level insertions and deletions", () => {
     const marks = wordDiff("hello world", "hello there");
     expect(marks.some((mark) => mark.type === "del" && mark.text === "world")).toBe(true);
     expect(marks.some((mark) => mark.type === "ins" && mark.text === "there")).toBe(true);
+  });
+
+  it("keeps the compiled Italian Game PGN and hydrates missing chess notes", () => {
+    const ledger = ledgerDocument();
+    expect(pgnMatchesRepertoire(compiledMainlinePgn())).toBe(true);
+    expect(pgnMatchesRepertoire("1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. O-O Nf6 5. d5")).toBe(false);
+    expect(validateDocument({ ...ledger, chessPgn: "1. d4 d5" }).join(" ")).toMatch(/Italian Game/);
+    expect(ledger.projects.find((project) => project.slug === "veridian")?.claimIds).toContain("veridianUptime");
+    expect(ledger.claims.find((claim) => claim.id === "leadThroughput")?.linkedProject).toBe(
+      "distributed-lead-scorer",
+    );
+    const hydrated = hydrateDocument({
+      revisionId: "pub-old",
+      status: "published",
+      profile: ledger.profile,
+      claims: ledger.claims,
+    });
+    expect(hydrated.chess.length).toBe(ledger.chess.length);
+    expect(hydrated.chessPgn).toBe(ledger.chessPgn);
+    expect(hydrated.lab.hed).toMatch(/underperformed PeSTO/);
+    expect(overlayLab({ lab: { ...ledger.lab, hed: "" } }).hed).toBe(ledger.lab.hed);
+    expect(validateDocument({ ...ledger, lab: { ...ledger.lab, hed: "The net won" } }).join(" ")).toMatch(
+      /underperformed PeSTO/,
+    );
+  });
+
+  it("unions claim ids with linkedProject and blocks media still used by a plate", () => {
+    const ledger = ledgerDocument();
+    expect(claimsForExhibit("veridian", ledger).map((claim) => claim.id)).toEqual(
+      expect.arrayContaining(["veridianUptime", "veridianEmissions"]),
+    );
+    expect(publicEvidenceHref("/admin/claims")).toBeNull();
+    expect(publicEvidenceHref("/lab/learned-evaluator")).toBe("/lab/learned-evaluator");
+    const asset = {
+      pathname: "plates/plate-veridian.jpg",
+      url: "/plates/plate-veridian.jpg",
+      uploadedAt: "2026-09-03T00:00:00.000Z",
+      alt: "",
+      caption: "",
+      contentType: "image/jpeg",
+      size: 12,
+      usage: "",
+      focalPoint: "50% 50%",
+    };
+    expect(mediaUsedBy(asset, [ledger])).toContain("/projects/veridian");
+    const form = new FormData();
+    form.set("chess-present", "1");
+    form.set("chess-pgn", compiledMainlinePgn());
+    form.set("chess-d4-fact", "CMS flagship sentence.");
+    form.set("chess-d4-commentary", ledger.chess.find((note) => note.id === "d4")?.commentary ?? "");
+    form.set("chess-d4-entityKind", "experience");
+    form.set("chess-d4-entityId", "monash-university");
+    const next = applyFormToDocument(form, ledger);
+    expect(next.chess.find((note) => note.id === "d4")?.fact).toBe("CMS flagship sentence.");
+    expect(next.chessPgn).toBe(compiledMainlinePgn());
+  });
+
+  it("imports PGN comments onto annotations without changing compiled SANs", () => {
+    const ledger = ledgerDocument();
+    const d4 = ledger.chess.find((note) => note.id === "d4")!;
+    const withComment = compiledMainlinePgn().replace("5. d4", "5. d4 {Central Break filing.}");
+    expect(pgnMatchesRepertoire(withComment)).toBe(true);
+    const form = new FormData();
+    form.set("chess-present", "1");
+    form.set("chess-pgn", withComment);
+    form.set("chess-import-comments", "on");
+    form.set("chess-d4-fact", d4.fact);
+    form.set("chess-d4-commentary", d4.commentary);
+    form.set("chess-d4-entityKind", d4.entityKind);
+    form.set("chess-d4-entityId", d4.entityId);
+    const next = applyFormToDocument(form, ledger);
+    expect(next.chess.find((note) => note.id === "d4")?.commentary).toBe("Central Break filing.");
+    expect(pgnMatchesRepertoire(next.chessPgn)).toBe(true);
+  });
+
+  it("keeps path-only redirects, typed media refs, and colophon overlay", () => {
+    const ledger = ledgerDocument();
+    expect(ledger.redirects.map((row) => row.from)).toEqual(["/about", "/archive"]);
+    expect(validateDocument({ ...ledger, redirects: [...ledger.redirects, { ...ledger.redirects[0]!, id: "evil", from: "//evil.example", to: "https://evil.example", status: 308, enabled: true }] }).join(" ")).toMatch(/same-origin/);
+    const form = new FormData();
+    form.set("redirects-present", "1");
+    form.set("redirect-new-id", "old-desk");
+    form.set("redirect-new-from", "/old-desk");
+    form.set("redirect-new-to", "/#work");
+    form.set("redirect-create", "1");
+    const withRedirect = applyFormToDocument(form, ledger);
+    expect(withRedirect.redirects.some((row) => row.id === "old-desk" && row.from === "/old-desk")).toBe(true);
+
+    const delLedger = new FormData();
+    delLedger.set("redirects-present", "1");
+    delLedger.set("redirect-delete", "about");
+    expect(applyFormToDocument(delLedger, ledger).redirects.some((row) => row.id === "about")).toBe(true);
+
+    const mediaForm = new FormData();
+    mediaForm.set("projects-present", "1");
+    mediaForm.set("project-veridian-plate", "https://blob.example/veridian.jpg");
+    mediaForm.set("project-veridian-plateMedia", "cms/media/veridian.jpg");
+    const withPlate = applyFormToDocument(mediaForm, ledger);
+    expect(withPlate.projects.find((project) => project.slug === "veridian")?.plateMedia).toBe("cms/media/veridian.jpg");
+    const typed = {
+      pathname: "cms/media/veridian.jpg",
+      url: "https://blob.example/veridian.jpg",
+      uploadedAt: "2026-09-03T00:00:00.000Z",
+      alt: "",
+      caption: "",
+      contentType: "image/jpeg",
+      size: 12,
+      usage: "",
+      focalPoint: "50% 50%",
+    };
+    expect(mediaUsedBy(typed, [withPlate])).toContain("/projects/veridian");
+
+    const articleForm = new FormData();
+    articleForm.set("articles-present", "1");
+    articleForm.set("article-colophon-body", "Type: still the compiled receipt.");
+    const withArticle = applyFormToDocument(articleForm, ledger);
+    expect(overlayArticle("colophon", withArticle).body).toBe("Type: still the compiled receipt.");
+    expect(overlayArticle("colophon", { articles: [] }).body).toMatch(/Libre Baskerville/);
   });
 });
 

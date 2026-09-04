@@ -1,3 +1,5 @@
+import { pgnMatchesRepertoire } from "@/lib/cms/chess-notes";
+import { LEDGER_REDIRECT_IDS, isRedirectStatus, isSafeRedirectPath, normalizeRedirectFrom } from "@/lib/cms/redirects";
 import type { CmsClaim, SiteDocument } from "@/lib/cms/types";
 import { resumeData } from "@/lib/data";
 
@@ -57,15 +59,30 @@ export function projectSchemaReady(project: {
 }
 
 export const LEDGER_PROJECT_SLUGS = new Set(resumeData.projects.map((project) => project.slug));
+export const LEDGER_EXPERIENCE_IDS = new Set(
+  resumeData.experience.map((job) => job.company.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")),
+);
 
 const DATE = /^\d{4}(?:-\d{2}(?:-\d{2})?)?$/;
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+function wordCount(value: string): number {
+  return value.trim() ? value.trim().split(/\s+/).length : 0;
+}
 
 export function validateDocument(doc: SiteDocument): string[] {
   const errors: string[] = [];
   if (!doc.profile.dek) errors.push("Profile role line is required.");
   if (!doc.profile.tagline) errors.push("Profile tagline is required.");
   if (doc.profile.dek.length > 240) errors.push("Profile role line is too long.");
+  const recruiterWords = wordCount(doc.profile.recruiterBio);
+  if (recruiterWords < 35 || recruiterWords > 45) {
+    errors.push(`Recruiter biography is ${recruiterWords} words; it must be 35–45.`);
+  }
+  const followerWords = wordCount(doc.profile.followerBio);
+  if (followerWords < 100 || followerWords > 140) {
+    errors.push(`Follower biography is ${followerWords} words; it must be 100–140.`);
+  }
   const ids = new Set<string>();
   for (const claim of doc.claims) {
     if (ids.has(claim.id)) errors.push(`Duplicate claim id ${claim.id}.`);
@@ -102,6 +119,46 @@ export function validateDocument(doc: SiteDocument): string[] {
     }
     if (slugs.has(project.slug)) errors.push(`Duplicate project slug ${project.slug}.`);
     slugs.add(project.slug);
+  }
+  if (doc.chessPgn && !pgnMatchesRepertoire(doc.chessPgn)) {
+    errors.push("Chess PGN must keep the Italian Game mainline already compiled on Opening Preparation.");
+  }
+  if (doc.lab?.hed && !/underperformed PeSTO/.test(doc.lab.hed)) {
+    errors.push("Lab headline must keep “underperformed PeSTO” so Gate C cannot be rewritten as a win.");
+  }
+  if (doc.lab?.teaser && !/underperformed PeSTO/.test(doc.lab.teaser)) {
+    errors.push("Lab teaser must keep “underperformed PeSTO” so Gate C cannot be rewritten as a win.");
+  }
+  const projectSlugs = new Set(doc.projects.map((project) => project.slug));
+  const claimIdSet = new Set(doc.claims.map((claim) => claim.id));
+  for (const claim of doc.claims) {
+    if (claim.linkedProject && !projectSlugs.has(claim.linkedProject)) {
+      errors.push(`${claim.id} linked project ${claim.linkedProject} is missing.`);
+    }
+  }
+  for (const project of doc.projects) {
+    for (const id of project.claimIds ?? []) {
+      if (!claimIdSet.has(id)) errors.push(`${project.slug} references missing claim ${id}.`);
+    }
+  }
+  const froms = new Set<string>();
+  for (const row of doc.redirects ?? []) {
+    if (!row.id.trim()) errors.push("Redirect is missing an id.");
+    if (!isSafeRedirectPath(row.from, "from")) {
+      errors.push(`Redirect ${row.id} source must be a same-origin path, not /admin or protocol-relative.`);
+    }
+    if (!isSafeRedirectPath(row.to, "to")) {
+      errors.push(`Redirect ${row.id} target must be a same-origin path, not /admin or an external URL.`);
+    }
+    if (!isRedirectStatus(row.status)) errors.push(`Redirect ${row.id} status is not 301, 302, 307, or 308.`);
+    const key = normalizeRedirectFrom(row.from);
+    if (froms.has(key)) errors.push(`Duplicate redirect from ${row.from}.`);
+    froms.add(key);
+  }
+  for (const id of LEDGER_REDIRECT_IDS) {
+    if (!(doc.redirects ?? []).some((row) => row.id === id)) {
+      errors.push(`Required redirect ${id} is missing.`);
+    }
   }
   return errors;
 }

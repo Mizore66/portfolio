@@ -63,7 +63,7 @@ export const resumeData = {
       scope: DESKS.westernDigital.collaboration,
       bullets: [
         `${METRICS.wdOversight.display} — ${METRICS.wdOversight.oversight} for 50+ staff.`,
-        "Role-backed station records and the dashboards operators used to decide which stations to visit.",
+        "Role-based station records and the dashboards operators used to decide which stations to visit.",
         `WebSocket carried station-status and model-inference updates so operators could read the board instead of walking stations; ${METRICS.wdOversight.latency}.`,
       ],
       impact: METRICS.wdOversight.display,
@@ -90,7 +90,7 @@ export const resumeData = {
       tech: ["MATLAB", "Python", "MathCAD"],
       scope: DESKS.petronas.collaboration,
       bullets: [...DESKS.petronas.facts],
-      impact: "Replaced MATLAB-dependent back-end functionality with Python packages",
+      impact: "Replaced MATLAB-dependent back-end calculation and reporting functions with Python packages",
     },
   ],
   projects: [
@@ -143,11 +143,11 @@ export const resumeData = {
       name: "CircuitMindAI",
       slug: "circuitmindai",
       subtitle: "PCB Inspection",
-      purpose: "Detector capability implemented; precision/recall not yet filed. Images in, voice-guided inspection steps out, with cached results for network loss.",
+      purpose: "Images in, voice-guided inspection steps out, with cached results for network loss.",
       date: "Mar 2026",
       tech: ["Next.js", "AWS Bedrock", "Express", "Amazon OSS", "GitHub Actions"],
       bullets: [
-        "Nova Pro reads the copper; Nova Sonic talks the operator through the fault.",
+        "Nova Pro analyses the PCB image; Nova Sonic talks the operator through the fault.",
         "Next.js and Express on ECS Fargate, with GitHub Actions stamping ECR.",
         "A local cache holds the inspection when the network drops.",
         "A REST API for the line, not a slogan about performance.",
@@ -158,20 +158,20 @@ export const resumeData = {
       example: "Input: a board image and operator audio. Output: a fault overlay on the copper, with inspection guidance still audible when the network drops.",
       github: "https://github.com/Mizore66/CircuitMindAI",
       plate: "/plates/plate-circuitmind.jpg",
-      plateCaption: "CircuitMindAI under the loupe — halftone plate, illustrative.",
+      plateCaption: "CircuitMindAI under the loupe — Nova Pro reads the copper; Nova Sonic talks the operator through the fault. Halftone plate, illustrative.",
       plateAlt: "Halftone photograph: a printed circuit board under a loupe, traces filling the frame.",
       description:
-        "CircuitMindAI inspects circuit boards: Nova Pro reads the copper, Nova Sonic talks the operator through the fault. Next.js and Express sit on ECS Fargate; GitHub Actions stamps the image.",
-      judgment: "Vision on the copper and voice for the operator: Nova Pro reads the board image, Nova Sonic speaks the inspection steps, and results are cached locally so the floor can keep working when the network drops.",
+        "CircuitMindAI inspects circuit boards: Nova Pro analyses the PCB image, Nova Sonic talks the operator through the fault. Next.js and Express sit on ECS Fargate; GitHub Actions stamps the image.",
+      judgment: "Vision on the board and voice for the operator: Nova Pro analyses the PCB image, Nova Sonic speaks the inspection steps, and results are cached locally so the floor can keep working when the network drops.",
       constraint: "The inspection has to survive a dropped network.",
-      limitation: "Detection quality (precision, latency, confusion) was not filed. Detector capability implemented; precision/recall not yet filed.",
+      limitation: "Detection quality (precision, latency, confusion) was not filed.",
       rejected:
         "I considered a server-only detector. A detector that fails with connectivity loss is not dependable enough for the inspection floor, so results are cached locally.",
       retrospective:
         "I would file detection quality — precision, latency, and confusion — so the floor capability can be measured rather than only described.",
       evidenceNote: "Detection quality was not filed.",
       evidenceKind: "capability" as const,
-      meta: "Nova Pro reads the copper; Nova Sonic talks the operator through the fault. Next.js and Express on ECS Fargate.",
+      meta: "Nova Pro analyses the PCB image; Nova Sonic talks the operator through the fault. Next.js and Express on ECS Fargate.",
       patent: CIRCUITMIND_LINE satisfies ApparatusSpec,
       apparatus: {
         name: "CircuitMindAI",
@@ -209,12 +209,12 @@ export const resumeData = {
       plateAlt: "Halftone photograph: a vault door and lock-work, lit like a bank interior.",
       description:
         "A Next.js desk draws the vault line; Node.js talks to Drift, Jupiter, and Meteora; MongoDB stores the copy so another desk can run it.",
-      why: "Two vault desks on Solana — Drift, Jupiter, and Meteora — and a hand-off that lived in a document. The failure is the gap between the schematic and the desk that has to fire it.",
-      judgment: "One schematic that draws, shares, and fires — so the hand-off is the same object the operator sees.",
+      why: "Three protocol integrations on Solana — Drift, Jupiter, and Meteora — and a hand-off that lived in a document. The failure is the gap between the schematic and the desk that has to execute it.",
+      judgment: "One schematic that builds, shares, and executes — so the hand-off is the same object the operator sees.",
       constraint: "A Megahack weekend: one schematic had to ship.",
       limitation: "Source is the public Megahack repository.",
       rejected:
-        "I considered wiring each protocol desk (Drift, Jupiter, Meteora) as its own UI. A weekend prize cannot keep three hand-offs in sync, so one schematic draws, shares, and fires.",
+        "I considered wiring each protocol desk (Drift, Jupiter, Meteora) as its own UI. A weekend prize cannot keep three hand-offs in sync, so one schematic builds, shares, and executes.",
       retrospective:
         "I would keep a live host after the prize weekend, or state more clearly that the public repository is the remaining artifact.",
       example: "Input: a vault line on the schematic. Output: the same object shared and fired at Drift, Jupiter, or Meteora.",
@@ -253,9 +253,9 @@ export const resumeData = {
       plateCaption: "GraphRAG at the card catalog — halftone plate, illustrative.",
       plateAlt: "Halftone photograph: wooden card-catalog drawers, one drawer open on a labelled card.",
       description:
-        "LangGraph asks Neo4j for an independent university handbook and policy archive, then a vector store when the graph is silent. Agents write Cypher, check it, and try again.",
+        "LangGraph asks Neo4j for an independent university handbook and policy archive, then a vector store when no valid graph path is returned. Agents write Cypher, check it, and try again.",
       judgment:
-        "The graph is the structured path for prerequisites and policy; the vector store is the fallback when the graph is silent.",
+        "The graph is the structured path for prerequisites and policy; the vector store is the fallback when no valid graph path is returned.",
       why: "A question about prerequisites has to walk the graph, not only the nearest paragraph. This archive is not the Monash regulations corpus.",
       constraint: "Prerequisites and credit-transfer are edges, not another vector-only retrieval dump.",
       limitation: "Ambiguous questions fall back to a broader semantic search. Sample size and Recall@k were not filed.",
@@ -286,20 +286,20 @@ export const resumeData = {
       bullets: [
         `${METRICS.riskAuc.display} on the unpublished evaluation sample.`,
         "SHAP names the drivers on the score.",
-        "Daily retrain from Kafka so the score is this morning's tape.",
+        "Daily retrain from Kafka so the score is this morning's market-data batch.",
       ],
       impact: "0.87 AUC-ROC score",
       evidenceNote: METRICS.riskAuc.note,
       evidenceKind: METRICS.riskAuc.kind,
       why: "Daily credit scores that a desk has to interpret, serve, and retrain — not a notebook that dies after the plot.",
       judgment: "LightGBM and XGBoost with SHAP, served through BentoML, with Kafka carrying the stream so the model can be retrained without taking the API down.",
-      constraint: "The morning tape had to retrain the score without taking the serving API down.",
+      constraint: "The daily Kafka market-data batch had to retrain the score without taking the serving API down.",
       limitation: "Dataset size, split, leakage controls, and positive-class prevalence were not filed beside 0.87 AUC-ROC. An unnamed 15% lift was withdrawn.",
       rejected:
         "I considered a single offline notebook as the delivery. A score the desk cannot retrain or explain is not a desk tool, so Kafka, SHAP, and BentoML stay on the path.",
       retrospective:
         "I would file dataset size, split, leakage controls, and prevalence — and keep the unnamed 15% baseline unpublished.",
-      example: "Input: the morning tape on Kafka. Output: a score with SHAP drivers, served through BentoML.",
+      example: "Input: the daily Kafka market-data batch. Output: a score with SHAP drivers, served through BentoML.",
       github: "",
       plate: "/plates/plate-risk.jpg",
       plateCaption: "Financial Risk Predictor — the ledger, halftone plate, illustrative.",
@@ -326,7 +326,7 @@ export const resumeData = {
       date: "May 2025",
       tech: ["PyTorch DDP", "PySpark", "Deep Interest Network", "Distributed Computing"],
       bullets: [
-        `${METRICS.leadThroughput.display} on PySpark; hours of pipeline latency cut to minutes on that capacity-benchmark desk. Exact clocks were not filed. Pipeline capacity, not sustained traffic.`,
+        `${METRICS.leadThroughput.display} on PySpark. Exact clocks, cluster size, input distribution, and runtime were not filed. Pipeline capacity, not sustained traffic.`,
         "Deep Interest Network on PyTorch DDP across the GPU cluster.",
         "Automated evaluation so a bad net does not ship.",
         "Checkpoints resume a failed hour from the last written slice.",
@@ -334,7 +334,7 @@ export const resumeData = {
       impact: METRICS.leadThroughput.display,
       evidenceNote: METRICS.leadThroughput.note,
       evidenceKind: METRICS.leadThroughput.kind,
-      why: "A conversion score that takes hours is a score the desk cannot use on today's tape.",
+      why: "A conversion score that takes hours is a score the desk cannot use before the batch deadline.",
       judgment: "PySpark for the feature path; a Deep Interest Network on PyTorch DDP for the score; checkpoints so a dead job resumes from the last written slice.",
       constraint: "A failed hour had to resume from the last completed slice. The 100 million events per day figure is pipeline capacity, not sustained traffic.",
       limitation: "Capacity benchmark. Cluster size, input distribution, and runtime were not filed.",

@@ -1,5 +1,8 @@
-import { LEDGER_PROJECT_SLUGS, REQUIRED_CLAIM_IDS } from "@/lib/cms/validate";
-import type { ClaimKind, CmsAspiration, CmsClaim, CmsProjectCopy, SiteDocument } from "@/lib/cms/types";
+import { LEDGER_EXPERIENCE_IDS, LEDGER_PROJECT_SLUGS, REQUIRED_CLAIM_IDS } from "@/lib/cms/validate";
+import { ledgerLab } from "@/lib/cms/lab-copy";
+import { mergePgnComments } from "@/lib/cms/chess-notes";
+import { LEDGER_REDIRECT_IDS, isRedirectStatus, isSafeRedirectPath } from "@/lib/cms/redirects";
+import type { ChessEntityKind, ClaimKind, CmsAspiration, CmsClaim, CmsEducation, CmsExperience, CmsProjectCopy, CmsRedirect, SiteDocument } from "@/lib/cms/types";
 
 const KINDS: ClaimKind[] = ["production", "benchmark", "evaluation", "pipeline", "capability"];
 const SURFACES: CmsClaim["surfaces"][number][] = ["home", "opening", "resume", "exhibit", "lab"];
@@ -51,6 +54,8 @@ function blankClaim(id: string): CmsClaim {
     denominator: "Unfiled.",
     source: "Unfiled.",
     sourceUrl: "",
+    linkedProject: "",
+    mediaPathname: "",
     heroEligible: false,
     archived: false,
     surfaces: ["exhibit"],
@@ -80,18 +85,48 @@ function blankProject(slug: string): CmsProjectCopy {
     bullets: "",
     description: "",
     plate: "",
+    plateMedia: "",
     plateCaption: "",
     plateAlt: "",
     apparatusName: "",
     apparatusRuntime: "",
     apparatusPath: "",
     apparatusBeside: "",
+    claimIds: [],
     archived: true,
   };
 }
 
 function blankAspiration(id: string): CmsAspiration {
   return { id, label: "New aspiration", active: false, start: "", end: "" };
+}
+
+function blankExperience(id: string): CmsExperience {
+  return {
+    id,
+    employer: "New employer",
+    role: "Role",
+    type: "Contract",
+    period: "",
+    tech: "",
+    ownership: "",
+    bullets: "",
+    impact: "",
+    archived: true,
+  };
+}
+
+function blankEducation(id: string): CmsEducation {
+  return {
+    id,
+    institution: "New institution",
+    qualification: "",
+    honours: "",
+    grades: "",
+    dates: "",
+    location: "",
+    archived: false,
+  };
 }
 
 function slugify(value: string): string {
@@ -155,6 +190,8 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
         denominator: text(formData, `claim-${claim.id}-denominator`, claim.denominator),
         source: text(formData, `claim-${claim.id}-source`, claim.source),
         sourceUrl: text(formData, `claim-${claim.id}-sourceUrl`, claim.sourceUrl),
+        linkedProject: text(formData, `claim-${claim.id}-linkedProject`, claim.linkedProject),
+        mediaPathname: text(formData, `claim-${claim.id}-mediaPathname`, claim.mediaPathname ?? ""),
         heroEligible: on(formData, `claim-${claim.id}-hero`),
         archived: on(formData, `claim-${claim.id}-archived`),
         surfaces: claimSurfaces(formData, claim.id, claim.surfaces),
@@ -222,6 +259,82 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
     aspirations = sortByOrder(aspirations, text(formData, "asp-order", ""), (item) => item.id);
   }
 
+  let experience = formData.has("experience-present")
+    ? (current.experience ?? []).map((row) => ({
+        ...row,
+        employer: text(formData, `exp-${row.id}-employer`, row.employer),
+        role: text(formData, `exp-${row.id}-role`, row.role),
+        type: text(formData, `exp-${row.id}-type`, row.type),
+        period: text(formData, `exp-${row.id}-period`, row.period),
+        tech: text(formData, `exp-${row.id}-tech`, row.tech),
+        ownership: text(formData, `exp-${row.id}-ownership`, row.ownership),
+        bullets: text(formData, `exp-${row.id}-bullets`, row.bullets),
+        impact: text(formData, `exp-${row.id}-impact`, row.impact),
+        archived: on(formData, `exp-${row.id}-archived`),
+      }))
+    : (current.experience ?? []);
+
+  if (formData.has("experience-present")) {
+    const createExp = slugify(text(formData, "exp-new-id", "") || text(formData, "exp-new-employer", "")).toLowerCase();
+    if (formData.get("exp-create") === "1" && createExp && !experience.some((row) => row.id === createExp)) {
+      const created = blankExperience(createExp);
+      created.employer = text(formData, "exp-new-employer", created.employer);
+      created.role = text(formData, "exp-new-role", created.role);
+      experience = [...experience, created];
+    }
+    const duplicateExp = String(formData.get("exp-duplicate") ?? "");
+    if (duplicateExp) {
+      const src = experience.find((row) => row.id === duplicateExp);
+      if (src) {
+        const nextId = uniqueCopyId(src.id, (id) => experience.some((row) => row.id === id));
+        experience = [...experience, { ...src, id: nextId, archived: true }];
+      }
+    }
+    const deleteExp = String(formData.get("exp-delete") ?? "");
+    if (deleteExp && !LEDGER_EXPERIENCE_IDS.has(deleteExp)) {
+      experience = experience.filter((row) => row.id !== deleteExp);
+    }
+    if (deleteExp && LEDGER_EXPERIENCE_IDS.has(deleteExp)) {
+      experience = experience.map((row) => (row.id === deleteExp ? { ...row, archived: true } : row));
+    }
+    experience = sortByOrder(experience, text(formData, "exp-order", ""), (row) => row.id);
+  }
+
+  let education = formData.has("education-present")
+    ? (current.education ?? []).map((row) => ({
+        ...row,
+        institution: text(formData, `edu-${row.id}-institution`, row.institution),
+        qualification: text(formData, `edu-${row.id}-qualification`, row.qualification),
+        honours: text(formData, `edu-${row.id}-honours`, row.honours),
+        grades: text(formData, `edu-${row.id}-grades`, row.grades),
+        dates: text(formData, `edu-${row.id}-dates`, row.dates),
+        location: text(formData, `edu-${row.id}-location`, row.location),
+        archived: on(formData, `edu-${row.id}-archived`),
+      }))
+    : (current.education ?? []);
+
+  if (formData.has("education-present")) {
+    const createEdu = slugify(text(formData, "edu-new-id", "") || text(formData, "edu-new-institution", "")).toLowerCase();
+    if (formData.get("edu-create") === "1" && createEdu && !education.some((row) => row.id === createEdu)) {
+      const created = blankEducation(createEdu);
+      created.institution = text(formData, "edu-new-institution", created.institution);
+      education = [...education, created];
+    }
+    const duplicateEdu = String(formData.get("edu-duplicate") ?? "");
+    if (duplicateEdu) {
+      const src = education.find((row) => row.id === duplicateEdu);
+      if (src) {
+        const nextId = uniqueCopyId(src.id, (id) => education.some((row) => row.id === id));
+        education = [...education, { ...src, id: nextId, archived: true }];
+      }
+    }
+    const deleteEdu = String(formData.get("edu-delete") ?? "");
+    if (deleteEdu && deleteEdu !== "monash-beng") {
+      education = education.filter((row) => row.id !== deleteEdu);
+    }
+    education = sortByOrder(education, text(formData, "edu-order", ""), (row) => row.id);
+  }
+
   let projects = formData.has("projects-present")
     ? current.projects.map((project) => ({
         ...project,
@@ -245,20 +358,27 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
         bullets: text(formData, `project-${project.slug}-bullets`, project.bullets),
         description: text(formData, `project-${project.slug}-description`, project.description),
         plate: text(formData, `project-${project.slug}-plate`, project.plate),
+        plateMedia: text(formData, `project-${project.slug}-plateMedia`, project.plateMedia ?? ""),
         plateCaption: text(formData, `project-${project.slug}-plateCaption`, project.plateCaption),
         plateAlt: text(formData, `project-${project.slug}-plateAlt`, project.plateAlt),
         apparatusName: text(formData, `project-${project.slug}-apparatusName`, project.apparatusName),
         apparatusRuntime: text(formData, `project-${project.slug}-apparatusRuntime`, project.apparatusRuntime),
         apparatusPath: text(formData, `project-${project.slug}-apparatusPath`, project.apparatusPath),
         apparatusBeside: text(formData, `project-${project.slug}-apparatusBeside`, project.apparatusBeside),
+        claimIds: formData.has(`project-${project.slug}-claims-present`)
+          ? current.claims
+              .filter((claim) => on(formData, `project-${project.slug}-claim-${claim.id}`))
+              .map((claim) => claim.id)
+          : project.claimIds,
         archived: on(formData, `project-${project.slug}-archived`),
       }))
     : current.projects;
 
   if (formData.has("projects-present")) {
-    const createSlug = slugify(text(formData, "project-new-slug", "")).toLowerCase();
+    const createTitle = text(formData, "project-new-title", "");
+    const createSlug = slugify(text(formData, "project-new-slug", "") || createTitle).toLowerCase();
     if (formData.get("project-create") === "1" && createSlug && !projects.some((project) => project.slug === createSlug)) {
-      projects = [...projects, blankProject(createSlug)];
+      projects = [...projects, { ...blankProject(createSlug), title: createTitle || "New exhibit" }];
     }
     const duplicateSlug = String(formData.get("project-duplicate") ?? "");
     if (duplicateSlug) {
@@ -275,6 +395,96 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
     projects = sortByOrder(projects, text(formData, "project-order", ""), (project) => project.slug);
   }
 
+  const ENTITY_KINDS: ChessEntityKind[] = ["experience", "education", "project", "lab", "outlook", ""];
+  let chess = formData.has("chess-present")
+    ? current.chess.map((note) => {
+        const kind = text(formData, `chess-${note.id}-entityKind`, note.entityKind) as ChessEntityKind;
+        return {
+          ...note,
+          fact: text(formData, `chess-${note.id}-fact`, note.fact),
+          commentary: text(formData, `chess-${note.id}-commentary`, note.commentary),
+          featured: on(formData, `chess-${note.id}-featured`),
+          entityKind: ENTITY_KINDS.includes(kind) ? kind : note.entityKind,
+          entityId: text(formData, `chess-${note.id}-entityId`, note.entityId),
+          mediaPathname: text(formData, `chess-${note.id}-mediaPathname`, note.mediaPathname ?? ""),
+        };
+      })
+    : current.chess;
+  const chessPgn = formData.has("chess-present")
+    ? text(formData, "chess-pgn", current.chessPgn).trim() || current.chessPgn
+    : current.chessPgn;
+  if (formData.has("chess-present") && on(formData, "chess-import-comments")) {
+    chess = mergePgnComments(chess, chessPgn);
+  }
+
+  const currentLab = current.lab ?? ledgerLab();
+  const lab = formData.has("lab-present")
+    ? {
+        hed: text(formData, "lab-hed", currentLab.hed),
+        dek: text(formData, "lab-dek", currentLab.dek),
+        teaser: text(formData, "lab-teaser", currentLab.teaser),
+        meta: text(formData, "lab-meta", currentLab.meta),
+        resultJoke: text(formData, "lab-resultJoke", currentLab.resultJoke),
+        hypothesisHed: text(formData, "lab-hypothesisHed", currentLab.hypothesisHed),
+        hypothesis: text(formData, "lab-hypothesis", currentLab.hypothesis),
+        experimentHed: text(formData, "lab-experimentHed", currentLab.experimentHed),
+        experiment: text(formData, "lab-experiment", currentLab.experiment),
+        failedHed: text(formData, "lab-failedHed", currentLab.failedHed),
+        failed: text(formData, "lab-failed", currentLab.failed),
+        learnedHed: text(formData, "lab-learnedHed", currentLab.learnedHed),
+        learned: text(formData, "lab-learned", currentLab.learned),
+      }
+    : currentLab;
+
+  function blankRedirect(id: string): CmsRedirect {
+    return { id, from: `/${id}`, to: "/", status: 308, enabled: true };
+  }
+
+  let redirects = formData.has("redirects-present")
+    ? (current.redirects ?? []).map((row) => {
+        const rawStatus = Number(text(formData, `redirect-${row.id}-status`, String(row.status)));
+        return {
+          ...row,
+          from: text(formData, `redirect-${row.id}-from`, row.from).trim(),
+          to: text(formData, `redirect-${row.id}-to`, row.to).trim(),
+          status: isRedirectStatus(rawStatus) ? rawStatus : row.status,
+          enabled: on(formData, `redirect-${row.id}-enabled`),
+        };
+      })
+    : (current.redirects ?? []);
+
+  if (formData.has("redirects-present")) {
+    const createFrom = text(formData, "redirect-new-from", "").trim();
+    const createId = slugify(text(formData, "redirect-new-id", "") || createFrom).toLowerCase();
+    if (formData.get("redirect-create") === "1" && createId && !redirects.some((row) => row.id === createId)) {
+      const created = blankRedirect(createId);
+      created.from = isSafeRedirectPath(createFrom, "from") ? createFrom : created.from;
+      created.to = text(formData, "redirect-new-to", created.to).trim() || created.to;
+      redirects = [...redirects, created];
+    }
+    const deleteRedirect = String(formData.get("redirect-delete") ?? "");
+    if (deleteRedirect && !LEDGER_REDIRECT_IDS.has(deleteRedirect)) {
+      redirects = redirects.filter((row) => row.id !== deleteRedirect);
+    }
+    redirects = sortByOrder(redirects, text(formData, "redirect-order", ""), (row) => row.id);
+  }
+
+  const articles = formData.has("articles-present")
+    ? (current.articles ?? []).map((row) => ({
+        ...row,
+        kicker: text(formData, `article-${row.slug}-kicker`, row.kicker),
+        body: text(formData, `article-${row.slug}-body`, row.body),
+        honestyKicker: text(formData, `article-${row.slug}-honestyKicker`, row.honestyKicker),
+        honesty: text(formData, `article-${row.slug}-honesty`, row.honesty),
+        witnessKicker: text(formData, `article-${row.slug}-witnessKicker`, row.witnessKicker),
+        witnesses: text(formData, `article-${row.slug}-witnesses`, row.witnesses),
+        plate: text(formData, `article-${row.slug}-plate`, row.plate),
+        plateCaption: text(formData, `article-${row.slug}-plateCaption`, row.plateCaption),
+        plateAlt: text(formData, `article-${row.slug}-plateAlt`, row.plateAlt),
+        plateMedia: text(formData, `article-${row.slug}-plateMedia`, row.plateMedia),
+      }))
+    : (current.articles ?? []);
+
   return {
     ...current,
     note: text(formData, "note", current.note),
@@ -282,6 +492,13 @@ export function applyFormToDocument(formData: FormData, current: SiteDocument): 
     claims,
     aspirations,
     projects,
+    experience,
+    education,
+    chess,
+    chessPgn,
+    lab,
+    redirects,
+    articles,
   };
 }
 

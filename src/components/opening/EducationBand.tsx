@@ -1,7 +1,9 @@
-import { resumeData } from "@/lib/data";
+import { getRenderableDocument } from "@/lib/cms/store";
+import { overlayEducation } from "@/lib/cms/overlay";
 
-export function EducationBand() {
-  const edu = resumeData.education;
+export async function EducationBand() {
+  const site = await getRenderableDocument();
+  const edu = overlayEducation(site);
   return (
     <section
       id="education"

@@ -72,11 +72,11 @@ describe("measured claims have one owner each", () => {
     expect(POSITIONING.deskSummaries.map((d) => d.desk).join(" ")).toMatch(/Western Digital/);
     expect(POSITIONING.deskSummaries.map((d) => d.desk).join(" ")).toMatch(/Setel/);
     expect(POSITIONING.deskSummaries.map((d) => d.desk).join(" ")).toMatch(/Monash/);
-    expect(POSITIONING.throughLine).toMatch(/through-line/);
+    expect(POSITIONING.throughLine).toMatch(/dashboard had to carry live status/);
     expect(POSITIONING.deskSummaries[0]?.line).toMatch(/department leadership/);
-    expect(POSITIONING.desksLine).toMatch(/Built production payments at Setel/);
+    expect(POSITIONING.desksLine).toMatch(/payment systems at Setel/);
     expect(POSITIONING.independentDek).toMatch(/Independent/);
-    expect(POSITIONING.professionalDek).toMatch(/Internships and contract roles/);
+    expect(POSITIONING.professionalDek).toMatch(/payments, lab operations, and university-policy retrieval/i);
     expect(POSITIONING.next).toMatch(/fintech infrastructure/);
     expect(RETRIEVAL_SPLIT).toMatch(/\+45%/);
     expect(RETRIEVAL_SPLIT).toMatch(/\+35%/);
@@ -98,7 +98,7 @@ describe("measured claims have one owner each", () => {
     expect(POSITIONING.deskNote).toMatch(/internal screenshots remain private/);
     expect(POSITIONING.nameNote).toMatch(/Anas Tarek Qumhiyeh on the résumé/);
     expect(POSITIONING.availability).not.toMatch(/visa|relocat|work authorization/i);
-    expect(POSITIONING.workAuth).toMatch(/not filed/);
+    expect(POSITIONING.workAuth).toMatch(/Ask about work authorization/);
     expect(exhibitTitle({ name: "Veridian", subtitle: "MLOps Tradeoff Engine" })).toBe(
       "Veridian — MLOps Tradeoff Engine",
     );

@@ -216,33 +216,33 @@ export const POSITIONING = {
   identity:
     "Software engineer building ML infrastructure and data-intensive systems for payments, lab operations, and retrieval.",
   seniority:
-    "Internships and contract roles across production systems, plus independent experiments that include a published loss.",
+    "Internships and contract roles in payments, lab operations, and university-policy retrieval, plus independent experiments that include a published loss.",
   howIWork:
     "At Setel, payment-engine defects could travel to checkout at the pump, so the tests had to survive that path.",
   availability:
     "Open to software engineering roles across fintech, ML infrastructure, and data platforms.",
   graduateNote: "Graduate and junior opportunities welcome.",
-  workAuth: "Work authorization and relocation constraints are not filed here.",
+  workAuth: "Ask about work authorization and relocation.",
   contactHed: "Hiring a software engineer for backend, product, ML infrastructure, or data-platform work? Write to me.",
   replies: "Usually replies within two business days (MYT).",
   closer:
     "I'm interested in teams building reliable ML and data systems in fintech or infrastructure-heavy products.",
   next: "The next line I want to play: measured systems in fintech infrastructure.",
-  professionalDek: "Internships and contract roles across production systems.",
+  professionalDek: "Payments, lab operations, and university-policy retrieval.",
   independentDek: "Independent projects. Production and contract work is under Experience.",
   independentKicker: "Independent projects",
   deskNote:
     "Professional work is summarized here; internal screenshots remain private. I joined existing teams on internships and contracts; independent flagships are solo.",
   ownershipBridge:
-    "I built production payments at Setel, lab operations at Western Digital, retrieval at Monash, and the flagship exhibits independently.",
+    "I built payment systems at Setel, a lab-operations dashboard at Western Digital, retrieval systems at Monash, and the projects below independently.",
   nameNote: "Anas T. Qumhiyeh on the masthead; Anas Tarek Qumhiyeh on the résumé.",
   desksLine:
-    "Built production payments at Setel, then lab operations and retrieval at Western Digital, Petronas, and Monash University.",
-  throughLine: "The through-line is systems that have to keep working after they ship.",
+    "Built payment systems at Setel, a lab-operations dashboard at Western Digital, then retrieval at Monash University, with earlier work at Petronas.",
+  throughLine: "At Western Digital, operators had to walk stations when the board was silent, so the dashboard had to carry live status.",
   deskSummaries: [
     {
       desk: "Petronas",
-      line: "Replaced MATLAB-dependent back-end functionality with Python packages; usability findings to department leadership.",
+      line: "Replaced MATLAB-dependent back-end calculation and reporting functions with Python packages; usability findings to department leadership.",
     },
     {
       desk: "Western Digital",
@@ -258,13 +258,13 @@ export const POSITIONING = {
     },
   ],
   recruiterBio:
-    "Software engineer building ML infrastructure and data-intensive systems for payments, lab operations, and retrieval. Production payments at Setel; lab operations at Western Digital; retrieval over university regulations at Monash.",
+    "Software engineer building ML infrastructure and data-intensive systems for payments, lab operations, and retrieval. I built production payment paths at Setel, a lab-operations dashboard at Western Digital, and retrieval over university regulations at Monash. Graduate, May 2026.",
   followerBio:
-    "I've played chess since I was a teenager, which is why this portfolio is a scoresheet: moves are facts, annotations are voice. I like systems that have to survive measurement — at Petronas I presented usability findings to department leadership; at Western Digital I built for 50+ lab staff. I joined existing teams on internships and contracts; independent flagships are solo.",
+    "I build backend, ML-infrastructure, and data systems, with production work at Setel and Western Digital and retrieval work at Monash. I've played chess since I was a teenager, which is why this portfolio is a scoresheet: moves are facts, annotations are voice. At Petronas I replaced MATLAB-dependent back-end functions with Python packages and presented usability findings to department leadership. At Western Digital I built a lab-operations dashboard for 50+ staff, with WebSocket station-status updates so operators could read the board instead of walking stations. At Setel I worked on checkout and capture on the payment engine. At Monash I owned the GraphRAG retrieval path and distilled an SLM; the faculty's administration tools were outside my scope. I joined existing teams on internships and contracts; independent flagships are solo.",
   aboutHeading: "About the annotator",
   about: [
+    "I build backend, ML-infrastructure, and data systems, with production work at Setel and Western Digital and retrieval work at Monash.",
     "I've played chess since I was a teenager, which is why this portfolio is a scoresheet: moves are facts, annotations are voice.",
-    "I like systems that have to survive measurement. At Petronas I presented usability findings to department leadership; at Western Digital I built for 50+ lab staff. I joined existing teams on internships and contracts; independent flagships are solo.",
     "The moves are the work; the annotations are my interpretation of it.",
   ],
 } as const;
@@ -407,9 +407,9 @@ export function projectEvidence(project: {
       return {
         result: project.impact,
         capability:
-          "Detector capability implemented; precision/recall not yet filed. Cached results cover network loss. Detection quality was not filed.",
+          "Cached results cover network loss. Detection quality (precision, latency, confusion) was not filed.",
         environment: project.apparatus.runtime,
-        sample: "Detector capability implemented; precision/recall not yet filed. This is a capability, not a measured detector.",
+        sample: "This is a capability, not a measured detector. Precision and recall were not filed.",
       };
     case "mirrorfi":
       return {

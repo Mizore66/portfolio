@@ -62,8 +62,10 @@ function reducedMotion(): boolean {
 
 export function OpeningApp({
   staticBoard,
+  chessNotes,
 }: {
   staticBoard?: ReactNode;
+  chessNotes?: Record<string, { fact: string; commentary: string; entityLabel: string }>;
 } = {}) {
   const selection = useSyncExternalStore(
     subscribeSelection,
@@ -90,7 +92,6 @@ export function OpeningApp({
   const hoverTimer = useRef<number>(0);
   const skipSpy = useRef(false);
   const skipSpyTimer = useRef<number>(0);
-  const pickRef = useRef<() => void>(() => {});
   const [engineApi, setEngineApi] = useState<EngineApi | null>(null);
   const engineApiRef = useRef(engineApi);
   engineApiRef.current = engineApi;
@@ -105,6 +106,7 @@ export function OpeningApp({
     };
   }, []);
   const selectedRef = useRef(selectedId);
+  selectedRef.current = selectedId;
   const [ready, setReady] = useState(false);
   useEffect(() => {
     setReady(true);
@@ -170,13 +172,9 @@ export function OpeningApp({
     const top = window.scrollY + el.getBoundingClientRect().top - stack - 12;
     const reduced = reducedMotion();
     window.scrollTo({ top: Math.max(0, top), behavior: reduced ? "auto" : "smooth" });
-    const release = () => {
+    skipSpyTimer.current = window.setTimeout(() => {
       skipSpy.current = false;
-      window.removeEventListener("scrollend", release);
-      pickRef.current();
-    };
-    window.addEventListener("scrollend", release, { once: true });
-    skipSpyTimer.current = window.setTimeout(release, reduced ? 80 : 1000);
+    }, reduced ? 80 : 1000);
   }, []);
 
   const userSelect = useCallback(
@@ -279,16 +277,17 @@ export function OpeningApp({
       if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
       if (!isChessKeyTarget(e.target)) return;
       e.preventDefault();
-      const next = stepMainline(selectedId, e.key === "ArrowRight" ? 1 : -1);
-      userSelect(next);
+      const next = stepMainline(selectedRef.current, e.key === "ArrowRight" ? 1 : -1);
+      skipSpy.current = true;
+      window.clearTimeout(skipSpyTimer.current);
+      onSelect(next);
+      skipSpyTimer.current = window.setTimeout(() => {
+        skipSpy.current = false;
+      }, 1000);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [userSelect, selectedId]);
-
-  useEffect(() => {
-    selectedRef.current = selectedId;
-  }, [selectedId]);
+  }, [onSelect]);
 
   useEffect(() => {
     extraLenRef.current = extra.length;
@@ -362,7 +361,6 @@ export function OpeningApp({
       }
       if (best && best.id !== selectedRef.current) onSelect(best.id);
     };
-    pickRef.current = pick;
     const schedule = () => {
       if (skipSpy.current) return;
       if (!frame) frame = window.requestAnimationFrame(pick);
@@ -377,7 +375,6 @@ export function OpeningApp({
       io.disconnect();
       window.removeEventListener("scroll", schedule);
       if (frame) window.cancelAnimationFrame(frame);
-      pickRef.current = () => {};
     };
   }, [onSelect]);
 
@@ -523,8 +520,8 @@ export function OpeningApp({
           <section id="the-game" aria-labelledby="paper-title">
           <div className="game-band px-4 sm:px-6">
             <PaperToc selectedId={selectedId} onSelect={userSelect} />
-            <p className="mt-3 font-mono text-[12px] uppercase tracking-[0.14em]">
-              <a href="#scoresheet" className="text-book-blue underline decoration-2 underline-offset-4">
+            <p className="mt-3">
+              <a href="#scoresheet" className="paper-hit">
                 {BROADSHEET.skipBoard}
               </a>
             </p>
@@ -661,6 +658,7 @@ export function OpeningApp({
                 selectedId={selectedId}
                 onSelect={userSelect}
                 onPreview={onPreview}
+                chessNotes={chessNotes}
               />
             </section>
           </div>

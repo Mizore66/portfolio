@@ -146,6 +146,6 @@ describe("document integrity", () => {
     expect(METRICS.setelDefects.denominator).toMatch(/not filed/);
     expect(METRICS.wdOversight.denominator).toMatch(/not filed/);
     expect(METRICS.leadThroughput.denominator).toMatch(/not filed/);
-    expect(POSITIONING.ownershipBridge).toMatch(/I built production payments at Setel/);
+    expect(POSITIONING.ownershipBridge).toMatch(/I built payment systems at Setel/);
   });
 });

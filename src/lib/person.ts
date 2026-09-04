@@ -98,14 +98,19 @@ export function projectJsonLd(project: {
   };
 }
 
-export function labArticleJsonLd() {
+export function labArticleJsonLd(article: {
+  hed: string;
+  meta: string;
+  datePublished: string;
+  href: string;
+} = LAB_ARTICLE) {
   return {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: LAB_ARTICLE.hed,
-    description: LAB_ARTICLE.meta,
-    datePublished: LAB_ARTICLE.datePublished,
-    url: `${SITE_URL}${LAB_ARTICLE.href}`,
+    headline: article.hed,
+    description: article.meta,
+    datePublished: article.datePublished,
+    url: `${SITE_URL}${article.href}`,
     author: {
       "@type": "Person",
       name: PERSON_NAME,

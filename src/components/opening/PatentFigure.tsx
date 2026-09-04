@@ -274,9 +274,13 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
       aria-label={spec.engraving.alt}
     >
       <div className="patent-figure-mat">
-        <SheetHeader spec={spec} />
+        <div aria-hidden="true">
+          <SheetHeader spec={spec} />
+        </div>
         <div className="relative">
-          <Engraving spec={spec} labeled />
+          <div aria-hidden="true">
+            <Engraving spec={spec} labeled />
+          </div>
           <button
             type="button"
             className="patent-expand-hit"
@@ -286,9 +290,12 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
             onClick={open}
           />
         </div>
-        <SignatureBlock />
+        <div aria-hidden="true">
+          <SignatureBlock />
+        </div>
       </div>
       <div className="patent-reference" data-testid="patent-legend">
+        <p className="patent-sheet-mark font-mono text-[12px] text-faded">(No Model.)</p>
         <p className="patent-reference-kicker">Reference</p>
         <ol className="patent-reference-grid">
           {spec.parts.map((part) => (
@@ -299,7 +306,7 @@ export function PatentFigure({ spec }: { spec: ApparatusSpec }) {
             </li>
           ))}
         </ol>
-        <details className="patent-transcript" open>
+        <details className="patent-transcript">
           <summary>Diagram description</summary>
           <p className="mt-2 font-display text-[16px] leading-snug">{spec.engraving.alt}</p>
           <ol className="mt-2">

@@ -1595,15 +1595,38 @@
   border: 1px solid var(--ink);
   padding: var(--space-2);
 }
+.paper-hit {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 10px 12px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--book-blue);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
 .paper-toc summary {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
   min-height: 44px;
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 12px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   cursor: pointer;
+}
+.paper-toc summary .toc-chevron {
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+.paper-toc details[open] .toc-chevron {
+  transform: rotate(90deg);
 }
 .paper-toc ol {
   margin: var(--space-2) 0 0;
@@ -2165,9 +2188,19 @@ h1, h2, h3 {
   color: var(--paper);
   border-color: var(--ink);
 }
-.path-chip:focus-visible {
-  outline: 2px solid var(--score-red);
-  outline-offset: 2px;
+.recruiter-nav-link[aria-current="page"],
+.recruiter-nav-link[aria-current="location"] {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-weight: 600;
+}
+.evidence-disclose summary {
+  min-height: 44px;
+  cursor: pointer;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .project-card {
@@ -2355,30 +2388,15 @@ h1, h2, h3 {
   letter-spacing: 0.08em;
 }
 @media (max-width: 767px) {
-  .hero-left,
-  .hero-proof-wrap {
-    display: contents;
-  }
-  .hero-identity {
-    order: 1;
-  }
-  .hero-proof {
-    order: 2;
-  }
-  .hero-cta-block {
-    order: 3;
-  }
-  #work {
-    order: 4;
-  }
-  .hero-engine {
-    order: 5;
+  .hero-left {
+    display: flex;
+    flex-direction: column;
   }
 }
 @media (min-width: 768px) {
   .home-desk {
     display: grid;
-    grid-template-columns: minmax(0, 60fr) minmax(0, 40fr);
+    grid-template-columns: minmax(0, 64fr) minmax(280px, 36fr);
     grid-template-areas:
       "hero board"
       "work work";
@@ -2898,6 +2916,17 @@ h1, h2, h3 {
   min-height: 44px;
   display: flex;
   align-items: center;
+}
+@media (max-width: 699px) {
+  .scoresheet-progress {
+    position: sticky;
+    top: var(--sticky-stack, 168px);
+    z-index: 19;
+    margin: 0;
+    padding: 8px 16px;
+    background: var(--paper);
+    border-bottom: 1px solid var(--ink);
+  }
 }
 
 .diff-del {

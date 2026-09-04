@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
+import { JsonLd } from "@/components/JsonLd";
 import { DeskCollage } from "@/components/opening/DeskCollage";
 import { FontLoader } from "@/components/opening/FontLoader";
 import { NewspaperPieceSprite } from "@/components/opening/NewspaperPiece";
@@ -55,18 +56,8 @@ export default async function RootLayout({
   return (
     <html lang="en-GB">
       <body className="relative z-[1] min-h-screen bg-transparent font-lora text-ink antialiased">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(
-              personJsonLd({ jobTitle: site.profile.dek, location: site.profile.location }),
-            ),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd()) }}
-        />
+        <JsonLd data={personJsonLd({ jobTitle: site.profile.dek, location: site.profile.location })} />
+        <JsonLd data={websiteJsonLd()} />
         <PreviewBanner />
         <FontLoader />
         <NewspaperPieceSprite />

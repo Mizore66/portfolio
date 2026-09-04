@@ -37,7 +37,7 @@ test.describe("document mode", () => {
     await expect(page.getByTestId("closer")).toHaveCount(0);
     await expect(page.getByTestId("colophon")).toHaveCount(0);
     await expect(page.getByTestId("career-trajectory")).toContainText(/Petronas/);
-    await expect(page.getByTestId("career-trajectory")).toContainText(/through-line/);
+    await expect(page.getByTestId("career-trajectory")).toContainText(/dashboard had to carry live status/);
     await expect(page.getByTestId("career-trajectory")).not.toContainText(/The desks compound/);
     await expect(page.getByTestId("about-band")).toContainText(/played chess since I was a teenager/);
     await expect(page.getByTestId("about-band")).toContainText(/About the annotator/);
@@ -47,7 +47,7 @@ test.describe("document mode", () => {
     await expect(page.getByTestId("path-filter")).toContainText(/ML \/ data systems/);
     await expect(page.getByTestId("path-filter")).toContainText(/Product \/ backend/);
     await expect(page.getByRole("link", { name: /Skip to selected work/i })).toHaveCount(1);
-    await expect(page.getByTestId("lab-teaser")).toContainText(/learned evaluator lost/i);
+    await expect(page.getByTestId("lab-teaser")).toContainText(/underperformed PeSTO/i);
     await expect(page.getByTestId("masthead-proof")).toContainText(/−40% production defects/);
     await expect(page.getByTestId("masthead-proof")).toContainText(/100M-event capacity/);
     await expect(page.getByTestId("masthead-proof").locator(".metric-row").nth(2)).toHaveText(

@@ -1,41 +1,44 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { JsonLd } from "@/components/JsonLd";
 import { EloCommitsChart } from "@/components/opening/EloCommitsChart";
 import { EvaluationsColumn } from "@/components/opening/EvaluationsColumn";
 import { RecruiterNav } from "@/components/opening/RecruiterNav";
 import { BROADSHEET } from "@/content/opening";
-import { LAB_ARTICLE } from "@/content/learned-evaluator";
+import { overlayLab } from "@/lib/cms/lab-copy";
+import { getPublishedDocument, getRenderableDocument } from "@/lib/cms/store";
 import { labArticleJsonLd } from "@/lib/person";
 import { SITE_URL } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: `${LAB_ARTICLE.hed} — Lab · A. T. Qumhiyeh`,
-  description: LAB_ARTICLE.meta,
-  alternates: { canonical: LAB_ARTICLE.href },
-  openGraph: {
-    title: `${LAB_ARTICLE.hed} — Lab · A. T. Qumhiyeh`,
-    description: LAB_ARTICLE.meta,
-    url: `${SITE_URL}${LAB_ARTICLE.href}`,
-    type: "article",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${LAB_ARTICLE.hed} — Lab · A. T. Qumhiyeh`,
-    description: LAB_ARTICLE.meta,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const article = overlayLab(await getPublishedDocument());
+  return {
+    title: `${article.hed} — Lab · A. T. Qumhiyeh`,
+    description: article.meta,
+    alternates: { canonical: article.href },
+    openGraph: {
+      title: `${article.hed} — Lab · A. T. Qumhiyeh`,
+      description: article.meta,
+      url: `${SITE_URL}${article.href}`,
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${article.hed} — Lab · A. T. Qumhiyeh`,
+      description: article.meta,
+    },
+  };
+}
 
-export default function LearnedEvaluatorPage() {
+export default async function LearnedEvaluatorPage() {
+  const article = overlayLab(await getRenderableDocument());
   return (
     <div className="min-h-screen text-ink">
       <a href="#article" className="skip-link">
         Skip to the article
       </a>
       <div className="relative z-[1] mx-auto max-w-2xl px-3 py-8 sm:px-5 sm:py-12">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(labArticleJsonLd()) }}
-        />
+        <JsonLd data={labArticleJsonLd(article)} />
         <div className="sheet mb-4">
           <RecruiterNav />
         </div>
@@ -53,70 +56,70 @@ export default function LearnedEvaluatorPage() {
                   href="/#lab"
                   className="font-mono text-[12px] uppercase tracking-widest text-faded underline decoration-2 underline-offset-4"
                 >
-                  {LAB_ARTICLE.kicker}
+                  {article.kicker}
                 </Link>
               </div>
               <p className="mt-3 font-mono text-[12px] uppercase tracking-[0.28em] text-faded">
-                {LAB_ARTICLE.kicker} · Gate C · {LAB_ARTICLE.resultGlyph}
+                {article.kicker} · Gate C · {article.resultGlyph}
               </p>
-              <p className="mt-2 font-mono text-[12px] text-faded">{LAB_ARTICLE.filed}</p>
+              <p className="mt-2 font-mono text-[12px] text-faded">{article.filed}</p>
               <p className="mt-1 font-mono text-[12px] text-faded" data-testid="lab-dates">
-                Published {LAB_ARTICLE.datePublished}
+                Published {article.datePublished}
               </p>
               <h1 id="lab-title" className="exhibit-title mt-2 font-display text-ink">
-                {LAB_ARTICLE.hed}
+                {article.hed}
               </h1>
-              <p className="mt-3 max-w-[68ch] font-display text-[18px] leading-snug text-ink">{LAB_ARTICLE.dek}</p>
-              <p className="metric-row mt-4">{LAB_ARTICLE.result}</p>
-              <p className="mt-1 font-mono text-[12px] text-faded">{LAB_ARTICLE.resultNote}</p>
-              <p className="mt-4 font-display text-[18px] italic text-score-red">{LAB_ARTICLE.resultJoke}</p>
+              <p className="mt-3 max-w-[68ch] font-display text-[18px] leading-snug text-ink">{article.dek}</p>
+              <p className="metric-row mt-4">{article.result}</p>
+              <p className="mt-1 font-mono text-[12px] text-faded">{article.resultNote}</p>
+              <p className="mt-4 font-display text-[18px] italic text-score-red">{article.resultJoke}</p>
             </header>
 
             <section id="hypothesis" className="mt-8" aria-labelledby="lab-hypothesis">
-              <p className="band-kicker">{LAB_ARTICLE.hypothesisKicker}</p>
+              <p className="band-kicker">{article.hypothesisKicker}</p>
               <h2 id="lab-hypothesis" className="band-title">
-                {LAB_ARTICLE.hypothesisHed}
+                {article.hypothesisHed}
               </h2>
               <p className="mt-3 max-w-[68ch] font-display text-[16px] leading-[1.65] text-ink">
-                {LAB_ARTICLE.hypothesis}
+                {article.hypothesis}
               </p>
             </section>
 
             <section id="experiment" className="mt-8" aria-labelledby="lab-experiment">
-              <p className="band-kicker">{LAB_ARTICLE.experimentKicker}</p>
+              <p className="band-kicker">{article.experimentKicker}</p>
               <h2 id="lab-experiment" className="band-title">
-                {LAB_ARTICLE.experimentHed}
+                {article.experimentHed}
               </h2>
               <p className="mt-3 max-w-[68ch] font-lora text-[16px] leading-[1.7] text-ink">
-                {LAB_ARTICLE.experiment}
+                {article.experiment}
               </p>
             </section>
 
             <section id="result" className="mt-8" aria-labelledby="lab-result">
-              <p className="band-kicker">{LAB_ARTICLE.resultKicker}</p>
+              <p className="band-kicker">{article.resultKicker}</p>
               <h2 id="lab-result" className="band-title">
-                {LAB_ARTICLE.resultHed}
+                {article.resultHed}
               </h2>
-              <p className="mt-3 font-mono text-[14px] leading-relaxed text-ink">{LAB_ARTICLE.resultLine}</p>
+              <p className="mt-3 font-mono text-[14px] leading-relaxed text-ink">{article.resultLine}</p>
             </section>
 
             <section id="failed" className="mt-8" aria-labelledby="lab-failed">
-              <p className="band-kicker">{LAB_ARTICLE.failedKicker}</p>
+              <p className="band-kicker">{article.failedKicker}</p>
               <h2 id="lab-failed" className="band-title">
-                {LAB_ARTICLE.failedHed}
+                {article.failedHed}
               </h2>
               <p className="mt-3 max-w-[68ch] font-lora text-[16px] leading-[1.7] text-ink">
-                {LAB_ARTICLE.failed}
+                {article.failed}
               </p>
             </section>
 
             <section id="learned" className="mt-8" aria-labelledby="lab-learned">
-              <p className="band-kicker">{LAB_ARTICLE.learnedKicker}</p>
+              <p className="band-kicker">{article.learnedKicker}</p>
               <h2 id="lab-learned" className="band-title">
-                {LAB_ARTICLE.learnedHed}
+                {article.learnedHed}
               </h2>
               <p className="mt-3 max-w-[68ch] font-display text-[16px] italic leading-snug text-ink">
-                {LAB_ARTICLE.learned}
+                {article.learned}
               </p>
             </section>
 

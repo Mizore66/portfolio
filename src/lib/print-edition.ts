@@ -1,10 +1,13 @@
 import { BROADSHEET } from "@/content/opening";
+import type { OverlayJob } from "@/lib/cms/overlay";
 import { resumeData } from "@/lib/data";
 import { FEATURED_PROJECT_SLUGS, HERO_PROOF, POSITIONING } from "@/lib/metrics";
 import { SITE_HOST, SITE_URL } from "@/lib/site";
 
-const PAGE_W = 612;
-const PAGE_H = 792;
+const PAPER = {
+  letter: { w: 612, h: 792 },
+  a4: { w: 595, h: 842 },
+} as const;
 const M = 40;
 const INK = "0.102 0.071 0.047";
 
@@ -57,8 +60,27 @@ type Mark = { role: "H1" | "H2" | "P" | "Link"; mcid: number };
  * One-page tagged résumé. Single column, no chessboard: ATS and screen
  * readers should not meet the Italian Game before Experience.
  */
-export function buildPrintEditionPdf(overlay?: { dek?: string; availability?: string }): Uint8Array {
+export function buildPrintEditionPdf(overlay?: {
+  dek?: string;
+  availability?: string;
+  jobs?: OverlayJob[];
+  education?: {
+    school: string;
+    location: string;
+    degree: string;
+    honours: string;
+    graduation: string;
+    wam: string;
+    cgpa: string;
+  };
+  paper?: "letter" | "a4";
+}): Uint8Array {
   const d = resumeData;
+  const jobs = overlay?.jobs ?? d.experience;
+  const edu = overlay?.education ?? d.education;
+  const paper = overlay?.paper === "a4" ? "a4" : "letter";
+  const PAGE_W = PAPER[paper].w;
+  const PAGE_H = PAPER[paper].h;
   const headline = overlay?.dek ?? d.headline;
   const availability = overlay?.availability ?? POSITIONING.availability;
   const ops: string[] = [];
@@ -139,7 +161,7 @@ export function buildPrintEditionPdf(overlay?: { dek?: string; availability?: st
   };
 
   heading("Experience");
-  for (const job of d.experience) {
+  for (const job of jobs) {
     const who = job.company ? `${job.title}, ${job.company}` : job.title;
     marked("P", () => txt("F2", 9, M, y, ascii(who)));
     y -= 10;
@@ -159,14 +181,14 @@ export function buildPrintEditionPdf(overlay?: { dek?: string; availability?: st
   }
 
   heading("Education");
-  marked("P", () => txt("F2", 9, M, y, d.education.degree));
+  marked("P", () => txt("F2", 9, M, y, edu.degree));
   y -= 11;
   marked("P", () =>
-    txt("F1", 8, M, y, ascii(`${d.education.school}, ${d.education.location}. ${d.education.honours}.`)),
+    txt("F1", 8, M, y, ascii(`${edu.school}, ${edu.location}. ${edu.honours}.`)),
   );
   y -= 10;
   marked("P", () =>
-    txt("F1", 8, M, y, ascii(`Graduated ${d.education.graduation}. WAM ${d.education.wam}  |  CGPA ${d.education.cgpa}.`)),
+    txt("F1", 8, M, y, ascii(`Graduated ${edu.graduation}. WAM ${edu.wam}  |  CGPA ${edu.cgpa}.`)),
   );
   y -= 14;
 
@@ -177,7 +199,7 @@ export function buildPrintEditionPdf(overlay?: { dek?: string; availability?: st
       p.slug === "veridian"
         ? " Intercepts Terraform before provisioning or a demand-driven scale event; recommends a lower-carbon compute configuration."
         : p.slug === "circuitmindai"
-          ? " Detector capability implemented; precision/recall not yet filed. Cached inspection steps for network loss."
+          ? " Cached inspection steps for network loss. Detection quality was not filed."
           : p.slug === "multi-agent-graphrag"
             ? " Independent handbook archive; +35% vs vector-only as filed, not Recall@k."
             : "";
@@ -189,15 +211,21 @@ export function buildPrintEditionPdf(overlay?: { dek?: string; availability?: st
     }
     y -= 2;
   }
-  const also = d.projects
+  const alsoItems = d.projects
     .filter((proj) => !featuredSet.has(proj.slug))
     .map((p) =>
       p.slug === "mirrorfi" ? `${p.name} (${p.contextLabel ?? p.impact})` : `${p.name} (${p.impact})`,
-    )
-    .join("  |  ");
-  for (const line of wrap(`Also: ${also}`, 96)) {
-    marked("P", () => txt("F1", 8, M, y, ascii(line)));
-    y -= 10;
+    );
+  marked("P", () => txt("F3", 8, M, y, "Also"));
+  y -= 10;
+  for (let i = 0; i < alsoItems.length; i += 2) {
+    const left = alsoItems[i] ?? "";
+    const right = alsoItems[i + 1];
+    const line = right ? `${left}   |   ${right}` : left;
+    for (const wrapped of wrap(line, 96)) {
+      marked("P", () => txt("F1", 8, M, y, ascii(wrapped)));
+      y -= 9;
+    }
   }
 
   y -= 4;
