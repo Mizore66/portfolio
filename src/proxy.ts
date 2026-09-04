@@ -8,6 +8,23 @@ import { applySecurityHeaders } from "@/lib/security-headers";
 
 const PUBLIC_CACHE = "public, s-maxage=60, stale-while-revalidate=600";
 
+function shouldLookupRedirect(path: string): boolean {
+  if (path === "/") return false;
+  if (path.startsWith("/_next") || path.startsWith("/admin") || path.startsWith("/api")) return false;
+  if (
+    path.startsWith("/projects") ||
+    path.startsWith("/lab") ||
+    path.startsWith("/opening-preparation") ||
+    path.startsWith("/colophon") ||
+    path.startsWith("/print-edition") ||
+    path.startsWith("/plates")
+  ) {
+    return false;
+  }
+  if (/\.[a-z0-9]+$/i.test(path)) return false;
+  return true;
+}
+
 /** 301 www → apex so canonical, og:url, and the masthead dateline agree.
  *  Host is checked in the handler: Next's matcher parser requires string
  *  literals, and `has[].value` templates fail the compile. */
@@ -32,7 +49,7 @@ export async function proxy(request: NextRequest) {
   if (dest) return finish(NextResponse.redirect(dest, 301));
 
   const path = request.nextUrl.pathname;
-  if (!path.startsWith("/admin") && !path.startsWith("/_next") && !path.startsWith("/api")) {
+  if (shouldLookupRedirect(path)) {
     const hit = await lookupPublishedRedirect(path);
     if (hit) {
       return finish(NextResponse.redirect(new URL(hit.to, request.url), hit.status));
