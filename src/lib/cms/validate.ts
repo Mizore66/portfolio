@@ -66,8 +66,9 @@ export const LEDGER_EXPERIENCE_IDS = new Set(
 const DATE = /^\d{4}(?:-\d{2}(?:-\d{2})?)?$/;
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-function wordCount(value: string): number {
-  return value.trim() ? value.trim().split(/\s+/).length : 0;
+function wordCount(value: string | undefined | null): number {
+  const text = typeof value === "string" ? value.trim() : "";
+  return text ? text.split(/\s+/).length : 0;
 }
 
 export function validateDocument(doc: SiteDocument): string[] {

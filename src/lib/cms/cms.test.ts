@@ -15,7 +15,7 @@ import { mediaUsedBy } from "@/lib/cms/media-usage";
 import { claimsForExhibit, overlayProject, overlayProjects, publicEvidenceHref, resolveExhibit } from "@/lib/cms/overlay";
 import { documentDiff, groupedDocumentDiff, wordDiff } from "@/lib/cms/diff";
 import { claimHeroReady, validateDocument } from "@/lib/cms/validate";
-import { draftHealth, draftStatus, revisionInstant } from "@/lib/cms/health";
+import { draftHealth, draftStatus, formatLocalTime, revisionInstant } from "@/lib/cms/health";
 import { parseSessionToken } from "@/lib/cms/session-mac";
 import { resumeData } from "@/lib/data";
 
@@ -526,6 +526,14 @@ describe("cms ledger caveats", () => {
     const withArticle = applyFormToDocument(articleForm, ledger);
     expect(overlayArticle("colophon", withArticle).body).toBe("Type: still the compiled receipt.");
     expect(overlayArticle("colophon", { articles: [] }).body).toMatch(/Libre Baskerville/);
+  });
+});
+
+describe("cms health formatting", () => {
+  it("formatLocalTime always returns a string", () => {
+    expect(typeof formatLocalTime("2026-09-03T10:00:00.000Z")).toBe("string");
+    expect(formatLocalTime(undefined)).toBe("Unknown time");
+    expect(formatLocalTime({})).toBe("Unknown time");
   });
 });
 
