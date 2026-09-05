@@ -54,6 +54,7 @@ export default async function ClaimsEditor({
             return (
               <details
                 key={claim.id}
+                id={`claim-${claim.id}`}
                 className="border-2 border-ink p-4"
                 open={index < 3 || claim.heroEligible || missing.length > 0}
               >

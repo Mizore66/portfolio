@@ -101,11 +101,22 @@ export async function HeroIdentity() {
                     <sup>{index + 1}</sup>
                   </a>
                 </p>
-                <EvidenceMeta note={note} kind={item.kind} />
+                <EvidenceMeta note={note} kind={item.kind} compact />
               </li>
             );
           })}
         </ul>
+        <div className="hero-cta-block">
+          <p
+            data-testid="masthead-availability"
+            className="mt-4 font-mono text-[12px] uppercase tracking-[0.12em] text-faded"
+          >
+            {availability}
+          </p>
+          <div className="mt-4">
+            <Contacts />
+          </div>
+        </div>
         <ol className="hero-claim-notes" data-testid="hero-claim-notes">
           {proof.map((item, index) => (
             <li key={item.id} id={`claim-note-${item.id}`}>
@@ -118,17 +129,6 @@ export async function HeroIdentity() {
             </li>
           ))}
         </ol>
-        <div className="hero-cta-block px-4 pb-5 sm:px-6">
-          <p
-            data-testid="masthead-availability"
-            className="mt-4 font-mono text-[12px] uppercase tracking-[0.12em] text-faded"
-          >
-            {availability}
-          </p>
-          <div className="mt-5">
-            <Contacts />
-          </div>
-        </div>
       </div>
     </div>
   );
@@ -144,7 +144,9 @@ export function PaperMasthead() {
           Edition {year} · C50 · Italian Game · {SITE_HOST} · Moves are facts · Annotations are voice
         </p>
       </div>
-      <RecruiterNav stamp="c50" />
+      <div className="paper-chrome">
+        <RecruiterNav stamp="c50" />
+      </div>
       <div className="border-b-2 border-ink px-4 py-4 sm:px-6">
         <p className="font-mono text-[12px] uppercase tracking-[0.22em] text-faded">Scoresheet</p>
         <h1 id="paper-title" data-testid="paper-title" className="masthead-title">

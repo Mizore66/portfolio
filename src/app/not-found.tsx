@@ -12,7 +12,7 @@ export default function NotFound() {
   return (
     <div className="min-h-screen text-ink">
       <div className="relative z-[1] mx-auto max-w-xl px-3 py-16 sm:px-5">
-        <div className="sheet mb-4">
+        <div className="sheet mb-4 paper-chrome-float">
           <RecruiterNav />
         </div>
         <main>

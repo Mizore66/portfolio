@@ -131,7 +131,7 @@ export default async function ProjectPage({
         {BROADSHEET.skipExhibit}
       </a>
       <div className="relative z-[1] mx-auto max-w-4xl min-w-0 overflow-x-clip px-3 py-8 sm:px-5 sm:py-12">
-        <div className="sheet mb-4">
+        <div className="sheet mb-4 paper-chrome-float">
           <RecruiterNav />
         </div>
         <main id="exhibit">

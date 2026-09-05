@@ -437,3 +437,19 @@ export function ApparatusRows({
     </fieldset>
   );
 }
+
+export function HashOpen() {
+  useEffect(() => {
+    function apply() {
+      const id = window.location.hash.replace(/^#/, "");
+      if (!id) return;
+      const el = document.getElementById(id);
+      if (el instanceof HTMLDetailsElement) el.open = true;
+      el?.scrollIntoView({ block: "start" });
+    }
+    apply();
+    window.addEventListener("hashchange", apply);
+    return () => window.removeEventListener("hashchange", apply);
+  }, []);
+  return null;
+}

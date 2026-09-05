@@ -13,14 +13,20 @@ export function EvidenceMeta({
   kind,
   source,
   gap,
+  compact = false,
 }: {
   note?: string;
   kind?: EvidenceKind;
   source?: string;
   gap?: string;
+  compact?: boolean;
 }) {
   const cleaned = noteWithoutKind(note, kind);
   if (!cleaned && !kind && !source && !gap) return null;
+  if (compact) {
+    if (!cleaned) return null;
+    return <p className="evidence-meta-compact">{cleaned}</p>;
+  }
   return (
     <dl className="evidence-meta">
       {kind ? (

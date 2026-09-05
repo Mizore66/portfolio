@@ -42,7 +42,7 @@ export default async function Home({
       </a>
       <div className="relative z-[1] flex justify-center px-2 py-3 sm:px-3">
         <div data-testid="newspaper-spread" className="sheet sheet-page">
-          <header>
+          <header className="paper-chrome">
             <EditionKicker />
             <RecruiterNav />
           </header>

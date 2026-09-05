@@ -65,13 +65,13 @@ export async function ExperienceList() {
               {yearsOf(job.period)}
               {"type" in job && job.type ? ` · ${job.type}` : null}
             </p>
-            <p className="metric-row">{job.impact}</p>
             <div className="mt-1 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
               <h3 className="font-display text-[18px] leading-snug text-ink">
                 {job.company} — {job.title}
               </h3>
               <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-faded">{job.period}</p>
             </div>
+            <p className="metric-row mt-2">{job.impact}</p>
             {"scope" in job && job.scope ? (
               <p className="mt-2 max-w-[68ch] font-mono text-[12px] leading-relaxed text-faded">{job.scope}</p>
             ) : null}

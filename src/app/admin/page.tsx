@@ -97,14 +97,24 @@ export default async function AdminHome({
           Save Draft cannot persist here. Set POSTGRES_URL or BLOB_READ_WRITE_TOKEN. Health probe: /api/cms-health.
         </p>
       ) : null}
-      {state.backfill.length ? (
-        <p className="mt-4 border-2 border-ink p-4 font-display text-[16px]" role="status">
-          Upgrade applied. Empty required evidence fields were filled from the TypeScript ledger (
-          {state.backfill.slice(0, 6).join(", ")}
-          {state.backfill.length > 6 ? "…" : ""}). Preview and Publish use the filled packet. Publish this revision to
-          persist the backfill in the store.
-        </p>
-      ) : null}
+      <div className="admin-dashboard-actions">
+        <Link href="/admin/profile" className="masthead-chip masthead-chip-primary">
+          Edit homepage and biography
+        </Link>
+        <form action={enablePreviewAction}>
+          <input type="hidden" name="returnTo" value="/admin" />
+          <button type="submit" className="masthead-chip" title="Opens the site in private preview mode.">
+            Preview draft
+          </button>
+        </form>
+        <Link href="/admin/diff" className="masthead-chip">
+          Diff
+        </Link>
+        <Link href="/admin/history" className="masthead-chip">
+          History
+        </Link>
+      </div>
+      <p className="mt-2 font-mono text-[12px] text-faded">Opens the site in private preview mode.</p>
       <ul className="mt-6 grid gap-3 sm:grid-cols-2">
         <li className="border-2 border-ink p-4">
           <p className="font-mono text-[12px] uppercase tracking-[0.14em] text-faded">Current published revision</p>
@@ -140,26 +150,21 @@ export default async function AdminHome({
       <p className="mt-6 max-w-[62ch] font-display text-[16px] leading-snug text-ink">
         Publishing updates the homepage, project pages, résumé, and sitemap from one revision.
       </p>
-      <p className="mt-3 max-w-[62ch] font-display text-[15px] leading-snug text-faded">{HERO_EVIDENCE_RULE}</p>
-      <p className="mt-4 flex flex-wrap gap-3">
-        <Link href="/admin/profile" className="masthead-chip masthead-chip-primary">
-          Edit homepage and biography
-        </Link>
-        <form action={enablePreviewAction}>
-          <input type="hidden" name="returnTo" value="/admin" />
-          <button type="submit" className="masthead-chip" title="Opens the site in private preview mode.">
-            Preview draft
-          </button>
-        </form>
-        <Link href="/admin/diff" className="masthead-chip">
-          Diff
-        </Link>
-        <Link href="/admin/history" className="masthead-chip">
-          History
-        </Link>
-      </p>
-      <p className="mt-2 font-mono text-[12px] text-faded">Opens the site in private preview mode.</p>
       {status.key === "dirty" ? <DiscardDraftButton /> : null}
+      {state.backfill.length ? (
+        <p className="admin-callout mt-6 font-display text-[16px]" role="status">
+          Upgrade applied. Empty required evidence fields were filled from the TypeScript ledger (
+          {state.backfill.slice(0, 6).join(", ")}
+          {state.backfill.length > 6 ? "…" : ""}). Preview and Publish use the filled packet. Publish this revision to
+          persist the backfill in the store.
+        </p>
+      ) : null}
+      <details className="mt-6">
+        <summary className="cursor-pointer font-mono text-[12px] uppercase tracking-[0.14em] text-faded">
+          Homepage proof rules
+        </summary>
+        <p className="mt-3 max-w-[62ch] font-display text-[15px] leading-snug text-faded">{HERO_EVIDENCE_RULE}</p>
+      </details>
       <form className="admin-form mt-8" method="get">
         <label>
           Search claims and projects
@@ -175,14 +180,14 @@ export default async function AdminHome({
         <ul className="mt-4 grid gap-2">
           {claimHits.map((claim) => (
             <li key={claim.id}>
-              <Link href="/admin/claims" className="text-book-blue underline">
+              <Link href={`/admin/claims#claim-${claim.id}`} className="text-book-blue underline">
                 Claim · {claim.id}
               </Link>
             </li>
           ))}
           {projectHits.map((project) => (
             <li key={project.slug}>
-              <Link href="/admin/projects" className="text-book-blue underline">
+              <Link href={`/admin/projects#project-${project.slug}`} className="text-book-blue underline">
                 Project · {project.slug}
               </Link>
             </li>

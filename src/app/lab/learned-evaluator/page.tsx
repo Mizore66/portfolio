@@ -39,7 +39,7 @@ export default async function LearnedEvaluatorPage() {
       </a>
       <div className="relative z-[1] mx-auto max-w-2xl px-3 py-8 sm:px-5 sm:py-12">
         <JsonLd data={labArticleJsonLd(article)} />
-        <div className="sheet mb-4">
+        <div className="sheet mb-4 paper-chrome-float">
           <RecruiterNav />
         </div>
         <main id="article">

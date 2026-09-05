@@ -41,7 +41,7 @@ export default async function ProjectsEditor({
           {doc.projects.map((project, index) => {
             const missing = projectSchemaReady(project);
             return (
-              <details key={project.slug} className="border-2 border-ink p-4" open={index < 2 && !project.archived}>
+              <details key={project.slug} id={`project-${project.slug}`} className="border-2 border-ink p-4" open={index < 2 && !project.archived}>
                 <summary className="cursor-pointer font-mono text-[12px] uppercase tracking-[0.14em]">
                   {project.slug}
                   {project.title ? ` · ${project.title}` : ""}

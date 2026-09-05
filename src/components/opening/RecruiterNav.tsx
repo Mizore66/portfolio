@@ -59,8 +59,18 @@ export function RecruiterNav({ stamp = "resume" }: { stamp?: "resume" | "c50" })
         moreButton.current?.focus();
       }
     }
+    function onPointer(e: PointerEvent) {
+      const node = moreButton.current?.closest(".nav-more");
+      if (node && e.target instanceof Node && !node.contains(e.target)) {
+        setMoreOpen(false);
+      }
+    }
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("pointerdown", onPointer);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("pointerdown", onPointer);
+    };
   }, []);
 
   function linkProps(href: string, match: string) {

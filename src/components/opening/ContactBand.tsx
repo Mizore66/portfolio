@@ -53,6 +53,15 @@ export async function ContactBand() {
           </ExternalLink>
         </li>
         <li>
+          <ExternalLink
+            className="masthead-chip"
+            href={`https://${resumeData.github}`}
+            rel="me noopener noreferrer"
+          >
+            GitHub
+          </ExternalLink>
+        </li>
+        <li>
           <a className="masthead-chip" href={BROADSHEET.printHref}>
             {BROADSHEET.resumeLabel}
             <span className="ml-2 font-normal normal-case tracking-normal text-faded">
