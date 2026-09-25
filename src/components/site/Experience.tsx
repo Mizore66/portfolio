@@ -7,8 +7,7 @@ export function Experience({ roles }: { roles: readonly Role[] }) {
   const earlier = roles.filter((r) => r.earlier);
   return (
     <section id="experience" className="section" aria-labelledby="experience-title">
-      <p className="kicker">Experience</p>
-      <h2 id="experience-title">Where I&apos;ve worked</h2>
+      <h2 id="experience-title">Experience</h2>
       {current.map((r) => (
         <RoleEntry key={r.id} role={r} />
       ))}

@@ -24,10 +24,11 @@ export function SiteHeader() {
             {item.label}
           </Link>
         ))}
-        <a href="/print-edition" className="site-resume">
-          Résumé
-        </a>
       </nav>
+      {/* Outside the section nav so it can share the name's row on phones. */}
+      <a href="/print-edition" className="site-resume">
+        Résumé
+      </a>
     </header>
   );
 }

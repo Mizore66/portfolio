@@ -7,12 +7,13 @@ export function LabTeaser() {
   const claim = getClaim(LAB_TEASER.claimId);
   return (
     <section id="lab" className="section" aria-labelledby="lab-title">
-      <p className="kicker">Lab</p>
       <h2 id="lab-title">The engine experiment</h2>
       <p>{LAB_TEASER.headline}</p>
       <p id={`claim-${claim.id}`} className="claim">
-        <span className="claim-value">{LAB_TEASER.meta}</span>
-        <span className="claim-type">{EVIDENCE_LABEL[claim.type]}</span>
+        <span className="claim-head">
+          <span className="claim-value">{LAB_TEASER.meta}</span>
+          <span className="claim-type">{EVIDENCE_LABEL[claim.type]}</span>
+        </span>
       </p>
       <p className="annotation">{LAB_TEASER.annotation}</p>
       <ul className="chips">

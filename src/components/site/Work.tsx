@@ -17,8 +17,7 @@ export function Work({ path }: { path: WorkPath | null }) {
   const shown = featured.length + archive.length;
   return (
     <section id="work" className="section" aria-labelledby="work-title">
-      <p className="kicker">Selected work</p>
-      <h2 id="work-title">Work</h2>
+      <h2 id="work-title">Selected work</h2>
       <ul className="chips" aria-label="Filter work">
         {FILTERS.map((f) => (
           <li key={f.label}>
@@ -36,7 +35,7 @@ export function Work({ path }: { path: WorkPath | null }) {
         {shown} projects shown
       </p>
       {featured.length ? (
-        <div className="cards">
+        <div className="featured">
           {featured.map((p) => (
             <ProjectCard key={p.slug} project={p} />
           ))}
@@ -50,9 +49,8 @@ export function Work({ path }: { path: WorkPath | null }) {
               const claim = p.result.claimId ? getClaim(p.result.claimId) : null;
               return (
                 <li key={p.slug} id={p.slug}>
-                  <Link href={`/projects/${p.slug}`}>
-                    {p.name} — {p.subtitle}
-                  </Link>{" "}
+                  <Link href={`/projects/${p.slug}`}>{p.name}</Link>{" "}
+                  <span className="archive-subtitle">{p.subtitle}</span>
                   <span className="card-result" id={claim ? `claim-${claim.id}` : undefined}>
                     <span className="claim-value">{p.result.line}</span>
                     {claim ? <span className="claim-type">{EVIDENCE_LABEL[claim.type]}</span> : null}

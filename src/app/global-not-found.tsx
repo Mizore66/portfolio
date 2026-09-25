@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import "./(legacy)/globals.css";
+import { SiteFooter } from "@/components/site/SiteFooter";
+import { SiteHeader } from "@/components/site/SiteHeader";
+import { FONT_VARIABLES } from "./(site)/fonts";
+import "./(site)/site.css";
 
 export const metadata: Metadata = {
   title: "Correction — A. T. Qumhiyeh",
@@ -9,17 +12,27 @@ export const metadata: Metadata = {
 
 export default function GlobalNotFound() {
   return (
-    <html lang="en-GB">
+    <html lang="en-GB" className={FONT_VARIABLES}>
       <body>
-        <main data-testid="correction" style={{ maxWidth: "40rem", margin: "4rem auto", padding: "0 1.25rem" }}>
-          <p>Correction</p>
-          <h1>The page you requested was a misprint.</h1>
-          <p>It never made the plate. The front page still holds the work.</p>
-          <p>
-            <a href="/">← Back to the front page</a> · <a href="/print-edition">Resume</a> ·{" "}
-            <a href="/#contact">Contact</a>
-          </p>
+        <SiteHeader />
+        <main id="main" className="reading not-found" data-testid="correction" aria-labelledby="not-found-title">
+          <h1 id="not-found-title" className="hero-statement">
+            The page you requested was a misprint.
+          </h1>
+          <p className="hero-subline">The front page still holds the work.</p>
+          <div className="hero-actions">
+            <a className="btn btn-primary" href="/">
+              Back to the front page
+            </a>
+            <a className="btn" href="/print-edition">
+              Résumé
+            </a>
+            <a className="btn" href="/#contact">
+              Contact
+            </a>
+          </div>
         </main>
+        <SiteFooter />
       </body>
     </html>
   );
