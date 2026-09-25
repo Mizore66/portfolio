@@ -35,8 +35,8 @@ describe("document integrity", () => {
   });
 
   it("gives the colophon a title that is not the homepage brand", () => {
-    const src = readFileSync(join(process.cwd(), "src/app/(legacy)/colophon/page.tsx"), "utf8");
-    expect(src).toMatch(/title: "How this paper was set — A\. T\. Qumhiyeh"/);
+    const src = readFileSync(join(process.cwd(), "src/app/(site)/colophon/page.tsx"), "utf8");
+    expect(src).toMatch(/title: "How this site was made · Anas Qumhiyeh"/);
     expect(src).not.toMatch(/Anas T\. Qumhiyeh — Opening Preparation/);
   });
 

@@ -5,7 +5,7 @@ import { FONT_VARIABLES } from "./(site)/fonts";
 import "./(site)/site.css";
 
 export const metadata: Metadata = {
-  title: "Correction — A. T. Qumhiyeh",
+  title: "Correction · Anas Qumhiyeh",
   description: "The page you requested was a misprint. The front page still holds the work.",
   robots: { index: false },
 };

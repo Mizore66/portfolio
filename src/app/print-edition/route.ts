@@ -5,7 +5,7 @@ import { buildResumePdf } from "@/lib/resume-pdf";
 export async function GET(request: Request) {
   const paper = new URL(request.url).searchParams.get("paper") === "a4" ? "a4" : "letter";
   const bytes = await buildResumePdf(paper);
-  const etag = `"${createHash("sha256").update(bytes).digest("hex").slice(0, 32)}"`;
+  const etag = `"resume-${createHash("sha256").update(bytes).digest("hex").slice(0, 32)}"`;
   const headers = {
     "Content-Type": "application/pdf",
     "Content-Disposition": 'inline; filename="Anas-Tarek-Qumhiyeh-resume.pdf"',

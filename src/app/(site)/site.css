@@ -318,6 +318,19 @@ button.gb-sq { cursor: pointer; }
 .elo-err line { stroke: var(--color-ink); stroke-width: 1.5; }
 .elo-chart figcaption { margin-top: .5rem; font-size: .85rem; color: var(--color-muted); }
 
+/* Colophon */
+.colophon-list { display: grid; gap: 1rem; margin: 0 0 1rem; }
+.colophon-list dt { font-weight: 500; }
+.colophon-list dd { margin: .15rem 0 0; font-size: 1.35rem; }
+.colophon-pieces { font-family: var(--font-chess); font-variant-emoji: text; }
+.swatches { list-style: none; padding: 0; margin: 0 0 1rem; display: grid; gap: .6rem; }
+.swatches li { display: flex; align-items: center; gap: .75rem; }
+.swatch { flex: 0 0 2rem; height: 2rem; border: 1px solid var(--color-rule); }
+.perft { border-collapse: collapse; margin: .5rem 0 0; font-size: .95rem; }
+.perft th, .perft td { text-align: left; padding: .35rem 1.25rem .35rem 0; border-bottom: 1px solid var(--color-rule); }
+.perft td { font-family: var(--font-mono); }
+.perft th { font-weight: 500; font-size: .85rem; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
