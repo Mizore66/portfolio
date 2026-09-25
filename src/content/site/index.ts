@@ -35,3 +35,17 @@ export function pathCounts(): Record<"all" | WorkPath, number> {
   const by = (c: WorkPath) => listed.filter((p) => p.category === c).length;
   return { all: listed.length, ml: by("ml"), product: by("product"), devtools: by("devtools") };
 }
+
+export function projectBySlug(slug: string): Project | undefined {
+  return PROJECTS.find((p) => p.slug === slug);
+}
+
+/** Previous and next in PROJECTS order (featured, archive, lab); no wrap-around. */
+export function adjacentProjects(slug: string): { prev?: Project; next?: Project } {
+  const i = PROJECTS.findIndex((p) => p.slug === slug);
+  return { prev: i > 0 ? PROJECTS[i - 1] : undefined, next: i >= 0 ? PROJECTS[i + 1] : undefined };
+}
+
+export function projectClaims(project: Project): Claim[] {
+  return project.caseStudy.evidence.map(getClaim);
+}

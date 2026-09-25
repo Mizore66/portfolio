@@ -1,11 +1,13 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { CLAIMS } from "./claims";
 import { EDUCATION } from "./education";
 import { IDENTITY } from "./identity";
-import { featuredProjects, getClaim, parsePath, pathCounts, workFor } from "./index";
+import { adjacentProjects, featuredProjects, getClaim, parsePath, pathCounts, projectBySlug, projectClaims, workFor } from "./index";
 import { LAB_TEASER } from "./lab";
 import { FEATURED_SLUGS, PROJECTS } from "./projects";
-import { ROLES } from "./roles";
+import { RETRIEVAL_SPLIT, ROLES } from "./roles";
 import { SKILLS } from "./skills";
 
 const LEGACY_SLUGS = [
@@ -104,5 +106,74 @@ describe("en-GB spelling", () => {
       "",
     );
     expect(text).not.toMatch(/\b(behavior|catalog|authorization|organization|optimize|analyze|color)\b/i);
+  });
+});
+
+describe("case studies", () => {
+  it("gives every project a case study with real evidence", () => {
+    for (const p of PROJECTS) {
+      expect(p.caseStudy.evidence.length, p.slug).toBeGreaterThan(0);
+      for (const id of p.caseStudy.evidence) expect(() => getClaim(id), `${p.slug}:${id}`).not.toThrow();
+      expect(p.caseStudy.evidence, p.slug).toContain(p.result.claimId);
+    }
+  });
+  it("carries the lines the brief says must appear", () => {
+    expect(JSON.stringify(projectBySlug("gemini-teleportal")!.caseStudy)).toContain(
+      "Built together with Kai; the repository is under his account.",
+    );
+    expect(projectBySlug("multi-agent-graphrag")!.caseStudy.notes).toContain(RETRIEVAL_SPLIT);
+    expect(projectBySlug("slm-distillation-engine")!.caseStudy.notes!.join(" ")).toMatch(/Monash/);
+    expect(projectBySlug("mirrorfi")!.caseStudy.team).toMatch(/team of 6/);
+  });
+  it("drops the cut and corrected lines (brief §3.9, D11)", () => {
+    const text = JSON.stringify(PROJECTS);
+    for (const cut of [
+      /No live host/,
+      /remaining public artifact/,
+      /auto-rebalanc/i,
+      /architecture, implementation, and demo/,
+      /withdrawn/,
+      /not filed|unfiled/i,
+    ])
+      expect(text).not.toMatch(cut);
+  });
+  it("marks only the owner-pending case studies as drafts", () => {
+    expect(PROJECTS.filter((p) => p.caseStudy.draft).map((p) => p.slug)).toEqual(["faultline", "gemini-teleportal"]);
+  });
+  it("points media at files that exist, with alt text and captions", () => {
+    for (const p of PROJECTS)
+      for (const m of p.media ?? []) {
+        expect(existsSync(join(process.cwd(), "public", m.src)), m.src).toBe(true);
+        expect(m.alt.length, m.src).toBeGreaterThan(20);
+        expect(m.caption.length, m.src).toBeGreaterThan(0);
+      }
+    for (const slug of FEATURED_SLUGS) expect(projectBySlug(slug)!.media?.length, slug).toBeGreaterThan(0);
+  });
+  it("links each architecture branch to a real path node", () => {
+    for (const p of PROJECTS) {
+      const a = p.architecture;
+      if (!a) continue;
+      expect(a.path.length, p.slug).toBeGreaterThan(0);
+      for (const b of a.branches ?? []) {
+        const from = b.from ?? a.path.length - 1;
+        expect(from >= 0 && from < a.path.length, `${p.slug}:${b.label}`).toBe(true);
+      }
+    }
+  });
+});
+
+describe("project navigation", () => {
+  it("finds projects by slug and returns undefined for unknown slugs", () => {
+    expect(projectBySlug("faultline")?.name).toBe("FaultLine");
+    expect(projectBySlug("nope")).toBeUndefined();
+  });
+  it("walks previous and next in list order without wrapping", () => {
+    expect(adjacentProjects("faultline")).toEqual({ prev: undefined, next: PROJECTS[1] });
+    const last = PROJECTS[PROJECTS.length - 1];
+    expect(adjacentProjects(last.slug).next).toBeUndefined();
+    expect(adjacentProjects(last.slug).prev).toBe(PROJECTS[PROJECTS.length - 2]);
+  });
+  it("resolves a project's evidence claims in order", () => {
+    expect(projectClaims(projectBySlug("veridian")!).map((c) => c.id)).toEqual(["veridianEmissions", "veridianUptime"]);
   });
 });
