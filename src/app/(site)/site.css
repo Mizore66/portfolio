@@ -203,6 +203,76 @@ a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; 
 .case-pager-next { text-align: right; align-items: flex-end; }
 .case-pager-label { font-size: .85rem; font-weight: 400; color: var(--color-muted); }
 
+/* Analysis board (live) */
+.gb { display: flex; flex-direction: column; gap: .75rem; width: 100%; max-width: 360px; }
+.gb-wide { max-width: 520px; }
+.gb-frame { display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: 6px; }
+.gb-board { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); aspect-ratio: 1; border: 1px solid var(--color-ink); }
+.gb-sq { position: relative; display: flex; align-items: center; justify-content: center; padding: 0; border: 0; font: inherit; line-height: 1; aspect-ratio: 1; }
+button.gb-sq { cursor: pointer; }
+.gb-light { background: var(--color-board-light); }
+.gb-dark { background: var(--color-board-dark); }
+.gb-sq:focus-visible { outline: 3px solid var(--color-annotation); outline-offset: -3px; z-index: 1; }
+.gb-selected { box-shadow: inset 0 0 0 3px var(--color-annotation); }
+.gb-target::after { content: ""; position: absolute; width: 26%; height: 26%; border-radius: 50%; background: var(--color-annotation); opacity: .7; }
+.gb-piece { font-family: var(--font-chess); font-size: clamp(1.1rem, 5.4vw, 2rem); font-variant-emoji: text; pointer-events: none; }
+.gb-wide .gb-piece { font-size: clamp(1.1rem, 6vw, 2.75rem); }
+.gb-white { color: #ffffff; -webkit-text-stroke: 1px var(--color-ink); paint-order: stroke fill; }
+.gb-black { color: var(--color-ink); }
+.gb-evalbar { position: relative; background: #000000; border: 1px solid var(--color-ink); overflow: hidden; }
+.gb-evalbar-white { position: absolute; left: 0; right: 0; bottom: 0; background: #ffffff; transition: height .4s ease; }
+.gb-start { display: flex; flex-direction: column; align-items: flex-start; gap: .25rem; }
+.gb-start .note { margin: 0; font-size: .85rem; }
+.gb-panel { display: flex; flex-direction: column; gap: .5rem; }
+.gb-toggle { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0; padding: 0; border: 0; }
+.gb-toggle label { cursor: pointer; font-size: .9rem; }
+.gb-toggle label:has(input:focus-visible) { outline: 3px solid var(--color-annotation); outline-offset: 2px; }
+.gb-status { margin: 0; font-weight: 500; }
+.gb-stats { display: flex; gap: 1.5rem; margin: 0; }
+.gb-stats dt { font-size: .8rem; color: var(--color-muted); }
+.gb-stats dd { margin: 0; font-family: var(--font-mono); }
+.gb-pv { margin: 0; min-height: 1.6em; font-family: var(--font-mono); font-size: .85rem; overflow-wrap: anywhere; }
+
+/* Career eval graph */
+.career-dek { margin-bottom: .75rem; }
+.career-legend { display: flex; flex-wrap: wrap; gap: .25rem 1.25rem; font-size: .85rem; color: var(--color-muted); margin-bottom: .25rem; }
+.career-legend span { display: inline-flex; align-items: center; gap: .4rem; }
+.career-plot { position: relative; width: 100%; }
+.career-plot svg { display: block; overflow: visible; }
+.cg-grid { stroke: var(--color-rule); stroke-width: 1; }
+.cg-zero { stroke: var(--color-board-dark); stroke-width: 1; }
+.cg-tick { font-family: var(--font-mono); font-size: 11px; fill: var(--color-muted); }
+.cg-label { font-family: var(--font-mono); font-size: 11px; fill: var(--color-muted); stroke: var(--color-paper); stroke-width: 3px; paint-order: stroke; }
+.cg-role-label { font-family: var(--font-sans); font-size: 11px; fill: var(--color-muted); stroke: var(--color-paper); stroke-width: 3px; paint-order: stroke; stroke-linejoin: round; }
+.cg-span { stroke: var(--color-ink); stroke-width: 4; stroke-linecap: round; }
+.cg-dot { fill: var(--color-board-dark); stroke: var(--color-paper); stroke-width: 2; }
+.cg-edu { fill: var(--color-ink); stroke: var(--color-paper); stroke-width: 2; }
+.cg-hit { fill: transparent; }
+.cg-mark { cursor: pointer; outline: none; }
+.cg-mark:focus-visible .cg-hit { stroke: var(--color-annotation); stroke-width: 2; }
+.cg-active .cg-span { stroke: var(--color-annotation); }
+.cg-active .cg-dot, .cg-active .cg-edu { fill: var(--color-annotation); }
+.cg-tip { position: absolute; display: flex; flex-direction: column; width: 190px; padding: .4rem .6rem; background: var(--color-paper); border: 1px solid var(--color-rule); box-shadow: 0 2px 8px rgb(20 24 29 / .08); font-size: .8rem; pointer-events: none; }
+.cg-tip span { color: var(--color-muted); font-family: var(--font-mono); font-size: .75rem; }
+.career-table { margin-top: .75rem; font-size: .9rem; }
+.career-table summary { display: inline-flex; align-items: center; min-height: 44px; cursor: pointer; color: var(--color-muted); text-decoration: underline; text-underline-offset: 3px; }
+.career-table table { width: 100%; border-collapse: collapse; margin-top: .5rem; }
+.career-table th, .career-table td { text-align: left; padding: .35rem .5rem .35rem 0; border-bottom: 1px solid var(--color-rule); }
+.career-table th { font-weight: 500; font-size: .85rem; }
+.career-table td:nth-child(2), .career-table td:nth-child(4) { font-family: var(--font-mono); font-size: .85rem; }
+.board-caption { margin: 0; }
+
+/* Mobile board strip */
+.mobile-strip { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: .75rem; min-height: 44px; padding: 0 var(--gutter); background: var(--color-paper); border-bottom: 1px solid var(--color-rule); text-decoration: none; font-size: .85rem; }
+.mobile-strip-bar { position: relative; flex: 0 0 64px; height: 10px; background: #000000; border: 1px solid var(--color-ink); }
+.mobile-strip-bar span { position: absolute; inset: 0 auto 0 0; background: #ffffff; }
+.mobile-strip-progress { position: absolute; left: 0; bottom: -1px; height: 2px; width: 100%; background: var(--color-annotation); transform-origin: left; transform: scaleX(0); }
+@supports (animation-timeline: scroll()) {
+  .mobile-strip-progress { animation: strip-progress linear both; animation-timeline: scroll(root); }
+}
+@keyframes strip-progress { to { transform: scaleX(1); } }
+@media (min-width: 1024px) { .mobile-strip { display: none; } }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }

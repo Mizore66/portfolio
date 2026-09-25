@@ -322,7 +322,8 @@ export const GAME: readonly GameNode[] = [
     san: "d6",
     moveNumber: 5,
     color: "b",
-    sym: "",
+    // Informant "?": after 5…d6, 6.dxc5 wins the bishop for a pawn (the engine agrees). Owner review.
+    sym: "?",
     kind: "Project",
     title: "The Closed Centre",
     fact: projectFact("multi-agent-graphrag"),

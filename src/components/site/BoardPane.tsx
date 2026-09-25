@@ -1,27 +1,30 @@
+"use client";
+
 import Link from "next/link";
-import { LINE_NAME, LINE_PLIES, LINE_SAN } from "@/content/site/line";
-import { StaticBoard } from "./StaticBoard";
+import { AnalysisBoard } from "@/components/game/AnalysisBoard";
+import { useFrontGame } from "@/components/game/FrontGame";
 
-/** "1. e4 e5 2. Nf3 Nc6" → ["1. e4 e5", "2. Nf3 Nc6"], so a move never breaks across lines. */
-const MOVES = LINE_SAN.split(/ (?=\d+\. )/);
-
-/** Phase 1: static. Phase 3 replaces the link with an in-place "Start engine". */
-export function BoardPane() {
+/** The front page's board pane: the current position until the reader picks another, the engine only on request. */
+export function BoardPane({ lineName, moves }: { lineName: string; moves: string[] }) {
+  const { stop } = useFrontGame();
   return (
     <aside id="the-game" className="board-pane" aria-labelledby="board-title">
       <h2 id="board-title" className="board-title">
         Analysis board
       </h2>
-      <StaticBoard plies={LINE_PLIES} label="Position after 10…Bg4: the Deriv chapter, the current move." />
-      <p className="note">{LINE_NAME}</p>
-      <ol className="moves" aria-label="Moves">
-        {MOVES.map((m) => (
+      <p className="board-caption">
+        <span className="claim-value">{stop.move}</span> {stop.chapter}
+      </p>
+      <AnalysisBoard basePlies={stop.plies} positionKey={stop.nodeId} label={`Position after ${stop.move}: ${stop.chapter}`} />
+      <p className="note">{lineName}</p>
+      <ol className="moves" aria-label="The mainline">
+        {moves.map((m) => (
           <li key={m}>{m}</li>
         ))}
       </ol>
-      <p className="annotation">The career, annotated move by move. The latest move is Deriv.</p>
-      <Link className="btn" href="/opening-preparation">
-        Play the annotated career
+      <p className="annotation">The career, annotated move by move. The latest move is FaultLine; the deepest White move is Deriv.</p>
+      <Link className="btn" href={`/opening-preparation?move=${stop.nodeId}`}>
+        Read this move on the scoresheet
       </Link>
     </aside>
   );

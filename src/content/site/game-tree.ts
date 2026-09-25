@@ -1,7 +1,8 @@
-import { positionAfter, type Color } from "@/lib/chess/replay";
-import { expandIfCastle } from "@/lib/chess/play";
+import { replayPlies } from "@/lib/game/plies";
 import type { Ply } from "@/lib/opening/types";
 import { DEFAULT_MOVE, GAME, type GameNode } from "./game";
+
+export { replayPlies, sideToMoveAfter } from "@/lib/game/plies";
 
 const BY_ID = new Map(GAME.map((n) => [n.id, n]));
 
@@ -48,19 +49,8 @@ export function enginePliesTo(id: string): Ply[] {
   return pathTo(id).flatMap((n) => (n.uci ? [uciToPly(n.uci)] : []));
 }
 
-/** Replay plies for the piece list (castling adds the rook ply). */
-export function replayPlies(engine: readonly Ply[]): Ply[] {
-  const out: Ply[] = [];
-  for (const ply of engine) out.push(...expandIfCastle(positionAfter(out), ply));
-  return out;
-}
-
 export function replayPliesTo(id: string): Ply[] {
   return replayPlies(enginePliesTo(id));
-}
-
-export function sideToMoveAfter(engineCount: number): Color {
-  return engineCount % 2 === 0 ? "w" : "b";
 }
 
 /** "1. e4", "1…e5", "10. Nbxd2". */
