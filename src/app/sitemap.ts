@@ -1,45 +1,23 @@
 import type { MetadataRoute } from "next";
-import { LAB_ARTICLE } from "@/content/learned-evaluator";
-import { getPublishedDocument } from "@/lib/cms/store";
+import { LAB_ARTICLE } from "@/content/site/lab";
 import { PROJECTS } from "@/content/site/projects";
-import { parseFiledDate } from "@/lib/filed";
+import { CONTENT_UPDATED } from "@/content/site/updated";
 import { SITE_URL } from "@/lib/site";
 
-const LAB_FILED = parseFiledDate(LAB_ARTICLE.dateModified ?? LAB_ARTICLE.datePublished) ?? new Date("2026-09-03T00:00:00.000Z");
+const day = (d: string) => new Date(d.length === 7 ? `${d}-01T00:00:00Z` : `${d}T00:00:00Z`);
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const published = await getPublishedDocument();
-  const revised = parseFiledDate(published.publishedAt) ?? new Date(published.publishedAt);
+/** Brief §2.6: priorities fixed, lastmod from content dates. */
+export default function sitemap(): MetadataRoute.Sitemap {
   return [
-    {
-      url: SITE_URL,
-      lastModified: revised,
-      changeFrequency: "weekly",
-      priority: 1,
-    },
-    {
-      url: `${SITE_URL}/opening-preparation`,
-      lastModified: revised,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/colophon`,
-      lastModified: revised,
-      changeFrequency: "monthly",
-      priority: 0.3,
-    },
-    {
-      url: `${SITE_URL}/lab/learned-evaluator`,
-      lastModified: LAB_FILED,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    ...PROJECTS.map((project) => ({
-      url: `${SITE_URL}/projects/${project.slug}`,
-      lastModified: new Date(`${project.date}-01T00:00:00.000Z`),
-      changeFrequency: "monthly" as const,
+    { url: SITE_URL, lastModified: day(CONTENT_UPDATED), changeFrequency: "monthly", priority: 1 },
+    { url: `${SITE_URL}/opening-preparation`, lastModified: day(CONTENT_UPDATED), changeFrequency: "monthly", priority: 0.8 },
+    { url: `${SITE_URL}/lab/learned-evaluator`, lastModified: day(LAB_ARTICLE.dateModified), changeFrequency: "yearly", priority: 0.7 },
+    ...PROJECTS.map((p) => ({
+      url: `${SITE_URL}/projects/${p.slug}`,
+      lastModified: day(p.date),
+      changeFrequency: "yearly" as const,
       priority: 0.6,
     })),
+    { url: `${SITE_URL}/colophon`, lastModified: day(CONTENT_UPDATED), changeFrequency: "yearly", priority: 0.3 },
   ];
 }

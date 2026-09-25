@@ -1,6 +1,7 @@
 import { join } from "node:path";
 import PDFDocument from "pdfkit";
 import { resumeData } from "@/content/site/resume";
+import { CONTENT_UPDATED } from "@/content/site/updated";
 
 /**
  * One-page tagged résumé (brief §4.2). Embedded, subset Schibsted Grotesk so "−", "→", "±" and "é"
@@ -11,7 +12,7 @@ const PAPER = { letter: [612, 792], a4: [595, 842] } as const;
 export type Paper = keyof typeof PAPER;
 
 /** Fixed so identical content gives identical bytes (and a stable ETag). */
-const CONTENT_DATE = new Date("2026-09-25T00:00:00Z");
+const CONTENT_DATE = new Date(`${CONTENT_UPDATED}T00:00:00Z`);
 
 const FONT_DIR = join(process.cwd(), "src/fonts/schibsted-grotesk");
 const REGULAR = join(FONT_DIR, "SchibstedGrotesk-Regular.ttf");

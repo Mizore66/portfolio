@@ -28,7 +28,7 @@ export function contentSecurityPolicy(
     // React `style={{}}` becomes a style attribute. A style-src nonce would ignore
     // 'unsafe-inline' (CSP3) and break those attributes.
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob: https://*.public.blob.vercel-storage.com https://*.blob.vercel-storage.com",
+    "img-src 'self' data: blob:",
     "font-src 'self' data:",
     "connect-src 'self' https://vitals.vercel-insights.com https://va.vercel-scripts.com",
     "worker-src 'self' blob:",

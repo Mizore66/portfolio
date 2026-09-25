@@ -286,7 +286,8 @@ button.gb-sq { cursor: pointer; }
 }
 .chapter { padding: 1.75rem 0; border-top: 1px solid var(--color-rule); scroll-margin-top: 1rem; }
 .chapter-title { font-size: 1.3rem; line-height: 1.25; font-weight: 500; margin: .35rem 0 .75rem; }
-.chapter-title a { text-decoration: none; }
+.chapter-title a { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; }
+.chapter-title { margin-top: 0; margin-bottom: .35rem; }
 .chapter-title a:hover { text-decoration: underline; }
 .chapter-variation { margin-left: clamp(.75rem, 3vw, 2rem); padding-left: 1rem; border-top: 0; border-left: 2px solid var(--color-rule); padding-block: 1rem; }
 .chapter-variation .chapter-title { font-size: 1.1rem; }
