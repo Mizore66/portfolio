@@ -6,6 +6,11 @@ const nextConfig: NextConfig = {
   experimental: {
     globalNotFound: true,
   },
+  // The résumé PDF reads its fonts from disk at request time (brief §4.2).
+  serverExternalPackages: ["pdfkit"],
+  outputFileTracingIncludes: {
+    "/print-edition": ["./src/fonts/schibsted-grotesk/*.ttf"],
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60 * 60 * 24 * 14,
