@@ -67,9 +67,9 @@ export function AnalysisBoard({ basePlies, positionKey, label, initialMode = "ha
   const [started, setStarted] = useState(false);
   const [mode, setMode] = useState<EvalMode>(initialMode);
   const [net, setNet] = useState<NnueNet | null>(null);
-  const [netStatus, setNetStatus] = useState<Status>("idle");
+  const [netFailed, setNetFailed] = useState(false);
   const [info, setInfo] = useState<SearchInfo | null>(null);
-  const [thinking, setThinking] = useState(false);
+  const [finishedSearch, setFinishedSearch] = useState<string | null>(null);
   const [engineDown, setEngineDown] = useState(false);
   const [visible, setVisible] = useState(true);
   const [cursor, setCursor] = useState("e2");
@@ -78,13 +78,15 @@ export function AnalysisBoard({ basePlies, positionKey, label, initialMode = "ha
   const [announce, setAnnounce] = useState("");
   const squareRefs = useRef(new Map<string, HTMLButtonElement>());
 
-  // A new chapter resets the board to its position.
-  useEffect(() => {
+  // A new chapter resets the board to its position (adjusted during render, not in an effect).
+  const [shownKey, setShownKey] = useState(positionKey);
+  if (shownKey !== positionKey) {
+    setShownKey(positionKey);
     setExtra([]);
     setSelected(null);
     setAwaitingReply(false);
     setInfo(null);
-  }, [positionKey]);
+  }
 
   const enginePlies = useMemo(() => [...basePlies, ...extra], [basePlies, extra]);
   const replay = useMemo(() => replayPlies(enginePlies), [enginePlies]);
@@ -111,22 +113,20 @@ export function AnalysisBoard({ basePlies, positionKey, label, initialMode = "ha
 
   // Weights only when Learned is chosen after the engine starts.
   useEffect(() => {
-    if (!started || mode !== "learned" || net) return;
+    if (!started || mode !== "learned" || net || netFailed) return;
     let cancelled = false;
-    setNetStatus("loading");
     loadLearnedNet()
       .then((n) => {
-        if (cancelled) return;
-        setNet(n);
-        setNetStatus("ready");
+        if (!cancelled) setNet(n);
       })
-      .catch(() => !cancelled && setNetStatus("error"));
+      .catch(() => !cancelled && setNetFailed(true));
     return () => {
       cancelled = true;
     };
-  }, [started, mode, net]);
+  }, [started, mode, net, netFailed]);
 
   const effectiveMode: EvalMode = mode === "learned" && net ? "learned" : "handcrafted";
+  const netStatus: Status = net ? "ready" : netFailed ? "error" : started && mode === "learned" ? "loading" : "idle";
   const waitingForNet = mode === "learned" && !net && netStatus === "loading";
 
   const play = useCallback(
@@ -138,10 +138,13 @@ export function AnalysisBoard({ basePlies, positionKey, label, initialMode = "ha
     [pieces],
   );
 
-  // One bounded search per position; the engine replies after the visitor's move.
+  // One bounded search per position; the engine replies after the visitor's move. "Thinking" is
+  // derived: true until the search for the current inputs reports done.
+  const searchKey = `${enginePlies.length}:${replay.map((p) => p.from + p.to).join("")}:${effectiveMode}:${net ? 1 : 0}:${awaitingReply ? 1 : 0}`;
+  const searching = started && visible && !outcome && !waitingForNet;
+  const thinking = searching && finishedSearch !== searchKey;
   useEffect(() => {
-    if (!started || !visible || outcome || waitingForNet) return;
-    setThinking(true);
+    if (!searching) return;
     let latest: SearchInfo | null = null;
     const cancel = startSearch({ plies: replay, side, mode: effectiveMode, net }, (e) => {
       if (e.type === "info") {
@@ -149,7 +152,7 @@ export function AnalysisBoard({ basePlies, positionKey, label, initialMode = "ha
         setInfo(latest);
         return;
       }
-      setThinking(false);
+      setFinishedSearch(searchKey);
       if (e.type === "error") {
         setEngineDown(true);
         return;
@@ -159,12 +162,9 @@ export function AnalysisBoard({ basePlies, positionKey, label, initialMode = "ha
         play(latest.best, "engine");
       }
     });
-    return () => {
-      cancel();
-      setThinking(false);
-    };
+    return cancel;
     // replay identity changes with every move; the rest are the search inputs.
-  }, [started, visible, outcome, waitingForNet, replay, side, effectiveMode, net, awaitingReply, play]);
+  }, [searching, searchKey, replay, side, effectiveMode, net, awaitingReply, play]);
 
   async function start() {
     setStarted(true);
@@ -303,7 +303,10 @@ export function AnalysisBoard({ basePlies, positionKey, label, initialMode = "ha
             <legend className="sr-only">Evaluation</legend>
             {(["handcrafted", "learned"] as const).map((m) => (
               <label key={m} className={mode === m ? "chip chip-active" : "chip"}>
-                <input type="radio" name={`eval-${label}`} value={m} checked={mode === m} onChange={() => setMode(m)} className="sr-only" />
+                <input type="radio" name={`eval-${label}`} value={m} checked={mode === m} onChange={() => {
+                    setMode(m);
+                    if (m === "learned") setNetFailed(false);
+                  }} className="sr-only" />
                 {m === "handcrafted" ? "Handcrafted (PeSTO)" : "Learned (NNUE)"}
               </label>
             ))}

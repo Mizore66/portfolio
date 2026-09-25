@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { FONT_VARIABLES } from "./(site)/fonts";
@@ -21,15 +22,15 @@ export default function GlobalNotFound() {
           </h1>
           <p className="hero-subline">The front page still holds the work.</p>
           <div className="hero-actions">
-            <a className="btn btn-primary" href="/">
+            <Link className="btn btn-primary" href="/">
               Back to the front page
-            </a>
+            </Link>
             <a className="btn" href="/print-edition">
               Résumé
             </a>
-            <a className="btn" href="/#contact">
+            <Link className="btn" href="/#contact">
               Contact
-            </a>
+            </Link>
           </div>
         </main>
         <SiteFooter />
