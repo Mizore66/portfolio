@@ -29,7 +29,7 @@ a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; 
 :where(.reading, .board-pane) p { margin: 0 0 1rem; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .skip-link { position: absolute; left: -9999px; }
-.skip-link:focus { left: 1rem; top: 1rem; background: var(--color-paper); padding: .5rem .75rem; z-index: 10; }
+.skip-link:focus { left: 1rem; top: 1rem; display: inline-flex; align-items: center; min-height: 44px; background: var(--color-paper); padding: 0 .75rem; z-index: 10; }
 
 /* Header: name + Résumé share the first row on phones; the section links take the second. */
 .site-header { display: flex; flex-wrap: wrap; align-items: center; gap: 0 1.5rem; padding: .25rem var(--page-inline); border-bottom: 1px solid var(--color-rule); }
@@ -92,14 +92,16 @@ a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; 
 @media (min-width: 768px) { .card { grid-template-columns: 10rem minmax(0, 1fr); } }
 .card-meta { display: flex; flex-wrap: wrap; gap: 0 1rem; font-family: var(--font-mono); font-size: .8rem; line-height: 1.7; color: var(--color-muted); margin: .3rem 0 0; }
 @media (min-width: 768px) { .card-meta { flex-direction: column; } }
-.card-body { display: flex; flex-direction: column; align-items: flex-start; gap: .6rem; }
+.card-body { display: flex; flex-direction: column; align-items: flex-start; gap: .5rem; }
 .card-title { font-size: 1.35rem; line-height: 1.25; font-weight: 500; margin: 0; }
+/* 44px touch target on the entry's main link without changing the title's size. */
+.card-title a, .archive li > a { display: inline-flex; align-items: center; min-height: 44px; }
 .card-subtitle { display: block; font-size: 1rem; font-weight: 400; color: var(--color-muted); }
 .card-purpose, .card-result { margin: 0; }
 .card-source { font-size: .9rem; display: inline-flex; align-items: center; min-height: 44px; }
 .archive-heading { font-size: 1.15rem; font-weight: 500; margin: 2.5rem 0 .5rem; }
 .archive { margin: 0; padding: 0; list-style: none; }
-.archive li { padding: .85rem 0; }
+.archive li { padding: .5rem 0 .75rem; }
 .archive li + li { border-top: 1px solid var(--color-rule); }
 .archive-subtitle { color: var(--color-muted); }
 .archive .card-result { margin-top: .15rem; }
