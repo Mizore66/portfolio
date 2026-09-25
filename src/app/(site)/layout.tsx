@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
+import { AnalyticsEvents } from "@/components/site/AnalyticsEvents";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteJsonLd } from "@/components/site/SiteJsonLd";
@@ -34,6 +35,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         <SiteJsonLd data={personSchema()} />
         <SiteJsonLd data={websiteSchema()} />
         {process.env.VERCEL ? <Analytics /> : null}
+        <AnalyticsEvents />
       </body>
     </html>
   );

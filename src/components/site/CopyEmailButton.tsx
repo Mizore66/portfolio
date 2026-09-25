@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@vercel/analytics";
 import { useEffect, useRef, useState } from "react";
 
 type CopyState = "idle" | "copied" | "failed";
@@ -24,6 +25,7 @@ export function CopyEmailButton({ email }: { email: string }) {
         try {
           await navigator.clipboard.writeText(email);
           setState("copied");
+          track("copy_email");
         } catch {
           setState("failed");
         }
