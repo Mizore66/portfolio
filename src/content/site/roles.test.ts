@@ -16,8 +16,9 @@ describe("roles", () => {
     ]);
   });
   it("is sorted newest first with exactly one current role", () => {
-    const starts = ROLES.map((r) => r.start);
-    expect([...starts].sort().reverse()).toEqual(starts);
+    // Ordered by end date: Western Digital and Setel both end in Dec 2025, and the brief lists Western Digital first.
+    const ends = ROLES.map((r) => r.end ?? "9999-12");
+    expect([...ends].sort().reverse()).toEqual(ends);
     expect(ROLES.filter((r) => r.end === null).map((r) => r.id)).toEqual(["deriv"]);
   });
   it("only references claims that exist", () => {
