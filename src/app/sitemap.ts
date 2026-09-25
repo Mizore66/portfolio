@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { LAB_ARTICLE } from "@/content/learned-evaluator";
 import { getPublishedDocument } from "@/lib/cms/store";
-import { resumeData } from "@/lib/data";
+import { PROJECTS } from "@/content/site/projects";
 import { parseFiledDate } from "@/lib/filed";
 import { SITE_URL } from "@/lib/site";
 
@@ -35,28 +35,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.7,
     },
-    ...resumeData.projects.flatMap((project) => {
-      const copy = published.projects.find((row) => row.slug === project.slug);
-      if (copy?.archived) return [];
-      return [
-        {
-          url: `${SITE_URL}/projects/${project.slug}`,
-          lastModified: parseFiledDate(project.date) ?? revised,
-          changeFrequency: "monthly" as const,
-          priority: 0.6,
-        },
-      ];
-    }),
-    ...published.projects.flatMap((project) => {
-      if (resumeData.projects.some((row) => row.slug === project.slug) || project.archived) return [];
-      return [
-        {
-          url: `${SITE_URL}/projects/${project.slug}`,
-          lastModified: parseFiledDate(project.date) ?? revised,
-          changeFrequency: "monthly" as const,
-          priority: 0.5,
-        },
-      ];
-    }),
+    ...PROJECTS.map((project) => ({
+      url: `${SITE_URL}/projects/${project.slug}`,
+      lastModified: new Date(`${project.date}-01T00:00:00.000Z`),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    })),
   ];
 }

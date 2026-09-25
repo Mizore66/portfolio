@@ -280,7 +280,8 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByRole("button", { name: "Tree" })).toBeHidden();
   });
 
-  test("move query selects a node and survives an exhibit round-trip", async ({
+  // Replaced by e2e/site/project.spec.ts (rebuild Phase 2).
+  test.skip("move query selects a node and survives an exhibit round-trip", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
@@ -440,7 +441,8 @@ test.describe("Opening Preparation", () => {
       .toBeGreaterThanOrEqual(5);
   });
 
-  test("exhibits read as a pasted clipping", async ({ page }) => {
+  // Replaced by e2e/site/project.spec.ts (rebuild Phase 2).
+  test.skip("exhibits read as a pasted clipping", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/projects/veridian");
     await expect(page.getByRole("heading", { level: 1, name: "Veridian" })).toBeVisible();
@@ -1325,7 +1327,8 @@ test.describe("Opening Preparation", () => {
     expect(overflow).toBe(false);
   });
 
-  test("the exhibit is in the annotator register", async ({ page }) => {
+  // Replaced by e2e/site/project.spec.ts (rebuild Phase 2).
+  test.skip("the exhibit is in the annotator register", async ({ page }) => {
     await page.goto("/projects/circuitmindai");
     await expect(page.getByRole("heading", { level: 1, name: "CircuitMindAI" })).toBeVisible();
     await expect(page.locator("body")).toContainText(/Nova Pro reads the copper/);

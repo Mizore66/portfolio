@@ -76,7 +76,7 @@ describe("document integrity", () => {
     expect(blob).toMatch(/jQuery/);
     expect(blob).toMatch(/Oracle Database/);
     expect(blob).toMatch(/NestJS/);
-    const exhibit = readFileSync(join(process.cwd(), "src/app/(legacy)/projects/[slug]/page.tsx"), "utf8");
+    const exhibit = readFileSync(join(process.cwd(), "src/app/(site)/projects/[slug]/page.tsx"), "utf8");
     expect(exhibit).not.toMatch(/drop-cap/);
   });
 

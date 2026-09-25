@@ -104,6 +104,8 @@ export type Project = {
   caseStudy: CaseStudy;
   architecture?: Architecture;
   media?: readonly Media[];
+  /** Index into `media` for the front-page thumbnail (default 0). */
+  thumbnail?: number;
 };
 
 /**

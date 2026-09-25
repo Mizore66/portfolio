@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { personSchema, serializeJsonLd, websiteSchema } from "./schema";
+import { projectBySlug } from "./index";
+import { personSchema, projectSchema, serializeJsonLd, websiteSchema } from "./schema";
 
 describe("JSON-LD", () => {
   it("describes the person with current role, phone and alumni", () => {
@@ -23,5 +24,20 @@ describe("JSON-LD", () => {
     const out = serializeJsonLd({ x: "</script><script>alert(1)</script>" });
     expect(out).not.toContain("<");
     expect(JSON.parse(out)).toEqual({ x: "</script><script>alert(1)</script>" });
+  });
+  it("describes a public project as source code with its repository", () => {
+    expect(projectSchema(projectBySlug("faultline")!)).toMatchObject({
+      "@type": "SoftwareSourceCode",
+      name: "FaultLine",
+      codeRepository: "https://github.com/Mizore66/faultline",
+      url: "https://anasqumhiyeh.dev/projects/faultline",
+      author: { "@type": "Person", name: "Anas Tarek Qumhiyeh" },
+      dateCreated: "2026-07",
+    });
+  });
+  it("describes a project without a public repo as a creative work", () => {
+    const v = projectSchema(projectBySlug("veridian")!);
+    expect(v["@type"]).toBe("CreativeWork");
+    expect(v).not.toHaveProperty("codeRepository");
   });
 });

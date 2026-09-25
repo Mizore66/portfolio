@@ -198,7 +198,8 @@ test.describe("plates", () => {
 });
 
 test.describe("exhibit evidence", () => {
-  test("GraphRAG names the +35/+45 split and a public-source state", async ({ page }) => {
+  // Replaced by e2e/site/project.spec.ts (rebuild Phase 2).
+  test.skip("GraphRAG names the +35/+45 split and a public-source state", async ({ page }) => {
     await page.goto("/projects/multi-agent-graphrag");
     await expect(page.getByTestId("retrieval-split")).toContainText(/different corpus/);
     await expect(page.getByTestId("evidence-card")).toContainText(/\+35%/);

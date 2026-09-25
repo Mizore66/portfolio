@@ -15,7 +15,8 @@ test.describe("axe", () => {
     await expectNoAxeViolations(page);
   });
 
-  test("an exhibit has no violations", async ({ page }) => {
+  // Replaced by e2e/site/project.spec.ts (rebuild Phase 2).
+  test.skip("an exhibit has no violations", async ({ page }) => {
     await page.goto("/projects/veridian");
     await expect(page.getByRole("heading", { level: 1, name: "Veridian" })).toBeVisible();
     await expect(page.locator("main#exhibit")).toBeVisible();

@@ -87,7 +87,8 @@ test.describe("round four accessibility", () => {
     await expect(table).toContainText("-143");
   });
 
-  test("flagship exhibits include rejected alternatives and a retrospective", async ({ page }) => {
+  // Replaced by e2e/site/project.spec.ts (rebuild Phase 2).
+  test.skip("flagship exhibits include rejected alternatives and a retrospective", async ({ page }) => {
     await page.goto("/projects/veridian");
     await expect(page.getByTestId("exhibit-rejected")).toContainText(/carbon ledger/);
     await expect(page.getByTestId("exhibit-retrospective")).toContainText(/evaluation period/);

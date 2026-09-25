@@ -1,6 +1,7 @@
 import { SITE_URL } from "@/lib/site";
 import { EDUCATION } from "./education";
 import { IDENTITY } from "./identity";
+import type { Project } from "./types";
 
 export function personSchema(): Record<string, unknown> {
   return {
@@ -33,6 +34,23 @@ export function websiteSchema(): Record<string, unknown> {
     url: SITE_URL,
     author: { "@type": "Person", name: IDENTITY.legalName },
   };
+}
+
+/** Brief §4.5: SoftwareSourceCode when the repository is public, otherwise CreativeWork. */
+export function projectSchema(p: Project): Record<string, unknown> {
+  const base = {
+    "@context": "https://schema.org",
+    name: p.name,
+    alternativeHeadline: p.subtitle,
+    description: p.seo.description,
+    url: `${SITE_URL}/projects/${p.slug}`,
+    dateCreated: p.date,
+    keywords: p.tech.join(", "),
+    author: { "@type": "Person", name: IDENTITY.legalName, url: SITE_URL },
+  };
+  return p.repo
+    ? { ...base, "@type": "SoftwareSourceCode", codeRepository: p.repo }
+    : { ...base, "@type": "CreativeWork" };
 }
 
 export function serializeJsonLd(data: unknown): string {

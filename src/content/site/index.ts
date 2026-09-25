@@ -1,6 +1,7 @@
 import { CLAIMS } from "./claims";
 import { FEATURED_SLUGS, PROJECTS } from "./projects";
-import type { Claim, Project, ProjectCategory } from "./types";
+import type { WorkPath } from "./paths";
+import type { Claim, Project } from "./types";
 
 export function getClaim(id: string): Claim {
   const claim = CLAIMS.find((c) => c.id === id);
@@ -8,11 +9,7 @@ export function getClaim(id: string): Claim {
   return claim;
 }
 
-export type WorkPath = ProjectCategory;
-
-export function parsePath(v: unknown): WorkPath | null {
-  return v === "ml" || v === "product" || v === "devtools" ? v : null;
-}
+export { parsePath, type WorkPath } from "./paths";
 
 export function featuredProjects(): Project[] {
   return FEATURED_SLUGS.map((slug) => {

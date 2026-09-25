@@ -122,6 +122,7 @@ export const PROJECTS: readonly Project[] = [
       ],
       beside: [{ label: "GitHub Actions + Cloud Build", note: "deploys the web app" }],
     },
+    thumbnail: 1,
     media: [
       {
         src: "/work/gemini-teleportal/sign-in.webp",
