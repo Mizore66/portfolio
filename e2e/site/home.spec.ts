@@ -62,6 +62,14 @@ test.describe("front page", () => {
     await expect(page.getByRole("button", { name: "Copied" })).toBeVisible();
   });
 
+  test("unknown URLs get a 404 that leads back to the front page", async ({ page }) => {
+    const response = await page.goto("/this-plate-was-never-set");
+    expect(response?.status()).toBe(404);
+    await expect(page.getByRole("heading", { level: 1, name: /misprint/i })).toBeVisible();
+    await page.getByRole("link", { name: "Back to the front page" }).click();
+    await expect(page.locator("main h1").first()).toHaveText("I like systems that have to survive measurement.");
+  });
+
   test("puts work before the board on mobile", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");

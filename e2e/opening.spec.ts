@@ -811,7 +811,8 @@ test.describe("Opening Preparation", () => {
     await expect(page.getByTestId("engine-pv")).not.toHaveText(/Nc3/);
   });
 
-  test("a misprint page runs a correction, not a default 404", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("a misprint page runs a correction, not a default 404", async ({ page }) => {
     await page.goto("/this-plate-was-never-set");
     await expect(page.getByTestId("correction")).toBeVisible();
     await expect(page.getByRole("heading", { name: /misprint/i })).toBeVisible();

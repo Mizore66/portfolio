@@ -171,7 +171,8 @@ test.describe("selected work paths", () => {
 });
 
 test.describe("plates", () => {
-  test("home and the paper keep distinct titles", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("home and the paper keep distinct titles", async ({ page }) => {
     await page.goto("/");
     await expect(page).toHaveTitle(/Anas T\. Qumhiyeh — Opening Preparation/);
     await page.goto("/opening-preparation");

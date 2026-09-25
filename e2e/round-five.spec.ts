@@ -85,7 +85,8 @@ test.describe("round five invariants", () => {
     expect(color).not.toBe("rgb(139, 36, 28)");
   });
 
-  test("the name-format note lives in the colophon, not the homepage footer", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("the name-format note lives in the colophon, not the homepage footer", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByTestId("home-footer")).not.toContainText(/on the résumé/);
     await page.goto("/colophon");
@@ -103,7 +104,8 @@ test.describe("round five invariants", () => {
     expect(again.headers().etag).toBe(pdf.headers().etag);
   });
 
-  test("a recruiter can name the work in thirty seconds of headings", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("a recruiter can name the work in thirty seconds of headings", async ({ page }) => {
     await page.goto("/");
     const headings = await page.locator("h1, h2").allTextContents();
     const blob = headings.join(" · ");
