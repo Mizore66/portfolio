@@ -281,7 +281,7 @@ export const GAME: readonly GameNode[] = [
     sym: "!",
     kind: "Project",
     title: "The Knight Comes In",
-    fact: `${projectFact("mirrorfi")} Grand Prize, Solana Megahack 2025, in a team of 6.`,
+    fact: `${projectFact("mirrorfi")} Grand Prize, Solana Megahack 2025.`,
     commentary:
       "Grand prize is a symbol. The work was a product: shareable vault lines, a schema people could copy. Then the last minor piece develops.",
     eval: 0.5,
@@ -305,7 +305,7 @@ export const GAME: readonly GameNode[] = [
     sym: "!!",
     kind: "Flagship",
     title: "The Central Break",
-    fact: `${projectFact("veridian")} ${project("veridian").result.line}.`,
+    fact: projectFact("veridian"),
     commentary:
       "You prepare with c3, then you break the centre. d4 is the move this scoresheet hangs on: agents that intercept infrastructure, measurements instead of demos. The double-exclaim is Informant’s, not mine — but I played it.",
     eval: 1.6,
@@ -431,7 +431,7 @@ export const GAME: readonly GameNode[] = [
     sym: "!",
     kind: "Project",
     title: "The Outpost",
-    fact: `${projectFact("gemini-teleportal")} Built together with Kai.`,
+    fact: projectFact("gemini-teleportal"),
     commentary:
       "The knight jumps into the centre with support behind it. Teleportal was built with Kai, and the square only held because both of us covered it.",
     links: [projectLink("gemini-teleportal")],

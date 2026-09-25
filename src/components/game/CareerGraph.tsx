@@ -94,7 +94,8 @@ export function CareerGraph({ points, from, now }: { points: CareerPoint[]; from
         </span>
       </div>
       <div ref={wrap} className="career-plot">
-        <svg width={width} height={H} role="img" aria-label="Career timeline plotted as an evaluation graph. The same data is in the table below.">
+        {/* Scales with its container from the first paint; the links inside carry the meaning. */}
+        <svg viewBox={`0 0 ${width} ${H}`} className="career-svg" aria-label="Career timeline as an evaluation graph. The same data is in the table below.">
           {yTicks.map((v) => (
             <g key={v}>
               <line x1={PAD.left} x2={width - PAD.right} y1={yAt(v)} y2={yAt(v)} className={v === 0 ? "cg-zero" : "cg-grid"} />

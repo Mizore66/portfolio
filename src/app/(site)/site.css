@@ -238,7 +238,7 @@ button.gb-sq { cursor: pointer; }
 .career-legend { display: flex; flex-wrap: wrap; gap: .25rem 1.25rem; font-size: .85rem; color: var(--color-muted); margin-bottom: .25rem; }
 .career-legend span { display: inline-flex; align-items: center; gap: .4rem; }
 .career-plot { position: relative; width: 100%; }
-.career-plot svg { display: block; overflow: visible; }
+.career-plot svg { display: block; overflow: visible; width: 100%; height: auto; }
 .cg-grid { stroke: var(--color-rule); stroke-width: 1; }
 .cg-zero { stroke: var(--color-board-dark); stroke-width: 1; }
 .cg-tick { font-family: var(--font-mono); font-size: 11px; fill: var(--color-muted); }
@@ -272,6 +272,51 @@ button.gb-sq { cursor: pointer; }
 }
 @keyframes strip-progress { to { transform: scaleX(1); } }
 @media (min-width: 1024px) { .mobile-strip { display: none; } }
+
+/* Scoresheet */
+/* Intro, board, scoresheet in reading order; on desktop the board takes the right column. */
+.op-layout { display: grid; grid-template-columns: minmax(0, 1fr); max-width: var(--page-max); margin-inline: auto; }
+.op-intro, .op-sheet { padding-inline: var(--gutter); max-width: 50rem; }
+.op-sheet { padding-bottom: 5rem; }
+@media (min-width: 1024px) {
+  .op-layout { grid-template-columns: minmax(0, 1fr) 380px; grid-template-rows: auto 1fr; }
+  .op-intro { grid-column: 1; grid-row: 1; }
+  .op-sheet { grid-column: 1; grid-row: 2; }
+  .op-layout > .board-pane { grid-column: 2; grid-row: 1 / span 2; }
+}
+.chapter { padding: 1.75rem 0; border-top: 1px solid var(--color-rule); scroll-margin-top: 1rem; }
+.chapter-title { font-size: 1.3rem; line-height: 1.25; font-weight: 500; margin: .35rem 0 .75rem; }
+.chapter-title a { text-decoration: none; }
+.chapter-title a:hover { text-decoration: underline; }
+.chapter-variation { margin-left: clamp(.75rem, 3vw, 2rem); padding-left: 1rem; border-top: 0; border-left: 2px solid var(--color-rule); padding-block: 1rem; }
+.chapter-variation .chapter-title { font-size: 1.1rem; }
+.chapter-claims { list-style: none; padding: 0; margin: 0 0 1rem; display: grid; gap: .35rem; }
+.chapter-claims .claim-meta { color: var(--color-muted); font-size: .85rem; }
+.chapter-claims .claim-type { margin-left: .25rem; }
+.chapter-links { display: flex; flex-wrap: wrap; gap: 0 1.25rem; }
+.puzzle { margin: 1rem 0; padding: 1rem; border: 1px solid var(--color-rule); }
+.puzzle-prompt { font-weight: 500; }
+.puzzle .annotation { margin: .75rem 0 0; min-height: 1.6em; }
+.step-nav { display: flex; justify-content: space-between; gap: .5rem; }
+.tree { max-height: 40vh; overflow-y: auto; border-top: 1px solid var(--color-rule); padding-top: .5rem; }
+.tree ol { list-style: none; margin: 0; padding: 0; font-size: .85rem; }
+.tree a { display: flex; align-items: center; min-height: 32px; text-decoration: none; white-space: pre; }
+.tree a[aria-current] { font-weight: 500; color: var(--color-annotation); text-decoration: underline; }
+.tree-variation a, .tree-not-taken a { color: var(--color-muted); }
+.tree-not-taken a { text-decoration: line-through; }
+@media (max-width: 767px) { .tree a { min-height: 44px; } }
+
+/* Lab */
+.lab-title { font-size: clamp(1.75rem, 4vw, 2.6rem); }
+.lab-result { overflow-wrap: anywhere; }
+.elo-chart { margin: 1.5rem 0 0; }
+.elo-chart svg { width: 100%; height: auto; }
+.elo-label { font-family: var(--font-sans); font-size: 14px; font-weight: 500; fill: var(--color-ink); }
+.elo-value { font-family: var(--font-mono); font-size: 12px; fill: var(--color-ink); }
+.elo-bar { fill: var(--color-board-dark); }
+.elo-zero-mark { stroke: var(--color-ink); stroke-width: 3; }
+.elo-err line { stroke: var(--color-ink); stroke-width: 1.5; }
+.elo-chart figcaption { margin-top: .5rem; font-size: .85rem; color: var(--color-muted); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }

@@ -46,7 +46,8 @@ test.describe("axe", () => {
     await expectNoAxeViolations(page);
   });
 
-  test("Opening Preparation has no axe violations", async ({ page }) => {
+  // Replaced by e2e/site/game.spec.ts (rebuild Phase 3).
+  test.skip("Opening Preparation has no axe violations", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/opening-preparation");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();

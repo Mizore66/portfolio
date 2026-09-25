@@ -177,3 +177,26 @@ describe("project navigation", () => {
     expect(projectClaims(projectBySlug("veridian")!).map((c) => c.id)).toEqual(["veridianEmissions", "veridianUptime"]);
   });
 });
+
+describe("lab article", () => {
+  it("leads with the loss and applies the brief's required changes", async () => {
+    const { LAB_ARTICLE } = await import("./lab");
+    expect(LAB_ARTICLE.title).toMatch(/underperformed PeSTO/);
+    expect(LAB_ARTICLE.disclosure).toMatch(/±60 centipawns/);
+    expect(LAB_ARTICLE.causes).toMatch(/training data/);
+    expect(LAB_ARTICLE.causes).toMatch(/integration/);
+    expect(JSON.stringify(LAB_ARTICLE)).not.toMatch(/2200/);
+    expect(LAB_ARTICLE.credits.join(" ")).toMatch(/Ronald Friederich/);
+    expect(LAB_ARTICLE.credits.join(" ")).toMatch(/CC0-1\.0/);
+    expect(LAB_ARTICLE.description.length).toBeLessThanOrEqual(160);
+  });
+  it("matches the engine's clamp and the match receipt", async () => {
+    const { LAB_ARTICLE } = await import("./lab");
+    const { NNUE_RESIDUAL } = await import("@/lib/chess/engine");
+    const { PHASE2_MATCH } = await import("@/lib/chess/phase2");
+    expect(NNUE_RESIDUAL).toBe(60);
+    expect(LAB_ARTICLE.gates[1].elo).toBe(PHASE2_MATCH.elo);
+    expect(LAB_ARTICLE.gates[1].err).toBe(PHASE2_MATCH.eloErr);
+    expect(LAB_ARTICLE.gates[1].games).toBe(PHASE2_MATCH.games);
+  });
+});

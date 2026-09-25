@@ -51,7 +51,8 @@ test.describe("round four recruiter order", () => {
 });
 
 test.describe("round four accessibility", () => {
-  test("Opening Preparation has an H2 scoresheet and classified Veridian uptime", async ({ page }) => {
+  // Replaced by e2e/site/game.spec.ts (rebuild Phase 3).
+  test.skip("Opening Preparation has an H2 scoresheet and classified Veridian uptime", async ({ page }) => {
     await page.goto("/opening-preparation");
     await expect(page.getByRole("heading", { level: 1, name: "Opening Preparation" })).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: "Scoresheet", exact: true })).toBeVisible();
@@ -62,7 +63,8 @@ test.describe("round four accessibility", () => {
     );
   });
 
-  test("arrow keys do not steal scroll when the board is not focused", async ({ page }) => {
+  // Replaced by e2e/site/game.spec.ts (rebuild Phase 3).
+  test.skip("arrow keys do not steal scroll when the board is not focused", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/opening-preparation?move=start");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
@@ -78,7 +80,8 @@ test.describe("round four accessibility", () => {
     );
   });
 
-  test("the lab chart exposes a table of every plotted point", async ({ page }) => {
+  // Replaced by e2e/site/game.spec.ts (rebuild Phase 3).
+  test.skip("the lab chart exposes a table of every plotted point", async ({ page }) => {
     await page.goto("/lab/learned-evaluator");
     const table = page.getByTestId("elo-commits-table");
     await expect(table).toBeVisible();

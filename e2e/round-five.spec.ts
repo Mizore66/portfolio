@@ -10,7 +10,8 @@ test.describe("round five invariants", () => {
     await expect(matches).toHaveCount(1);
   });
 
-  test("Opening Preparation exposes a single settling status", async ({ page }) => {
+  // Replaced by e2e/site/game.spec.ts (rebuild Phase 3).
+  test.skip("Opening Preparation exposes a single settling status", async ({ page }) => {
     await page.goto("/opening-preparation?move=start");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     const settling = page.getByTestId("engine-settling");
@@ -33,7 +34,8 @@ test.describe("round five invariants", () => {
     expect(firstH3).toBeGreaterThan(firstH2);
   });
 
-  test("Petronas facts stay canonical on the scoresheet", async ({ page }) => {
+  // Replaced by e2e/site/game.spec.ts (rebuild Phase 3).
+  test.skip("Petronas facts stay canonical on the scoresheet", async ({ page }) => {
     await page.goto("/opening-preparation?move=nf3");
     await expect(page.locator("#chapter-nf3")).toContainText(
       "Replaced MATLAB-dependent back-end calculation and reporting functions with Python packages",
@@ -64,7 +66,8 @@ test.describe("round five invariants", () => {
     await expect(page).toHaveURL(/\/$/);
   });
 
-  test("playable squares stay out of the tab order", async ({ page }) => {
+  // Replaced by e2e/site/game.spec.ts (rebuild Phase 3).
+  test.skip("playable squares stay out of the tab order", async ({ page }) => {
     await page.goto("/opening-preparation?move=start");
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
     const plane = page.getByTestId("board-plane");
