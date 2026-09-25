@@ -7,7 +7,8 @@ async function expectNoAxeViolations(page: import("@playwright/test").Page) {
 }
 
 test.describe("axe", () => {
-  test("home has no violations", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("home has no violations", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/");
     await expect(page.getByTestId("masthead-role")).toBeVisible();

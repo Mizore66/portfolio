@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("round four recruiter order", () => {
-  test("compact DOM puts selected work before the analysis board", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("compact DOM puts selected work before the analysis board", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
     const order = await page.evaluate(() => {
@@ -18,7 +19,8 @@ test.describe("round four recruiter order", () => {
     expect(work!.y).toBeLessThan(board!.y);
   });
 
-  test("desktop still places the board beside the hero", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("desktop still places the board beside the hero", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/");
     const engine = page.getByTestId("hero-engine");
@@ -27,7 +29,8 @@ test.describe("round four recruiter order", () => {
     expect(box!.y).toBeLessThan(640);
   });
 
-  test("hero proof is three metrics in one strip", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("hero proof is three metrics in one strip", async ({ page }) => {
     await page.goto("/");
     const rows = page.getByTestId("masthead-proof").locator(".metric-row");
     await expect(rows).toHaveCount(3);
@@ -37,7 +40,8 @@ test.describe("round four recruiter order", () => {
     await expect(page.getByTestId("hero-claim-notes")).toContainText(/Production defect count/);
   });
 
-  test("selected work labels evidence kind and archives secondary projects", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("selected work labels evidence kind and archives secondary projects", async ({ page }) => {
     await page.goto("/#work");
     await expect(page.locator("#veridian")).toContainText(/Controlled evaluation/);
     await expect(page.locator("#circuitmindai")).toContainText(/Capability/);
@@ -95,7 +99,8 @@ test.describe("round four accessibility", () => {
 });
 
 test.describe("round four zoom and landscape", () => {
-  test("200% and 400% proxies do not overflow the homepage", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("200% and 400% proxies do not overflow the homepage", async ({ page }) => {
     for (const size of [
       { width: 640, height: 400 },
       { width: 320, height: 200 },
@@ -121,7 +126,8 @@ test.describe("round four artifacts", () => {
 });
 
 test.describe("homepage diagram and band layout", () => {
-  test("the hero board mounts newspaper pieces from the sprite", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("the hero board mounts newspaper pieces from the sprite", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/");
     const board = page.locator("#hero-board");
@@ -132,7 +138,8 @@ test.describe("homepage diagram and band layout", () => {
     await expect(board.locator('[data-piece-id="wNb1"] use')).toHaveAttribute("href", "#np-wN");
   });
 
-  test("the intro proof box is closed on all four sides", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("the intro proof box is closed on all four sides", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/");
     const borders = await page.locator(".hero-proof").evaluate((el) => {
@@ -150,7 +157,8 @@ test.describe("homepage diagram and band layout", () => {
     expect(borders.left).toBeGreaterThan(0);
   });
 
-  test("section kickers sit near the rule instead of in a 72px void", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("section kickers sit near the rule instead of in a 72px void", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/");
     for (const testId of ["education-band", "lab-band", "about-band", "contact-band"]) {

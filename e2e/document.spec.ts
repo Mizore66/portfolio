@@ -11,7 +11,8 @@ async function stripStyles(page: import("@playwright/test").Page) {
 test.describe("document mode", () => {
   test.use({ javaScriptEnabled: false });
 
-  test("identity, work, experience, and contact survive without JS", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("identity, work, experience, and contact survive without JS", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1, name: "Anas T. Qumhiyeh" })).toBeVisible();
     await expect(page.getByTestId("masthead-role")).toContainText(/Software engineer/);
@@ -59,13 +60,15 @@ test.describe("document mode", () => {
 });
 
 test.describe("deep links", () => {
-  test("#setel lands on the Setel desk", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("#setel lands on the Setel desk", async ({ page }) => {
     await page.goto("/#setel");
     await expect(page.locator("#setel")).toBeVisible();
     await expect(page.locator("#setel")).toContainText(/Setel/);
   });
 
-  test("homepage flagship #veridian is addressable", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("homepage flagship #veridian is addressable", async ({ page }) => {
     await page.goto("/#veridian");
     await expect(page.locator("#veridian")).toBeVisible();
   });
@@ -84,7 +87,8 @@ test.describe("deep links", () => {
 });
 
 test.describe("copy email", () => {
-  test("the address is selectable and a copy control exists", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("the address is selectable and a copy control exists", async ({ page }) => {
     await page.goto("/#contact");
     await expect(page.getByTestId("contact-email")).toHaveText(/anasqumhiyeh@gmail.com/);
     await expect(page.getByTestId("copy-email")).toBeVisible();
@@ -96,7 +100,8 @@ test.describe("copy email", () => {
 });
 
 test.describe("browser behavior", () => {
-  test("Back from a case study returns to the paper", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("Back from a case study returns to the paper", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("link", { name: "Read the Veridian case study" }).click();
     await expect(page).toHaveURL(/\/projects\/veridian/);
@@ -107,7 +112,8 @@ test.describe("browser behavior", () => {
 });
 
 test.describe("css off", () => {
-  test("the document still reads as a CV when stylesheets are gone", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("the document still reads as a CV when stylesheets are gone", async ({ page }) => {
     await page.goto("/");
     await stripStyles(page);
     const headings = await page.locator("h1, h2").allTextContents();
@@ -124,7 +130,8 @@ test.describe("css off", () => {
 });
 
 test.describe("opening paper", () => {
-  test("the analysis board shares the first desktop screen", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("the analysis board shares the first desktop screen", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/");
     const engine = page.getByTestId("hero-engine");
@@ -134,7 +141,8 @@ test.describe("opening paper", () => {
     expect(box!.y).toBeLessThan(640);
     await expect(page.locator("#hero-board")).not.toHaveAttribute("tabindex");
   });
-  test("/?move= redirects onto the scoresheet plate", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("/?move= redirects onto the scoresheet plate", async ({ page }) => {
     await page.goto("/?move=e4");
     await expect(page).toHaveURL(/\/opening-preparation/);
     await expect(page.locator("[data-hydrated='true']")).toBeVisible();
@@ -153,7 +161,8 @@ test.describe("opening paper", () => {
 });
 
 test.describe("selected work paths", () => {
-  test("product path keeps CircuitMind and drops Veridian", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("product path keeps CircuitMind and drops Veridian", async ({ page }) => {
     await page.goto("/?path=product#work");
     await expect(page.getByTestId("selected-work")).toBeVisible();
     await expect(page.locator("#circuitmindai")).toBeVisible();
@@ -217,7 +226,8 @@ test.describe("narrow exhibits", () => {
 });
 
 test.describe("work filters", () => {
-  test("the ML path survives a trip through Veridian", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("the ML path survives a trip through Veridian", async ({ page }) => {
     await page.goto("/?path=ml#work");
     await expect(page.getByTestId("path-filter").locator(".path-chip-current")).toContainText(/ML \/ data systems/);
     await page.getByRole("link", { name: "Read the Veridian case study" }).click();

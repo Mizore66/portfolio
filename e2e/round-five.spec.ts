@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("round five invariants", () => {
-  test("the homepage learned-evaluator sentence appears once", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("the homepage learned-evaluator sentence appears once", async ({ page }) => {
     await page.goto("/");
     const caption = page.getByTestId("hero-engine-caption");
     await expect(caption).toHaveCount(1);
@@ -44,7 +45,8 @@ test.describe("round five invariants", () => {
     );
   });
 
-  test("the hero board can pause the Italian autoplay", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("the hero board can pause the Italian autoplay", async ({ page }) => {
     await page.goto("/");
     const play = page.getByTestId("hero-play");
     await expect(play).toBeVisible();
@@ -53,7 +55,8 @@ test.describe("round five invariants", () => {
     await expect(play).toHaveAttribute("aria-pressed", "false");
   });
 
-  test("hero CTAs do not steal arrow keys from the page", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("hero CTAs do not steal arrow keys from the page", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
     await page.getByTestId("hero-experiment").focus();
@@ -127,7 +130,8 @@ test.describe("round five invariants", () => {
     }
   });
 
-  test("400% zoom proxy and forced colors keep the homepage readable", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("400% zoom proxy and forced colors keep the homepage readable", async ({ page }) => {
     await page.emulateMedia({ forcedColors: "active" });
     await page.setViewportSize({ width: 320, height: 200 });
     await page.goto("/");
@@ -139,7 +143,8 @@ test.describe("round five invariants", () => {
     await expect(page.getByTestId("masthead-proof")).toContainText(/−40%/);
   });
 
-  test("mobile homepage puts identity before proof notes", async ({ page }) => {
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("mobile homepage puts identity before proof notes", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
     const name = await page.getByRole("heading", { level: 1, name: "Anas T. Qumhiyeh" }).boundingBox();
@@ -159,7 +164,8 @@ test.describe("round five invariants", () => {
     await expect(page).toHaveURL(/\/#work$/);
   });
 
-  test("document CSP carries a nonce and wasm-unsafe-eval without script unsafe-inline", async ({
+  // Replaced by e2e/site/home.spec.ts (rebuild Phase 1).
+  test.skip("document CSP carries a nonce and wasm-unsafe-eval without script unsafe-inline", async ({
     page,
   }) => {
     const response = await page.goto("/");
