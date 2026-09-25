@@ -1,4 +1,4 @@
-import { LoginForm } from "@/app/admin/login/form";
+import { LoginForm } from "@/app/(legacy)/admin/login/form";
 import { passwordConfigured } from "@/lib/cms/password";
 import { sessionConfigured } from "@/lib/cms/session";
 import { totpConfigured } from "@/lib/cms/totp";

@@ -28,14 +28,14 @@ describe("document integrity", () => {
   });
 
   it("gives the 404 a title that is not the homepage brand", () => {
-    const src = readFileSync(join(process.cwd(), "src/app/not-found.tsx"), "utf8");
+    const src = readFileSync(join(process.cwd(), "src/app/(legacy)/not-found.tsx"), "utf8");
     expect(src).toMatch(/title: "Correction — A\. T\. Qumhiyeh"/);
     expect(src).toMatch(/description: "The page you requested was a misprint/);
     expect(src).not.toMatch(/Anas T\. Qumhiyeh — Opening Preparation/);
   });
 
   it("gives the colophon a title that is not the homepage brand", () => {
-    const src = readFileSync(join(process.cwd(), "src/app/colophon/page.tsx"), "utf8");
+    const src = readFileSync(join(process.cwd(), "src/app/(legacy)/colophon/page.tsx"), "utf8");
     expect(src).toMatch(/title: "How this paper was set — A\. T\. Qumhiyeh"/);
     expect(src).not.toMatch(/Anas T\. Qumhiyeh — Opening Preparation/);
   });
@@ -76,7 +76,7 @@ describe("document integrity", () => {
     expect(blob).toMatch(/jQuery/);
     expect(blob).toMatch(/Oracle Database/);
     expect(blob).toMatch(/NestJS/);
-    const exhibit = readFileSync(join(process.cwd(), "src/app/projects/[slug]/page.tsx"), "utf8");
+    const exhibit = readFileSync(join(process.cwd(), "src/app/(legacy)/projects/[slug]/page.tsx"), "utf8");
     expect(exhibit).not.toMatch(/drop-cap/);
   });
 

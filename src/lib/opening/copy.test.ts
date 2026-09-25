@@ -175,7 +175,7 @@ describe("bfcache", () => {
   });
 
   it("does not ship a custom cursor or disable selection on copyable text", () => {
-    const css = readFileSync(join(process.cwd(), "src/app/globals.css"), "utf8");
+    const css = readFileSync(join(process.cwd(), "src/app/(legacy)/globals.css"), "utf8");
     expect(css).not.toMatch(/cursor:\s*url\(/);
     expect(css).not.toMatch(/user-select:\s*none/);
   });
