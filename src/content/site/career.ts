@@ -35,7 +35,7 @@ let cache: CareerPoint[] | null = null;
 
 function computed(): CareerPoint[] {
   if (cache) return cache;
-  cache = GAME.flatMap((n) => {
+  cache = GAME.flatMap((n): CareerPoint[] => {
     const c = n.career;
     if (!c) return [];
     const base = { nodeId: n.id, move: moveLabel(n), evalCp: engineEval(n.id) };
