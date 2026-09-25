@@ -5,9 +5,10 @@ import { formatMonth } from "@/content/site/format";
 import { CATEGORY_LABEL } from "@/content/site/projects";
 import { EVIDENCE_LABEL, type Project } from "@/content/site/types";
 
-export function ProjectCard({ project }: { project: Project }) {
+export function ProjectCard({ project, saveData = false }: { project: Project; saveData?: boolean }) {
   const claim = project.result.claimId ? getClaim(project.result.claimId) : null;
-  const thumb = project.media?.[project.thumbnail ?? 0];
+  // Thumbnails are decorative (the case study carries the captioned screenshots): Save-Data skips them (§5.5).
+  const thumb = saveData ? undefined : project.media?.[project.thumbnail ?? 0];
   return (
     <article id={project.slug} className="card" aria-labelledby={`${project.slug}-title`}>
       <p className="card-meta">

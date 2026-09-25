@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { About } from "@/components/site/About";
 import { BoardPane } from "@/components/site/BoardPane";
@@ -23,6 +24,7 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 export default async function HomePage({ searchParams }: { searchParams: SearchParams }) {
   const sp = await searchParams;
+  const saveData = (await headers()).get("save-data")?.toLowerCase() === "on";
   const move = typeof sp.move === "string" ? sp.move : undefined;
   if ((move && isGameId(move)) || sp.tape === "1") {
     const q = new URLSearchParams();
@@ -45,7 +47,7 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
       <main id="main" className="reading">
         <Hero identity={IDENTITY} />
         <CareerGraph points={points} from="2024-11" now={nowYm} />
-        <Work path={parsePath(sp.path)} />
+        <Work path={parsePath(sp.path)} saveData={saveData} />
         <Experience roles={ROLES} />
         <Skills />
         <Education />

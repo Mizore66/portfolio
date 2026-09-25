@@ -164,6 +164,15 @@ test.describe("accessibility bar (§5.5)", () => {
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   });
 
+  test("Save-Data skips the decorative thumbnails", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator(".card-thumb").first()).toBeAttached();
+    await page.setExtraHTTPHeaders({ "Save-Data": "on" });
+    await page.goto("/");
+    await expect(page.locator(".card").first()).toBeVisible();
+    await expect(page.locator(".card-thumb")).toHaveCount(0);
+  });
+
   test("with reduced motion nothing animates on its own", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");

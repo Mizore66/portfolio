@@ -11,7 +11,7 @@ const FILTERS: { path: WorkPath | null; label: string }[] = [
   { path: "devtools", label: CATEGORY_LABEL.devtools },
 ];
 
-export function Work({ path }: { path: WorkPath | null }) {
+export function Work({ path, saveData = false }: { path: WorkPath | null; saveData?: boolean }) {
   const { featured, archive } = workFor(path);
   const counts = pathCounts();
   const shown = featured.length + archive.length;
@@ -37,7 +37,7 @@ export function Work({ path }: { path: WorkPath | null }) {
       {featured.length ? (
         <div className="featured">
           {featured.map((p) => (
-            <ProjectCard key={p.slug} project={p} />
+            <ProjectCard key={p.slug} project={p} saveData={saveData} />
           ))}
         </div>
       ) : null}
