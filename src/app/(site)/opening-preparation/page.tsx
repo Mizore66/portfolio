@@ -32,7 +32,7 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
 function treeRows(): TreeRow[] {
   const rows: TreeRow[] = [];
   const walk = (n: GameNode, depth: number) => {
-    rows.push({ id: n.id, label: n.id === "start" ? "Start" : `${moveLabel(n)}${n.sym}  ${n.title}`, depth, kind: n.type });
+    rows.push({ id: n.id, label: n.id === "start" ? "Starting position" : `${moveLabel(n)}${n.sym}  ${n.title}`, depth, kind: n.type });
     const kids = children(n.id);
     const main = kids.find((k) => k.type === "mainline" && n.type === "mainline");
     for (const side of kids.filter((k) => k !== main)) walk(side, depth + 1);
