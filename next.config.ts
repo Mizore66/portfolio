@@ -3,6 +3,14 @@ import { SECURITY_HEADERS } from "./src/lib/security-headers";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
+  experimental: {
+    globalNotFound: true,
+  },
+  // The résumé PDF reads its fonts from disk at request time (brief §4.2).
+  serverExternalPackages: ["pdfkit"],
+  outputFileTracingIncludes: {
+    "/print-edition": ["./src/fonts/schibsted-grotesk/*.ttf"],
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60 * 60 * 24 * 14,
@@ -11,15 +19,13 @@ const nextConfig: NextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 184, 200, 256, 384, 480],
   },
   async headers() {
+    return [{ source: "/:path*", headers: SECURITY_HEADERS }];
+  },
+  // Brief §2.2: static, no lookup.
+  async redirects() {
     return [
-      {
-        source: "/:path*",
-        headers: SECURITY_HEADERS,
-      },
-      {
-        source: "/((?!admin|_next|print-edition|api/).*)",
-        headers: [{ key: "Cache-Control", value: "public, s-maxage=60, stale-while-revalidate=600" }],
-      },
+      { source: "/about", destination: "/#about", permanent: true },
+      { source: "/archive", destination: "/#work", permanent: true },
     ];
   },
 };

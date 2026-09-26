@@ -1,0 +1,48 @@
+import { CLAIMS } from "./claims";
+import { FEATURED_SLUGS, PROJECTS } from "./projects";
+import type { WorkPath } from "./paths";
+import type { Claim, Project } from "./types";
+
+export function getClaim(id: string): Claim {
+  const claim = CLAIMS.find((c) => c.id === id);
+  if (!claim) throw new Error(`Unknown claim: ${id}`);
+  return claim;
+}
+
+export { parsePath, type WorkPath } from "./paths";
+
+export function featuredProjects(): Project[] {
+  return FEATURED_SLUGS.map((slug) => {
+    const p = PROJECTS.find((x) => x.slug === slug);
+    if (!p) throw new Error(`Featured project missing: ${slug}`);
+    return p;
+  });
+}
+
+export function workFor(path: WorkPath | null): { featured: Project[]; archive: Project[] } {
+  const keep = (p: Project) => !path || p.category === path;
+  return {
+    featured: featuredProjects().filter(keep),
+    archive: PROJECTS.filter((p) => p.group === "archive" && keep(p)),
+  };
+}
+
+export function pathCounts(): Record<"all" | WorkPath, number> {
+  const listed = PROJECTS.filter((p) => p.group !== "lab");
+  const by = (c: WorkPath) => listed.filter((p) => p.category === c).length;
+  return { all: listed.length, ml: by("ml"), product: by("product"), devtools: by("devtools") };
+}
+
+export function projectBySlug(slug: string): Project | undefined {
+  return PROJECTS.find((p) => p.slug === slug);
+}
+
+/** Previous and next in PROJECTS order (featured, archive, lab); no wrap-around. */
+export function adjacentProjects(slug: string): { prev?: Project; next?: Project } {
+  const i = PROJECTS.findIndex((p) => p.slug === slug);
+  return { prev: i > 0 ? PROJECTS[i - 1] : undefined, next: i >= 0 ? PROJECTS[i + 1] : undefined };
+}
+
+export function projectClaims(project: Project): Claim[] {
+  return project.caseStudy.evidence.map(getClaim);
+}

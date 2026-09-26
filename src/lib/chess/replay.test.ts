@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { OPENING_NODES } from "../../content/opening";
-import { collectPlies, getMainline } from "../opening/tree";
+import { GAME as OPENING_NODES } from "@/content/site/game";
+import { mainline as getMainline, replayPliesTo as collectPlies } from "@/content/site/game-tree";
 import { occupancy, occupancyFen, positionAfter, snapInnerEdge, squareBox } from "./replay";
 
 describe("Italian Game replay", () => {
@@ -87,20 +87,10 @@ describe("Italian Game replay", () => {
     }
   });
 
-  it("keeps a mainline of start through Re1", () => {
+  it("keeps the D19 mainline from start to the outlook", () => {
     expect(getMainline().map((n) => n.id)).toEqual([
-      "start",
-      "e4",
-      "e5",
-      "nf3",
-      "nc6",
-      "bc4",
-      "bc5",
-      "oo",
-      "nf6",
-      "d4",
-      "exd4",
-      "re1",
+      "start", "e4", "e5", "nf3", "nc6", "bc4", "bc5", "c3", "nf6", "d4", "exd4", "e5-push", "d5",
+      "skribble-lab", "teleportal", "graduation", "bb4-check", "bd2", "bxd2", "deriv", "faultline", "outlook",
     ]);
   });
 });

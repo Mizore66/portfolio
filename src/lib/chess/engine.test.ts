@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { collectPlies } from "@/lib/opening/tree";
+import { replayPliesTo as collectPlies } from "@/content/site/game-tree";
 import { positionAfter } from "@/lib/chess/replay";
 import { decodeNnue } from "@/lib/chess/nnue/format";
 import { PHASE2_NET_ID } from "@/lib/chess/phase2";
