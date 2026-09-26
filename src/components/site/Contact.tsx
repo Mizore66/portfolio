@@ -1,10 +1,14 @@
 import type { Identity } from "@/content/site/types";
+import { sectionNotation } from "@/content/site/sections";
 import { CopyEmailButton } from "./CopyEmailButton";
+import { SectionTitle } from "./SectionTitle";
 
 export function Contact({ identity }: { identity: Identity }) {
   return (
     <section id="contact" className="section" aria-labelledby="contact-title">
-      <h2 id="contact-title">{identity.contactHeading}</h2>
+      <SectionTitle id="contact-title" {...sectionNotation("contact")}>
+        {identity.contactHeading}
+      </SectionTitle>
       <p>{identity.availability}</p>
       <ul className="inline-list">
         <li>{identity.location}</li>

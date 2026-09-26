@@ -2,7 +2,9 @@ import Link from "next/link";
 import { getClaim, pathCounts, workFor, type WorkPath } from "@/content/site";
 import { CATEGORY_LABEL } from "@/content/site/projects";
 import { EVIDENCE_LABEL } from "@/content/site/types";
+import { sectionNotation } from "@/content/site/sections";
 import { ProjectCard } from "./ProjectCard";
+import { SectionTitle } from "./SectionTitle";
 
 const FILTERS: { path: WorkPath | null; label: string }[] = [
   { path: null, label: "All" },
@@ -17,7 +19,9 @@ export function Work({ path, saveData = false }: { path: WorkPath | null; saveDa
   const shown = featured.length + archive.length;
   return (
     <section id="work" className="section" aria-labelledby="work-title">
-      <h2 id="work-title">Selected work</h2>
+      <SectionTitle id="work-title" {...sectionNotation("work")}>
+        Selected work
+      </SectionTitle>
       <ul className="chips" aria-label="Filter work">
         {FILTERS.map((f) => (
           <li key={f.label}>

@@ -26,7 +26,12 @@ export function RoleEntry({ role }: { role: Role }) {
           ))}
         </div>
       ) : null}
-      {role.note ? <p className="note">{role.note}</p> : null}
+      {/* Clarifications sit in the margin beside the entry on wide screens (brief §4); inline below it otherwise. */}
+      {role.note ? (
+        <p className="note margin-note" data-fx="margin">
+          {role.note}
+        </p>
+      ) : null}
       {role.annotation ? <p className="annotation">{role.annotation}</p> : null}
       <p className="role-tech">{role.tech.join(", ")}</p>
     </article>

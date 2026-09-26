@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Analytics } from "@vercel/analytics/next";
 import { AnalyticsEvents } from "@/components/site/AnalyticsEvents";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteJsonLd } from "@/components/site/SiteJsonLd";
+import { MotionRuntime } from "@/components/motion/MotionRuntime";
 import { personSchema, websiteSchema } from "@/content/site/schema";
 import { SITE_URL } from "@/lib/site";
 import { FONT_VARIABLES } from "./fonts";
@@ -23,7 +25,7 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION },
 };
 
-export const viewport: Viewport = { themeColor: "#FFFFFF", colorScheme: "light" };
+export const viewport: Viewport = { themeColor: "#F1F2EC", colorScheme: "light" };
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -36,6 +38,9 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         <SiteJsonLd data={websiteSchema()} />
         {process.env.VERCEL ? <Analytics /> : null}
         <AnalyticsEvents />
+        <Suspense fallback={null}>
+          <MotionRuntime />
+        </Suspense>
       </body>
     </html>
   );

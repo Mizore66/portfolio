@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 const TYPE = [
   { name: "Schibsted Grotesk", role: "Facts and interface", sample: "Roman is fact.", className: "" },
-  { name: "Literata Italic", role: "Commentary only", sample: "Italic is voice.", className: "annotation" },
+  { name: "Schibsted Grotesk Italic", role: "Commentary only", sample: "Italic is voice.", className: "annotation" },
   { name: "Commit Mono", role: "Notation and figures", sample: "10. Nbxd2 Bg4 −143.3 ±35.4", className: "claim-value" },
   { name: "Noto Sans Symbols 2", role: "Chess pieces", sample: "♚ ♛ ♜ ♝ ♞ ♟", className: "colophon-pieces" },
 ];

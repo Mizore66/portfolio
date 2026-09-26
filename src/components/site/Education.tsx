@@ -1,11 +1,15 @@
 import { EDUCATION } from "@/content/site/education";
 import { formatMonth } from "@/content/site/format";
+import { sectionNotation } from "@/content/site/sections";
+import { SectionTitle } from "./SectionTitle";
 
 export function Education() {
   const e = EDUCATION;
   return (
     <section id="education" className="section" aria-labelledby="education-title">
-      <h2 id="education-title">Education</h2>
+      <SectionTitle id="education-title" {...sectionNotation("education")}>
+        Education
+      </SectionTitle>
       <h3 className="education-institution">{e.institution}</h3>
       <p>
         {e.degree}, {e.minor}
