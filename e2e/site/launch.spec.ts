@@ -108,17 +108,18 @@ test.describe("accessibility bar (§5.5)", () => {
     });
   }
 
-  test("no sideways scrolling at any listed viewport", async ({ page }) => {
-    const sizes = [[320, 800], [375, 812], [768, 1024], [1280, 800], [1920, 1080], [640, 400], [320, 200], [844, 390]];
-    for (const path of PUBLIC) {
+  // One test per page: eight viewports each, so every test stays inside the default budget.
+  for (const path of PUBLIC) {
+    test(`${path}: no sideways scrolling at any listed viewport`, async ({ page }) => {
+      const sizes = [[320, 800], [375, 812], [768, 1024], [1280, 800], [1920, 1080], [640, 400], [320, 200], [844, 390]];
       for (const [w, h] of sizes) {
         await page.setViewportSize({ width: w, height: h });
         await page.goto(path);
         const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
         expect(overflow, `${path} at ${w}×${h}`).toBeLessThanOrEqual(0);
       }
-    }
-  });
+    });
+  }
 
   test("the front page stays under 14,000 px tall at 390 px", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
