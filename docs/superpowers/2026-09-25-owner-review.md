@@ -58,6 +58,13 @@ Everything below is marked `draft` in the content files, or was written to fill 
 - LCP 1.7 s, TBT 10 ms, CLS 0. That meets the 2.5 s mobile LCP target.
 - SEO scored 66 only because Vercel sends `x-robots-tag: noindex` on preview URLs. Production sends no such header, and `robots.txt` allows everything.
 
+**Owner's production run, 2026-09-27** (same settings, https://anasqumhiyeh.dev/):
+- Performance 95, Accessibility 100, Best practices 100, SEO 100.
+- LCP 2.1 s, TBT 40 ms, CLS 0, Speed Index 5.2 s.
+- The report's critical path starts with a 3.3 s document request. That was a serverless cold start: every HTML page is rendered per request because of the CSP nonce.
+- Fix (2026-09-27): the front page no longer runs the chess engine while rendering. The eval graph's 16 values used to cost about 1.5 s of search on each cold start. They are now stored in `career-evals.ts`, and a unit test re-runs the search to keep them honest.
+- **Owner option:** functions run in `iad1` (Washington, D.C.). Moving them to `sin1` (Singapore: Vercel → Settings → Functions → Function Region) cuts the round trip for readers in Singapore, Malaysia and Australia.
+
 **Earlier local runs** (production build, Lighthouse 12):
 
 | Page | Mobile perf | Mobile LCP | Desktop perf | A11y / BP / SEO |

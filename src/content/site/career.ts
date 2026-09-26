@@ -1,8 +1,7 @@
-import { fromPieces, searchMove } from "@/lib/chess/engine";
-import { positionAfter } from "@/lib/chess/replay";
+import { CAREER_EVALS } from "./career-evals";
 import { EDUCATION } from "./education";
 import { GAME } from "./game";
-import { enginePliesTo, moveLabel, replayPliesTo, sideToMoveAfter } from "./game-tree";
+import { moveLabel } from "./game-tree";
 import { PROJECTS } from "./projects";
 import { ROLES } from "./roles";
 
@@ -21,14 +20,12 @@ export type CareerPoint = {
   evalCp: number;
 };
 
-/** Node budget for the eval: small enough to be instant, deterministic because it is node-limited. */
-export const CAREER_EVAL_NODES = 6000;
+export { CAREER_EVAL_NODES } from "./career-evals";
 
 function engineEval(nodeId: string): number {
-  const engine = enginePliesTo(nodeId);
-  const replay = replayPliesTo(nodeId);
-  const pos = fromPieces(positionAfter(replay), sideToMoveAfter(engine.length), replay[replay.length - 1] ?? null);
-  return searchMove(pos, { nodes: CAREER_EVAL_NODES, evalMode: "handcrafted" }).score;
+  const cp = CAREER_EVALS[nodeId];
+  if (cp === undefined) throw new Error(`No stored career eval for "${nodeId}"; see career-evals.ts`);
+  return cp;
 }
 
 let cache: CareerPoint[] | null = null;

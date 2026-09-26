@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { fromPieces, isLegalPly } from "@/lib/chess/engine";
+import { fromPieces, isLegalPly, searchMove } from "@/lib/chess/engine";
 import { occupancyFen, positionAfter } from "@/lib/chess/replay";
 import { careerPoints } from "./career";
+import { CAREER_EVAL_NODES, CAREER_EVALS } from "./career-evals";
 import { DEFAULT_MOVE, GAME } from "./game";
 import {
   enginePliesTo,
@@ -124,7 +125,16 @@ describe("career eval graph", () => {
       expect(Number.isFinite(p.evalCp), p.nodeId).toBe(true);
       expect(Math.abs(p.evalCp), p.nodeId).toBeLessThan(600);
     }
-    // Deterministic: the same call gives the same numbers.
-    expect(careerPoints().map((p) => p.evalCp)).toEqual(points.map((p) => p.evalCp));
+  });
+
+  it("stores exactly what the engine finds, so the page never searches at request time", () => {
+    for (const p of points) {
+      const engine = enginePliesTo(p.nodeId);
+      const replay = replayPliesTo(p.nodeId);
+      const pos = fromPieces(positionAfter(replay), sideToMoveAfter(engine.length), replay[replay.length - 1] ?? null);
+      const cp = searchMove(pos, { nodes: CAREER_EVAL_NODES, evalMode: "handcrafted" }).score;
+      expect(CAREER_EVALS[p.nodeId], p.nodeId).toBe(cp);
+    }
+    expect(Object.keys(CAREER_EVALS).sort()).toEqual(points.map((p) => p.nodeId).sort());
   });
 });
