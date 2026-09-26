@@ -6,6 +6,8 @@ Phase 0 changed nothing on the site. The only committed changes are `/references
 
 ## 0. What the owner needs to decide before Phase 1
 
+**Decided 2026-09-27: the owner approved every recommendation below**, including the items deferred to gate A or Phase 2 (`?at=` for home board state, arrows from the game tree plus the engine's principal variation, the launch-test amendment, the new palette with black-and-white eval bars, and the ≤3 s autoplay opening with a camera push-in).
+
 The brief conflicts with the codebase in five places. Each item gives a recommendation.
 
 1. **`?move=` on the home page.** Today `/?move=<id>` is a server redirect to `/opening-preparation?move=<id>` (`src/app/(site)/page.tsx:28-34`, tested in `e2e/site/home.spec.ts`). The brief wants the home board to sync to `?move=`.
