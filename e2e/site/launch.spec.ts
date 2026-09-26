@@ -80,7 +80,7 @@ test.describe("sitemap and robots", () => {
       expect(xml, path).toContain(`<loc>https://anasqumhiyeh.dev${path}</loc>`);
       expect(xml, path).toMatch(new RegExp(`<loc>https://anasqumhiyeh.dev${path.replace(/\//g, "\\/")}</loc>[\\s\\S]*?<priority>${priority}</priority>`));
     }
-    expect(xml.match(/\/projects\//g)).toHaveLength(9);
+    expect(xml.match(/\/projects\//g)).toHaveLength(10);
     expect(xml).not.toContain("/admin");
   });
 

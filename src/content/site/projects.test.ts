@@ -138,7 +138,7 @@ describe("case studies", () => {
       expect(text).not.toMatch(cut);
   });
   it("marks only the owner-pending case studies as drafts", () => {
-    expect(PROJECTS.filter((p) => p.caseStudy.draft).map((p) => p.slug)).toEqual(["faultline", "gemini-teleportal"]);
+    expect(PROJECTS.filter((p) => p.caseStudy.draft).map((p) => p.slug)).toEqual(["faultline", "gemini-teleportal", "rexcheck"]);
   });
   it("points media at files that exist, with alt text and captions", () => {
     for (const p of PROJECTS)

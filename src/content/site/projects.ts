@@ -198,6 +198,59 @@ export const PROJECTS: readonly Project[] = [
     ],
   },
   {
+    slug: "rexcheck",
+    name: "RexCheck",
+    subtitle: "DeFi pool health scoring",
+    date: "2026-04",
+    origin: "Built with Chang Kai Zhe",
+    category: "ml",
+    group: "archive",
+    repo: "https://github.com/Mizore66/RexCheck",
+    tech: ["Python", "asyncio", "Redis", "Rails 8", "Hotwire", "PostgreSQL", "XGBoost", "MCP"],
+    purpose: "New DeFi pools in, a health score and a trade recommendation out, for a live dashboard and for AI agents.",
+    result: { claimId: "rexcheckScoring", line: "Pool health scoring over MCP" },
+    seo: {
+      title: "RexCheck — DeFi pool health scoring",
+      description: "A Python worker ingests new GeckoTerminal pools; Rails scores them with XGBoost or rules and serves a live dashboard and MCP tools for agents.",
+    },
+    caseStudy: {
+      evidence: ["rexcheckScoring"],
+      team: "Built with Chang Kai Zhe; both of us committed to the repository.",
+      problem:
+        "A new liquidity pool can be drained within hours of launch. Someone about to trade it, or an agent about to recommend it, needs a risk read in the first hour, not after the fact.",
+      decision:
+        "Split ingestion from judgement. An async Python worker polls GeckoTerminal, drops pools it has already seen with a Bloom filter, and queues the rest in Redis. Rails 8 scores each pool, keeps its history in PostgreSQL, pushes it to the dashboard over Turbo Streams, and answers agents through an MCP server.",
+      constraint: "Only what a pool shows in its first hour can feed the score.",
+      example:
+        "Input: a pool address and network. Output: a 0–100 health score, SAFE, WARNING or DANGER, a recommendation such as DO_NOT_TRADE, and flags such as critical_low_liquidity or wash_trading_suspected.",
+      rejected: "A single-page frontend: the dashboard is server-rendered Hotwire, so a new scan reaches the page without a client app.",
+      built: [
+        "An asyncio ingestion worker with a scalable Bloom filter for duplicates and back-off on GeckoTerminal rate limits.",
+        "A risk calculator that scores with an XGBoost classifier on five first-hour features, and falls back to liquidity, wash-trading and pool-age rules when the model is unavailable.",
+        "A live Hotwire dashboard, with the N+1 query on the pool list removed by tracking each pool's latest scan.",
+        "An MCP server with tools to analyse a token, get a pool's status, list tracked tokens and check the backend, with a static fallback when Rails is unreachable.",
+        "Dockerfiles for running the Rails app and the worker as separate ECS Fargate tasks.",
+      ],
+      limitations:
+        "The classifier's near-perfect test scores come from the training pipeline's labelled set, which it can generate synthetically; they are not a measurement on live pools, so none is quoted here. The 500-user MCP load test is written but has no recorded run.",
+      changeNow: "Label real pools that were drained, measure the classifier against them, and run the load test.",
+      draft: true,
+    },
+    architecture: {
+      path: [
+        { label: "GeckoTerminal", note: "new pools" },
+        { label: "Python worker", note: "Bloom filter" },
+        { label: "Redis", note: "queue" },
+        { label: "Rails 8", note: "score" },
+      ],
+      branches: [
+        { label: "Hotwire", note: "live dashboard" },
+        { label: "MCP server", note: "agent tools" },
+      ],
+      beside: [{ label: "PostgreSQL", note: "scan history" }],
+    },
+  },
+  {
     slug: "veridian",
     name: "Veridian",
     subtitle: "MLOps tradeoff engine",

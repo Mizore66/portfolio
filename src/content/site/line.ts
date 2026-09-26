@@ -12,3 +12,6 @@ export const LINE_SAN =
   "1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3 Nf6 5. d4 exd4 6. e5 d5 7. Bb5 Ne4 8. cxd4 Bb4+ 9. Bd2 Bxd2+ 10. Nbxd2 Bg4";
 
 export const LINE_NAME = "Italian Game: Classical Variation, Greco Gambit, Anderssen Variation";
+
+/** Confirmed against the Lichess opening database (c.tsv lists this line through 8…Bb4+ as C54). */
+export const LINE_ECO = "C54";

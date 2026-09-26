@@ -18,7 +18,7 @@ import { MobileBoardStrip } from "@/components/game/MobileBoardStrip";
 import { careerPoints } from "@/content/site/career";
 import { LATEST_MOVE } from "@/content/site/game";
 import { enginePliesTo, gameNode, isGameId, moveLabel } from "@/content/site/game-tree";
-import { LINE_NAME, LINE_SAN } from "@/content/site/line";
+import { LINE_ECO, LINE_NAME, LINE_SAN } from "@/content/site/line";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -55,7 +55,7 @@ export default async function HomePage({ searchParams }: { searchParams: SearchP
         <About identity={IDENTITY} />
         <Contact identity={IDENTITY} />
       </main>
-      <BoardPane lineName={LINE_NAME} moves={LINE_SAN.split(/ (?=\d+\. )/)} />
+      <BoardPane lineName={`${LINE_NAME} (${LINE_ECO})`} moves={LINE_SAN.split(/ (?=\d+\. )/)} />
       </div>
     </FrontGame>
   );

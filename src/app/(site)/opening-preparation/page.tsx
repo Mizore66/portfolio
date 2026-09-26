@@ -7,7 +7,7 @@ import { EVIDENCE_LABEL } from "@/content/site/types";
 import { DEFAULT_MOVE, GAME, type GameNode } from "@/content/site/game";
 import { children, enginePliesTo, gameNode, isGameId, mainline, moveLabel, resolveMove } from "@/content/site/game-tree";
 import { LAB_TEASER } from "@/content/site/lab";
-import { LINE_NAME } from "@/content/site/line";
+import { LINE_ECO, LINE_NAME } from "@/content/site/line";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -116,7 +116,7 @@ export default async function OpeningPreparationPage({ searchParams }: { searchP
         <h1 className="hero-statement">Opening Preparation</h1>
         <p className="hero-subline">{INTRO}</p>
         <p className="hero-status">
-          The résumé is literal; the chess is annotation. Moves in roman are facts; lines in italic are my commentary. {LINE_NAME}.
+          The résumé is literal; the chess is annotation. Moves in roman are facts; lines in italic are my commentary. {LINE_NAME} ({LINE_ECO}).
         </p>
         <div className="hero-actions">
           <a className="btn btn-primary" href="#scoresheet">

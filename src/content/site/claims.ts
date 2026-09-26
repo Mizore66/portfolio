@@ -17,6 +17,7 @@ export const CLAIMS: readonly Claim[] = [
   { id: "teleportalTasks", display: "90%+ of demo desktop tasks, unaided", type: "controlled-evaluation", owner: "Gemini Teleportal (with Kai)", date: "2026-03", context: "A demo task set, not general use." },
   { id: "teleportalLatency", display: "~2–5 s from voice to action", type: "controlled-evaluation", owner: "Gemini Teleportal (with Kai)", date: "2026-03", context: "Phone audio and screen video over WebRTC to the Gemini Live API." },
   { id: "circuitmindInspection", display: "Vision and voice PCB inspection", type: "capability", owner: "CircuitMindAI", date: "2026-03", context: "Cached for network loss; detection quality was not measured." },
+  { id: "rexcheckScoring", display: "Pool health scoring over MCP", type: "capability", owner: "RexCheck", date: "2026-04", context: "Classifier scores are from a labelled training set, not measured on live pools." },
   { id: "mirrorfiPrize", display: "Grand Prize, Solana Megahack 2025", type: "award", owner: "MirrorFi (team of 6)", date: "2025-05", context: "Out of 150+ teams." },
   { id: "graphragRetrieval", display: "+35% retrieval vs vector-only", type: "controlled-evaluation", owner: "Multi-Agent GraphRAG", date: "2025-10", context: "Independent handbook and policy archive, not the Monash corpus." },
   { id: "setelDefects", display: "−40% production defects", type: "production", owner: "Setel", date: "2025-12", context: "Checkout and capture; a separate observation from the 92.5% coverage." },

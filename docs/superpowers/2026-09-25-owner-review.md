@@ -16,6 +16,7 @@ Everything below is marked `draft` in the content files, or was written to fill 
 |---|---|---|
 | Case study: FaultLine | Problem, decision, constraint, example, rejected, built, limitations, change-now | `src/content/site/projects.ts` |
 | Case study: Gemini Teleportal | Same sections | `src/content/site/projects.ts` |
+| Case study: RexCheck | The whole page, written from the repo on 2026-09-26 | `src/content/site/projects.ts` |
 | Game commentary | c3, d4 (edited), e5-push, d5, skribble-lab, teleportal, graduation, bb4-check, bd2, bxd2, deriv, faultline | `src/content/site/game.ts` |
 | Game commentary, 5.O-O side line | oo-nf6, oo-d4, oo-exd4, re1 | `src/content/site/game.ts` |
 | About | The paragraph is assembled from the brief's facts. It needs a read in your own voice. | `src/content/site/identity.ts` |
@@ -26,15 +27,18 @@ Everything below is marked `draft` in the content files, or was written to fill 
 
 ### Content and claims
 
-- **FaultLine "1–3 h saved".** This conflicts with the repo's own differentiation document. The claim is shown as the brief states it. Confirm it or soften it.
-- **FaultLine language.** D16 says Go, but the repo's `main` branch is still TypeScript. The site describes the Go rewrite. Checklist item: "The FaultLine repo shows the Go rewrite."
-- **Which projects get pages.** The site has nine projects. propdesk, market-sentinel, Economy-News-Pipeline and RexCheck have no pages. Say which of them should.
+- **FaultLine "1–3 h saved".** It is still shown as the brief states it. The repo does not back it up:
+  - `docs/impact-validation-codex-self-dogfood.md` records "Time saved / adoption: not measured … Do not invent".
+  - `docs/differentiation.md` lists "Teams resolve regressions faster" as a claim that needs external validation before use.
+  - **Open:** keep it, or swap it for implementation-backed wording.
+- **FaultLine language.** The Go rewrite is PR #205 in the FaultLine repo. The site already describes it; that becomes true once the PR merges.
+- **Which projects get pages.** Answered: RexCheck only. The others were job assessments. RexCheck is now an archive case study (ML / data systems), evidence type Capability, marked draft.
 - **Hedging cuts.** Where the brief asked for hedges to be cut, I cut by leaving the hedge out rather than rewording it.
 
 ### The game
 
-- **5…d6 is marked "?"** because it loses a piece. Confirm that annotation is what you want.
-- **ECO code (§0.2 item 6).** It is not printed anywhere until you confirm it (probably C54).
+- **5…d6 is marked "?".** Confirmed by the owner.
+- **ECO code (§0.2 item 6).** C54, checked against the Lichess opening database (`c.tsv` lists this exact line through 8…Bb4+). It is printed beside the line name.
 - **Eval graph.** The graph plots the engine's own evaluation (handcrafted, 6,000 nodes, deterministic), not evaluations you wrote by hand.
 - **Mobile strip.** It links to `#the-game` rather than opening a dialog, so there is no dialog to trap focus.
 - **Board squares on phones.** They are about 40 px, under the 44 px target, because eight squares have to fit a 320 px screen. Every square is also reachable with the arrow keys.
@@ -76,7 +80,7 @@ The §5.5 checks are automated in `e2e/site/launch.spec.ts`. They cover:
 
 | Item | Status |
 |---|---|
-| Every §0.2 item confirmed or defaulted | **Open:** ECO code (item 6) |
+| Every §0.2 item confirmed or defaulted | Done (ECO C54) |
 | Hero statement, no metrics strip (D20, D21) | Done |
 | §2.1 URLs return 200; §2.2 redirects | Done (e2e) |
 | `/admin`, `/api/cms-health` and unknown paths return 404 | Done (e2e) |
@@ -88,7 +92,7 @@ The §5.5 checks are automated in `e2e/site/launch.spec.ts`. They cover:
 | §4.7 headers on live responses | Tested locally. **Owner:** check with `curl -I` on production. |
 | Engine playable, starts on request, keyboard | Done (e2e and a manual browser check) |
 | Chess line reaches Skribble Lab and Deriv; legal moves | Done (unit tests replay every move through the engine) |
-| FaultLine repo shows the Go rewrite | **Owner** |
+| FaultLine repo shows the Go rewrite | **Owner:** merge PR #205 in the FaultLine repo |
 | Phone number in Contact, PDF and JSON-LD | Done |
 | §5.4 and §5.5 bars on production | **Owner**, after the merge. See section 4. |
 | Analytics events fire | Wired up. **Owner:** confirm they appear in the Vercel dashboard. |
@@ -96,9 +100,9 @@ The §5.5 checks are automated in `e2e/site/launch.spec.ts`. They cover:
 
 ## 6. Owner-only steps, in order
 
-1. Download `/admin/export` once from the **current production site** before merging, so no unpublished draft is lost. This branch has already removed the CMS.
-2. Review the preview. Rewrite the drafts in section 2 and answer the questions in section 3.
-3. Merge `rebuild/analysis-board` into `master`.
+1. ~~Export the CMS.~~ Skipped at the owner's call (2026-09-26): the rebuild replaces everything the CMS held.
+2. ~~Merge `rebuild/analysis-board` into `master`.~~ Done by Claude at the owner's request (2026-09-26).
+3. Rewrite the drafts in section 2 when you have time.
 4. In Vercel:
    - remove the CMS environment variables;
    - delete the Blob store and the Postgres database;
