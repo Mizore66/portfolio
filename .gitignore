@@ -61,3 +61,6 @@ next-env.d.ts
 /training/__pycache__/
 /tmp/
 /matches/*.log
+
+# Owner's reference recordings and extracted frames: never commit or deploy.
+/references/
