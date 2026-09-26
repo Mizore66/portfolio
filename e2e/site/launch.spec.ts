@@ -111,6 +111,9 @@ test.describe("accessibility bar (§5.5)", () => {
   // One test per page: eight viewports each, so every test stays inside the default budget.
   for (const path of PUBLIC) {
     test(`${path}: no sideways scrolling at any listed viewport`, async ({ page }) => {
+      // Layout only: every image carries width and height, so the optimiser is not needed here. Under
+      // `next start` its AVIF encodes can hang when a navigation aborts them, which stalled "load" on CI.
+      await page.route("**/_next/image**", (route) => route.fulfill({ status: 204 }));
       const sizes = [[320, 800], [375, 812], [768, 1024], [1280, 800], [1920, 1080], [640, 400], [320, 200], [844, 390]];
       for (const [w, h] of sizes) {
         await page.setViewportSize({ width: w, height: h });
