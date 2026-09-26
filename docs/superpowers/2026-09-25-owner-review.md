@@ -27,10 +27,8 @@ Everything below is marked `draft` in the content files, or was written to fill 
 
 ### Content and claims
 
-- **FaultLine "1–3 h saved".** It is still shown as the brief states it. The repo does not back it up:
-  - `docs/impact-validation-codex-self-dogfood.md` records "Time saved / adoption: not measured … Do not invent".
-  - `docs/differentiation.md` lists "Teams resolve regressions faster" as a claim that needs external validation before use.
-  - **Open:** keep it, or swap it for implementation-backed wording.
+- **FaultLine "1–3 h saved".** Confirmed by the owner (2026-09-26): measured when FaultLine was tested on other repositories as well as its own. Kept as a controlled evaluation.
+  - The FaultLine repo's docs have not caught up: `docs/impact-validation-codex-self-dogfood.md` still says "Time saved / adoption: not measured". Record those runs there so a reviewer who checks the repo finds the evidence.
 - **FaultLine language.** The Go rewrite is PR #205 in the FaultLine repo. The site already describes it; that becomes true once the PR merges.
 - **Which projects get pages.** Answered: RexCheck only. The others were job assessments. RexCheck is now an archive case study (ML / data systems), evidence type Capability, marked draft.
 - **Hedging cuts.** Where the brief asked for hedges to be cut, I cut by leaving the hedge out rather than rewording it.
@@ -53,7 +51,14 @@ Everything below is marked `draft` in the content files, or was written to fill 
 - **404 title.** It keeps the old "Correction" wording: "Correction · Anas Qumhiyeh".
 - **Analytics.** Vercel Web Analytics sends five custom events: `email_click`, `copy_email`, `resume_open` (with `paper`), `case_study_open` (with `slug`) and `engine_start`.
 
-## 4. Performance and accessibility (local production build, Lighthouse 12)
+## 4. Performance and accessibility
+
+**Owner's run, 2026-09-26** (Lighthouse 13.4.1, emulated Moto G Power, slow 4G, on a Vercel preview):
+- Performance 100, Accessibility 100, Best practices 100.
+- LCP 1.7 s, TBT 10 ms, CLS 0. That meets the 2.5 s mobile LCP target.
+- SEO scored 66 only because Vercel sends `x-robots-tag: noindex` on preview URLs. Production sends no such header, and `robots.txt` allows everything.
+
+**Earlier local runs** (production build, Lighthouse 12):
 
 | Page | Mobile perf | Mobile LCP | Desktop perf | A11y / BP / SEO |
 |---|---|---|---|---|
@@ -86,26 +91,24 @@ The §5.5 checks are automated in `e2e/site/launch.spec.ts`. They cover:
 | `/admin`, `/api/cms-health` and unknown paths return 404 | Done (e2e) |
 | §2.5 fragment ids land | Done (e2e) |
 | §3 items present, §3.9 fixes applied, no AI images | Done, apart from the drafts in section 2 |
-| Résumé PDF passes §4.2 in both paper sizes | Done (unit tests read the PDF back). **Owner:** check it on the Vercel preview. |
+| Résumé PDF passes §4.2 in both paper sizes | Done. Unit tests read the PDF back, and both sizes are served in production. |
 | §4.4 content invariants | Done (unit) |
-| JSON-LD validates in a structured-data tester | Shape is tested. **Owner:** paste production into the Rich Results Test. |
-| §4.7 headers on live responses | Tested locally. **Owner:** check with `curl -I` on production. |
+| JSON-LD validates in a structured-data tester | Done. The Rich Results Test reports no errors. It detects no rich results because Person, WebSite and SoftwareSourceCode are not Google rich-result types. |
+| §4.7 headers on live responses | Done. securityheaders.com grades production A+. |
 | Engine playable, starts on request, keyboard | Done (e2e and a manual browser check) |
 | Chess line reaches Skribble Lab and Deriv; legal moves | Done (unit tests replay every move through the engine) |
 | FaultLine repo shows the Go rewrite | **Owner:** merge PR #205 in the FaultLine repo |
 | Phone number in Contact, PDF and JSON-LD | Done |
-| §5.4 and §5.5 bars on production | **Owner**, after the merge. See section 4. |
+| §5.4 and §5.5 bars on production | Done. See section 4. |
 | Analytics events fire | Wired up. **Owner:** confirm they appear in the Vercel dashboard. |
-| CMS decommissioned (§5.1) | **Owner:** steps below |
+| CMS decommissioned (§5.1) | Done by the owner (2026-09-26) |
 
 ## 6. Owner-only steps, in order
 
 1. ~~Export the CMS.~~ Skipped at the owner's call (2026-09-26): the rebuild replaces everything the CMS held.
 2. ~~Merge `rebuild/analysis-board` into `master`.~~ Done by Claude at the owner's request (2026-09-26).
 3. Rewrite the drafts in section 2 when you have time.
-4. In Vercel:
-   - remove the CMS environment variables;
-   - delete the Blob store and the Postgres database;
-   - confirm that `anas-tarek-qumhiyeh.vercel.app` is the production alias. The proxy redirects it, and `www`, to the apex.
-5. Run Lighthouse and the Rich Results Test on production, and `curl -I` a page to see the headers.
-6. Push the Go rewrite of FaultLine to its repo's `main` branch.
+4. ~~Clean up Vercel (CMS variables, Blob store, Postgres).~~ Done by the owner (2026-09-26).
+5. ~~Run Lighthouse, the Rich Results Test and a header check.~~ Done (2026-09-26); see sections 4 and 5.
+6. Merge FaultLine PR #205 (the Go rewrite).
+7. Confirm the analytics events in Vercel → Analytics → Events.
