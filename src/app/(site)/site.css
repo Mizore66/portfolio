@@ -335,3 +335,48 @@ button.gb-sq { cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* House motion (docs/upgrade/phase-1-visual-system.md §2.4). src/lib/motion/tokens.ts mirrors these. */
+:root {
+  --ease-place: cubic-bezier(0.6, 0, 0.2, 1);
+  --t-tap: 120ms;
+  --t-hover: 180ms;
+  --t-lift: 270ms;
+  --t-move: 400ms;
+  --t-reframe: 600ms;
+  --t-push: 900ms;
+}
+
+/* The 3D board: one fixed canvas under the content; drei Views draw into these boxes. */
+.board-box { position: relative; width: 100%; }
+.board-box-hero { aspect-ratio: 16 / 10; }
+.board-box-pane { aspect-ratio: 1; }
+.board-box-raking { aspect-ratio: 21 / 9; }
+.board-box-diagram { aspect-ratio: 1; }
+.board-poster { position: absolute; inset: 0; display: grid; place-items: center; transition: opacity var(--t-reframe) var(--ease-place); }
+.board-poster .board { width: auto; height: 88%; max-width: 100%; }
+.board-box[data-ready] .board-poster { opacity: 0; }
+html[data-chess-cursor] .board-box { cursor: none; }
+
+/* The analysis-board cursor: fine pointers only, never eased. */
+.chess-cursor-dot, .chess-cursor-piece { position: fixed; left: 0; top: 0; pointer-events: none; z-index: 60; opacity: 0; }
+.chess-cursor-dot { width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: #3B6A4B; }
+.chess-cursor-dot[data-on="1"] { opacity: .8; }
+.chess-cursor-piece { font-family: var(--font-chess); font-size: 20px; line-height: 1; color: var(--color-ink); }
+.chess-cursor-piece[data-on="1"] { opacity: 1; }
+.chess-cursor-piece span { display: inline-block; transition: transform var(--t-move) var(--ease-place); }
+.chess-cursor-piece[data-step="1"] span { transform: translate(7px, -7px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .board-poster, .chess-cursor-piece span { transition: none; }
+}
+
+/* Phase 2 prototype (/lab/board-prototype). */
+.proto { max-width: 72rem; padding-top: 2rem; }
+.proto-title { font-size: 1.75rem; font-weight: 500; margin: 0 0 .5rem; }
+.proto-h { font-size: 1rem; font-weight: 500; margin: 2rem 0 .5rem; }
+.proto-stats { font-family: var(--font-mono); font-size: .8rem; }
+.proto-row { display: grid; gap: 2rem; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .proto-row { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); } }
+.proto-move { min-height: 44px; padding: 0 .5rem; border: 0; background: none; font: inherit; font-variant-numeric: tabular-nums; cursor: pointer; }
+.proto-move.is-current { background: #E8E2C9; font-weight: 500; }
