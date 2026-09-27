@@ -16,8 +16,9 @@ const PROFILES = {
   K: [[0, 0], [.34, 0], [.34, .06], [.30, .10], [.30, .14], [.23, .18], [.13, .86], [.22, .92], [.22, .96], [.12, 1.00], [.17, 1.20], [.23, 1.40], [.21, 1.46], [.10, 1.50], [0, 1.50]],
 };
 
+const SMOOTH = {};
 export function profileRadius(type, y) {
-  const p = PROFILES[type];
+  const p = (SMOOTH[type] ??= smooth(PROFILES[type]));
   for (let i = 1; i < p.length; i++) {
     const [r0, y0] = p[i - 1], [r1, y1] = p[i];
     if (y >= y0 && y <= y1 && y1 > y0) return r0 + ((y - y0) / (y1 - y0)) * (r1 - r0);
@@ -51,15 +52,34 @@ export const MAT = {
   dark: () => new THREE.MeshStandardMaterial({ color: 0x141312, roughness: .9 }),
 };
 
+
+/** Rounds gentle corners of a lathe profile (Chaikin cuts where the turn is under ~55°); crisp steps stay crisp. */
+function smooth(pts, passes = 4) {
+  let p = pts;
+  for (let k = 0; k < passes; k++) {
+    const out = [p[0]];
+    for (let i = 1; i < p.length - 1; i++) {
+      const [a, b, c] = [p[i - 1], p[i], p[i + 1]];
+      const u = [b[0] - a[0], b[1] - a[1]], v = [c[0] - b[0], c[1] - b[1]];
+      const turn = Math.abs(Math.atan2(u[0] * v[1] - u[1] * v[0], u[0] * v[0] + u[1] * v[1]));
+      if (turn > .96) { out.push(b); continue; }
+      out.push([b[0] - u[0] * .25, b[1] - u[1] * .25], [b[0] + v[0] * .25, b[1] + v[1] * .25]);
+    }
+    out.push(p.at(-1)); p = out;
+  }
+  return p;
+}
+
 export function piece(type, mat) {
   const g = new THREE.Group();
   const add = (geo, m = mat) => { const mesh = new THREE.Mesh(geo, m); mesh.castShadow = true; mesh.receiveShadow = true; g.add(mesh); return mesh; };
-  add(new THREE.LatheGeometry(PROFILES[type].map(([r, y]) => V(r, y)), 96));
+  add(new THREE.LatheGeometry((SMOOTH[type] ??= smooth(PROFILES[type])).map(([r, y]) => V(r, y)), 96));
   if (type === "P") add(new THREE.SphereGeometry(.16, 48, 32)).position.y = .68;
   if (type === "B") {
     add(new THREE.SphereGeometry(.05, 24, 16)).position.y = 1.33;
-    const slit = add(new THREE.BoxGeometry(.02, .2, .37), MAT.dark());
-    slit.position.set(0, 1.08, 0); slit.rotation.z = -0.6; slit.castShadow = false;
+    // the mitre cut: a dark groove laid on the head's surface, rising diagonally across the front
+    const cut = []; for (let i = 0; i <= 40; i++) { const t = i / 40, y = 1.0 + t * .15, a = -.62 + t * .8, r = profileRadius("B", y) - .002; cut.push(new THREE.Vector3(Math.sin(a) * r, y, Math.cos(a) * r)); }
+    const groove = add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(cut), 80, .0075, 8, false), MAT.dark()); groove.castShadow = false;
   }
   if (type === "Q") {
     for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2; add(new THREE.SphereGeometry(.045, 20, 12)).position.set(Math.cos(a) * .2, 1.4, Math.sin(a) * .2); }

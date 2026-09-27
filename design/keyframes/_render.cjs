@@ -11,7 +11,7 @@ const SIZES = { d: [1440, 900], m: [390, 844] };
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
   const filters = process.argv.slice(2);
-  const files = fs.readdirSync(DIR).filter((f) => f.endsWith(".html") && f !== "index.html" && (!filters.length || filters.some((s) => f.includes(s))));
+  const files = fs.readdirSync(DIR).filter((f) => f.endsWith(".html") && !["index.html", "picks.html", "lab-round2.html", "round2.html", "lab-long.html"].includes(f) && (!filters.length || filters.some((s) => f.includes(s))));
   const browser = await chromium.launch({ args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] });
   for (const f of files) {
     const mobile = /-m\.html$/.test(f);

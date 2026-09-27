@@ -76,8 +76,19 @@ Owner decisions for the v3 redesign, newest last.
 | 07 Play | The overhead board after 3…Bc5 with the f3 knight's moves | the learned net's eval, +0.43 (53.9%) |
 
 **Still rough in the Lab frames (fix during round 2 or in the build):**
-- 02: the spilled sheets are low contrast on the white side.
-- 05: the heaps read slightly like columns rather than piles.
+- ~~02: the spilled sheets are low contrast on the white side.~~ Fixed in round 2 (darker sheet edges).
+- ~~05: the heaps read slightly like columns rather than piles.~~ Fixed in round 2 (wider settling).
 - All knights use the placeholder silhouette; Phase 4 models it properly.
 - The camera's dive between chapters is motion only (Phase 3), so no frame shows it.
 - Trees in 00 are still seeded placeholders; the build draws the kept engine's real search.
+
+## Phase 2, round 2 (2026-09-28)
+
+Review page: `design/keyframes/round2.html`. The picks stay stable; only the §5 failures flagged in round 1 changed.
+- **Pieces, everywhere:** lathe profiles are rounded at gentle corners (crisp steps kept), so heads no longer read as faceted. The bishop's mitre is a groove on the surface. Crack and copper inlays follow the new surface.
+- **proj-a:** the key light is higher, so the shadow is shorter and lighter and no longer runs under the subtitle.
+- **roles-b:** 19 words (was about 50). Names only in career order, "now" on Deriv; dates move to hover and the role pages.
+
+**Open for the owner:**
+- The Lab chapters run about 40 to 70 words each, above the 20-word rule, because they carry the technical story. Allowed there?
+- The Lab has no mobile compositions yet. The brief asks for mobile on the hero only; §5 wants every page designed for phones.
