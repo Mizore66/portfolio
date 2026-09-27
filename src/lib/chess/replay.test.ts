@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { GAME as OPENING_NODES } from "@/content/site/game";
-import { mainline as getMainline, replayPliesTo as collectPlies } from "@/content/site/game-tree";
+import { GAME as OPENING_NODES } from "./game-fixture";
+import { mainline as getMainline, replayPliesTo as collectPlies } from "./game-fixture";
 import { occupancy, occupancyFen, positionAfter, snapInnerEdge, squareBox } from "./replay";
 
 describe("Italian Game replay", () => {

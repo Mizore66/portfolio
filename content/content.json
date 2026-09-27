@@ -16,7 +16,13 @@
       "Hero carries no metric (v2 rule, from the colophon tests). Open for the redesign, but recorded here."
     ],
     "draftFlag": "Fields with draft: true were written by an agent from facts and are awaiting the owner's own wording. They are facts-true but not the owner's voice.",
-    "names": "Anas Qumhiyeh on the site; Anas Tarek Qumhiyeh on the résumé and wherever a legal name is expected (JSON-LD Person.name)."
+    "names": "Anas Qumhiyeh on the site; Anas Tarek Qumhiyeh on the résumé and wherever a legal name is expected (JSON-LD Person.name).",
+    "confirmedByOwner": {
+      "2026-09-28": [
+        "Education: graduated April 2026, WAM 81.8, CGPA 3.78 (docs/copy-desk.md's May 2026 / 82.1 / 3.82 was wrong).",
+        "Reference notes file is references/VIDEO_REFERENCE.md."
+      ]
+    }
   },
   "identity": {
     "legalName": "Anas Tarek Qumhiyeh",
@@ -1235,7 +1241,7 @@
     ]
   },
   "resume": {
-    "note": "The v2 one-page résumé, generated as a PDF at /print-edition (US Letter default, ?paper=a4). This is the composed content; experience bullets are the primary résumé wording. v2 résumé included only the three most recent roles and two projects; brief §2 asks résumé mode to be complete (every role, project, number, qualifier, link).",
+    "note": "The v2 one-page résumé, generated as a PDF at /print-edition (US Letter default, ?paper=a4). This is the composed content; experience bullets are the primary résumé wording. v2 résumé included only the three most recent roles and two projects; brief §2 asks résumé mode to be complete (every role, project, number, qualifier, link). PLACEHOLDER: the owner will supply their actual résumé to display; until then this content stands in. The v2 PDF generator was removed; plan a /print-edition → /resume redirect in Phase 5.",
     "pdfFilename": "Anas-Tarek-Qumhiyeh-resume.pdf",
     "name": "Anas Tarek Qumhiyeh",
     "summary": "Full-stack engineer building production services in Go, TypeScript and Python on PostgreSQL, Redis and Kubernetes, with digital-commerce experience in payment-gateway integration and merchant onboarding.",
@@ -2806,8 +2812,7 @@
     ]
   },
   "openQuestions": [
-    "docs/copy-desk.md (LinkedIn About text) says graduated May 2026, WAM 82.1, CGPA 3.82. The site's content says April 2026, WAM 81.8, CGPA 3.78. Which is correct?",
-    "Many case-study and game-commentary fields are draft: true (agent-written). Rewrite before they are used as voice?",
+    "Many case-study and game-commentary fields are draft: true (agent-written). The owner will review them when needed.",
     "identity.about and identity.contactHeading were also flagged as drafts in the 2026-09-25 owner review."
   ]
 }
