@@ -63,7 +63,7 @@ export type Role = {
   claimIds: readonly string[];
   /** Factual note printed under the claims (e.g. the +45% / +35% split). */
   note?: string;
-  /** Voice: rendered in Literata Italic. */
+  /** Voice: rendered in Schibsted Grotesk Italic. */
   annotation?: string;
   /** Condensed under "Earlier experience". */
   earlier: boolean;

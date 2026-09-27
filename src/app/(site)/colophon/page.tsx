@@ -9,17 +9,18 @@ export const metadata: Metadata = {
 
 const TYPE = [
   { name: "Schibsted Grotesk", role: "Facts and interface", sample: "Roman is fact.", className: "" },
-  { name: "Literata Italic", role: "Commentary only", sample: "Italic is voice.", className: "annotation" },
+  { name: "Schibsted Grotesk Italic", role: "Commentary only", sample: "Italic is voice.", className: "annotation" },
   { name: "Commit Mono", role: "Notation and figures", sample: "10. Nbxd2 Bg4 −143.3 ±35.4", className: "claim-value" },
   { name: "Noto Sans Symbols 2", role: "Chess pieces", sample: "♚ ♛ ♜ ♝ ♞ ♟", className: "colophon-pieces" },
 ];
 
 const COLOURS = [
-  { name: "Slate ink", hex: "#14181D", use: "Text" },
-  { name: "Board light", hex: "#E4E8EC", use: "Light squares" },
-  { name: "Board dark", hex: "#7D8A99", use: "Dark squares" },
-  { name: "Annotation violet", hex: "#6D3FD6", use: "Commentary, arrows, focus" },
-  { name: "White", hex: "#FFFFFF", use: "Paper" },
+  { name: "Paper", hex: "#F1F2EC", use: "Page" },
+  { name: "Ink", hex: "#161B19", use: "Text, buttons, black pieces" },
+  { name: "Pencil", hex: "#57605B", use: "Secondary text and commentary" },
+  { name: "Hairline", hex: "#D2D6CE", use: "Rules and borders" },
+  { name: "Tournament green", hex: "#3B6A4B", use: "Dark squares, links, focus" },
+  { name: "Buff", hex: "#E8E2C9", use: "Light squares and the scoresheet" },
 ];
 
 const TESTS = [
@@ -28,6 +29,7 @@ const TESTS = [
   "Every chess move is legal under the engine's own move generator, the mainline equals the canonical line, and every old ?move= link still resolves.",
   "The résumé PDF fits one page in both paper sizes, is tagged, and renders −, →, ± and é as text.",
   "No engine file or worker loads until the engine is started; a keyboard move gets an engine reply.",
+  "With WebGL off every board stays a printed diagram and no 3D code loads; with reduced motion nothing animates.",
   "Every public page has zero automated accessibility violations and no sideways scrolling at 320 px.",
 ];
 
@@ -133,6 +135,8 @@ export default function ColophonPage() {
           <li>Handcrafted evaluation: the PeSTO piece-square tables by Ronald Friederich.</li>
           <li>Lichess eval database, CC0-1.0. No Stockfish network weights are copied.</li>
           <li>Chess pieces are glyphs from Noto Sans Symbols 2 (SIL Open Font License).</li>
+          <li>The 3D pieces are turned from profiles written in code and the mat is drawn in code: no third-party models, scans or textures.</li>
+          <li>The 3D board uses three.js, React Three Fiber and drei; motion uses GSAP and Lenis; the board state is kept in Zustand.</li>
           <li>Built with Next.js, React and Tailwind CSS; hosted on Vercel with cookieless Vercel Web Analytics.</li>
         </ul>
       </section>

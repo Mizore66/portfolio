@@ -1,8 +1,15 @@
-import { Literata, Schibsted_Grotesk } from "next/font/google";
+import { Schibsted_Grotesk } from "next/font/google";
 import localFont from "next/font/local";
 
-const sans = Schibsted_Grotesk({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-sans-src", display: "swap" });
-const voice = Literata({ subsets: ["latin"], style: ["italic"], weight: ["400"], variable: "--font-voice-src", display: "swap" });
+// One family for text and notation (docs/upgrade/phase-1-visual-system.md §2.2): roman for facts, italic for commentary.
+const sans = Schibsted_Grotesk({ subsets: ["latin"], weight: ["400", "500"], style: "normal", variable: "--font-sans-src", display: "swap" });
+// Commentary is in most pages' first HTML, so its italic is on the critical path to first paint: it is the
+// variable italic instanced at 400, the only weight commentary uses (25 KB instead of 48), and preloaded.
+const voice = localFont({
+  src: [{ path: "../../fonts/schibsted-grotesk/schibsted-grotesk-italic-400-latin.woff2", weight: "400", style: "italic" }],
+  variable: "--font-voice-src",
+  display: "swap",
+});
 // Noto Sans Symbols 2 cut to the twelve chess pieces: 3 KB instead of the 235 KB "symbols" subset.
 const chess = localFont({
   src: [{ path: "../../fonts/noto-sans-symbols-2/noto-sans-symbols-2-chess.woff2", weight: "400", style: "normal" }],

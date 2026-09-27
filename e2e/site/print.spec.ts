@@ -30,7 +30,7 @@ test.describe("print, colophon, errors", () => {
   });
 
   test("preview images and the icon are PNGs, and the stray favicon is gone", async ({ request, page }) => {
-    for (const path of ["/", "/opening-preparation", "/lab/learned-evaluator", "/projects/faultline"]) {
+    for (const path of ["/", "/work", "/about", "/lab", "/opening-preparation", "/lab/learned-evaluator", "/projects/faultline"]) {
       await page.goto(path);
       const url = await page.locator('meta[property="og:image"]').getAttribute("content");
       const res = await request.get(new URL(url!).pathname + new URL(url!).search);

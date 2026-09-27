@@ -21,12 +21,9 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: SECURITY_HEADERS }];
   },
-  // Brief §2.2: static, no lookup.
+  // Brief §2.2: static, no lookup. /about is a page since the overview/work/about/lab split.
   async redirects() {
-    return [
-      { source: "/about", destination: "/#about", permanent: true },
-      { source: "/archive", destination: "/#work", permanent: true },
-    ];
+    return [{ source: "/archive", destination: "/work#archive", permanent: true }];
   },
 };
 

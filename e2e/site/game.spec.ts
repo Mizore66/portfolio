@@ -27,7 +27,9 @@ test.describe("the engine", () => {
     await page.keyboard.press("Enter");
     await expect(page.locator(".gb-status")).toHaveText(/Engine thinking/);
     await expect(page.locator(".gb-status")).toHaveText(/your move/, { timeout: 20_000 });
-    await expect(page.locator('.gb-board [data-square="h3"]')).toHaveAttribute("aria-label", /white pawn/);
+    // The pawn left h2. (Not "a white pawn stands on h3": a shallow search under load can answer ...Bxh3.)
+    await expect(page.locator('.gb-board [data-square="h2"]')).toHaveAttribute("aria-label", /empty/);
+    await expect(page.locator('.gb-board [data-square="h3"]')).toHaveAttribute("aria-label", /white pawn|black bishop/);
   });
 
   test("fetches the learned weights only when Learned is chosen", async ({ page }) => {
@@ -58,14 +60,14 @@ test.describe("the engine", () => {
 test.describe("the career graph", () => {
   test("a point sets the board and lands on its chapter", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
-    await page.locator('#career a.cg-mark[href="/#deriv"]').click();
+    await page.goto("/about");
+    await page.locator('#career a.cg-mark[href="/about#deriv"]').click();
     await expect(page).toHaveURL(/#deriv$/);
     await expect(page.locator(".board-caption")).toContainText("Deriv");
   });
 
   test("offers the same data as a table", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/about");
     await page.getByText("Show as a table").click();
     await expect(page.locator(".career-table tbody tr")).not.toHaveCount(0);
   });

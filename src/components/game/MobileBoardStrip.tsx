@@ -1,6 +1,6 @@
 /**
  * Mobile only (brief §7 B): a slim strip at the top edge. The bar shows the evaluation of the
- * current position; the violet line under it is reading progress, driven by CSS scroll timelines
+ * current position; the green line under it is reading progress, driven by CSS scroll timelines
  * (no scroll listeners). Tapping it goes to the board.
  */
 export function MobileBoardStrip({ move, evalCp }: { move: string; evalCp: number }) {

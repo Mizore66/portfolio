@@ -38,11 +38,13 @@ test.describe("round five invariants", () => {
     }
   });
 
-  test("legacy about and archive routes redirect onto the homepage", async ({ page }) => {
+  // Since the overview/work/about/lab split (docs/upgrade/phase-1-visual-system.md §4), /about is the profile page.
+  test("legacy about and archive routes land on their pages", async ({ page }) => {
     await page.goto("/about");
-    await expect(page).toHaveURL(/\/#about$/);
+    await expect(page).toHaveURL(/\/about$/);
+    await expect(page.locator("#experience")).toHaveCount(1);
     await page.goto("/archive");
-    await expect(page).toHaveURL(/\/#work$/);
+    await expect(page).toHaveURL(/\/work#archive$/);
   });
 
 });

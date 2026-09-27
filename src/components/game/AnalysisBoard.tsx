@@ -9,6 +9,7 @@ import { FILES, positionAfter, type Color, type Piece, type PieceType } from "@/
 import { loadLearnedNet, startSearch } from "@/lib/game/engine-client";
 import type { Ply } from "@/lib/opening/types";
 import { replayPlies, sideToMoveAfter } from "@/lib/game/plies";
+import { boardStore } from "@/lib/board/store";
 import { EvalBar } from "./EvalBar";
 
 type EngineApi = typeof import("@/lib/chess/engine");
@@ -36,6 +37,37 @@ function moveText(pieces: readonly Piece[], ply: Ply): string {
   return `${letter}${capture ? "x" : ""}${ply.to}${promo}`;
 }
 
+/** Resolves the engine's SAN line into plies on the board it was searched from (for the 3D arrows). */
+function sanLine(api: EngineApi, start: readonly Ply[], firstSide: Color, san: readonly string[], limit = 3): Ply[] {
+  const out: Ply[] = [];
+  let plies = [...start];
+  let side = firstSide;
+  for (const raw of san.slice(0, limit)) {
+    const pieces = positionAfter(replayPlies(plies));
+    const legal = api.legalPlies(api.fromPieces(pieces, side, replayPlies(plies).at(-1) ?? null));
+    const s = raw.replace(/[+#!?]/g, "").replace(/=.$/, "");
+    let ply: Ply | undefined;
+    if (s === "O-O" || s === "O-O-O") {
+      const rank = side === "w" ? "1" : "8";
+      ply = legal.find((l) => l.from === `e${rank}` && l.to === `${s === "O-O" ? "g" : "c"}${rank}`);
+    } else {
+      const to = s.slice(-2);
+      const letter = /^[KQRBN]/.test(s) ? (s[0] as PieceType) : "P";
+      const hint = s.slice(letter === "P" ? 0 : 1, -2).replace("x", "");
+      ply = legal.find((l) => {
+        const p = pieceAt(pieces, l.from);
+        if (!p || p.type !== letter || l.to !== to) return false;
+        return [...hint].every((ch) => l.from.includes(ch));
+      });
+    }
+    if (!ply) break;
+    out.push(ply);
+    plies = [...plies, ply];
+    side = side === "w" ? "b" : "w";
+  }
+  return out;
+}
+
 /** Position as text for screen readers (brief §4.6). */
 function describePosition(pieces: readonly Piece[]): string {
   const side = (c: Color) =>
@@ -56,12 +88,18 @@ export type AnalysisBoardProps = {
   label: string;
   /** Opens with Learned selected (the lab page). */
   initialMode?: EvalMode;
+  /**
+   * Paired with a 3D board box: before the engine starts, the box already shows
+   * the position, so this grid is kept for assistive tech only; after it starts,
+   * the engine's position and line are mirrored to the shared board store.
+   */
+  linked?: boolean;
   size?: "pane" | "wide";
 };
 
 type Status = "idle" | "loading" | "ready" | "error";
 
-export function AnalysisBoard({ basePlies, positionKey, label, initialMode = "handcrafted", size = "pane" }: AnalysisBoardProps) {
+export function AnalysisBoard({ basePlies, positionKey, label, initialMode = "handcrafted", size = "pane", linked = false }: AnalysisBoardProps) {
   const [extra, setExtra] = useState<Ply[]>([]);
   const [api, setApi] = useState<EngineApi | null>(null);
   const [started, setStarted] = useState(false);
@@ -165,6 +203,23 @@ export function AnalysisBoard({ basePlies, positionKey, label, initialMode = "ha
     return cancel;
     // replay identity changes with every move; the rest are the search inputs.
   }, [searching, searchKey, replay, side, effectiveMode, net, awaitingReply, play]);
+
+  // The 3D board's engine view reads the engine through the store (brief §4 Engine view).
+  useEffect(() => {
+    if (!linked) return;
+    boardStore().getState().setEngineView(started);
+  }, [linked, started]);
+  useEffect(() => {
+    if (!linked || !started) return;
+    boardStore().getState().setEngine({ plies: replay, pv: api && info?.pv.length ? sanLine(api, enginePlies, side, info.pv) : [], evalCp: info?.evalCp ?? null, depth: info?.depth ?? 0, searching: thinking });
+  }, [linked, started, replay, info, thinking, api, enginePlies, side]);
+  useEffect(() => {
+    if (!linked) return;
+    return () => {
+      boardStore().getState().setEngine(null);
+      boardStore().getState().setEngineView(false);
+    };
+  }, [linked]);
 
   async function start() {
     setStarted(true);
@@ -274,7 +329,7 @@ export function AnalysisBoard({ basePlies, positionKey, label, initialMode = "ha
       : `${side === "w" ? "White" : "Black"} to move${started ? ": your move" : ""}.`;
 
   return (
-    <div className={size === "wide" ? "gb gb-wide" : "gb"}>
+    <div className={`${size === "wide" ? "gb gb-wide" : "gb"}${linked ? " gb-linked" : ""}`} data-started={started ? "" : undefined}>
       <div className="gb-frame">
         <EvalBar evalCp={started && info ? info.evalCp : null} />
         <div

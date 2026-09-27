@@ -5,7 +5,10 @@ import { expect, test } from "@playwright/test";
 
 const PUBLIC = [
   "/",
-  "/?path=ml",
+  "/work",
+  "/work?path=ml",
+  "/about",
+  "/lab",
   "/opening-preparation",
   "/opening-preparation?move=deriv",
   "/lab/learned-evaluator",
@@ -23,7 +26,7 @@ const PUBLIC = [
 
 test.describe("redirects and removed routes", () => {
   test("static redirects land where the brief says", async ({ request }) => {
-    for (const [from, to] of [["/about", "/#about"], ["/archive", "/#work"]]) {
+    for (const [from, to] of [["/archive", "/work#archive"]]) {
       const res = await request.get(from, { maxRedirects: 0 });
       expect(res.status(), from).toBe(308);
       expect(res.headers().location, from).toBe(to);
@@ -136,6 +139,9 @@ test.describe("accessibility bar (§5.5)", () => {
     await page.evaluate(() => window.scrollTo(0, 2000));
     const sticky = await page.evaluate(() =>
       [...document.querySelectorAll("body *")]
+        // The 3D board's canvas layer sits under the content, hidden from assistive tech and pointer events:
+        // it is background, not chrome (AUDIT.md decision 3).
+        .filter((el) => !el.closest('[aria-hidden="true"]') && getComputedStyle(el).pointerEvents !== "none")
         .filter((el) => ["sticky", "fixed"].includes(getComputedStyle(el).position) && el.getBoundingClientRect().top <= 1)
         .reduce((sum, el) => sum + el.getBoundingClientRect().height, 0),
     );
@@ -169,10 +175,10 @@ test.describe("accessibility bar (§5.5)", () => {
   });
 
   test("Save-Data skips the decorative thumbnails", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/work");
     await expect(page.locator(".card-thumb").first()).toBeAttached();
     await page.setExtraHTTPHeaders({ "Save-Data": "on" });
-    await page.goto("/");
+    await page.goto("/work");
     await expect(page.locator(".card").first()).toBeVisible();
     await expect(page.locator(".card-thumb")).toHaveCount(0);
   });
@@ -183,6 +189,29 @@ test.describe("accessibility bar (§5.5)", () => {
     const running = await page.evaluate(() => document.getAnimations().filter((a) => a.playState === "running").length);
     expect(running).toBe(0);
   });
+
+  test("without WebGL every board stays a printed diagram and no 3D code loads", async ({ page }) => {
+    // Upgrade brief §9: works fully with WebGL off.
+    await page.addInitScript(() => {
+      const get = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement, type: string, ...rest: unknown[]) {
+        return /webgl/.test(type) ? null : (get as (...a: unknown[]) => RenderingContext | null).call(this, type, ...rest);
+      } as typeof get;
+    });
+    const three: string[] = [];
+    page.on("response", async (r) => {
+      if (r.request().resourceType() === "script" && (await r.text().catch(() => "")).includes("WebGLRenderer")) three.push(r.url());
+    });
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(String(e)));
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(1500);
+    await expect(page.locator(".board-box svg:visible").first()).toBeVisible();
+    await expect(page.locator("canvas")).toHaveCount(0);
+    expect(three).toEqual([]);
+    expect(errors).toEqual([]);
+  });
 });
 
 test.describe("readable without help (§4.8)", () => {
@@ -191,17 +220,22 @@ test.describe("readable without help (§4.8)", () => {
     const page = await context.newPage();
     await page.goto("/");
     await expect(page.locator("h1")).toHaveText("I like systems that have to survive measurement.");
-    await expect(page.locator("#deriv")).toContainText("AI Engineer");
     await expect(page.locator("#contact")).toContainText("anasqumhiyeh@gmail.com");
+    await expect(page.locator("#the-game .moves")).toContainText("10. Nbxd2 Bg4");
+    await page.goto("/about");
+    await expect(page.locator("#deriv")).toContainText("AI Engineer");
     await page.goto("/projects/faultline");
     await expect(page.locator("#measurement")).toContainText("PASS→FAIL");
     await context.close();
   });
 
-  test("the front page still reads as a CV with stylesheets gone", async ({ page }) => {
-    await page.goto("/");
-    await page.evaluate(() => document.querySelectorAll("style, link[rel='stylesheet']").forEach((el) => el.remove()));
-    const text = await page.locator("main").innerText();
+  test("the front page and the profile still read as a CV with stylesheets gone", async ({ page }) => {
+    let text = "";
+    for (const path of ["/", "/about"]) {
+      await page.goto(path);
+      await page.evaluate(() => document.querySelectorAll("style, link[rel='stylesheet']").forEach((el) => el.remove()));
+      text += await page.locator("main").innerText();
+    }
     for (const s of ["I like systems", "Deriv", "Skribble Lab", "Monash University", "anasqumhiyeh@gmail.com"]) expect(text).toContain(s);
   });
 });

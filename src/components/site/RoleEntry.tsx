@@ -1,11 +1,12 @@
 import { getClaim } from "@/content/site";
+import { nodeForRole } from "@/content/site/career";
 import { formatPeriod } from "@/content/site/format";
 import type { Role } from "@/content/site/types";
 import { ClaimLine } from "./ClaimLine";
 
 export function RoleEntry({ role }: { role: Role }) {
   return (
-    <article id={role.id} className={role.earlier ? "role role-earlier" : "role"} aria-labelledby={`${role.id}-title`}>
+    <article id={role.id} className={role.earlier ? "role role-earlier" : "role"} aria-labelledby={`${role.id}-title`} data-node={nodeForRole(role.id)}>
       <p className="role-meta">
         {formatPeriod(role.start, role.end)} · {role.kind}
       </p>
@@ -26,7 +27,12 @@ export function RoleEntry({ role }: { role: Role }) {
           ))}
         </div>
       ) : null}
-      {role.note ? <p className="note">{role.note}</p> : null}
+      {/* Clarifications sit in the margin beside the entry on wide screens (brief §4); inline below it otherwise. */}
+      {role.note ? (
+        <p className="note margin-note" data-fx="margin">
+          {role.note}
+        </p>
+      ) : null}
       {role.annotation ? <p className="annotation">{role.annotation}</p> : null}
       <p className="role-tech">{role.tech.join(", ")}</p>
     </article>

@@ -14,7 +14,8 @@ export function ProjectMedia({ media }: { media: readonly Media[] }) {
             height={m.height}
             alt={m.alt}
             sizes={portrait ? "(min-width: 768px) 360px, 50vw" : "(min-width: 1024px) 896px, 100vw"}
-            priority={i === 0}
+            // The first screenshot is the page's largest paint on every viewport.
+            {...(i === 0 ? { loading: "eager", fetchPriority: "high" } as const : {})}
           />
           <figcaption>{m.caption}</figcaption>
         </figure>

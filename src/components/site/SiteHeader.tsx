@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { IDENTITY } from "@/content/site/identity";
 
+// Overview, portfolio, profile, journal (brief §6, from PX PUSH's separate pages). Contact is the home page's ending.
 const NAV = [
-  { label: "Work", href: "/#work" },
-  { label: "Experience", href: "/#experience" },
-  { label: "Lab", href: "/#lab" },
-  { label: "About", href: "/#about" },
+  { label: "Work", href: "/work" },
+  { label: "About", href: "/about" },
+  { label: "Lab", href: "/lab" },
   { label: "Contact", href: "/#contact" },
 ] as const;
 

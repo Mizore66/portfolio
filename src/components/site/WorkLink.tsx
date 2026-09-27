@@ -8,7 +8,7 @@ import { parsePath } from "@/content/site/paths";
 export function WorkLink({ children, className }: { children: React.ReactNode; className?: string }) {
   const path = parsePath(useSearchParams().get("path"));
   return (
-    <Link className={className} href={path ? `/?path=${path}#work` : "/#work"}>
+    <Link className={className} href={path ? `/work?path=${path}` : "/work"}>
       {children}
     </Link>
   );

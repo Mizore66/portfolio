@@ -1,15 +1,21 @@
 @import "tailwindcss";
 
+/* Palette (docs/upgrade/phase-1-visual-system.md §2.1): a tournament vinyl mat on book paper.
+   The older names stay as aliases so existing rules keep working. */
 @theme {
-  --color-ink: #14181d;
-  --color-muted: #4a5561;
-  --color-rule: #d7dde3;
-  --color-board-light: #e4e8ec;
-  --color-board-dark: #7d8a99;
-  --color-annotation: #6d3fd6;
-  --color-paper: #ffffff;
+  --color-paper: #F1F2EC;
+  --color-ink: #161B19;
+  --color-pencil: #57605B;
+  --color-hairline: #D2D6CE;
+  --color-green: #3B6A4B;
+  --color-buff: #E8E2C9;
+  --color-muted: var(--color-pencil);
+  --color-rule: var(--color-hairline);
+  --color-board-light: var(--color-buff);
+  --color-board-dark: var(--color-green);
+  --color-annotation: var(--color-green);
   --font-sans: var(--font-sans-src), system-ui, sans-serif;
-  --font-voice: var(--font-voice-src), Georgia, serif;
+  --font-voice: var(--font-voice-src), var(--font-sans-src), system-ui, sans-serif;
   --font-mono: var(--font-mono-src), ui-monospace, monospace;
   --font-chess: var(--font-chess-src), "Segoe UI Symbol", sans-serif;
 }
@@ -50,16 +56,19 @@ a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; 
 .board-layout { display: grid; grid-template-columns: minmax(0, 1fr); max-width: var(--page-max); margin-inline: auto; }
 @media (min-width: 1024px) {
   .board-layout { grid-template-columns: minmax(0, 1fr) 380px; }
-  .board-pane { position: sticky; top: 0; align-self: start; max-height: 100dvh; overflow-y: auto; border-left: 1px solid var(--color-rule); }
+  .board-pane { position: sticky; top: 0; align-self: start; max-height: 100dvh; display: flex; flex-direction: column; border-left: 1px solid var(--color-rule); }
+  .board-pane-head { flex: none; }
+  .board-pane-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
 }
 .reading { padding: 0 var(--gutter) 5rem; max-width: 50rem; }
 .board-pane { padding: 1.5rem var(--gutter); display: flex; flex-direction: column; gap: .75rem; }
+.board-pane-head, .board-pane-body { display: flex; flex-direction: column; gap: .75rem; }
 @media (min-width: 1024px) { .board-pane { padding: 2rem 1.5rem; } }
 
 .section { padding-top: 4.5rem; }
 .section > h2 { font-size: 1.75rem; line-height: 1.2; font-weight: 500; letter-spacing: -.01em; margin: 0 0 1.25rem; text-wrap: balance; }
 .section p { max-width: 65ch; }
-.annotation { font-family: var(--font-voice); font-style: italic; color: var(--color-annotation); }
+.annotation { font-family: var(--font-voice); font-style: italic; color: var(--color-pencil); }
 .note { color: var(--color-muted); font-size: .95rem; }
 
 .hero { padding-top: clamp(2.5rem, 7vw, 5rem); }
@@ -72,7 +81,7 @@ a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; 
 .btn:hover { background: var(--color-board-light); }
 .btn:active { transform: translateY(1px); }
 .btn-primary { background: var(--color-ink); color: var(--color-paper); }
-.btn-primary:hover { background: #2a313a; }
+.btn-primary:hover { background: #2B322F; }
 .chips { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0 0 2rem; padding: 0; list-style: none; }
 .chip { display: inline-flex; align-items: center; min-height: 44px; padding: 0 .75rem; border: 1px solid var(--color-rule); text-decoration: none; }
 .chip:hover { border-color: var(--color-muted); }
@@ -212,9 +221,10 @@ a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; 
 button.gb-sq { cursor: pointer; }
 .gb-light { background: var(--color-board-light); }
 .gb-dark { background: var(--color-board-dark); }
-.gb-sq:focus-visible { outline: 3px solid var(--color-annotation); outline-offset: -3px; z-index: 1; }
-.gb-selected { box-shadow: inset 0 0 0 3px var(--color-annotation); }
-.gb-target::after { content: ""; position: absolute; width: 26%; height: 26%; border-radius: 50%; background: var(--color-annotation); opacity: .7; }
+/* On the board the accent is the dark square, so board states are drawn in ink. */
+.gb-sq:focus-visible { outline: 3px solid var(--color-ink); outline-offset: -3px; z-index: 1; }
+.gb-selected { box-shadow: inset 0 0 0 3px var(--color-ink); }
+.gb-target::after { content: ""; position: absolute; width: 26%; height: 26%; border-radius: 50%; background: var(--color-ink); opacity: .55; }
 .gb-piece { font-family: var(--font-chess); font-size: clamp(1.1rem, 5.4vw, 2rem); font-variant-emoji: text; pointer-events: none; }
 .gb-wide .gb-piece { font-size: clamp(1.1rem, 6vw, 2.75rem); }
 .gb-white { color: #ffffff; -webkit-text-stroke: 1px var(--color-ink); paint-order: stroke fill; }
@@ -334,4 +344,116 @@ button.gb-sq { cursor: pointer; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* Notation and figures are first-class type: tabular, never proportional (Phase 1 §2.2). */
+.claim-value, .moves, .role-meta, .card-meta, .board-caption, .cg-table, .gb-stats, .gb-pv, .gb-status, .cg-tick, .mobile-strip, .proto-stats, .ann, time { font-variant-numeric: tabular-nums; }
+
+/* House motion (docs/upgrade/phase-1-visual-system.md §2.4). src/lib/motion/tokens.ts mirrors these. */
+:root {
+  --ease-place: cubic-bezier(0.6, 0, 0.2, 1);
+  --t-tap: 120ms;
+  --t-hover: 180ms;
+  --t-lift: 270ms;
+  --t-move: 400ms;
+  --t-reframe: 600ms;
+  --t-push: 900ms;
+}
+
+/* The 3D board: one fixed canvas under the content; drei Views draw into these boxes. */
+.board-box { position: relative; width: 100%; }
+.board-box-hero { aspect-ratio: 16 / 10; }
+.board-box-pane { aspect-ratio: 1; }
+.board-box-raking { aspect-ratio: 21 / 9; }
+.board-box-diagram { aspect-ratio: 1; }
+.board-poster { position: absolute; inset: 0; display: grid; place-items: center; transition: opacity var(--t-reframe) var(--ease-place); }
+.board-poster .board { width: auto; height: 88%; max-width: 100%; }
+.board-box[data-ready] .board-poster { opacity: 0; }
+html[data-chess-cursor] .board-box { cursor: none; }
+
+/* The analysis-board cursor: fine pointers only, never eased. */
+.chess-cursor-dot, .chess-cursor-piece { position: fixed; left: 0; top: 0; pointer-events: none; z-index: 60; opacity: 0; }
+.chess-cursor-dot { width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: var(--color-green); }
+.chess-cursor-dot[data-on="1"] { opacity: .8; }
+.chess-cursor-piece { font-family: var(--font-chess); font-size: 20px; line-height: 1; color: var(--color-ink); }
+.chess-cursor-piece[data-on="1"] { opacity: 1; }
+.chess-cursor-piece span { display: inline-block; transition: transform var(--t-move) var(--ease-place); }
+.chess-cursor-piece[data-step="1"] span { transform: translate(7px, -7px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .board-poster, .chess-cursor-piece span { transition: none; }
+}
+
+/* Phase 2 prototype (/lab/board-prototype). */
+.proto { max-width: 72rem; padding-top: 2rem; }
+.proto-title { font-size: 1.75rem; font-weight: 500; margin: 0 0 .5rem; }
+.proto-h { font-size: 1rem; font-weight: 500; margin: 2rem 0 .5rem; }
+.proto-stats { font-family: var(--font-mono); font-size: .8rem; }
+.proto-row { display: grid; gap: 2rem; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .proto-row { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); } }
+.proto-move { min-height: 44px; padding: 0 .5rem; border: 0; background: none; font: inherit; font-variant-numeric: tabular-nums; cursor: pointer; }
+.proto-move.is-current { background: var(--color-buff); font-weight: 500; }
+
+/* Annotated section titles (brief §4): notation from the game, revealed behind masks. */
+.fx-mask { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: .1em; margin-bottom: -.1em; }
+.fx-mask > * { display: inline-block; }
+.ann { color: var(--color-green); margin-right: .55em; white-space: nowrap; font-weight: 500; }
+.ann-glyph { margin-left: .04em; }
+
+/* Margin annotations: beside the entry on wide screens, inline below it otherwise. */
+@media (min-width: 1280px) {
+  .role, .margin-row { display: grid; grid-template-columns: minmax(0, 1fr) 12.5rem; column-gap: 2rem; align-items: start; }
+  .role > *, .margin-row > * { grid-column: 1; }
+  .role > .margin-note, .margin-row > .margin-note { grid-column: 2; grid-row: 1 / span 12; margin: .35rem 0 0; padding-left: .75rem; border-left: 1px solid var(--color-hairline); font-size: .875rem; line-height: 1.5; }
+}
+
+/* Paired with a 3D board box: before "Start engine" the box shows the position, so the grid is for assistive tech only. */
+.gb-linked:not([data-started]) .gb-frame { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* The move list: each move is a button (brief §9). */
+.move-btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 .3rem; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; }
+.move-btn:hover { background: var(--color-buff); }
+.move-btn.is-current { background: var(--color-buff); font-weight: 500; }
+
+/* Home: the board pane is the hero board on wide screens (Phase 1 §3, as built in Phase 4). */
+@media (min-width: 1280px) {
+  .board-layout-home { grid-template-columns: minmax(0, 1fr) minmax(380px, 38vw); }
+}
+.hero-board-mobile { display: none; margin: 1.5rem 0 0; }
+@media (max-width: 1023px) { .hero-board-mobile { display: block; } }
+.page-title { font-size: clamp(2rem, 4vw, 2.75rem); line-height: 1.1; font-weight: 500; letter-spacing: -.015em; margin: clamp(2rem, 6vw, 4rem) 0 .75rem; }
+.proof h2 { font-size: 1.3rem; font-weight: 500; margin: 0 0 1rem; }
+.onward ul { list-style: none; padding: 0; margin: 0; display: grid; gap: .25rem; }
+.onward a { display: inline-flex; align-items: center; min-height: 44px; font-size: 1.15rem; }
+.lab-index { padding-top: 1rem; }
+.lab-index h1 { font-size: clamp(2rem, 4vw, 2.75rem); line-height: 1.1; font-weight: 500; margin: clamp(2rem, 6vw, 4rem) 0 1rem; }
+.lab-list { list-style: none; padding: 0; margin: 2rem 0 0; border-top: 1px solid var(--color-hairline); }
+.lab-list li { padding: .9rem 0; border-bottom: 1px solid var(--color-hairline); }
+.lab-list a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 500; }
+.footer-contact a { display: inline; min-height: 0; }
+
+/* The ending: a scoresheet slip, the board at a raking angle, the chess clock. */
+.contact .scoresheet { background: var(--color-buff); padding: clamp(1.25rem, 3vw, 2rem); transform-origin: 20% 100%; }
+/* It arrives tilted and settles square as its top rises from the bottom of the screen to 55% up (the old ScrollTrigger range). */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .contact .scoresheet { animation: scoresheet-settle linear both; animation-timeline: view(); animation-range: cover 0% cover 45vh; }
+  }
+}
+@keyframes scoresheet-settle { from { transform: translateY(32px) rotate(-2.5deg); } to { transform: none; } }
+.contact .scoresheet > h2 { margin-top: 0; }
+.contact-board { margin-top: 1.5rem; }
+.clock { display: grid; grid-template-columns: 1fr 1fr; max-width: 22rem; margin: .75rem 0 0 auto; border: 1px solid var(--color-ink); font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.clock-face { display: flex; flex-direction: column; gap: .15rem; padding: .6rem .8rem; }
+.clock-face + .clock-face { border-left: 1px solid var(--color-ink); }
+.clock-running { background: var(--color-ink); color: var(--color-paper); }
+.clock-label { font-size: .75rem; }
+.clock-time { font-size: 1.25rem; }
+
+/* Forced colours: primary buttons use the system button pair, like every other control. */
+@media (forced-colors: active) {
+  .btn-primary, .btn-primary:hover { background: ButtonFace; color: ButtonText; border-color: ButtonText; }
+  .ann { color: CanvasText; }
+  .chess-cursor-dot, .chess-cursor-piece { display: none; }
+  .clock-running { background: Highlight; color: HighlightText; }
 }

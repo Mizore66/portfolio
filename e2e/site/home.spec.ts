@@ -9,14 +9,16 @@ test.describe("front page", () => {
     await expect(h1).not.toHaveText(/\d/);
   });
 
-  test("keeps every legacy fragment id", async ({ page }) => {
-    await page.goto("/");
+  // Hash fragments never reach the server: old one-page links are forwarded to the page that holds them now.
+  test("every legacy fragment still lands on its content", async ({ page }) => {
     for (const id of [
       "work", "proof", "experience", "education", "lab", "about", "contact",
       "monash-university", "western-digital", "setel", "petronas", "deriv", "skribble-lab",
       "veridian", "circuitmindai", "multi-agent-graphrag", "the-game",
       "claim-setelDefects", "claim-monashRetrieval", "claim-leadThroughput",
     ]) {
+      await page.goto(`/#${id}`);
+      await page.waitForLoadState("domcontentloaded");
       await expect(page.locator(`[id="${id}"]`), id).toHaveCount(1);
     }
   });
@@ -72,7 +74,7 @@ test.describe("front page", () => {
 
   test("puts work before the board on mobile", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/");
+    await page.goto("/work");
     const order = await page.evaluate(() => {
       const work = document.getElementById("work")!;
       const board = document.getElementById("the-game")!;
