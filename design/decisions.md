@@ -29,7 +29,17 @@ Owner decisions for the v3 redesign, newest last.
 
 **Changed from the sketches:** the role page is no longer a seated view with a person across the table. It becomes a 3D chess set with the role's facts arranged around it; the layout is still to be decided.
 
+**Role page (2026-09-28):**
+- It combines layouts A and C.
+- A's structure: the table's game replays as you scroll, and the role's facts arrive as sidebars beside the board.
+- C's camera: a low, close angle on the set.
+
+**Master games (2026-09-28):**
+- The owner picked the top 7 of TheChessWorld's "15 Best Chess Games of All Time", stored in `content/chess-games.json`.
+- The games are there for the visitor to enjoy while reading. **No move is tied to a role or a claim.**
+- All 7 are verified in the kept engine. The source's printing of Nimzowitsch vs Alapin is illegal (it skips two moves) and was restored.
+
 ## Open
 
-- **Which master game plays on each table.** Candidates are verified as legal in the kept engine. Each still needs checking against a published score, and its attribution noted.
-- **The role page layout** around the 3D set.
+- There are 7 games and 6 roles. Proposed: a seventh table for education (the Monash degree).
+- Assignment proposal: games in the order they were played, on tables in career order.
