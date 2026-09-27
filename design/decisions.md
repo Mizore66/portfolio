@@ -39,7 +39,18 @@ Owner decisions for the v3 redesign, newest last.
 - The games are there for the visitor to enjoy while reading. **No move is tied to a role or a claim.**
 - All 7 are verified in the kept engine. The source's printing of Nimzowitsch vs Alapin is illegal (it skips two moves) and was restored.
 
-## Open
+**Tables (2026-09-28, closes Gate 1):**
+- Seven tables: the six roles plus the Monash degree.
+- Games are assigned in the order they were played, oldest at the earliest table. The order has no meaning beyond chronology.
 
-- There are 7 games and 6 roles. Proposed: a seventh table for education (the Monash degree).
-- Assignment proposal: games in the order they were played, on tables in career order.
+| Table (career order) | Game |
+|---|---|
+| Monash University, degree | Paulsen vs Morphy, New York 1857 |
+| Petronas | Rotlewi vs Rubinstein, Łódź 1907 |
+| Western Digital | Nimzowitsch vs Tarrasch, St Petersburg 1914 |
+| Setel | Nimzowitsch vs Alapin, St Petersburg 1914 |
+| Monash University, contract | Botvinnik vs Vidmar, Nottingham 1936 |
+| Skribble Lab | Byrne vs Fischer, New York 1956 |
+| Deriv | Tal vs Larsen, Bled 1965 |
+
+**Gate 1 closed.**
