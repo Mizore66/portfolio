@@ -4,9 +4,10 @@
 
 import { View } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { candidates, piecesAt, replayTo } from "@/lib/board/position";
+import { positionAfter } from "@/lib/chess/replay";
 import { boardStore, useBoard, type Arrow, type BoardBox } from "@/lib/board/store";
 import { Arrows } from "./Arrows";
 import { CameraRig, type RigCue } from "./CameraRig";
@@ -20,6 +21,9 @@ const OPENING_KEY = "board:opening-played";
 
 function openingWanted(box: BoardBox, reduced: boolean): boolean {
   if (!box.opening || reduced) return false;
+  // Only a box the visitor can see plays it; an offscreen pane must not spend the once-per-session replay.
+  const r = box.el.getBoundingClientRect();
+  if (r.bottom <= 0 || r.top >= window.innerHeight) return false;
   try {
     return sessionStorage.getItem(OPENING_KEY) !== "1";
   } catch {
@@ -57,10 +61,14 @@ function Lights() {
   );
 }
 
-/** Keeps the shared environment map on this view's own scene (each View is a portal). */
+/**
+ * Keeps the shared environment map on this view's own scene (each View is a
+ * portal). A layout effect, so it is set before the first frame draws: a frame
+ * without it compiles a second, environment-less set of shaders.
+ */
 function Env({ env }: { env: THREE.Texture | null }) {
   const scene = useThree((s) => s.scene);
-  useEffect(() => {
+  useLayoutEffect(() => {
     scene.environment = env;
     scene.environmentIntensity = 0.55;
   }, [scene, env]);
@@ -132,9 +140,9 @@ export function BoardView({ box, env, reduced, shadows }: { box: BoardBox; env: 
   const engine = useBoard((s) => s.engine);
   const engineView = useBoard((s) => s.engineView);
   const takeback = useBoard((s) => s.takeback);
+  const replay = useBoard((s) => s.replay);
   const track = useMemo(() => ({ current: box.el }), [box.el]);
   const visibleRef = useRef(false);
-  const [wide, setWide] = useState(false);
 
   // Hover and keyboard focus previews on shared boards, with a short intent delay so the board never flickers.
   const [preview, setPreview] = useState<string | null>(null);
@@ -150,9 +158,20 @@ export function BoardView({ box, env, reduced, shadows }: { box: BoardBox; env: 
 
   const [opening] = useState(() => openingWanted(box, reduced));
   const [skipped, setSkipped] = useState(false);
+  // Arriving from a project: start on its position so the move can be taken back.
+  const [arrivedFrom] = useState(() => (box.binding.kind === "current" && takeback && data.nodes[takeback] ? takeback : null));
   const [motion, setMotion] = useState<PieceMotion>(() =>
-    opening ? { kind: "sequence", key: "opening", frames: replayTo(data, bound) } : { kind: "instant", key: `i-${bound}`, pieces: piecesAt(data, bound) },
+    opening
+      ? { kind: "sequence", key: "opening", frames: replayTo(data, bound) }
+      : { kind: "instant", key: `i-${arrivedFrom ?? bound}`, pieces: piecesAt(data, arrivedFrom ?? bound) },
   );
+  useEffect(() => {
+    if (!arrivedFrom) return;
+    boardStore().getState().setTakeback(null);
+    const id = requestAnimationFrame(() => setMotion({ kind: "move", key: `tb-${Date.now()}`, pieces: piecesAt(data, boardStore().getState().nodeId) }));
+    return () => cancelAnimationFrame(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [cue, setCue] = useState<RigCue>(() => (opening ? { kind: "push", key: "opening" } : { kind: "rest" }));
 
   // Any input skips the opening straight to the final position (brief §4).
@@ -201,13 +220,44 @@ export function BoardView({ box, env, reduced, shadows }: { box: BoardBox; env: 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shownNode]);
 
+  // With the engine running, the shared boards show the position it is searching (the visitor may have played on).
+  const enginePlies = engine && box.binding.kind === "current" ? engine.plies : null;
+  const engineKey = enginePlies ? enginePlies.map((p) => p.from + p.to).join("") : null;
+  const engineFirst = useRef(true);
+  useEffect(() => {
+    if (engineFirst.current) {
+      engineFirst.current = false;
+      return;
+    }
+    if (!enginePlies) {
+      // Engine stopped or reset: back to the shared move.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setMotion({ kind: "move", key: `e0-${shownNode}-${Date.now()}`, pieces: piecesAt(data, shownNode) });
+      return;
+    }
+    setMotion({ kind: "move", key: `e-${engineKey}`, pieces: positionAfter(enginePlies) });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [engineKey]);
+
+  // Opening a project: its piece slides to its square from the position before the move (brief §4).
+  const replayKey = replay?.key ?? 0;
+  useEffect(() => {
+    if (!replay || box.binding.kind !== "current") return;
+    const parent = data.nodes[replay.nodeId]?.parent;
+    if (!parent) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMotion({ kind: "instant", key: `r0-${replay.key}`, pieces: piecesAt(data, parent) });
+    const id = requestAnimationFrame(() => setMotion({ kind: "move", key: `r-${replay.key}`, pieces: piecesAt(data, replay.nodeId) }));
+    return () => cancelAnimationFrame(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [replayKey]);
+
   // Visibility drives the idle orbit and the contact ending's arrival.
   const arrived = useRef(false);
   useEffect(() => {
     const io = new IntersectionObserver(
       ([e]) => {
         visibleRef.current = e.isIntersecting;
-        setWide(e.boundingClientRect.width / Math.max(1, e.boundingClientRect.height) > 1.3);
         if (e.isIntersecting && box.framing === "raking" && !arrived.current) {
           arrived.current = true;
           setCue({ kind: "arrive", key: "arrive" });
@@ -232,11 +282,9 @@ export function BoardView({ box, env, reduced, shadows }: { box: BoardBox; env: 
     return [];
   }, [preview, previewParent, engine, box.binding.kind, data]);
 
-  const shift = box.framing === "hero" && wide ? 1.42 : box.framing === "raking" && wide ? 1.5 : 1;
-
   return (
     <View track={track as React.RefObject<HTMLElement>}>
-      <CameraRig framing={box.framing} shift={shift} cue={cue} reduced={reduced} visibleRef={visibleRef} />
+      <CameraRig framing={box.framing} cue={cue} reduced={reduced} visibleRef={visibleRef} />
       <Env env={env} />
       {shadows ? <Lights /> : <><directionalLight color="#fffaf0" intensity={2.4} position={[-6, 11, 5]} /><hemisphereLight args={["#ffffff", "#b9c2b6", 0.5]} /></>}
       <Mat />
@@ -249,7 +297,7 @@ export function BoardView({ box, env, reduced, shadows }: { box: BoardBox; env: 
       />
       <Arrows arrows={arrows} reduced={reduced} />
       <HoverSquare el={box.el} />
-      {box.binding.kind === "current" ? <Glyphs on={engineView} searching={!!engine && engineView} /> : null}
+      {box.binding.kind === "current" ? <Glyphs on={engineView} searching={!!engine?.searching && engineView} /> : null}
       <FirstFrame id={box.id} el={box.el} />
     </View>
   );

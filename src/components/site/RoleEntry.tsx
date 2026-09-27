@@ -1,11 +1,12 @@
 import { getClaim } from "@/content/site";
+import { nodeForRole } from "@/content/site/career";
 import { formatPeriod } from "@/content/site/format";
 import type { Role } from "@/content/site/types";
 import { ClaimLine } from "./ClaimLine";
 
 export function RoleEntry({ role }: { role: Role }) {
   return (
-    <article id={role.id} className={role.earlier ? "role role-earlier" : "role"} aria-labelledby={`${role.id}-title`}>
+    <article id={role.id} className={role.earlier ? "role role-earlier" : "role"} aria-labelledby={`${role.id}-title`} data-node={nodeForRole(role.id)}>
       <p className="role-meta">
         {formatPeriod(role.start, role.end)} · {role.kind}
       </p>

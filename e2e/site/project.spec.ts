@@ -38,7 +38,7 @@ test.describe("case studies", () => {
   test("the back link keeps the work filter", async ({ page }) => {
     await page.goto("/projects/veridian?path=ml");
     await page.getByRole("link", { name: "Back to all work" }).click();
-    await expect(page).toHaveURL(/\/\?path=ml#work$/);
+    await expect(page).toHaveURL(/\/work\?path=ml$/);
   });
 
   test("walks to the next project", async ({ page }) => {

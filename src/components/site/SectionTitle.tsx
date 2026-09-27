@@ -5,11 +5,11 @@
  * screen readers so the heading's name stays the title alone. The motion
  * system reveals each part behind a mask (`data-fx="annotate"`).
  */
-export function SectionTitle({ id, move, sym, children }: { id: string; move?: string; sym?: string; children: React.ReactNode }) {
+export function SectionTitle({ id, move, sym, as: Tag = "h2", children }: { id: string; move?: string; sym?: string; as?: "h1" | "h2"; children: React.ReactNode }) {
   // "10…Bg4" → "10…" + "Bg4"; "10. Nbxd2" → "10." + "Nbxd2"; "11. …" → "11." + "…".
   const m = move?.match(/^(\d+(?:\.|…))\s?(.+)$/);
   return (
-    <h2 id={id} data-fx="annotate">
+    <Tag id={id} data-fx="annotate">
       {m ? (
         <span className="ann" aria-hidden="true">
           <span className="fx-mask">
@@ -33,6 +33,6 @@ export function SectionTitle({ id, move, sym, children }: { id: string; move?: s
         </span>
       ) : null}
       <span data-fx-title>{children}</span>
-    </h2>
+    </Tag>
   );
 }

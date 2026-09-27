@@ -28,7 +28,7 @@ export default function LearnedEvaluatorPage() {
             <Link href="/">Home</Link>
           </li>
           <li>
-            <Link href="/#lab">Lab</Link>
+            <Link href="/lab">Lab</Link>
           </li>
           <li aria-current="page">Learned evaluator</li>
         </ol>

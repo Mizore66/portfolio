@@ -27,7 +27,8 @@ export type BoardBox = {
 
 export type Arrow = { from: string; to: string; weight: number; strong?: boolean };
 
-export type EngineLine = { pv: Ply[]; evalCp: number | null; depth: number };
+/** What the engine is looking at and thinking, mirrored from AnalysisBoard (the engine itself is untouched). */
+export type EngineLine = { plies: Ply[]; pv: Ply[]; evalCp: number | null; depth: number; searching: boolean };
 
 export type BoardState = {
   /** The game tree, reduced (lib/board/data.ts). Set once by BoardRuntime. */
@@ -47,8 +48,10 @@ export type BoardState = {
   engine: EngineLine | null;
   /** The engine view: the board redrawn as characters while the engine searches. */
   engineView: boolean;
-  /** Set when the visitor returns from a project: the board plays that move backwards. */
+  /** Set when the visitor opens a project: on the next board, that move plays backwards. */
   takeback: string | null;
+  /** A move to play out again from its parent position (opening a project, brief §4). */
+  replay: { nodeId: string; key: number } | null;
   setData: (data: BoardData) => void;
   setNode: (nodeId: string, source?: BoardState["source"]) => void;
   setFocus: (nodeId: string | null) => void;
@@ -59,6 +62,8 @@ export type BoardState = {
   setEngine: (line: EngineLine | null) => void;
   setEngineView: (on: boolean) => void;
   setTakeback: (nodeId: string | null) => void;
+  /** Plays `nodeId`'s move from its parent position and makes it the current move. */
+  playMove: (nodeId: string) => void;
 };
 
 export function createBoardStore(initial: string) {
@@ -73,6 +78,7 @@ export function createBoardStore(initial: string) {
     engine: null,
     engineView: false,
     takeback: null,
+    replay: null,
     setData: (data) => set((s) => (s.data ? s : { data })),
     setNode: (nodeId, source = "user") => set((s) => (s.nodeId === nodeId ? s : { nodeId, source })),
     setFocus: (focusNode) => set({ focusNode }),
@@ -90,6 +96,7 @@ export function createBoardStore(initial: string) {
     setEngine: (engine) => set({ engine }),
     setEngineView: (engineView) => set({ engineView }),
     setTakeback: (takeback) => set({ takeback }),
+    playMove: (nodeId) => set({ replay: { nodeId, key: Date.now() }, nodeId, source: "user", focusNode: null }),
   }));
 }
 

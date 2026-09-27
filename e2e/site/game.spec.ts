@@ -58,14 +58,14 @@ test.describe("the engine", () => {
 test.describe("the career graph", () => {
   test("a point sets the board and lands on its chapter", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
-    await page.goto("/");
-    await page.locator('#career a.cg-mark[href="/#deriv"]').click();
+    await page.goto("/about");
+    await page.locator('#career a.cg-mark[href="/about#deriv"]').click();
     await expect(page).toHaveURL(/#deriv$/);
     await expect(page.locator(".board-caption")).toContainText("Deriv");
   });
 
   test("offers the same data as a table", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/about");
     await page.getByText("Show as a table").click();
     await expect(page.locator(".career-table tbody tr")).not.toHaveCount(0);
   });

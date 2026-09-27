@@ -3,24 +3,84 @@
 /* eslint-disable react-hooks/immutability -- three.js objects (scene, renderer, uniforms) are mutated imperatively by design in R3F; they are not React state. */
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { boardStore, useBoard } from "@/lib/board/store";
+import { yieldToMain } from "@/lib/idle";
 import { BoardView } from "./BoardView";
+import { pieceGeometries } from "./geometry";
+import { materials } from "./materials";
 import { takeAnimating } from "./perf";
 
-/** Shared room-light environment for every view's reflections. */
+/**
+ * Shared room-light environment for every view's reflections. Built in its own
+ * task after the canvas has mounted, not during React's render, so creating
+ * the WebGL context and filtering the environment are two short tasks rather
+ * than one long one.
+ */
 function useEnv(): THREE.Texture | null {
   const gl = useThree((s) => s.gl);
-  const rt = useMemo(() => {
-    const pmrem = new THREE.PMREMGenerator(gl);
-    const target = pmrem.fromScene(new RoomEnvironment(), 0.04);
-    pmrem.dispose();
-    return target;
+  const [rt, setRt] = useState<THREE.WebGLRenderTarget | null>(null);
+  useEffect(() => {
+    let live = true;
+    let made: THREE.WebGLRenderTarget | null = null;
+    void yieldToMain().then(() => {
+      if (!live) return;
+      const pmrem = new THREE.PMREMGenerator(gl);
+      made = pmrem.fromScene(new RoomEnvironment(), 0.04);
+      pmrem.dispose();
+      setRt(made);
+    });
+    return () => {
+      live = false;
+      made?.dispose();
+    };
   }, [gl]);
-  useEffect(() => () => rt.dispose(), [rt]);
-  return rt.texture;
+  return rt?.texture ?? null;
+}
+
+/**
+ * Compiles the board's shaders before the first frame, against a stand-in
+ * scene with the views' lights and environment, so the programs are cached
+ * when the views draw. Where the driver compiles in parallel
+ * (KHR_parallel_shader_compile) this keeps shader compilation off the main
+ * thread; elsewhere it costs the same as compiling on the first frame.
+ */
+function usePrecompiled(env: THREE.Texture | null, shadows: boolean): boolean {
+  const gl = useThree((s) => s.gl);
+  const camera = useThree((s) => s.camera);
+  const [done, setDone] = useState(false);
+  useEffect(() => {
+    if (!env) return;
+    let live = true;
+    const m = materials();
+    const geo = pieceGeometries().P;
+    const scene = new THREE.Scene();
+    scene.environment = env;
+    const sun = new THREE.DirectionalLight("#fffaf0", 2.6);
+    sun.castShadow = shadows;
+    scene.add(sun, new THREE.HemisphereLight("#ffffff", "#b9c2b6", 0.45));
+    const shadowCatcher = new THREE.ShadowMaterial({ color: "#1f2a24", opacity: 0.28 });
+    for (const mat of [m.plastic.w, m.plastic.b, m.mat, m.felt, m.slit.w, m.slit.b, m.arrow, m.arrowStrong, m.hover, shadowCatcher]) {
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.castShadow = mesh.receiveShadow = shadows;
+      scene.add(mesh);
+    }
+    // No timeout: mounting the views before compilation finishes would block the first frame on it. The
+    // printed diagram simply stays up longer.
+    void gl
+      .compileAsync(scene, camera)
+      .catch(() => {})
+      .then(() => {
+        shadowCatcher.dispose();
+        if (live) setDone(true);
+      });
+    return () => {
+      live = false;
+    };
+  }, [env, gl, camera, shadows]);
+  return done;
 }
 
 /** Scroll and resize move the tracked boxes, so the demand loop must draw again. */
@@ -45,6 +105,9 @@ function Invalidator() {
 function Views({ reduced, shadows }: { reduced: boolean; shadows: boolean }) {
   const boxes = useBoard((s) => s.boxes);
   const env = useEnv();
+  const ready = usePrecompiled(env, shadows);
+  // Until then every box keeps its printed diagram.
+  if (!ready) return null;
   return (
     <>
       {Object.values(boxes).map((b) => (

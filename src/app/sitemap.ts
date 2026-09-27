@@ -10,6 +10,9 @@ const day = (d: string) => new Date(d.length === 7 ? `${d}-01T00:00:00Z` : `${d}
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: SITE_URL, lastModified: day(CONTENT_UPDATED), changeFrequency: "monthly", priority: 1 },
+    { url: `${SITE_URL}/work`, lastModified: day(CONTENT_UPDATED), changeFrequency: "monthly", priority: 0.9 },
+    { url: `${SITE_URL}/about`, lastModified: day(CONTENT_UPDATED), changeFrequency: "monthly", priority: 0.9 },
+    { url: `${SITE_URL}/lab`, lastModified: day(LAB_ARTICLE.dateModified), changeFrequency: "yearly", priority: 0.7 },
     { url: `${SITE_URL}/opening-preparation`, lastModified: day(CONTENT_UPDATED), changeFrequency: "monthly", priority: 0.8 },
     { url: `${SITE_URL}/lab/learned-evaluator`, lastModified: day(LAB_ARTICLE.dateModified), changeFrequency: "yearly", priority: 0.7 },
     ...PROJECTS.map((p) => ({

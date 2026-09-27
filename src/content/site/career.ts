@@ -14,7 +14,7 @@ export type CareerPoint = {
   start: string;
   /** YYYY-MM, or null while ongoing. Equal to start for a single point in time. */
   end: string | null;
-  /** Where the chapter lives on the front page. */
+  /** Where the chapter lives: its entry on /about or /work (brief §6 split). */
   href: string;
   /** White's view, centipawns, from the vendored engine's handcrafted evaluation. */
   evalCp: number;
@@ -38,16 +38,26 @@ function computed(): CareerPoint[] {
     const base = { nodeId: n.id, move: moveLabel(n), evalCp: engineEval(n.id) };
     if (c.kind === "role") {
       const r = ROLES.find((x) => x.id === c.roleId)!;
-      return [{ ...base, kind: "role" as const, label: r.employer, start: r.start, href: `/#${r.id}`, end: r.end }];
+      return [{ ...base, kind: "role" as const, label: r.employer, start: r.start, href: `/about#${r.id}`, end: r.end }];
     }
     if (c.kind === "project") {
       const p = PROJECTS.find((x) => x.slug === c.slug)!;
-      const href = p.group === "lab" ? `/projects/${p.slug}` : `/#${p.slug}`;
+      const href = p.group === "lab" ? `/projects/${p.slug}` : `/work#${p.slug}`;
       return [{ ...base, kind: "project" as const, label: p.name, start: p.date, end: p.date, href }];
     }
-    return [{ ...base, kind: "education" as const, label: "Graduation", start: EDUCATION.graduated, end: EDUCATION.graduated, href: "/#education" }];
+    return [{ ...base, kind: "education" as const, label: "Graduation", start: EDUCATION.graduated, end: EDUCATION.graduated, href: "/about#education" }];
   });
   return cache;
+}
+
+/** The game node a role plays, if any. */
+export function nodeForRole(roleId: string): string | undefined {
+  return GAME.find((n) => n.career?.kind === "role" && n.career.roleId === roleId)?.id;
+}
+
+/** The game node a project plays, if any. */
+export function nodeForProject(slug: string): string | undefined {
+  return GAME.find((n) => n.career?.kind === "project" && n.career.slug === slug)?.id;
 }
 
 /** Roles and projects placed in real time, oldest first (brief §7 B). */

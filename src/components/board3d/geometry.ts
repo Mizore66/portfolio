@@ -113,13 +113,23 @@ function knight(): THREE.BufferGeometry {
   return mergeGeometries([lathe([...base(0.33), [0.21, 0.26], [0.2, 0.33], [0, 0.33]]), clean(head)])!;
 }
 
+const BUILD: Record<PieceType, () => THREE.BufferGeometry> = { P: pawn, R: rook, B: bishop, Q: queen, K: king, N: knight };
+const built: Partial<Record<PieceType, THREE.BufferGeometry>> = {};
 let cache: Record<PieceType, THREE.BufferGeometry> | null = null;
 
-export function pieceGeometries(): Record<PieceType, THREE.BufferGeometry> {
-  if (!cache) {
-    cache = { P: pawn(), R: rook(), B: bishop(), Q: queen(), K: king(), N: knight() };
-    for (const g of Object.values(cache)) g.computeVertexNormals();
+/** One piece's geometry, built once. Separate so the loader can build them a task at a time. */
+export function pieceGeometry(type: PieceType): THREE.BufferGeometry {
+  let g = built[type];
+  if (!g) {
+    g = BUILD[type]();
+    g.computeVertexNormals();
+    built[type] = g;
   }
+  return g;
+}
+
+export function pieceGeometries(): Record<PieceType, THREE.BufferGeometry> {
+  cache ??= { P: pieceGeometry("P"), R: pieceGeometry("R"), B: pieceGeometry("B"), Q: pieceGeometry("Q"), K: pieceGeometry("K"), N: pieceGeometry("N") };
   return cache;
 }
 

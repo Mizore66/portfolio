@@ -38,11 +38,24 @@ export function BoardBox({
   const current = useBoard((s) => s.nodeId);
   const node = binding.kind === "current" ? current : binding.nodeId;
 
+  // Registered only while the box has a size: a box hidden at this breakpoint neither draws nor claims the opening.
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    boardStore().getState().register({ id, el, framing, binding, opening });
-    return () => boardStore().getState().unregister(id);
+    let on = false;
+    const sync = () => {
+      const shown = el.offsetWidth > 0 && el.offsetHeight > 0;
+      if (shown && !on) boardStore().getState().register({ id, el, framing, binding, opening });
+      if (!shown && on) boardStore().getState().unregister(id);
+      on = shown;
+    };
+    sync();
+    const ro = new ResizeObserver(sync);
+    ro.observe(el);
+    return () => {
+      ro.disconnect();
+      if (on) boardStore().getState().unregister(id);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, framing, opening, binding.kind, binding.kind === "fixed" ? binding.nodeId : ""]);
 

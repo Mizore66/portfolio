@@ -109,6 +109,21 @@ export type Materials = {
 
 let cache: Materials | null = null;
 
+/** The mat's print at a size the screen can use: 2048 px only where the board can be that sharp. */
+function matSize(): number {
+  return window.innerWidth * Math.min(window.devicePixelRatio || 1, 2) > 1600 ? 2048 : 1024;
+}
+
+const tex: { map?: THREE.CanvasTexture; bump?: THREE.CanvasTexture; id?: THREE.CanvasTexture } = {};
+
+/** Steps the loader runs a task at a time before the canvas mounts, so no one task blocks input for long. */
+export const MATERIAL_STEPS: (() => void)[] = [
+  () => void (tex.map ??= matTexture(matSize())),
+  () => void (tex.bump ??= grainTexture(512)),
+  () => void (tex.id ??= matIdTexture(512)),
+  () => void materials(),
+];
+
 /** Piece classes for the ID pass: R = class (white 4, black 5), G = piece type, B = lambert shade. */
 function pieceIdMaterial(cls: number): THREE.ShaderMaterial {
   return new THREE.ShaderMaterial({
@@ -135,8 +150,8 @@ export function materials(): Materials {
     new THREE.MeshPhysicalMaterial({ color: hex, roughness, metalness: 0, clearcoat: 0.35, clearcoatRoughness: 0.28, specularIntensity: 0.6 });
   cache = {
     mat: new THREE.MeshPhysicalMaterial({
-      map: matTexture(2048),
-      bumpMap: grainTexture(512),
+      map: (tex.map ??= matTexture(matSize())),
+      bumpMap: (tex.bump ??= grainTexture(512)),
       bumpScale: 0.35,
       roughness: 0.58,
       metalness: 0,
@@ -146,7 +161,7 @@ export function materials(): Materials {
       clearcoat: 0.12,
       clearcoatRoughness: 0.55,
     }),
-    matId: new THREE.MeshBasicMaterial({ map: matIdTexture(512), toneMapped: false }),
+    matId: new THREE.MeshBasicMaterial({ map: (tex.id ??= matIdTexture(512)), toneMapped: false }),
     plastic: { w: plastic(C.ivoryPlastic, 0.42), b: plastic(C.blackPlastic, 0.32) },
     slit: { w: new THREE.MeshStandardMaterial({ color: "#8f8a7a", roughness: 0.6 }), b: new THREE.MeshStandardMaterial({ color: "#050606", roughness: 0.6 }) },
     felt: new THREE.MeshStandardMaterial({ color: C.green, roughness: 1 }),

@@ -3,11 +3,12 @@ import { getClaim } from "@/content/site";
 import { LAB_TEASER } from "@/content/site/lab";
 import { EVIDENCE_LABEL } from "@/content/site/types";
 
-export function LabTeaser() {
+export function LabTeaser({ headingLevel = "h2" }: { headingLevel?: "h1" | "h2" }) {
+  const H = headingLevel;
   const claim = getClaim(LAB_TEASER.claimId);
   return (
     <section id="lab" className="section" aria-labelledby="lab-title">
-      <h2 id="lab-title">The engine experiment</h2>
+      <H id="lab-title">The engine experiment</H>
       <p>{LAB_TEASER.headline}</p>
       <p id={`claim-${claim.id}`} className="claim">
         <span className="claim-head">

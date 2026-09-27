@@ -7,7 +7,7 @@ import * as THREE from "three";
 import type { Framing } from "@/lib/board/store";
 import { OPENING, T, place } from "@/lib/motion/tokens";
 import { markAnimating } from "./perf";
-import { squareXZ } from "./world";
+import { MAT, squareXZ } from "./world";
 
 /** Where each framing looks from. Angles in degrees; the distance is fitted to the box. */
 const FRAMES: Record<Framing, { elevation: number; azimuth: number; fov: number; lookY: number }> = {
@@ -21,7 +21,16 @@ const FRAMES: Record<Framing, { elevation: number; azimuth: number; fov: number;
   diagram: { elevation: 89.5, azimuth: 0, fov: 18, lookY: 0 },
 };
 
-const R_FIT = 5.9; // bounding radius of the mat with standing pieces
+// What must stay in frame: the mat's corners, and the tops of the tallest pieces over the outer squares.
+const FIT_POINTS = (() => {
+  const h = MAT / 2;
+  const pts: THREE.Vector3[] = [];
+  for (const x of [-h, h]) for (const z of [-h, h]) pts.push(new THREE.Vector3(x, 0, z));
+  for (const x of [-3.5, 3.5]) for (const z of [-3.5, 3.5]) pts.push(new THREE.Vector3(x, 1.65, z));
+  return pts;
+})();
+// How much of the half-frame the board may fill.
+const FILL: Record<Framing, number> = { hero: 0.94, pane: 0.95, raking: 0.98, diagram: 0.94 };
 const IDLE_PERIOD = 28000;
 const IDLE_SWING = 4;
 
@@ -31,21 +40,49 @@ export type RigCue =
   | { kind: "arrive"; key: string } // contact ending: settles into the raking angle
   | { kind: "focus"; key: string; squares: string[] };
 
+const _dir = new THREE.Vector3();
+const _right = new THREE.Vector3();
+const _up = new THREE.Vector3();
+const _fwd = new THREE.Vector3();
+const _q = new THREE.Vector3();
+const _look = new THREE.Vector3();
+const WORLD_UP = new THREE.Vector3(0, 1, 0);
+
 /**
- * The camera for one view. It fits the board to the box, shifts the lens so
- * wide hero boxes keep the board clear of the text column (Phase 1 §3), orbits
- * slowly at rest, and eases to frame a moved piece.
+ * The shortest camera distance that keeps every fit point inside the frame,
+ * for a camera looking at `look` from the given angles. Exact for a pinhole
+ * camera: a point's offset across the view does not change with distance,
+ * only its depth does, so each point gives a closed-form bound.
+ */
+function fitDistance(elevationDeg: number, azimuthDeg: number, look: THREE.Vector3, vfov: number, aspect: number, fill: number): number {
+  const el = THREE.MathUtils.degToRad(elevationDeg);
+  const az = THREE.MathUtils.degToRad(azimuthDeg);
+  _dir.set(Math.cos(el) * Math.sin(az), Math.sin(el), Math.cos(el) * Math.cos(az));
+  _fwd.copy(_dir).negate();
+  _right.crossVectors(_fwd, WORLD_UP).normalize();
+  _up.crossVectors(_right, _fwd);
+  const tanV = Math.tan(vfov / 2) * fill;
+  const tanH = Math.tan(vfov / 2) * aspect * fill;
+  let d = 0;
+  for (const p of FIT_POINTS) {
+    _q.subVectors(p, look);
+    const depth = _q.dot(_fwd);
+    d = Math.max(d, Math.abs(_q.dot(_right)) / tanH - depth, Math.abs(_q.dot(_up)) / tanV - depth);
+  }
+  return d;
+}
+
+/**
+ * The camera for one view. It fits the whole board to the box at the
+ * framing's angle, orbits slowly at rest, and eases to frame a moved piece.
  */
 export function CameraRig({
   framing,
-  shift,
   cue,
   reduced,
   visibleRef,
 }: {
   framing: Framing;
-  /** Virtual frame width as a multiple of the box: 1 = centred, 1.42 = board in the right two-thirds. */
-  shift: number;
   cue: RigCue;
   reduced: boolean;
   visibleRef: React.RefObject<boolean>;
@@ -103,11 +140,9 @@ export function CameraRig({
     const idle = !reduced && framing !== "diagram" && visibleRef.current && document.visibilityState === "visible";
     const azimuth = f.azimuth + (idle ? IDLE_SWING * Math.sin(((now % IDLE_PERIOD) / IDLE_PERIOD) * Math.PI * 2) : 0);
 
-    const aspect = Math.max(0.2, (size.width * shift) / Math.max(1, size.height));
-    const vfov = THREE.MathUtils.degToRad(f.fov);
-    const hfov = 2 * Math.atan(Math.tan(vfov / 2) * aspect);
-    const fit = Math.min(vfov, hfov);
-    const dist = (R_FIT / Math.sin(fit / 2)) * (framing === "raking" ? 0.66 : framing === "hero" ? 0.9 : 0.86) * distMul;
+    const aspect = Math.max(0.2, size.width / Math.max(1, size.height));
+    // Fitted at the framing's resting angle and centre, so the idle sway and a focus lean do not breathe the zoom.
+    const dist = fitDistance(f.elevation, f.azimuth, _look.set(0, f.lookY, 0), THREE.MathUtils.degToRad(f.fov), aspect, FILL[framing]) * distMul;
 
     const el = THREE.MathUtils.degToRad(elevation);
     const az = THREE.MathUtils.degToRad(azimuth);
@@ -115,9 +150,7 @@ export function CameraRig({
     c.position.set(t.x + dist * Math.cos(el) * Math.sin(az), t.y + f.lookY + dist * Math.sin(el), t.z + dist * Math.cos(el) * Math.cos(az));
     c.lookAt(t.x, t.y + f.lookY, t.z);
     c.fov = f.fov;
-    c.aspect = size.width / Math.max(1, size.height);
-    if (shift > 1.001) c.setViewOffset(size.width * shift, size.height, 0, 0, size.width, size.height);
-    else c.clearViewOffset();
+    c.aspect = aspect;
     c.updateProjectionMatrix();
 
     if (animating) {

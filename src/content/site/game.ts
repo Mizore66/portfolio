@@ -67,7 +67,7 @@ function projectFact(slug: string): string {
   return `${p.name}, ${p.subtitle}. ${p.origin}, ${formatMonth(p.date)}. ${p.purpose}`;
 }
 
-const roleLink = (id: string): GameLink => ({ label: role(id).employer, href: `/#${id}` });
+const roleLink = (id: string): GameLink => ({ label: role(id).employer, href: `/about#${id}` });
 const projectLink = (slug: string): GameLink => ({ label: project(slug).name, href: `/projects/${slug}` });
 
 const CONTACT_LINKS: readonly GameLink[] = [
@@ -110,7 +110,7 @@ export const GAME: readonly GameNode[] = [
     commentary:
       "Every open game starts by occupying the centre. I opened with software engineering — not because it was the only file, but because it was the one that let both bishops out.",
     eval: 0.35,
-    links: [{ label: "Education", href: "/#education" }],
+    links: [{ label: "Education", href: "/about#education" }],
   },
   {
     id: "alekhine",
@@ -452,7 +452,7 @@ export const GAME: readonly GameNode[] = [
     title: "Taking Back the Centre",
     fact: `Graduated ${formatMonth(e.graduated)}: ${e.degree}, ${e.institution}. ${e.honours.join(", ")}.`,
     commentary: "White takes the pawn back and the centre with it. Graduating closed the file that 1. e4 opened.",
-    links: [{ label: "Education", href: "/#education" }],
+    links: [{ label: "Education", href: "/about#education" }],
     career: { kind: "education" },
     draft: true,
   },

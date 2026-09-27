@@ -41,7 +41,7 @@ function WorkLinkWithFallback({ children, className }: { children: React.ReactNo
   return (
     <Suspense
       fallback={
-        <Link className={className} href="/#work">
+        <Link className={className} href="/work">
           {children}
         </Link>
       }

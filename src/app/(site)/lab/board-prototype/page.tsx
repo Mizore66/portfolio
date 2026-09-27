@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
 import { BoardBox } from "@/components/board/BoardBox";
-import { BoardRuntime } from "@/components/board/BoardRuntime";
-import { ChessCursor } from "@/components/board/ChessCursor";
 import { PrototypeControls } from "@/components/board/PrototypeControls";
 import { StaticBoard } from "@/components/site/StaticBoard";
 import { LATEST_MOVE } from "@/content/site/game";
 import { replayPliesTo } from "@/content/site/game-tree";
-import { boardData } from "@/lib/board/data";
 
 /** Phase 2 prototype (brief §11). Not linked, not in the sitemap, not indexed. */
 export const metadata: Metadata = {
@@ -16,7 +13,6 @@ export const metadata: Metadata = {
 };
 
 export default function BoardPrototypePage() {
-  const data = boardData();
   const diagram = <StaticBoard plies={replayPliesTo(LATEST_MOVE)} label="" />;
   return (
     <main id="main" className="reading proto">
@@ -47,8 +43,6 @@ export default function BoardPrototypePage() {
           </BoardBox>
         </div>
       </div>
-      <BoardRuntime data={data} />
-      <ChessCursor />
     </main>
   );
 }

@@ -6,6 +6,9 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteJsonLd } from "@/components/site/SiteJsonLd";
 import { MotionRuntime } from "@/components/motion/MotionRuntime";
+import { BoardRuntime } from "@/components/board/BoardRuntime";
+import { ChessCursor } from "@/components/board/ChessCursor";
+import { boardData } from "@/lib/board/data";
 import { personSchema, websiteSchema } from "@/content/site/schema";
 import { SITE_URL } from "@/lib/site";
 import { FONT_VARIABLES } from "./fonts";
@@ -41,6 +44,9 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         <Suspense fallback={null}>
           <MotionRuntime />
         </Suspense>
+        {/* One persistent canvas for every board on every page (brief §7). */}
+        <BoardRuntime data={boardData()} />
+        <ChessCursor />
       </body>
     </html>
   );
