@@ -128,11 +128,18 @@ export const MATERIAL_STEPS: (() => void)[] = [
 function pieceIdMaterial(cls: number): THREE.ShaderMaterial {
   return new THREE.ShaderMaterial({
     uniforms: { uClass: { value: cls / 8 }, uType: { value: 0 } },
+    // Pieces are instanced (Pieces.tsx); three declares instanceMatrix when USE_INSTANCING is set.
     vertexShader: /* glsl */ `
       varying vec3 vN;
       void main() {
-        vN = normalize(normalMatrix * normal);
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        vec4 p = vec4(position, 1.0);
+        vec3 n = normal;
+        #ifdef USE_INSTANCING
+          p = instanceMatrix * p;
+          n = mat3(instanceMatrix) * n;
+        #endif
+        vN = normalize(normalMatrix * n);
+        gl_Position = projectionMatrix * modelViewMatrix * p;
       }`,
     fragmentShader: /* glsl */ `
       uniform float uClass; uniform float uType;

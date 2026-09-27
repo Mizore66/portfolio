@@ -189,6 +189,29 @@ test.describe("accessibility bar (§5.5)", () => {
     const running = await page.evaluate(() => document.getAnimations().filter((a) => a.playState === "running").length);
     expect(running).toBe(0);
   });
+
+  test("without WebGL every board stays a printed diagram and no 3D code loads", async ({ page }) => {
+    // Upgrade brief §9: works fully with WebGL off.
+    await page.addInitScript(() => {
+      const get = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function (this: HTMLCanvasElement, type: string, ...rest: unknown[]) {
+        return /webgl/.test(type) ? null : (get as (...a: unknown[]) => RenderingContext | null).call(this, type, ...rest);
+      } as typeof get;
+    });
+    const three: string[] = [];
+    page.on("response", async (r) => {
+      if (r.request().resourceType() === "script" && (await r.text().catch(() => "")).includes("WebGLRenderer")) three.push(r.url());
+    });
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(String(e)));
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(1500);
+    await expect(page.locator(".board-box svg:visible").first()).toBeVisible();
+    await expect(page.locator("canvas")).toHaveCount(0);
+    expect(three).toEqual([]);
+    expect(errors).toEqual([]);
+  });
 });
 
 test.describe("readable without help (§4.8)", () => {

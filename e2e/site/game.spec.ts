@@ -27,7 +27,9 @@ test.describe("the engine", () => {
     await page.keyboard.press("Enter");
     await expect(page.locator(".gb-status")).toHaveText(/Engine thinking/);
     await expect(page.locator(".gb-status")).toHaveText(/your move/, { timeout: 20_000 });
-    await expect(page.locator('.gb-board [data-square="h3"]')).toHaveAttribute("aria-label", /white pawn/);
+    // The pawn left h2. (Not "a white pawn stands on h3": a shallow search under load can answer ...Bxh3.)
+    await expect(page.locator('.gb-board [data-square="h2"]')).toHaveAttribute("aria-label", /empty/);
+    await expect(page.locator('.gb-board [data-square="h3"]')).toHaveAttribute("aria-label", /white pawn|black bishop/);
   });
 
   test("fetches the learned weights only when Learned is chosen", async ({ page }) => {

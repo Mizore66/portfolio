@@ -62,7 +62,13 @@ function usePrecompiled(env: THREE.Texture | null, shadows: boolean): boolean {
     sun.castShadow = shadows;
     scene.add(sun, new THREE.HemisphereLight("#ffffff", "#b9c2b6", 0.45));
     const shadowCatcher = new THREE.ShadowMaterial({ color: "#1f2a24", opacity: 0.28 });
-    for (const mat of [m.plastic.w, m.plastic.b, m.mat, m.felt, m.slit.w, m.slit.b, m.arrow, m.arrowStrong, m.hover, shadowCatcher]) {
+    // Pieces, slits and felt pads are instanced, which is a different shader variant.
+    for (const mat of [m.plastic.w, m.plastic.b, m.felt, m.slit.w, m.slit.b]) {
+      const mesh = new THREE.InstancedMesh(geo, mat, 1);
+      mesh.castShadow = mesh.receiveShadow = shadows;
+      scene.add(mesh);
+    }
+    for (const mat of [m.mat, m.arrow, m.arrowStrong, m.hover, shadowCatcher]) {
       const mesh = new THREE.Mesh(geo, mat);
       mesh.castShadow = mesh.receiveShadow = shadows;
       scene.add(mesh);
