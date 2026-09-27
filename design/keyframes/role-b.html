@@ -1,0 +1,31 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Role B: the seam opens as a drawer</title>
+<link rel="stylesheet" href="_shared/tokens.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>
+  body { background: var(--hall-wall); } .edge { position:absolute; top:0; right:0; bottom:0; width:22px; background:var(--ink); z-index:4; } .resume { right:64px; z-index:6; }
+  .role { position:absolute; left:52px; top:13vh; z-index:3; } .role h1 { font-size:6.6vw; } .role p { margin-top:10px; font-size:15px; color:var(--pencil); }
+  .scrub { position:absolute; left:52px; bottom:6vh; z-index:3; } .scrub .mv { font-size:14px; } .ticks { display:flex; gap:5px; margin:10px 0 8px; align-items:flex-end; }
+  .ticks i { display:block; width:1px; height:9px; background:#aaa59c; } .ticks i.p { background:var(--ink); } .ticks i.c { width:2px; height:16px; background:var(--ink); }
+  .scrub .g { font-size:12px; color:var(--graphite); } .drawer { position:absolute; top:0; right:0; bottom:0; width:31vw; background:var(--ink); color:var(--paper); z-index:4; padding:13vh 44px 0; } .drawer li { list-style:none; margin-bottom:20px; } .drawer b { display:block; font-size:19px; font-weight:600; letter-spacing:-.01em; } .drawer span { font-size:12px; color:#8a867e; } .drawer .tech { font-size:12px; color:#6f6b64; margin-bottom:34px; } .resume { color: var(--paper); } .role { top: auto; bottom: 16vh; } .scrub { bottom: 6vh; }
+</style></head><body>
+<div class="frame"><canvas id="c"></canvas><div class="edge"></div>
+  <nav class="nav"><span aria-current="page">Roles</span><span>Work</span><span>Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
+  <div class="role"><h1 class="display">Deriv</h1><p>AI Engineer, Jun 2026 to now</p></div>
+  <aside class="drawer"><div class="tech mono">Go, FastAPI, Next.js, Kafka, Terraform, AWS</div><ul><li><b>~80% lower CX cost</b><span>Production</span></li><li><b>CSAT 5/10 → 8/10</b><span>Production</span></li><li><b>~20,000 complex events/day</b><span>Production</span></li><li><b>~50% faster time-to-fix</b><span>Production</span></li><li><b>~10-30% lower AWS cost</b><span>Production</span></li><li><b>4-6 services → one response</b><span>Capability, in staging</span></li></ul></aside>
+  <div class="scrub"><div class="mv mono">16. Nd5</div><div class="ticks"><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="c"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="g mono">Tal vs Larsen, Bled 1965</div></div>
+</div>
+<script type="module">
+import { THREE, renderer, applyEnv, board, position, done } from "./_shared/chess3d.js";
+const pos = (await (await fetch("./_shared/positions.json")).json())["Tal-Larsen"];
+const W = innerWidth, H = innerHeight, { r, envTex } = renderer(document.getElementById("c"), { exposure: 1.02 });
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0xf2f2ef); applyEnv(scene, envTex, .5);
+scene.add(new THREE.HemisphereLight(0xffffff, 0xd9d6cf, 1.05));
+const sun = new THREE.DirectionalLight(0xfffaf0, 2.3); sun.position.set(-7, 12, -5); sun.castShadow = true; sun.shadow.mapSize.set(4096, 4096); sun.shadow.radius = 7; sun.shadow.bias = -.0004;
+Object.assign(sun.shadow.camera, { left: -9, right: 9, top: 9, bottom: -9, near: 1, far: 40 }); scene.add(sun);
+scene.add(board({ highlight: pos.last, tableSize: 16, table: 0xdcd4c6 }));
+scene.add(position(pos.fen));
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(90, 30), new THREE.MeshStandardMaterial({ color: 0xf3f3f0, roughness: 1 })); wall.position.set(0, 8, -24); scene.add(wall);
+for (let i = -4; i <= 4; i++) { const w = new THREE.Mesh(new THREE.PlaneGeometry(3, 12), new THREE.MeshBasicMaterial({ color: 0xffffff })); w.position.set(i * 7, 11, -23.9); scene.add(w); }
+const cam = new THREE.PerspectiveCamera(36, W / H, .1, 200); cam.position.set(-5.6, 6.4, 11); cam.lookAt(0.4, -.6, -.6); cam.setViewOffset(W, H, -.02 * W, 0, W, H);
+done(r, scene, cam);
+</script></body></html>

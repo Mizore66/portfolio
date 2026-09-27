@@ -1,0 +1,10 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Contact A: 11. and the clock</title>
+<link rel="stylesheet" href="_shared/tokens.css"><style>
+  .mv { position:absolute; left:15vw; top:8vh; font-size:30vw; letter-spacing:-.06em; } .caret { position:absolute; left:calc(15vw + 49vw); top:calc(8vh + 5vw); width:.9vw; height:21vw; background:var(--fg); }
+  .yours { position:absolute; left:4vw; bottom:18vh; font-size:40px; } .mail { position:absolute; left:4vw; bottom:12vh; font-size:20px; font-weight:600; } .rt { position:absolute; left:4vw; bottom:8vh; font-size:13px; color:var(--fg2); }
+  .links { position:absolute; left:calc(55.9% + 13vw); bottom:10vh; list-style:none; font-size:20px; font-weight:500; line-height:1.7; }
+  .clock { position:absolute; left:calc(55.9% - 150px); bottom:8vh; width:300px; display:flex; gap:10px; padding:10px; border-radius:10px; background:#2a2826; z-index:3; }
+  .face { flex:1; background:#f3f3f1; color:#0d0d0c; border-radius:5px; padding:8px 10px; } .face small { display:block; font-size:11px; color:#77726a; } .face b { font-size:26px; font-weight:500; }
+</style></head><body><div class="frame"><div id="ink"><nav class="nav"><span>Roles</span><span>Work</span><span>Lab</span><span aria-current="page">Contact</span></nav><div class="resume">Résumé</div>
+  <div class="mv display">11.</div><div class="caret"></div><div class="yours display">Your move.</div><div class="mail">anasqumhiyeh@gmail.com</div><div class="rt">Usually replies within two business days (MYT).</div><ul class="links"><li>Email</li><li>LinkedIn</li><li>GitHub</li><li>Résumé</li></ul></div><div class="clock"><div class="face"><small>You</small><b class="mono" id="you">14:32</b></div><div class="face"><small>Anas, MYT</small><b class="mono">22:32</b></div></div></div>
+<script type="module">import { seam } from "./_shared/seam.js"; await document.fonts.ready; seam({ at: .559 });</script></body></html>

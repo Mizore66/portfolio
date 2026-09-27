@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phase 2 key frames, round 1</title>
+<link rel="stylesheet" href="_shared/fonts.css">
+<style>
+  :root { --ink: #0d0d0c; --paper: #f3f3f1; --dim: #77726a; --line: #d9d7d0; --move: #e8a33d; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Archivo", sans-serif; background: #e9e8e4; color: var(--ink); padding: 56px 48px 120px; }
+  h1 { font-size: 48px; font-weight: 900; font-variation-settings: "wdth" 112; letter-spacing: -.03em; }
+  .lede { margin-top: 12px; max-width: 72ch; color: #3d3a35; line-height: 1.5; }
+  section { margin-top: 72px; }
+  h2 { font-size: 26px; font-weight: 800; letter-spacing: -.02em; }
+  .note { margin-top: 6px; color: var(--dim); font-size: 14px; max-width: 80ch; line-height: 1.45; }
+  .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 24px; margin-top: 22px; align-items: start; }
+  .row.m { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 900px; }
+  figure { background: #fff; border-radius: 10px; overflow: hidden; }
+  figure img { display: block; width: 100%; height: auto; }
+  figcaption { padding: 12px 14px 14px; font-size: 14px; line-height: 1.4; }
+  figcaption b { display: block; font-size: 12px; font-family: "JetBrains Mono", monospace; font-weight: 500; color: var(--dim); margin-bottom: 4px; }
+  .check { margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 28px; max-width: 1100px; font-size: 13px; line-height: 1.4; }
+  .check div::before { content: "✓ "; font-weight: 700; } .check div.p::before { content: "~ "; color: var(--move); } .check div.x::before { content: "✗ "; color: #b0412e; }
+</style>
+</head>
+<body>
+<h1>Key frames, round 1</h1>
+<p class="lede">The combined concept from Gate 1: the Advantage seam for the hero and contact, the night gallery for work, the day hall for roles, and the search in the Lab. Frames are static and throwaway: real fonts (Archivo, JetBrains Mono), real copy from <code>content.json</code>, real 3D (three.js, lathe-turned pieces, physically based materials, one key light), and chess positions from the kept engine. Motion comes in Phase 3. Each check line is marked ✓ pass, ~ partial, ✗ fail.</p>
+
+<section>
+  <h2>1. Hero</h2>
+  <p class="note">Same system, three compositions. Mobile is designed separately: on phones the seam turns horizontal, like a phone-sized eval bar.</p>
+  <div class="row">
+    <figure><img src="png/hero-a.png" alt=""><figcaption><b>hero-a</b>The name set across the seam at +0.64, inverting letter by letter: the "s" and the "i" split.</figcaption></figure>
+    <figure><img src="png/hero-b.png" alt=""><figcaption><b>hero-b</b>The seam as a horizon: the name rides it in one line, top half ink, bottom half paper.</figcaption></figure>
+    <figure><img src="png/hero-c.png" alt=""><figcaption><b>hero-c</b>The sentence first, the name as the ground: cropped at the bottom edge and bleeding into the black.</figcaption></figure>
+  </div>
+  <div class="row m">
+    <figure><img src="png/hero-a-m.png" alt=""><figcaption><b>hero-a-m</b>Horizontal seam; "Qumhiyeh" is cut through by it.</figcaption></figure>
+    <figure><img src="png/hero-b-m.png" alt=""><figcaption><b>hero-b-m</b>The seam falls between first and last name.</figcaption></figure>
+    <figure><img src="png/hero-c-m.png" alt=""><figcaption><b>hero-c-m</b>Keeps the vertical seam; the sentence carries the top.</figcaption></figure>
+  </div>
+  <div class="check">
+    <div>One dominant element: the name, with strong scale contrast</div><div>Typographic moment at a scale no ordinary site uses</div>
+    <div>Résumé link in the same corner on every frame</div><div>20 words or fewer (11 to 13)</div>
+    <div class="p">Signature moment in the first 5 s: defined by motion (the seam swinging through the game), which is Phase 3</div><div class="p">Legible without chess: the split reads as design, but not yet as "advantage" without the move label</div>
+  </div>
+</section>
+
+<section>
+  <h2>2. Signature transition: hero to Work</h2>
+  <p class="note">The seam sweeps, and the black side is a window onto the gallery underneath, so the two states stay connected throughout.</p>
+  <div class="row">
+    <figure><img src="png/trans-a-1.png" alt=""><figcaption><b>A1 start</b>The hero. The gallery already sits under the black half, lights off.</figcaption></figure>
+    <figure><img src="png/trans-a-2.png" alt=""><figcaption><b>A2 middle</b>Black floods left; the name inverts as it goes; a first piece shows through.</figcaption></figure>
+    <figure><img src="png/trans-a-3.png" alt=""><figcaption><b>A3 end</b>The seam is an edge; the gallery lights come on, FaultLine first.</figcaption></figure>
+  </div>
+  <div class="row">
+    <figure><img src="png/trans-b-1.png" alt=""><figcaption><b>B1 start</b>Same start.</figcaption></figure>
+    <figure><img src="png/trans-b-2.png" alt=""><figcaption><b>B2 middle</b>The seam tilts as it sweeps (Illoca's angled entrance), like a door swinging.</figcaption></figure>
+    <figure><img src="png/trans-b-3.png" alt=""><figcaption><b>B3 end</b>It settles upright on the corridor view.</figcaption></figure>
+  </div>
+  <div class="check"><div>The transition connects both states; nothing fades out and back in</div><div>No scroll-jacking: the sweep is driven by one click or a pinned scroll</div></div>
+</section>
+
+<section>
+  <h2>3. Work index: the night gallery</h2>
+  <div class="row">
+    <figure><img src="png/work-a.png" alt=""><figcaption><b>work-a</b>Three plinths in a row; the focus piece gets the brightest light and the one number.</figcaption></figure>
+    <figure><img src="png/work-b.png" alt=""><figcaption><b>work-b</b>A corridor: FaultLine large in front, the others receding, the name set big.</figcaption></figure>
+    <figure><img src="png/work-c.png" alt=""><figcaption><b>work-c</b>The gallery floor is the board: each piece stands on the square its move landed on (g4, e4, c5).</figcaption></figure>
+  </div>
+  <div class="check">
+    <div>Materials argue for each project: porcelain crack, aluminium, basalt with a copper trace</div><div>One number per project, with its qualifier</div>
+    <div class="x">work-a: three equal plinths weaken scale contrast, and it has no typographic moment</div><div class="p">Knight silhouette is still rough; Phase 4 models it properly</div>
+  </div>
+</section>
+
+<section>
+  <h2>4. Project page: FaultLine</h2>
+  <div class="row">
+    <figure><img src="png/proj-a.png" alt=""><figcaption><b>proj-a</b>The piece stands on the seam, keyed from the black side, so it inverts like the name above it.</figcaption></figure>
+    <figure><img src="png/proj-b.png" alt=""><figcaption><b>proj-b</b>Macro on the crack; the number "1-5 min" is the type moment, crossing the seam.</figcaption></figure>
+    <figure><img src="png/proj-c.png" alt=""><figcaption><b>proj-c</b>The claim is the image; the piece is small, like a figure on a horizon.</figcaption></figure>
+  </div>
+  <div class="check"><div>One dominant element in each, with different scale relationships</div><div>Claim, qualifier and move on the first screen</div><div class="p">Cast shadow is long and hard in proj-a; soften in the next round</div></div>
+</section>
+
+<section>
+  <h2>5. Roles: the day hall</h2>
+  <div class="row">
+    <figure><img src="png/roles-a.png" alt=""><figcaption><b>roles-a</b>The simul from above: seven tables in career order, each board at its master game's famous moment.</figcaption></figure>
+    <figure><img src="png/roles-b.png" alt=""><figcaption><b>roles-b</b>Along the row at standing height: the Deriv table (Tal vs Larsen, 16. Nd5) in the foreground.</figcaption></figure>
+  </div>
+  <div class="check">
+    <div>Legible without chess: one room, many tables, several at once</div><div>Every board is a real, engine-checked position</div>
+    <div class="x">Over 20 words: the seven labels or the list push both frames to about 30 to 50. Proposal: show only the name and year, and put dates on hover</div><div class="p">roles-a: seven equal tables compete; the current table needs more emphasis</div>
+  </div>
+</section>
+
+<section>
+  <h2>6. Role page: Deriv</h2>
+  <div class="row">
+    <figure><img src="png/role-a.png" alt=""><figcaption><b>role-a</b>A+C as approved: low corner camera, one fact at a time beside the board, the game's scrubber below.</figcaption></figure>
+    <figure><img src="png/role-b.png" alt=""><figcaption><b>role-b</b>A variation: the seam opens into a drawer holding all six numbers, and the board fills the rest.</figcaption></figure>
+  </div>
+  <div class="check"><div>The game is independent of the facts (owner's rule)</div><div>Board orientation and position verified: a1 dark, Tal's king on c1</div></div>
+</section>
+
+<section>
+  <h2>7. Lab: the engine's search</h2>
+  <div class="row">
+    <figure><img src="png/lab-a.png" alt=""><figcaption><b>lab-a</b>The seam at 30.5%, the real match score; the tree grows from a root on the seam.</figcaption></figure>
+    <figure><img src="png/lab-b.png" alt=""><figcaption><b>lab-b</b>Inside the search: the tree recedes in depth and the principal variation is lit.</figcaption></figure>
+  </div>
+  <div class="check"><div>Numbers exact: −143.3 ±35.4 Elo, 2 wins, 74 draws, 52 losses, 50,000 nodes a move</div><div class="p">Trees here are seeded placeholders; the build draws the kept engine's real search</div><div class="p">lab-b is closest to the generic "AI network" look; lab-a is safer</div></div>
+</section>
+
+<section>
+  <h2>8. Contact: the ending</h2>
+  <div class="row">
+    <figure><img src="png/contact-a.png" alt=""><figcaption><b>contact-a</b>"11." across the seam, a waiting cursor, and the chess clock: your time and Malaysia time.</figcaption></figure>
+    <figure><img src="png/contact-b.png" alt=""><figcaption><b>contact-b</b>The unfinished game after 10…Bg4, seen from White's side: the visitor's side of the board.</figcaption></figure>
+    <figure><img src="png/contact-c.png" alt=""><figcaption><b>contact-c</b>"Your move." as the whole composition; the address set large enough to read across a room.</figcaption></figure>
+  </div>
+  <div class="check"><div>Email, LinkedIn, GitHub and résumé all on one screen</div><div>20 words or fewer</div><div class="p">Clock times are samples; the build shows live times</div></div>
+</section>
+
+<section>
+  <h2>Across the whole set</h2>
+  <div class="check">
+    <div>One palette: paper, ink, gallery black, search ink, and one accent (amber = the move being played)</div><div>One type system: Archivo at display widths, JetBrains Mono for notation (both SIL OFL)</div>
+    <div class="p">Contact links are one click away via the nav on every page; a footer strip with the three links is proposed for the build</div><div class="p">Nothing reads as a template, except work-a (product gallery) and lab-b (AI-network)</div>
+  </div>
+</section>
+</body>
+</html>

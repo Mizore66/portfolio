@@ -1,0 +1,19 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Roles A: the hall from above</title>
+<link rel="stylesheet" href="_shared/tokens.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>
+  body { background: var(--hall-wall); } .edge { position:absolute; inset:0 0 0 auto; width:22px; background:var(--ink); z-index:4; } .resume { right: 64px; }
+  .t { position:absolute; transform:translateX(-50%); text-align:center; white-space:nowrap; z-index:3; }
+  .t b { display:block; font-size:14px; font-weight:600; letter-spacing:-.01em; } .t span { display:block; margin-top:3px; font-size:12px; color:var(--graphite); }
+  .t.now b { font-size:16px; } .ttl { position:absolute; left:48px; bottom:5vh; font-size:10.5vw; z-index:3; } .sub { position:absolute; left:52px; bottom:calc(5vh + 10.9vw); font-size:15px; color:var(--pencil); z-index:3; }
+</style></head><body>
+<div class="frame"><canvas id="c"></canvas><div class="edge"></div>
+  <nav class="nav"><span aria-current="page">Roles</span><span>Work</span><span>Lab</span><span>Contact</span></nav><div class="resume">Résumé</div><div class="sub">Seven boards, from the degree to Deriv.</div><h1 class="ttl display">Roles</h1>
+</div>
+<script type="module">
+import { hall, TABLES } from "./_shared/hall.js"; import { done } from "./_shared/chess3d.js";
+await document.fonts.ready;
+const h = await hall(document.getElementById("c"), { view: "high" });
+TABLES.forEach((t, i) => { const p = h.toScreen(h.anchors[i].clone().setY(-.05)); const el = document.createElement("div"); el.className = "t" + (i === 6 ? " now" : ""); el.innerHTML = "<b>" + t.employer + "</b><span>" + t.when + "</span>"; el.style.left = p.x + "px"; el.style.top = p.y + "px"; document.querySelector(".frame").append(el); });
+done(h.r, h.scene, h.cam);
+</script></body></html>

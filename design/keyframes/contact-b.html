@@ -1,0 +1,22 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Contact B: the unfinished board, your side</title>
+<link rel="stylesheet" href="_shared/tokens.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style> canvas { z-index:1; }
+  .yours { position:absolute; left:4vw; top:13vh; font-size:8.6vw; } .sub { position:absolute; left:4.2vw; top:calc(13vh + 8.6vw); font-size:15px; color:var(--fg2); }
+  .mail { position:absolute; left:4.2vw; top:calc(13vh + 8.6vw + 44px); font-size:22px; font-weight:600; } .rt { position:absolute; left:4.2vw; top:calc(13vh + 8.6vw + 80px); font-size:13px; color:var(--fg2); }
+  .links { position:absolute; right:48px; top:13vh; list-style:none; font-size:18px; font-weight:500; line-height:1.7; text-align:right; }
+</style></head><body><div class="frame"><canvas id="c"></canvas><div id="ink"><nav class="nav"><span>Roles</span><span>Work</span><span>Lab</span><span aria-current="page">Contact</span></nav><div class="resume">Résumé</div>
+  <h1 class="yours display">Your move.</h1><div class="sub mono">11. White to move · +0.64</div><div class="mail">anasqumhiyeh@gmail.com</div><div class="rt">Usually replies within two business days (MYT).</div><ul class="links"><li>Email</li><li>LinkedIn</li><li>GitHub</li><li>Résumé</li></ul></div></div>
+<script type="module">
+import { seam } from "./_shared/seam.js"; import { THREE, renderer, applyEnv, board, position, done } from "./_shared/chess3d.js";
+await document.fonts.ready; seam({ at: .559 });
+const pos = (await (await fetch("./_shared/positions.json")).json()).career;
+const W = innerWidth, H = innerHeight, { r, envTex } = renderer(document.getElementById("c"), { exposure: 1.05 }); r.setClearColor(0, 0);
+const scene = new THREE.Scene(); applyEnv(scene, envTex, .3);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x404040, .55));
+const key = new THREE.DirectionalLight(0xfff4e4, 2.4); key.position.set(9, 6, -4); key.castShadow = true; key.shadow.mapSize.set(4096, 4096); key.shadow.radius = 6; key.shadow.bias = -.0004;
+Object.assign(key.shadow.camera, { left: -8, right: 8, top: 8, bottom: -8, near: 1, far: 40 }); scene.add(key);
+const b = board({ highlight: pos.last, tableSize: 0 }); scene.add(b); scene.add(position(pos.fen));
+const cam = new THREE.PerspectiveCamera(30, W / H, .1, 100); cam.position.set(2.2, 4.4, 15); cam.lookAt(.3, 0, 0); cam.setViewOffset(W, H, -.12 * W, -.22 * H, W, H);
+done(r, scene, cam);
+</script></body></html>
