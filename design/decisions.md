@@ -89,6 +89,6 @@ Review page: `design/keyframes/round2.html`. The picks stay stable; only the §5
 - **proj-a:** the key light is higher, so the shadow is shorter and lighter and no longer runs under the subtitle.
 - **roles-b:** 19 words (was about 50). Names only in career order, "now" on Deriv; dates move to hover and the role pages.
 
-**Open for the owner:**
-- The Lab chapters run about 40 to 70 words each, above the 20-word rule, because they carry the technical story. Allowed there?
-- The Lab has no mobile compositions yet. The brief asks for mobile on the hero only; §5 wants every page designed for phones.
+**Owner decisions (2026-09-28):**
+- The Lab chapters may run past the 20-word rule, about 40 to 70 words each, because they carry the technical story.
+- The Lab gets phone compositions: `lab-a-m` and `lab2-1-m` to `lab2-7-m`. On phones the seam turns horizontal, white on top, at the same share as on desktop, as the hero does. Chapter 02 puts the seam exactly on the top of the kept stack; 03 recedes the casts so the playing net is largest; 06 uses a long lens so the plinths stay true to scale.

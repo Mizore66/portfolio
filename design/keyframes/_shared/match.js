@@ -19,7 +19,7 @@ function heap(n, seed) {
 
 export const PILES = [{ key: "w", x: -5.6, seed: 3 }, { key: "d", x: 0, seed: 5 }, { key: "l", x: 5.8, seed: 9 }];
 
-export function matchScene(canvas, theme, { counts, falling = null, view }) {
+export function matchScene(canvas, theme, { counts, falling = null, view, piles = PILES, camera = { pos: [0, 11.5, 31], look: [0, 1.2, 0], fov: 28 } }) {
   const day = theme === "day";
   const { r, envTex } = renderer(canvas, { exposure: day ? 1 : 1.12 }), scene = new THREE.Scene();
   const bg = day ? 0xf3f3f1 : 0x0b0e14; scene.background = new THREE.Color(bg); scene.fog = new THREE.Fog(bg, 40, 90); applyEnv(scene, envTex, day ? .45 : .12);
@@ -29,19 +29,19 @@ export function matchScene(canvas, theme, { counts, falling = null, view }) {
   const rim = new THREE.DirectionalLight(day ? 0xffffff : 0x9fb4d8, day ? .4 : .9); rim.position.set(6, 4, -10); scene.add(rim);
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(300, 300), new THREE.MeshStandardMaterial({ color: day ? 0xe8e6e0 : 0x0b0f16, roughness: .8 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
   const mats = { w: MAT.porcelain(), d: new THREE.MeshPhysicalMaterial({ color: 0x3b3e45, roughness: .78, clearcoat: 0, clearcoatRoughness: .4 }), l: new THREE.MeshPhysicalMaterial({ color: 0x16171a, roughness: .3, clearcoat: 1, clearcoatRoughness: .12 }) };
-  for (const p of PILES) {
-    const ring = new THREE.Mesh(new THREE.RingGeometry(2.55, 2.58, 128), new THREE.MeshBasicMaterial({ color: day ? 0x57534c : 0x8f98a8, transparent: true, opacity: .45 })); ring.rotation.x = -Math.PI / 2; ring.position.set(p.x, .005, 0); ring.scale.z = .8; scene.add(ring);
+  for (const p of piles) { const pz = p.z ?? 0;
+    const ring = new THREE.Mesh(new THREE.RingGeometry(2.55, 2.58, 128), new THREE.MeshBasicMaterial({ color: day ? 0x57534c : 0x8f98a8, transparent: true, opacity: .45 })); ring.rotation.x = -Math.PI / 2; ring.position.set(p.x, .005, pz); ring.scale.z = .8; scene.add(ring);
     const list = heap(counts[p.key], p.seed), m = new THREE.InstancedMesh(STONE, mats[p.key], Math.max(1, list.length)); m.count = list.length;
     const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), E = new THREE.Euler(), one = new THREE.Vector3(1, 1, 1);
-    list.forEach((s, i) => { M.compose(new THREE.Vector3(p.x + s.x, s.y, s.z), Q.setFromEuler(E.set(s.rx, s.ry, s.rz)), one); m.setMatrixAt(i, M); });
+    list.forEach((s, i) => { M.compose(new THREE.Vector3(p.x + s.x, s.y, pz + s.z), Q.setFromEuler(E.set(s.rx, s.ry, s.rz)), one); m.setMatrixAt(i, M); });
     m.castShadow = m.receiveShadow = true; scene.add(m);
   }
-  if (falling) { const s = new THREE.Mesh(STONE, mats[falling.key]); s.position.set(PILES.find((p) => p.key === falling.key).x, falling.y, 0); s.rotation.set(.5, .3, -.35); s.castShadow = true; scene.add(s); }
-  const cam = new THREE.PerspectiveCamera(28, innerWidth / innerHeight, .1, 200); cam.position.set(0, 11.5, 31); cam.lookAt(0, 1.2, 0);
+  if (falling) { const s = new THREE.Mesh(STONE, mats[falling.key]); { const f = piles.find((p) => p.key === falling.key); s.position.set(f.x, falling.y, f.z ?? 0); } s.rotation.set(.5, .3, -.35); s.castShadow = true; scene.add(s); }
+  const cam = new THREE.PerspectiveCamera(camera.fov, innerWidth / innerHeight, .1, 200); cam.position.set(...camera.pos); cam.lookAt(...camera.look);
   cam.setViewOffset(innerWidth, innerHeight, view[0] * innerWidth, view[1] * innerHeight, innerWidth, innerHeight); cam.updateMatrixWorld();
   return { r, scene, cam };
 }
 
-export function pileTags(cam, labels) {
-  return PILES.map((p) => { const v = new THREE.Vector3(p.x, 0, 2.8).project(cam); return `<div class="tag p" style="left:${(v.x + 1) / 2 * innerWidth}px;top:${(1 - v.y) / 2 * innerHeight + 14}px">${labels[p.key]}</div>`; }).join("");
+export function pileTags(cam, labels, piles = PILES) {
+  return piles.map((p) => { const v = new THREE.Vector3(p.x, 0, (p.z ?? 0) + 2.8).project(cam); return `<div class="tag p" style="left:${(v.x + 1) / 2 * innerWidth}px;top:${(1 - v.y) / 2 * innerHeight + 14}px">${labels[p.key]}</div>`; }).join("");
 }
