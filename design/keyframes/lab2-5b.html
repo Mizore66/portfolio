@@ -1,0 +1,19 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Lab 2.5b: the match</title>
+<link rel="stylesheet" href="_shared/tokens.css"><link rel="stylesheet" href="_shared/lab2.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>.tag.p { transform: translate(-50%, 0); } .tag.p::after { display:none; } .ctr { position:absolute; bottom:48px; transform: translateX(12px); font-family: var(--font-mono); font-size:12px; }</style>
+</head><body><div class="frame">
+<div id="ink"><nav class="nav"><span>Roles</span><span>Work</span><span aria-current="page">Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
+  <div class="chap">05 / 06</div><h1 class="ttl display" style="font-size:180px;top:96px">−143.3</h1><div class="pm" style="position:absolute;left:52px;top:270px;font-size:22px;font-weight:700">±35.4 Elo<div style="font-size:13px;font-weight:400;color:var(--fg2);margin-top:6px">Controlled benchmark</div></div><p class="note" style="left:48px;bottom:48px;max-width:30ch"><b>STOPPED AT GAME 128</b>The evidence crossed the line: LLR −2.99, past the −2.94 bound. The learned net lost.</p>
+  <div class="ctr" style="left:.30500%"></div>
+  <div id="tags"></div>
+</div></div>
+<script type="module">
+import { seam } from "./_shared/seam.js"; import { twin } from "./_shared/twin.js"; import { matchScene, pileTags } from "./_shared/match.js";
+await document.fonts.ready;
+const AT = .305, root = document.querySelector(".frame"); document.querySelectorAll(".ctr").forEach((c) => { c.style.left = AT * 100 + "%"; c.textContent = "game 128 of 128 · 30.5%"; });
+const { dark } = seam({ at: AT, root }); document.querySelectorAll(".ctr").forEach((c) => { c.style.left = AT * 100 + "%"; c.textContent = "game 128 of 128 · 30.5%"; });
+let tags = "";
+twin(root, dark, (theme, canvas) => { const s = matchScene(canvas, theme, { counts: { w: 2, d: 74, l: 52 }, falling: null, view: [-.16, -.1] }); tags = pileTags(s.cam, { w: "2 wins", d: "74 draws", l: "52 losses" }); return s; });
+document.querySelectorAll("#tags").forEach((t) => t.innerHTML = tags);
+</script></body></html>

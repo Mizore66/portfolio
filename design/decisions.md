@@ -54,3 +54,30 @@ Owner decisions for the v3 redesign, newest last.
 | Deriv | Tal vs Larsen, Bled 1965 |
 
 **Gate 1 closed.**
+
+## Phase 2, round 1 (2026-09-28)
+
+**Picks:** the owner kept all eight designer's picks (`design/keyframes/picks.html`): hero A, transition B, work C, project A, roles B, role A, lab A, contact A.
+
+**The Lab becomes a short technical story.**
+- It explains how the engine was trained and ends with the visitor playing it on an overhead 3D board.
+- Framing: one engine, two evaluators (handcrafted PeSTO and a learned net), the learned one trained twice.
+- The play screen's default opponent is **Learned**.
+- The first draft (`lab-long.html`) read like a work presentation. The owner chose **"the engine from the inside"** in full: one continuous scene, one pinned chapter per screen, each with one object, and the seam carrying meaning in every chapter. Frames: `lab2-1` to `lab2-7`, collected in `design/keyframes/lab-round2.html`.
+
+| Chapter | Object | The seam |
+|---|---|---|
+| 01 Two evaluators | PeSTO knight table as porcelain terrain; the learned net as a basalt knight with a copper circuit | 50%, one judge on each side |
+| 02 The data | A stack of sheets to scale, through 8 filter planes; the discarded 43% spilled; one sheet held out | 56.6%, the share kept |
+| 03 Training | The same knight cast three times: clay, bisque, glaze (r 0.31, 0.50, 0.64) | none: the one all-white chapter |
+| 04 Gate A | 50 boards, each showing its real opening from `openings-v1` | 50%, dead level |
+| 05 Gate C | 128 results as stones in three heaps (2, 74, 52) | falls from 50% to 30.5% |
+| 06 What failed | Plinths at the engine's piece values; the net on a copper plinth of ±60 cp | none: gallery black |
+| 07 Play | The overhead board after 3…Bc5 with the f3 knight's moves | the learned net's eval, +0.43 (53.9%) |
+
+**Still rough in the Lab frames (fix during round 2 or in the build):**
+- 02: the spilled sheets are low contrast on the white side.
+- 05: the heaps read slightly like columns rather than piles.
+- All knights use the placeholder silhouette; Phase 4 models it properly.
+- The camera's dive between chapters is motion only (Phase 3), so no frame shows it.
+- Trees in 00 are still seeded placeholders; the build draws the kept engine's real search.

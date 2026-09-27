@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab: the full page</title>
+<link rel="stylesheet" href="_shared/tokens.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>
+  html, body { height: auto; overflow: visible; background: var(--search); }
+  .hero { position: relative; height: 900px; overflow: hidden; background: var(--paper); }
+  .hero .num { position:absolute; left:3vw; top:14vh; font-size:14vw; } .hero .pm { position:absolute; left:3.4vw; top:calc(14vh + 13vw); font-size:22px; font-weight:700; } .hero .pm .q { font-size:13px; font-weight:400; color:var(--fg2); margin-top:6px; }
+  .hero .body { position:absolute; left:3.4vw; bottom:14vh; font-size:19px; line-height:1.35; max-width:13ch; } .hero .voice { position:absolute; left:3.4vw; bottom:8vh; font-size:16px; font-style:italic; color:var(--fg2); }
+  .hero .rec { position:absolute; right:48px; bottom:8vh; font-size:14px; color:var(--move) !important; } .hero .sc { position:absolute; left:calc(30.5% + 14px); bottom:8vh; font-size:13px; color:var(--fg2); }
+  .hero svg.t { position:absolute; inset:0; z-index:1; }
+  .ch { position: relative; color: #e9ecf2; padding: 130px 96px 120px 118px; border-left: 22px solid var(--paper); }
+  .ch h2 { font-family: var(--font-display); font-weight: 900; font-variation-settings: "wdth" 112; font-size: 64px; letter-spacing: -.035em; line-height: .95; }
+  .ch .txt { margin-top: 26px; max-width: 52ch; font-size: 18px; line-height: 1.55; color: #b9c0cc; }
+  .ch .txt b { color: #e9ecf2; font-weight: 600; }
+  .src { margin-top: 18px; font-size: 13px; color: #6f7888; }
+  .split { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 80px; align-items: center; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 64px; }
+  .panel { border-top: 1px solid #2a3140; padding-top: 22px; }
+  .panel h3 { font-size: 22px; font-weight: 700; letter-spacing: -.01em; } .panel p { margin-top: 8px; font-size: 14px; color: #8f98a8; line-height: 1.5; }
+  .mono { font-family: var(--font-mono); }
+  .big { font-family: var(--font-display); font-weight: 900; font-variation-settings: "wdth" 112; letter-spacing: -.04em; line-height: .9; }
+  .amber { color: var(--move); }
+  .play { position: relative; height: 1000px; overflow: hidden; border-left: 22px solid var(--paper); }
+  .play canvas { position: absolute; inset: 0; z-index: 0; }
+  .ctl { position: absolute; right: 96px; top: 130px; width: 360px; z-index: 2; color: #e9ecf2; }
+  .ctl h2 { font-family: var(--font-display); font-weight: 900; font-variation-settings: "wdth" 112; font-size: 56px; letter-spacing: -.035em; line-height: .95; }
+  .opt { margin-top: 34px; font-size: 13px; color: #6f7888; } .opt div { margin-top: 10px; display: flex; gap: 22px; font-size: 18px; font-weight: 600; color: #6f7888; }
+  .opt span.on { color: #e9ecf2; box-shadow: 0 2px 0 var(--move); }
+  .moves { margin-top: 36px; font-size: 15px; line-height: 1.7; color: #b9c0cc; } .status { margin-top: 26px; font-size: 18px; line-height: 1.45; } .start { margin-top: 30px; display: inline-block; font-size: 17px; font-weight: 700; padding-bottom: 4px; border-bottom: 2px solid #e9ecf2; }
+  .bar { position: absolute; left: 44px; top: 150px; bottom: 150px; width: 18px; z-index: 2; background: #1a1f29; }
+  .bar i { position: absolute; left: 0; right: 0; bottom: 0; background: var(--paper); }
+  .bar b { position: absolute; left: -2px; top: -30px; font-size: 13px; color: #e9ecf2; font-family: var(--font-mono); font-weight: 400; white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<section class="hero frame" id="hero" style="height:900px;width:100%">
+  <svg class="t" id="t"></svg>
+  <div id="ink"><nav class="nav"><span>Roles</span><span>Work</span><span aria-current="page">Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
+    <h1 class="num display">−143.3</h1><div class="pm">±35.4 Elo<div class="q">Controlled benchmark, 128 games at 50,000 nodes a move</div></div>
+    <p class="body">The learned evaluator lost to PeSTO.</p><p class="voice">I published the loss.</p>
+    <div class="sc mono">30.5%</div><div class="rec mono">2 wins · 74 draws · 52 losses</div></div>
+</section>
+
+<section class="ch">
+  <div class="split">
+    <div><h2>One search, two evaluators.</h2>
+      <p class="txt">Both sides of every match use the same alpha-beta search, which I wrote from scratch in TypeScript. Only the judgement at the end of each line changes: <b>handcrafted tables</b>, or <b>a small neural net I trained</b>.</p></div>
+    <svg id="net" viewBox="0 0 700 360" style="width:100%"></svg>
+  </div>
+  <div class="pair">
+    <div class="panel"><h3>Handcrafted</h3><p>The PeSTO piece-square tables by Ronald Friederich: a score for every piece on every square. Below, the knight in the middlegame. Not trained by me; credited.</p><svg id="pst" viewBox="0 0 420 294" style="width:420px;margin-top:26px"></svg></div>
+    <div class="panel"><h3>Learned (NNUE)</h3><p>768 inputs (every piece on every square), two 256-wide accumulators, one for each side, then 32, then one number. Updated incrementally as moves are made, so the search can afford it.</p></div>
+  </div>
+</section>
+
+<section class="ch" style="background:#0d1119">
+  <h2>Twenty million positions.</h2>
+  <p class="txt">The labels are public Stockfish evaluations from the <b>Lichess evaluation database (CC0)</b>. No Stockfish network weights are copied. The filters keep only quiet positions that a leaf evaluation should be able to judge.</p>
+  <svg id="funnel" viewBox="0 0 1200 300" style="width:100%;margin-top:60px"></svg>
+  <p class="src mono">Kept: dedupe by position, ply 10 or later, no en passant, not in check, first engine move not a capture, no mates, clamped to ±1500 cp, depth 12 or more.</p>
+</section>
+
+<section class="ch">
+  <div class="split" style="grid-template-columns:minmax(0,7fr) minmax(0,5fr)">
+    <svg id="r" viewBox="0 0 700 420" style="width:100%"></svg>
+    <div><h2>Trained twice.</h2>
+      <p class="txt">PyTorch, mean squared error in win/draw/loss space, <b>quantisation-aware from the second epoch</b>, exported to int8 and run in WebAssembly inside a worker: 410 KB. The first net learned too little. The retrain used more, deeper data.</p>
+      <p class="txt" style="margin-top:18px">A second check guards against mimicry: a net that simply copies PeSTO can never beat it. The final net correlates <b>0.70</b> with PeSTO, well short of 1.0.</p></div>
+  </div>
+</section>
+
+<section class="ch" style="background:#0d1119">
+  <div class="split">
+    <div><h2>First, check the referee.</h2>
+      <p class="txt">Before any result counts, the harness plays <b>handcrafted against itself</b>: 100 games at 50,000 nodes, every opening played from both sides. 17 wins, 66 draws, 17 losses: exactly <b>0.0 Elo</b>. The harness is fair, so any later gap belongs to the evaluator.</p></div>
+    <svg id="gatea" viewBox="0 0 640 300" style="width:100%"></svg>
+  </div>
+</section>
+
+<section class="ch">
+  <h2>Then the match.</h2>
+  <p class="txt">Learned against handcrafted, same search, <b>50,000 nodes a move</b>, fifty openings from both sides. The test was set up to stop as soon as the evidence was decisive (SPRT, H0 = 0 Elo, H1 = +10 Elo). It stopped at game 128.</p>
+  <div style="display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:64px;margin-top:56px;align-items:end">
+    <svg id="match" viewBox="0 0 820 340" style="width:100%"></svg>
+    <div><div class="big" style="font-size:108px">−143.3</div><div style="margin-top:12px;font-size:20px;font-weight:700">±35.4 Elo</div><div class="src">Controlled benchmark</div>
+      <div class="mono" style="margin-top:28px;font-size:15px;color:#b9c0cc">2 wins · 74 draws · 52 losses<br>LLR −2.99, bound −2.94</div></div>
+  </div>
+</section>
+
+<section class="ch" style="background:#0d1119">
+  <h2>What failed.</h2>
+  <div class="pair" style="grid-template-columns:minmax(0,6fr) minmax(0,6fr);gap:80px;margin-top:40px">
+    <div><p class="txt" style="margin-top:0">What was tested as "Learned" is not the net alone. It is the material count plus the net's output, <b>clamped to ±60 centipawns</b>: the net can move a position by at most 0.6 of a pawn either way.</p>
+      <svg id="clamp" viewBox="0 0 560 150" style="width:100%;margin-top:40px"></svg></div>
+    <div><div class="panel"><h3>Two causes, neither isolated</h3><p>The quality of the training data, or the integration itself: with a ±60 cp clamp on top of material, the net has little room to change a decision.</p></div>
+      <div class="panel" style="margin-top:34px"><h3>What I learned</h3><p style="font-style:italic;font-size:18px;color:#d6dbe4">A loss at the spec cap is still a result.</p><p>Do not rematch this net. A new net still has to pass the data and progress gates first.</p></div></div>
+  </div>
+</section>
+
+<section class="play" id="play">
+  <canvas id="c"></canvas>
+  <div class="bar" id="bar"><i id="barW"></i><b id="barL">+0.43</b></div>
+  <div class="ctl">
+    <h2>Play it.</h2>
+    <div class="opt">Opponent<div><span class="on">Learned</span><span>Handcrafted</span></div></div>
+    <div class="opt">You play<div><span class="on">White</span><span>Black</span></div></div>
+    <div class="moves mono">1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5</div>
+    <p class="status">Your move, as White. At 50,000 nodes the learned net rates this <span class="mono">+0.43</span> for White, and its own choice here is <span class="mono">c3</span>.</p>
+    <div class="start">Start the engine</div>
+    <p class="src" style="margin-top:22px">Loads 410 KB only when you press Start. Runs in a worker, pauses when the tab is hidden.</p>
+  </div>
+</section>
+
+<script type="module">
+import { seam } from "./_shared/seam.js"; import { tree } from "./_shared/tree.js";
+import { THREE, renderer, applyEnv, board, position, done, sq } from "./_shared/chess3d.js";
+const D = await (await fetch("./_shared/lab-data.json")).json();
+await document.fonts.ready;
+const NS = "http://www.w3.org/2000/svg", L = "#e9ecf2", A = "#e8a33d", DIM = "#2a3140";
+const svgEl = (p, t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; p.appendChild(e); return e; };
+const TXT = (p, x, y, s, c, t, anchor = "start", mono = true) => svgEl(p, "text", { x, y, fill: c, "font-size": s, "text-anchor": anchor, "font-family": mono ? "JetBrains Mono" : "Archivo" }, t);
+
+// hero
+const hero = document.getElementById("hero"); seam({ at: .305, root: hero }); hero.querySelector(".seam-bg").style.background = "var(--search)";
+{ const W = hero.clientWidth, H = 900, x0 = .305 * W, y0 = .66 * H, s = document.getElementById("t"); s.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const { lines, pv } = tree({ root: [x0, y0], len: .1 * W, depth: 9, seed: 19, bounds: [x0, .34 * H, W - 30, H - 40] });
+  s.innerHTML = lines.map(([a, b, c, d, k]) => `<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="#e9ecf2" stroke-opacity="${Math.min(.1 + .075 * k, .8).toFixed(2)}" stroke-width="${(.35 + .11 * k).toFixed(2)}"/>`).join("") + `<polyline points="${pv.map((p) => p.join(",")).join(" ")}" fill="none" stroke="#e8a33d" stroke-width="2.4"/><circle cx="${x0}" cy="${y0}" r="6" fill="#e9ecf2"/>`; }
+
+// net diagram
+{ const s = document.getElementById("net"), cols = [[40, 24, "768"], [250, 16, "256"], [250, 16, "256"], [470, 8, "32"], [640, 1, "1"]];
+  const ys = (n, top, h) => Array.from({ length: n }, (_, i) => top + (n === 1 ? h / 2 : (i / (n - 1)) * h));
+  const col = [{ x: 60, pts: ys(24, 40, 280) }, { x: 270, pts: ys(12, 40, 120) }, { x: 270, pts: ys(12, 200, 120) }, { x: 480, pts: ys(8, 110, 140) }, { x: 640, pts: [180] }];
+  for (let c = 0; c < col.length - 1; c++) { const a = col[c], b = c === 0 ? null : col[c + 1];
+    const targets = c === 0 ? [col[1], col[2]] : c === 1 || c === 2 ? [col[3]] : [col[4]];
+    targets.forEach((t) => a.pts.forEach((y1, i) => t.pts.forEach((y2, j) => { if ((i + j) % (c === 0 ? 5 : 2)) return; svgEl(s, "line", { x1: a.x, y1, x2: t.x, y2, stroke: L, "stroke-opacity": .09, "stroke-width": .7 }); }))); }
+  col.forEach((c, k) => c.pts.forEach((y) => svgEl(s, "circle", { cx: c.x, cy: y, r: k === 4 ? 9 : 3.4, fill: k === 4 ? A : L })));
+  TXT(s, 60, 352, 13, "#8f98a8", "768 inputs", "middle"); TXT(s, 270, 26, 13, "#8f98a8", "your side · 256", "middle"); TXT(s, 270, 352, 13, "#8f98a8", "their side · 256", "middle"); TXT(s, 480, 280, 13, "#8f98a8", "32", "middle"); TXT(s, 640, 214, 13, A, "eval", "middle"); }
+
+// PeSTO knight table (middlegame): lightest = best square for a knight
+{ const s = document.getElementById("pst"), v = D.pestoKnightMg, S = 34, O = 18, mn = Math.min(...v), mx = Math.max(...v);
+  for (let r = 7; r >= 0; r--) for (let f = 0; f < 8; f++) { const x = v[r * 8 + f], t = (x - mn) / (mx - mn), g = Math.round(20 + t * 215);
+    svgEl(s, "rect", { x: O + f * S, y: (7 - r) * S, width: S - 1, height: S - 1, fill: `rgb(${g},${g},${Math.min(255, g + 8)})` }); }
+  "abcdefgh".split("").forEach((c, i) => TXT(s, O + i * S + S / 2, 8 * S + 16, 11, "#6f7888", c, "middle"));
+  for (let r = 0; r < 8; r++) TXT(s, 4, (7 - r) * S + S / 2 + 4, 11, "#6f7888", String(r + 1), "middle");
+  const at = (name) => { const f = name.charCodeAt(0) - 97, r = +name[1] - 1; return [O + f * S, (7 - r) * S, v[r * 8 + f]]; };
+  const lx = O + 8 * S + 24;
+  [["f6", 20], ["a8", 70]].forEach(([n, y]) => { const [x, yy, val] = at(n); svgEl(s, "rect", { x: x + .5, y: yy + .5, width: S - 2, height: S - 2, fill: "none", stroke: val > 0 ? "#0b0e14" : "#e9ecf2", "stroke-width": 2 });
+    TXT(s, lx, y, 13, "#e9ecf2", n); TXT(s, lx + 30, y, 13, "#8f98a8", (val > 0 ? "+" : "−") + Math.abs(val)); });
+  TXT(s, lx, 110, 11, "#6f7888", "centipawns,"); TXT(s, lx, 126, 11, "#6f7888", "knight on"); TXT(s, lx, 142, 11, "#6f7888", "each square"); }
+
+// funnel
+{ const s = document.getElementById("funnel"), rows = [["Read", 35405130], ["Kept after filters", 20040000], ["Training", 20000000], ["Hold-out", 40000]], mx = 35405130;
+  rows.forEach(([l, n], i) => { const y = i * 72, w = Math.max(3, (n / mx) * 780); svgEl(s, "rect", { x: 250, y, width: w, height: 42, fill: i === 2 ? A : L, "fill-opacity": i === 2 ? 1 : .85 - i * .15 });
+    TXT(s, 0, y + 28, 18, "#e9ecf2", l, "start", false); TXT(s, 250 + w + 16, y + 28, 16, "#b9c0cc", n.toLocaleString("en-GB")); }); }
+
+// hold-out r
+{ const s = document.getElementById("r"), X0 = 60, Y0 = 360, H = 300, nets = [["768×2×128", "3M · depth 8 · 2 epochs", .31, "played Gate C at 1k"], ["768×2×256", "6M · depth 8 · 3 epochs", .50, "comparison, not played"], ["768×2×256", "20M · depth 12 · 3 epochs", .64, "the playing net"]];
+  [0, .25, .5, .75, 1].forEach((t) => { const y = Y0 - t * H; svgEl(s, "line", { x1: X0, y1: y, x2: 680, y2: y, stroke: DIM, "stroke-width": 1 }); TXT(s, X0 - 12, y + 4, 12, "#6f7888", t.toFixed(2), "end"); });
+  nets.forEach(([a, b, r, role], i) => { const x = X0 + 70 + i * 200, y = Y0 - r * H; svgEl(s, "rect", { x: x - 34, y, width: 68, height: r * H, fill: i === 2 ? A : L, "fill-opacity": i === 2 ? 1 : .35 });
+    TXT(s, x, y - 12, 16, i === 2 ? A : "#e9ecf2", r.toFixed(2), "middle"); TXT(s, x, Y0 + 24, 13, "#e9ecf2", a, "middle"); TXT(s, x, Y0 + 42, 11, "#8f98a8", b, "middle"); TXT(s, x, Y0 + 58, 11, "#6f7888", role, "middle"); });
+  TXT(s, X0, 30, 12, "#8f98a8", "hold-out correlation with Stockfish labels (r)"); }
+
+// gate A
+{ const s = document.getElementById("gatea"), g = D.gateA.games, S = 26;
+  g.forEach((sc, i) => { const pair = Math.floor(i / 2), col = pair % 10, row = Math.floor(pair / 10), x = col * (2 * S + 12) + (i % 2) * S, y = row * (S + 16);
+    svgEl(s, "rect", { x, y, width: S - 3, height: S - 3, fill: sc === 1 ? L : sc === 0 ? "#1a1f29" : "#5d6676", stroke: sc === 0 ? "#3a4252" : "none" }); });
+  TXT(s, 0, 5 * (S + 16) + 18, 12, "#8f98a8", "pairs: one opening from each side · white win · grey draw · dark loss"); }
+
+// match curve
+{ const s = document.getElementById("match"), g = D.gateC.games, X0 = 40, Y0 = 300, W = 760, H = 260; let tot = 0; const pts = [];
+  g.forEach((sc, i) => { tot += sc; pts.push([X0 + (i + 1) / g.length * W, Y0 - (tot / (i + 1)) * H]); });
+  [0, .25, .5, .75, 1].forEach((t) => { const y = Y0 - t * H; svgEl(s, "line", { x1: X0, y1: y, x2: X0 + W, y2: y, stroke: DIM }); TXT(s, X0 - 10, y + 4, 12, "#6f7888", (t * 100) + "%", "end"); });
+  svgEl(s, "line", { x1: X0, y1: Y0 - .5 * H, x2: X0 + W, y2: Y0 - .5 * H, stroke: "#8f98a8", "stroke-dasharray": "4 5" }); TXT(s, X0 + W, Y0 - .5 * H - 10, 12, "#8f98a8", "even: 50%", "end");
+  svgEl(s, "polyline", { points: pts.map((p) => p.map((n) => n.toFixed(1)).join(",")).join(" "), fill: "none", stroke: A, "stroke-width": 2.6 });
+  const last = pts.at(-1); svgEl(s, "circle", { cx: last[0], cy: last[1], r: 6, fill: A }); TXT(s, last[0] - 10, last[1] + 26, 13, A, "30.5% after 128 games", "end");
+  TXT(s, X0, Y0 + 30, 12, "#6f7888", "game 1"); TXT(s, X0 + W, Y0 + 30, 12, "#6f7888", "game 128", "end"); TXT(s, X0, 14, 12, "#8f98a8", "learned net's running score"); }
+
+// clamp
+{ const s = document.getElementById("clamp"), X0 = 20, W = 520, c = X0 + W / 2, px = W / 300;
+  svgEl(s, "line", { x1: X0, y1: 70, x2: X0 + W, y2: 70, stroke: "#3a4252", "stroke-width": 2 });
+  svgEl(s, "rect", { x: c - 60 * px, y: 56, width: 120 * px, height: 28, fill: A, "fill-opacity": .9 });
+  svgEl(s, "line", { x1: c, y1: 40, x2: c, y2: 100, stroke: L, "stroke-width": 2 });
+  TXT(s, c, 30, 13, "#e9ecf2", "material count", "middle"); TXT(s, c - 60 * px, 118, 12, A, "−60 cp", "middle"); TXT(s, c + 60 * px, 118, 12, A, "+60 cp", "middle");
+  TXT(s, X0, 118, 12, "#6f7888", "−150"); TXT(s, X0 + W, 118, 12, "#6f7888", "+150", "end"); TXT(s, c, 144, 12, "#8f98a8", "the only room the net had", "middle"); }
+
+// play: overhead board with legal-move dots on the f3 knight
+{ const sec = document.getElementById("play"), W = sec.clientWidth, H = sec.clientHeight;
+  const { r, envTex } = renderer(document.getElementById("c"), { width: W, height: H, exposure: 1.05 });
+  const scene = new THREE.Scene(); scene.background = new THREE.Color(0x0b0e14); applyEnv(scene, envTex, .28);
+  scene.add(new THREE.HemisphereLight(0x9aa4b8, 0x0b0e14, .5));
+  const key = new THREE.SpotLight(0xfff1dc, 260, 0, .55, .6, 1.5); key.position.set(-3, 14, 5); key.target.position.set(0, 0, 0); scene.add(key.target);
+  key.castShadow = true; key.shadow.mapSize.set(4096, 4096); key.shadow.radius = 6; key.shadow.bias = -.0004; scene.add(key);
+  scene.add(board({ highlight: ["f8", "c5"], tableSize: 0 }));
+  const fen = "r.bqk.nr/pppp.ppp/..n...../..b.p.../..B.P.../.....N../PPPP.PPP/RNBQK..R";
+  scene.add(position(fen, { lift: "f3" }));
+  D.knightMoves.forEach((t) => { const p = sq(t), cap = t === "e5";
+    const m = new THREE.Mesh(cap ? new THREE.RingGeometry(.36, .44, 48) : new THREE.CircleGeometry(.14, 40), new THREE.MeshBasicMaterial({ color: 0x0d0d0c, transparent: true, opacity: .32 }));
+    m.rotation.x = -Math.PI / 2; m.position.set(p.x, .005, p.z); scene.add(m); });
+  const cam = new THREE.PerspectiveCamera(28, W / H, .1, 100); cam.position.set(0, 24, 6.4); cam.lookAt(0, 0, .3); cam.setViewOffset(W, H, .15 * W, 0, W, H);
+  const pct = 50 + 50 * (2 / (1 + Math.exp(-.00368208 * D.learned.evalCp)) - 1);
+  document.getElementById("barW").style.height = pct + "%"; 
+  done(r, scene, cam); }
+</script>
+</body>
+</html>

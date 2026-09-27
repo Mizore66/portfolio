@@ -1,0 +1,50 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Lab 2.7: play it</title>
+<link rel="stylesheet" href="_shared/tokens.css"><link rel="stylesheet" href="_shared/lab2.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>
+  .ctl { position:absolute; right:48px; top:150px; width:330px; }
+  .opt { font-family: var(--font-mono); font-size:12px; color: var(--fg2); margin-bottom:26px; } .opt div { margin-top:8px; display:flex; gap:20px; font-family: var(--font-display); font-size:18px; font-weight:600; } .opt span.on { color: var(--fg); box-shadow: 0 2px 0 var(--move); } .opt span:not(.on) { color: var(--fg2); }
+  .moves { font-family: var(--font-mono); font-size:14px; line-height:1.8; } .status { margin-top:18px; font-size:17px; line-height:1.45; } .start { margin-top:26px; display:inline-block; font-size:17px; font-weight:700; padding-bottom:4px; border-bottom:2px solid currentColor; }
+  .ev { position:absolute; bottom:48px; transform: translateX(12px); font-family: var(--font-mono); font-size:12px; }
+</style>
+</head><body><div class="frame">
+<div id="ink"><nav class="nav"><span>Roles</span><span>Work</span><span aria-current="page">Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
+  <h1 class="ttl display" style="font-size:104px">Play<br>it.</h1>
+  <p class="note" style="left:48px;bottom:48px;max-width:26ch"><b>THE SEAM IS THE EVAL</b>It sits where the learned net scores the position, and moves with every move.</p>
+  <div class="ev"></div>
+  <div class="ctl">
+    <div class="opt">Opponent<div><span class="on">Learned</span><span>Handcrafted</span></div></div>
+    <div class="opt">You play<div><span class="on">White</span><span>Black</span></div></div>
+    <div class="moves">1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5</div>
+    <p class="status">Your move. At 50,000 nodes the learned net rates this <span class="mono">+0.43</span> for White, and would play <span class="mono">c3</span>.</p>
+    <div class="start">Start the engine</div>
+    <p class="note" style="position:static;margin-top:20px">Loads 410 KB only when you press Start. Runs in a worker and pauses when the tab is hidden.</p>
+  </div>
+</div></div>
+<script type="module">
+import { seam } from "./_shared/seam.js"; import { twin } from "./_shared/twin.js";
+import { THREE, renderer, applyEnv, board, position, sq } from "./_shared/chess3d.js";
+const D = await (await fetch("./_shared/lab-data.json")).json(); await document.fonts.ready;
+const AT = .5 + .5 * Math.tanh(.00368208 * D.learned.evalCp / 2), root = document.querySelector(".frame"), W = innerWidth, H = innerHeight;
+const { dark } = seam({ at: AT, root });
+document.querySelectorAll(".ev").forEach((e) => { e.style.left = AT * 100 + "%"; e.textContent = "+0.43 · " + (AT * 100).toFixed(1) + "%"; });
+const FEN = "r.bqk.nr/pppp.ppp/..n...../..b.p.../..B.P.../.....N../PPPP.PPP/RNBQK..R";
+twin(root, dark, (theme, canvas) => {
+  const day = theme === "day";
+  const { r, envTex } = renderer(canvas, { exposure: day ? 1 : 1.08 }), scene = new THREE.Scene();
+  scene.background = new THREE.Color(day ? 0xf3f3f1 : 0x0b0e14); applyEnv(scene, envTex, day ? .45 : .1);
+  scene.add(new THREE.HemisphereLight(day ? 0xffffff : 0x9aa4b8, day ? 0xd8d5ce : 0x0b0e14, day ? .8 : .25));
+  const key = day ? new THREE.DirectionalLight(0xfff8ee, 2.4) : new THREE.SpotLight(0xfff1dc, 150, 0, .5, .7, 1.5);
+  key.position.set(-3, 14, 5); key.target.position.set(0, 0, 0); scene.add(key.target); key.castShadow = true; key.shadow.mapSize.set(4096, 4096); key.shadow.radius = 6; key.shadow.bias = -.0004;
+  if (day) Object.assign(key.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7, near: 1, far: 40 }); scene.add(key);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), day ? new THREE.MeshStandardMaterial({ color: 0xe9e7e1, roughness: .9 }) : new THREE.MeshStandardMaterial({ color: 0x0d1118, roughness: .9 }));
+  floor.rotation.x = -Math.PI / 2; floor.position.y = -.18; floor.receiveShadow = true; scene.add(floor);
+  scene.add(board({ highlight: ["f8", "c5"], tableSize: 0 }));
+  scene.add(position(FEN, { lift: "f3" }));
+  D.knightMoves.forEach((t) => { const p = sq(t), cap = t === "e5";
+    const m = new THREE.Mesh(cap ? new THREE.RingGeometry(.36, .44, 48) : new THREE.CircleGeometry(.14, 40), new THREE.MeshBasicMaterial({ color: 0x0d0d0c, transparent: true, opacity: .32 }));
+    m.rotation.x = -Math.PI / 2; m.position.set(p.x, .005, p.z); scene.add(m); });
+  const cam = new THREE.PerspectiveCamera(28, W / H, .1, 100); cam.position.set(0, 24, 6.4); cam.lookAt(0, 0, .3); cam.setViewOffset(W, H, .056 * W, .01 * H, W, H);
+  return { r, scene, cam };
+});
+</script></body></html>

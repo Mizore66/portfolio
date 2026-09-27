@@ -35,3 +35,20 @@ export function circuitmind() {
   g.add(surfaceTube("B", P, .009, MAT.copper(), .006));
   return g;
 }
+
+/** The learned evaluator: basalt knight with a copper circuit inlaid on both faces of the head. */
+export function learnedKnight() {
+  const g = piece("N", MAT.basalt()), cu = MAT.copper();
+  const paths = [[[-.15, .28], [-.15, .6], [.1, .6], [.1, .72], [.3, .72]], [[-.15, .6], [-.15, .88], [.05, .88], [.05, 1.02]], [[.1, .6], [.1, .44], [-.02, .44]]];
+  for (const z of [.152, -.152]) {
+    for (const p of paths) {
+      const curve = new THREE.CurvePath();
+      for (let i = 1; i < p.length; i++) curve.add(new THREE.LineCurve3(new THREE.Vector3(p[i - 1][0], p[i - 1][1], z), new THREE.Vector3(p[i][0], p[i][1], z)));
+      g.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 64, .011, 8, false), cu));
+      [p[0], p.at(-1)].forEach(([x, y]) => { const n = new THREE.Mesh(new THREE.CylinderGeometry(.03, .03, .012, 24), cu); n.rotation.x = Math.PI / 2; n.position.set(x, y, z); g.add(n); });
+    }
+  }
+  const ring = []; for (let i = 0; i <= 64; i++) ring.push([.12, (i / 64) * Math.PI * 2]);
+  g.add(surfaceTube("N", ring, .009, cu, .006));
+  return g;
+}

@@ -1,0 +1,33 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Lab 2.4: check the referee</title>
+<link rel="stylesheet" href="_shared/tokens.css"><link rel="stylesheet" href="_shared/lab2.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>.big { position:absolute; left:44px; bottom:22px; font-size:230px; z-index:3; } .half { position:absolute; left:50%; top:112px; transform: translateX(12px); font-family: var(--font-mono); font-size:12px; }</style>
+</head><body><div class="frame">
+<div id="ink"><nav class="nav"><span>Roles</span><span>Work</span><span aria-current="page">Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
+  <div class="chap">04 / 06</div>
+  <p class="note" style="left:48px;top:112px;max-width:40ch"><b>FIRST, CHECK THE REFEREE</b>Handcrafted against itself: 100 games at 50,000 nodes a move. The same 50 openings, each played once from each side.</p>
+  <p class="note" style="right:48px;top:112px;text-align:right;max-width:34ch"><b>DEAD LEVEL</b>17 wins · 66 draws · 17 losses. The harness is fair, so any later gap belongs to the evaluator.</p>
+  <h1 class="big display">0.0 Elo</h1>
+  <div class="half">50.0%</div>
+</div></div>
+<script type="module">
+import { seam } from "./_shared/seam.js"; import { twin } from "./_shared/twin.js"; import { many } from "./_shared/many.js";
+import { THREE, renderer, applyEnv } from "./_shared/chess3d.js";
+const OP = await (await fetch("./_shared/openings.json")).json(); await document.fonts.ready;
+const root = document.querySelector(".frame"), W = innerWidth, H = innerHeight, { dark } = seam({ at: .5, root });
+const S = 11, boards = OP.map((o, i) => ({ fen: o.fen, at: [((i % 10) - 4.5) * S, (Math.floor(i / 10) - 2) * S * 1.05] }));
+twin(root, dark, (theme, canvas) => {
+  const day = theme === "day";
+  const { r, envTex } = renderer(canvas, { exposure: day ? 1 : 1.1 }), scene = new THREE.Scene();
+  const bg = day ? 0xf3f3f1 : 0x0b0e14; scene.background = new THREE.Color(bg); scene.fog = new THREE.Fog(bg, 110, 190); applyEnv(scene, envTex, day ? .5 : .08);
+  scene.add(new THREE.HemisphereLight(day ? 0xffffff : 0x223048, day ? 0xd8d5ce : 0x05070a, day ? .8 : .35));
+  const key = new THREE.DirectionalLight(day ? 0xfff8ee : 0xffe8cc, day ? 2.6 : 1.6); key.position.set(day ? -40 : 40, 60, 30); key.castShadow = true;
+  key.shadow.mapSize.set(8192, 8192); key.shadow.radius = 3; key.shadow.bias = -.0003; Object.assign(key.shadow.camera, { left: -70, right: 70, top: 50, bottom: -50, near: 1, far: 200 }); scene.add(key);
+  if (!day) boards.forEach((b, i) => { if (i % 3) return; const s = new THREE.SpotLight(0xffe2b8, 900, 0, .16, .8, 1.6); s.position.set(b.at[0] + 6, 30, b.at[1] + 8); s.target.position.set(b.at[0], 0, b.at[1]); scene.add(s.target, s); });
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(800, 800), new THREE.MeshStandardMaterial({ color: day ? 0xe6e4de : 0x0d1118, roughness: day ? .9 : .35, metalness: day ? 0 : .2 }));
+  floor.rotation.x = -Math.PI / 2; floor.position.y = -.17; floor.receiveShadow = true; scene.add(floor);
+  many(scene, boards, day ? {} : { light: 0xcfc3ab, dark: 0x7d6a55, frame: 0x8f7a5f });
+  const cam = new THREE.PerspectiveCamera(30, W / H, .1, 400); cam.position.set(0, 58, 96); cam.lookAt(0, 0, -4); cam.setViewOffset(W, H, 0, .085 * H, W, H);
+  return { r, scene, cam };
+});
+</script></body></html>

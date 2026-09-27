@@ -1,0 +1,19 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Lab 2.5a: the match</title>
+<link rel="stylesheet" href="_shared/tokens.css"><link rel="stylesheet" href="_shared/lab2.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>.tag.p { transform: translate(-50%, 0); } .tag.p::after { display:none; } .ctr { position:absolute; bottom:48px; transform: translateX(12px); font-family: var(--font-mono); font-size:12px; }</style>
+</head><body><div class="frame">
+<div id="ink"><nav class="nav"><span>Roles</span><span>Work</span><span aria-current="page">Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
+  <div class="chap">05 / 06</div><h1 class="ttl display" style="font-size:112px">Then the<br>match.</h1><p class="note" style="left:48px;top:370px;max-width:38ch"><b>LEARNED AGAINST HANDCRAFTED</b>Same search, 50,000 nodes a move, the same 50 openings from both sides. Set to stop the moment the evidence was decisive.</p>
+  <div class="ctr" style="left:.500%"></div>
+  <div id="tags"></div>
+</div></div>
+<script type="module">
+import { seam } from "./_shared/seam.js"; import { twin } from "./_shared/twin.js"; import { matchScene, pileTags } from "./_shared/match.js";
+await document.fonts.ready;
+const AT = .5, root = document.querySelector(".frame"); document.querySelectorAll(".ctr").forEach((c) => { c.style.left = AT * 100 + "%"; c.textContent = "game 1 of 128 · 50.0%"; });
+const { dark } = seam({ at: AT, root }); document.querySelectorAll(".ctr").forEach((c) => { c.style.left = AT * 100 + "%"; c.textContent = "game 1 of 128 · 50.0%"; });
+let tags = "";
+twin(root, dark, (theme, canvas) => { const s = matchScene(canvas, theme, { counts: { w: 0, d: 0, l: 0 }, falling: { key: "d", y: 7.2 }, view: [-.16, -.1] }); tags = pileTags(s.cam, { w: "wins", d: "draws", l: "losses" }); return s; });
+document.querySelectorAll("#tags").forEach((t) => t.innerHTML = tags);
+</script></body></html>
