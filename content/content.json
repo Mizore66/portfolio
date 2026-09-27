@@ -1,0 +1,2813 @@
+{
+  "meta": {
+    "extractedFrom": "origin/master @ 88f0461 (production, PR #40 merge). Source modules: src/content/site/*.ts, src/lib/chess/perft-table.ts, page and component copy in src/app and src/components.",
+    "extractedOn": "2026-09-28",
+    "method": "Typed content modules were imported and serialised by script (no hand transcription). Page copy that lived only in components was copied by hand into pageCopy.",
+    "contentUpdatedOnV2": "2026-09-25",
+    "truthRules": [
+      "Every number keeps its qualifier (claims[].qualifier) and its context line.",
+      "+45% (Monash contract, university regulations) and +35% (independent GraphRAG project, separate corpus) are never merged. See roleNotes.RETRIEVAL_SPLIT.",
+      "−50% inference latency belongs only to the Monash contract's graph-logic SLM, never to the SLM Distillation Engine. See projects.notes.SLM_LATENCY_NOTE.",
+      "The Deriv Go service (4–6 services → one response) runs in staging, not production; its qualifier is Capability.",
+      "Gemini Teleportal was built with Kai; MirrorFi was a team of 6; RexCheck was built with Chang Kai Zhe.",
+      "Veridian's 99.9% uptime and −15% emissions are Cloud Run evaluations, not a production SLO.",
+      "The 100M-event figure is a capacity benchmark, not sustained traffic.",
+      "Do not describe the engine as 2200 Elo or any rating; only the measured deltas (lab.article) are claims.",
+      "Hero carries no metric (v2 rule, from the colophon tests). Open for the redesign, but recorded here."
+    ],
+    "draftFlag": "Fields with draft: true were written by an agent from facts and are awaiting the owner's own wording. They are facts-true but not the owner's voice.",
+    "names": "Anas Qumhiyeh on the site; Anas Tarek Qumhiyeh on the résumé and wherever a legal name is expected (JSON-LD Person.name)."
+  },
+  "identity": {
+    "legalName": "Anas Tarek Qumhiyeh",
+    "displayName": "Anas Qumhiyeh",
+    "currentRole": {
+      "title": "AI Engineer",
+      "employer": "Deriv",
+      "since": "2026-06"
+    },
+    "heroHeadline": "I like systems that have to survive measurement.",
+    "heroSubline": "Anas Qumhiyeh — AI Engineer at Deriv. I build production services in Go, TypeScript and Python, from payment gateways to support agents, and I publish the results, including the ones that lose.",
+    "summary": "Full-stack engineer building production services in Go, TypeScript and Python on PostgreSQL, Redis and Kubernetes, with digital-commerce experience in payment-gateway integration and merchant onboarding.",
+    "availability": "AI Engineer at Deriv since June 2026. Open to conversations about mid-level software engineering roles.",
+    "contactHeading": "Hiring a software engineer for backend, full-stack, or AI-systems work? Write to me.",
+    "location": "Bandar Sunway, Selangor, Malaysia",
+    "status": [
+      "Malaysian citizen",
+      "Open to remote",
+      "Open to relocating to Singapore or Australia"
+    ],
+    "responseTime": "Usually replies within two business days (MYT).",
+    "email": "anasqumhiyeh@gmail.com",
+    "phone": {
+      "display": "+60 11-12983-246",
+      "tel": "+601112983246"
+    },
+    "linkedin": "https://linkedin.com/in/anasqumhiyeh/",
+    "github": "https://github.com/Mizore66",
+    "about": [
+      "I'm a software engineer at Deriv, where I build AI customer-support systems in Go, FastAPI and Next.js on AWS. Before that I owned a payment-gateway integration at Skribble Lab and built graph retrieval over university regulations at Monash, where I graduated with First Class Honours in software engineering.",
+      "I've played chess since I was a teenager, which is why this site is laid out like an analysis board: moves are facts, annotations are voice. Where I worked in a team, the entry says so; independent projects are mine unless marked otherwise."
+    ]
+  },
+  "education": {
+    "institution": "Monash University",
+    "location": "Bandar Sunway, Selangor, Malaysia",
+    "degree": "Bachelor of Engineering (Honours), Software Engineering",
+    "minor": "Minor in Artificial Intelligence",
+    "graduated": "2026-04",
+    "honours": [
+      "First Class Honours",
+      "Best Graduate Award",
+      "Dean's List"
+    ],
+    "wam": "81.8",
+    "cgpa": "3.78"
+  },
+  "roles": [
+    {
+      "id": "deriv",
+      "employer": "Deriv",
+      "title": "AI Engineer",
+      "kind": "Full-time",
+      "start": "2026-06",
+      "end": null,
+      "tech": [
+        "Go",
+        "FastAPI",
+        "Next.js",
+        "Kafka",
+        "Terraform",
+        "AWS EKS/EC2"
+      ],
+      "bullets": [
+        "Shipped a full-stack customer-support system that proactively resolves user issues.",
+        "Built a Go microservice that unifies data from 4–6 internal services into a single response for the support system, now running in staging.",
+        "Built and operate Kafka- and API-based ingestion pipelines for reliable downstream analysis.",
+        "Built evaluation and debugging harnesses that reproduce failures and capture environment signals.",
+        "Updated the team's Terraform configurations while scaling existing infrastructure and provisioning new services."
+      ],
+      "claimIds": [
+        "derivCxCost",
+        "derivCsat",
+        "derivEvents",
+        "derivTimeToFix",
+        "derivAwsCost",
+        "derivGoService"
+      ],
+      "earlier": false
+    },
+    {
+      "id": "skribble-lab",
+      "employer": "Skribble Lab",
+      "title": "Software Engineer",
+      "kind": "Full-time",
+      "start": "2026-01",
+      "end": "2026-06",
+      "tech": [
+        "Laravel",
+        "PostgreSQL",
+        "Redis",
+        "Docker"
+      ],
+      "bullets": [
+        "Owned the Xendit payment-gateway integration end to end, from requirements review through production support.",
+        "Designed and shipped a merchant onboarding module for product and payment setup, and onboarded the primary client, Chung Ling Private High School.",
+        "Hunted integration breakage and production defects before customers found them."
+      ],
+      "claimIds": [
+        "skribbleMerchants",
+        "skribbleReach",
+        "skribbleErrors"
+      ],
+      "earlier": false
+    },
+    {
+      "id": "monash-university",
+      "employer": "Monash University",
+      "title": "Full-Stack AI Engineer",
+      "kind": "Contract",
+      "start": "2025-11",
+      "end": "2026-02",
+      "tech": [
+        "FastAPI",
+        "Neo4j",
+        "Next.js",
+        "LangGraph"
+      ],
+      "scope": "I owned the GraphRAG retrieval path and the distilled SLM; the faculty's administration tools were outside my scope.",
+      "bullets": [
+        "Built a FastAPI and Neo4j graph service for university regulations with a self-correcting Text-to-Cypher loop.",
+        "Automated prerequisite and credit-transfer rule resolution with embeddings plus multi-hop graph queries.",
+        "Profiled and simplified the reasoning pipeline into a graph-logic SLM that surfaced contradictory policy data for administrators."
+      ],
+      "claimIds": [
+        "monashRetrieval",
+        "slmLatency"
+      ],
+      "note": "+45% is the Monash contract on university regulations. +35% is the independent GraphRAG project on a separate university handbook and policy archive. Same comparison — vector-only — different corpus.",
+      "earlier": false
+    },
+    {
+      "id": "western-digital",
+      "employer": "Western Digital",
+      "title": "Full-stack Engineer",
+      "kind": "Contract",
+      "start": "2025-02",
+      "end": "2025-12",
+      "tech": [
+        "Next.js",
+        "ASP.NET",
+        "PostgreSQL",
+        "Docker"
+      ],
+      "bullets": [
+        "Built the lab-operations dashboard used by 50+ lab staff, with WebSocket station-status and model-inference updates under 100 ms of UI-visible latency."
+      ],
+      "claimIds": [
+        "wdOversight"
+      ],
+      "annotation": "Operators had to walk stations when the board was silent, so the dashboard had to carry live status.",
+      "earlier": true
+    },
+    {
+      "id": "setel",
+      "employer": "Setel",
+      "title": "Software Engineer Intern",
+      "kind": "Internship",
+      "start": "2025-07",
+      "end": "2025-12",
+      "tech": [
+        "Docker",
+        "Kubernetes",
+        "React",
+        "Node.js",
+        "MongoDB",
+        "NestJS"
+      ],
+      "bullets": [
+        "Authorization and capture of stored payment methods on the payment engine, documented so a new developer could follow the path without a walkthrough."
+      ],
+      "claimIds": [
+        "setelCoverage",
+        "setelDefects"
+      ],
+      "annotation": "Payment-engine defects could travel to checkout at the pump, so the tests had to survive that path.",
+      "earlier": true
+    },
+    {
+      "id": "petronas",
+      "employer": "Petronas",
+      "title": "Project Engineer Intern",
+      "kind": "Internship",
+      "start": "2024-11",
+      "end": "2025-02",
+      "tech": [
+        "MATLAB",
+        "Python",
+        "MathCAD"
+      ],
+      "bullets": [
+        "Replaced MATLAB-dependent back-end calculation and reporting functions with Python packages, removing paid runtime dependencies."
+      ],
+      "claimIds": [],
+      "earlier": true
+    }
+  ],
+  "roleNotes": {
+    "RETRIEVAL_SPLIT": "+45% is the Monash contract on university regulations. +35% is the independent GraphRAG project on a separate university handbook and policy archive. Same comparison — vector-only — different corpus.",
+    "OVERLAP_NOTE": "Western Digital (Feb–Dec 2025) overlapped with the Setel internship (Jul–Dec 2025) and final-year study. The Monash contract (Nov 2025 – Feb 2026) overlapped with the start of Skribble Lab (Jan 2026). I graduated in April 2026 and joined Deriv in June."
+  },
+  "skills": [
+    {
+      "label": "Languages",
+      "items": [
+        "Go",
+        "TypeScript",
+        "Python",
+        "JavaScript",
+        "SQL",
+        "PHP",
+        "C#",
+        "HTML/CSS"
+      ]
+    },
+    {
+      "label": "Frontend",
+      "items": [
+        "React",
+        "Next.js",
+        "Tailwind CSS",
+        "ShadCN",
+        "jQuery"
+      ]
+    },
+    {
+      "label": "Backend and APIs",
+      "items": [
+        "Node.js",
+        "NestJS",
+        "FastAPI",
+        "Laravel",
+        "ASP.NET",
+        "REST APIs",
+        "WebSockets",
+        "WebRTC",
+        "Kafka",
+        "Microservices"
+      ]
+    },
+    {
+      "label": "Data",
+      "items": [
+        "PostgreSQL",
+        "Redis",
+        "MySQL",
+        "MongoDB",
+        "Neo4j",
+        "Elasticsearch"
+      ]
+    },
+    {
+      "label": "Cloud and DevOps",
+      "items": [
+        "Kubernetes (AWS EKS)",
+        "Docker",
+        "AWS (EC2, EKS)",
+        "Google Cloud (Cloud Run, Cloud Build, Firestore)",
+        "Terraform",
+        "ArgoCD",
+        "GitHub Actions",
+        "GitLab CI/CD",
+        "Grafana",
+        "Loki"
+      ]
+    },
+    {
+      "label": "AI/ML",
+      "items": [
+        "LangGraph",
+        "PyTorch",
+        "TensorFlow",
+        "pandas",
+        "NumPy"
+      ]
+    }
+  ],
+  "evidenceTypes": {
+    "production": "Production",
+    "controlled-evaluation": "Controlled evaluation",
+    "controlled-benchmark": "Controlled benchmark",
+    "capacity-benchmark": "Capacity benchmark",
+    "capability": "Capability",
+    "award": "Award"
+  },
+  "claims": [
+    {
+      "id": "derivCxCost",
+      "display": "~80% lower CX cost",
+      "type": "production",
+      "owner": "Deriv",
+      "date": "2026",
+      "context": "Full-stack customer-support system that proactively resolves user issues.",
+      "qualifier": "Production"
+    },
+    {
+      "id": "derivCsat",
+      "display": "CSAT 5/10 → 8/10",
+      "type": "production",
+      "owner": "Deriv",
+      "date": "2026",
+      "context": "Average customer satisfaction after the support system shipped.",
+      "qualifier": "Production"
+    },
+    {
+      "id": "derivEvents",
+      "display": "~20,000 complex events/day",
+      "type": "production",
+      "owner": "Deriv",
+      "date": "2026",
+      "context": "Kafka- and API-based ingestion pipelines.",
+      "qualifier": "Production"
+    },
+    {
+      "id": "derivTimeToFix",
+      "display": "~50% faster time-to-fix",
+      "type": "production",
+      "owner": "Deriv",
+      "date": "2026",
+      "context": "Evaluation and debugging harnesses that reproduce production failures.",
+      "qualifier": "Production"
+    },
+    {
+      "id": "derivAwsCost",
+      "display": "~10–30% lower AWS cost",
+      "type": "production",
+      "owner": "Deriv",
+      "date": "2026",
+      "context": "Terraform changes on maintained AWS resources.",
+      "qualifier": "Production"
+    },
+    {
+      "id": "derivGoService",
+      "display": "4–6 services → one response",
+      "type": "capability",
+      "owner": "Deriv",
+      "date": "2026",
+      "context": "Go microservice sized for ~8,000–10,000 requests/day; running in staging, not production.",
+      "qualifier": "Capability"
+    },
+    {
+      "id": "skribbleErrors",
+      "display": "Weekly production errors 16 → 3",
+      "type": "production",
+      "owner": "Skribble Lab",
+      "date": "2026",
+      "context": "From high/medium severity to low severity (~80%).",
+      "qualifier": "Production"
+    },
+    {
+      "id": "skribbleMerchants",
+      "display": "5+ merchants on Xendit",
+      "type": "production",
+      "owner": "Skribble Lab",
+      "date": "2026",
+      "context": "Bank transfer, card and e-wallet payments.",
+      "qualifier": "Production"
+    },
+    {
+      "id": "skribbleReach",
+      "display": "3,000+ students and parents",
+      "type": "production",
+      "owner": "Skribble Lab",
+      "date": "2026",
+      "context": "Onboarding of Chung Ling Private High School (CLPHS).",
+      "qualifier": "Production"
+    },
+    {
+      "id": "monashRetrieval",
+      "display": "+45% retrieval vs vector-only",
+      "type": "controlled-evaluation",
+      "owner": "Monash University contract",
+      "date": "2026-02",
+      "context": "Self-correcting Text-to-Cypher over a Neo4j graph of university regulations.",
+      "qualifier": "Controlled evaluation"
+    },
+    {
+      "id": "slmLatency",
+      "display": "−50% inference latency",
+      "type": "controlled-evaluation",
+      "owner": "Monash University contract",
+      "date": "2026-02",
+      "context": "Graph-logic SLM distilled on the Monash contract, not the SLM Distillation Engine.",
+      "qualifier": "Controlled evaluation"
+    },
+    {
+      "id": "faultlineLocate",
+      "display": "First PASS→FAIL commit in 1–5 min",
+      "type": "controlled-evaluation",
+      "owner": "FaultLine",
+      "date": "2026-07",
+      "context": "On small-to-medium projects.",
+      "qualifier": "Controlled evaluation"
+    },
+    {
+      "id": "faultlineSaved",
+      "display": "1–3 h saved per investigation",
+      "type": "controlled-evaluation",
+      "owner": "FaultLine",
+      "date": "2026-07",
+      "context": "Compared with manual bisecting.",
+      "qualifier": "Controlled evaluation"
+    },
+    {
+      "id": "teleportalTasks",
+      "display": "90%+ of demo desktop tasks, unaided",
+      "type": "controlled-evaluation",
+      "owner": "Gemini Teleportal (with Kai)",
+      "date": "2026-03",
+      "context": "A demo task set, not general use.",
+      "qualifier": "Controlled evaluation"
+    },
+    {
+      "id": "teleportalLatency",
+      "display": "~2–5 s from voice to action",
+      "type": "controlled-evaluation",
+      "owner": "Gemini Teleportal (with Kai)",
+      "date": "2026-03",
+      "context": "Phone audio and screen video over WebRTC to the Gemini Live API.",
+      "qualifier": "Controlled evaluation"
+    },
+    {
+      "id": "circuitmindInspection",
+      "display": "Vision and voice PCB inspection",
+      "type": "capability",
+      "owner": "CircuitMindAI",
+      "date": "2026-03",
+      "context": "Cached for network loss; detection quality was not measured.",
+      "qualifier": "Capability"
+    },
+    {
+      "id": "rexcheckScoring",
+      "display": "Pool health scoring over MCP",
+      "type": "capability",
+      "owner": "RexCheck",
+      "date": "2026-04",
+      "context": "Classifier scores are from a labelled training set, not measured on live pools.",
+      "qualifier": "Capability"
+    },
+    {
+      "id": "mirrorfiPrize",
+      "display": "Grand Prize, Solana Megahack 2025",
+      "type": "award",
+      "owner": "MirrorFi (team of 6)",
+      "date": "2025-05",
+      "context": "Out of 150+ teams.",
+      "qualifier": "Award"
+    },
+    {
+      "id": "graphragRetrieval",
+      "display": "+35% retrieval vs vector-only",
+      "type": "controlled-evaluation",
+      "owner": "Multi-Agent GraphRAG",
+      "date": "2025-10",
+      "context": "Independent handbook and policy archive, not the Monash corpus.",
+      "qualifier": "Controlled evaluation"
+    },
+    {
+      "id": "setelDefects",
+      "display": "−40% production defects",
+      "type": "production",
+      "owner": "Setel",
+      "date": "2025-12",
+      "context": "Checkout and capture; a separate observation from the 92.5% coverage.",
+      "qualifier": "Production"
+    },
+    {
+      "id": "setelCoverage",
+      "display": "92.5% unit-test coverage",
+      "type": "controlled-evaluation",
+      "owner": "Setel",
+      "date": "2025-12",
+      "context": "Checkout and capture.",
+      "qualifier": "Controlled evaluation"
+    },
+    {
+      "id": "wdOversight",
+      "display": "−40% manual oversight",
+      "type": "controlled-evaluation",
+      "owner": "Western Digital",
+      "date": "2025-12",
+      "context": "Lab dashboard used by 50+ staff.",
+      "qualifier": "Controlled evaluation"
+    },
+    {
+      "id": "leadThroughput",
+      "display": "100M-event capacity benchmark",
+      "type": "capacity-benchmark",
+      "owner": "Distributed Lead Scorer",
+      "date": "2025-05",
+      "context": "Pipeline capacity, not sustained traffic.",
+      "qualifier": "Capacity benchmark"
+    },
+    {
+      "id": "veridianUptime",
+      "display": "99.9% observed uptime",
+      "type": "controlled-evaluation",
+      "owner": "Veridian",
+      "date": "2026-04",
+      "context": "Cloud Run evaluation, not a production SLO.",
+      "qualifier": "Controlled evaluation"
+    },
+    {
+      "id": "veridianEmissions",
+      "display": "−15% cloud emissions",
+      "type": "controlled-evaluation",
+      "owner": "Veridian",
+      "date": "2026-04",
+      "context": "Against the default unscheduled Cloud Run service.",
+      "qualifier": "Controlled evaluation"
+    },
+    {
+      "id": "riskAuc",
+      "display": "0.87 AUC-ROC",
+      "type": "controlled-evaluation",
+      "owner": "Financial Risk Predictor",
+      "date": "2025-07",
+      "context": "Offline evaluation, no published comparator.",
+      "qualifier": "Controlled evaluation"
+    },
+    {
+      "id": "slmInference",
+      "display": "70B → 3B student",
+      "type": "controlled-evaluation",
+      "owner": "SLM Distillation Engine",
+      "date": "2025-07",
+      "context": "No speed-up claimed.",
+      "qualifier": "Controlled evaluation"
+    },
+    {
+      "id": "gateC",
+      "display": "−143 Elo @ 50k nodes",
+      "type": "controlled-benchmark",
+      "owner": "Chess engine lab",
+      "date": "2026-09-03",
+      "context": "128 games against handcrafted PeSTO; SPRT terminated for H0.",
+      "qualifier": "Controlled benchmark"
+    }
+  ],
+  "projects": {
+    "featuredOrder": [
+      "faultline",
+      "gemini-teleportal",
+      "circuitmindai"
+    ],
+    "categoryLabels": {
+      "ml": "ML / data systems",
+      "product": "Product / backend",
+      "devtools": "Developer tools"
+    },
+    "notes": {
+      "TELEPORTAL_TEAM": "Built together with Kai; the repository is under his account.",
+      "SLM_LATENCY_NOTE": "The halved inference latency elsewhere on this site belongs to the Monash contract's graph-logic SLM, not to this project."
+    },
+    "list": [
+      {
+        "slug": "faultline",
+        "name": "FaultLine",
+        "subtitle": "Regression and leak-evidence CLI",
+        "date": "2026-07",
+        "origin": "Solo",
+        "category": "devtools",
+        "group": "featured",
+        "repo": "https://github.com/Mizore66/faultline",
+        "tech": [
+          "Go",
+          "Docker",
+          "GitHub Actions",
+          "Sigstore"
+        ],
+        "purpose": "Replays a frozen, human-reviewed check across Git history in Docker sandboxes to find the first reliable PASS→FAIL commit.",
+        "result": {
+          "claimId": "faultlineLocate",
+          "line": "First PASS→FAIL commit in 1–5 min"
+        },
+        "seo": {
+          "title": "FaultLine — Regression and leak-evidence CLI",
+          "description": "A Go CLI that replays a frozen, human-reviewed check across Git history in Docker sandboxes to find the first reliable PASS→FAIL commit."
+        },
+        "caseStudy": {
+          "draft": true,
+          "evidence": [
+            "faultlineLocate",
+            "faultlineSaved"
+          ],
+          "notes": [
+            "Rewritten in Go from the original TypeScript version."
+          ],
+          "problem": "A bisect result or a CI log says where a check failed once. It does not give another engineer evidence they can verify without rerunning the repository's code.",
+          "decision": "Freeze one human-reviewed check, replay that exact check across the selected Git states in Docker sandboxes, and package the recorded results so another engineer can verify them offline.",
+          "constraint": "Proof artifacts must never carry credentials, so verification fails closed.",
+          "example": "Input: a frozen workflow check and four Git states from FaultLine's own history. Output: PASS at e8e30649, the first stable FAIL at 97c3290e, and PASS again at the fix, 07ee7f11, in a package that verified against its recorded root.",
+          "rejected": "Git bisect on its own: it finds a boundary but leaves no reviewable, portable record of what was executed.",
+          "built": [
+            "A solo Go CLI that replays a frozen, human-reviewed check across Git history in Docker sandboxes. It pinpoints the first reliable PASS→FAIL commit in 1–5 minutes.",
+            "It automates investigation, minimisation and CI attestation with GitHub Actions and Sigstore. This saves 1–3 hours per regression investigation compared with manual bisecting, on small-to-medium projects.",
+            "Adversarial secret scanning with 8 detection rules plus an entropy heuristic, and fail-closed verification. Together they block credential leaks from proof artifacts."
+          ],
+          "limitations": "It shows where a frozen check first fails across the supplied Git states. It does not establish a unique root cause or an agent's intent."
+        },
+        "architecture": {
+          "path": [
+            {
+              "label": "Frozen check",
+              "note": "human-reviewed"
+            },
+            {
+              "label": "Replay",
+              "note": "Docker, per Git state"
+            },
+            {
+              "label": "Proof package"
+            },
+            {
+              "label": "Offline verifier",
+              "note": "no repo code runs"
+            }
+          ],
+          "branches": [
+            {
+              "label": "Secret scanner",
+              "note": "8 rules + entropy",
+              "from": 2
+            }
+          ],
+          "beside": [
+            {
+              "label": "GitHub Actions + Sigstore",
+              "note": "CI attestation"
+            }
+          ]
+        },
+        "media": [
+          {
+            "src": "/work/faultline/proof-page.webp",
+            "width": 1600,
+            "height": 992,
+            "alt": "FaultLine's read-only proof page, headed 'Where this frozen predicate first failed', reporting 18 declared files checked, 9 recorded executions, 3 Git states and 2 stable transitions.",
+            "caption": "The read-only proof view of a verified package. It checks every declared file before rendering and never reruns repository code."
+          },
+          {
+            "src": "/work/faultline/codex-session.webp",
+            "width": 1532,
+            "height": 1122,
+            "alt": "A Codex session log: FaultLine confirmed the human freeze, then refused to localise the regression without a digest-pinned runtime image.",
+            "caption": "FaultLine inside a Codex session on a real CI failure. After the human freeze it refused to run without a digest-pinned runtime image, a fail-closed stop rather than a guess."
+          }
+        ]
+      },
+      {
+        "slug": "gemini-teleportal",
+        "name": "Gemini Teleportal",
+        "subtitle": "Voice-controlled desktop AI agent",
+        "date": "2026-03",
+        "origin": "Built with Kai",
+        "category": "product",
+        "group": "featured",
+        "repo": "https://github.com/Kaiz404/Teleportal",
+        "tech": [
+          "Next.js",
+          "TypeScript",
+          "Python",
+          "Gemini Live API",
+          "WebRTC",
+          "Firebase",
+          "Cloud Run"
+        ],
+        "purpose": "Streams phone audio and screen video to the Gemini Live API, which drives the Windows desktop by exact UI element ids.",
+        "result": {
+          "claimId": "teleportalTasks",
+          "line": "90%+ of demo desktop tasks, unaided"
+        },
+        "seo": {
+          "title": "Gemini Teleportal — Voice-controlled desktop AI agent",
+          "description": "A voice-controlled desktop agent built with Kai: phone audio and screen video stream over WebRTC to the Gemini Live API, which drives the Windows UI."
+        },
+        "caseStudy": {
+          "draft": true,
+          "evidence": [
+            "teleportalTasks",
+            "teleportalLatency"
+          ],
+          "team": "Built together with Kai; the repository is under his account. Made for the Gemini Live Agent Challenge.",
+          "problem": "Driving a Windows desktop from a phone usually means pinching at a small mirror of the screen. The aim was to say the task instead, and have an agent that can see the screen carry it out.",
+          "decision": "Stream phone audio and the desktop's screen over WebRTC to the Gemini Live API, and have a ReAct agent act on exact UI element ids from the Windows UI Automation tree rather than on pixel guesses.",
+          "constraint": "Pairing had to need no setup: the phone and the desktop find each other through the same Google account, with no QR codes or session URLs.",
+          "built": [
+            "A ReAct agent that clicks exact UI element ids from the Windows UI Automation tree and from annotated screenshots, with perceptual-hash verification. It completed 90%+ of demo desktop tasks unaided.",
+            "Phone audio and screen video are streamed over WebRTC to the Gemini Live API. The agent acts on spoken commands within about 2–5 seconds. Pairing needs no configuration, using Google OAuth and Firestore signalling.",
+            "A GitHub Actions and Cloud Build pipeline that auto-deploys every frontend change to Cloud Run."
+          ]
+        },
+        "architecture": {
+          "path": [
+            {
+              "label": "Phone web app",
+              "note": "Next.js on Cloud Run"
+            },
+            {
+              "label": "Desktop executor",
+              "note": "Python, WebRTC"
+            },
+            {
+              "label": "ReAct agent",
+              "note": "UI Automation tree"
+            }
+          ],
+          "branches": [
+            {
+              "label": "Firestore",
+              "note": "signalling",
+              "from": 0
+            },
+            {
+              "label": "Gemini Live API",
+              "note": "voice and screen",
+              "from": 1
+            }
+          ],
+          "beside": [
+            {
+              "label": "GitHub Actions + Cloud Build",
+              "note": "deploys the web app"
+            }
+          ]
+        },
+        "thumbnail": 1,
+        "media": [
+          {
+            "src": "/work/gemini-teleportal/sign-in.webp",
+            "width": 720,
+            "height": 1021,
+            "alt": "Gemini Teleportal's phone sign-in screen: 'Sign in with the Google account you use on your desktop to connect.'",
+            "caption": "Pairing is the Google sign-in. The phone and the desktop find each other through the same account."
+          },
+          {
+            "src": "/work/gemini-teleportal/live-session.webp",
+            "width": 616,
+            "height": 1234,
+            "alt": "Teleportal on a phone during a session: the desktop's screen streams live at the top while the assistant listens, with voice input and output on.",
+            "caption": "A live session: the desktop streams to the phone while the assistant listens for a spoken task."
+          }
+        ]
+      },
+      {
+        "slug": "circuitmindai",
+        "name": "CircuitMindAI",
+        "subtitle": "PCB inspection",
+        "date": "2026-03",
+        "origin": "Solo",
+        "category": "product",
+        "group": "featured",
+        "repo": "https://github.com/Mizore66/CircuitMindAI",
+        "tech": [
+          "Next.js",
+          "Amazon Bedrock",
+          "Express",
+          "OpenSearch Serverless",
+          "GitHub Actions",
+          "ECS Fargate"
+        ],
+        "purpose": "Images in, voice-guided inspection steps out, with cached results for network loss.",
+        "result": {
+          "claimId": "circuitmindInspection",
+          "line": "Vision and voice PCB inspection"
+        },
+        "seo": {
+          "title": "CircuitMindAI — PCB inspection",
+          "description": "Nova Pro analyses the PCB image; Nova Sonic talks the operator through the fault. Next.js and Express on ECS Fargate."
+        },
+        "caseStudy": {
+          "evidence": [
+            "circuitmindInspection"
+          ],
+          "problem": "An operator inspecting a board needs to see the copper fault and hear inspection guidance, including when the network drops. A detector that fails with connectivity loss is not dependable enough for the inspection floor.",
+          "decision": "Vision on the board and voice for the operator … results are cached locally so the floor can keep working when the network drops.",
+          "constraint": "The inspection has to survive a dropped network.",
+          "example": "Input: a board image and operator audio. Output: a fault overlay on the copper, with inspection guidance still audible when the network drops.",
+          "rejected": "A server-only detector, rejected because it would fail when connectivity drops.",
+          "built": [
+            "A multi-modal GenAI pipeline: Nova Pro handles vision-based fault detection, and Nova Sonic provides low-latency, two-way voice guidance for the technician.",
+            "A decoupled Next.js frontend with an Express REST API.",
+            "GitHub Actions builds and pushes Docker images to ECR and updates ECS Fargate on every push. An Application Load Balancer and Auto Scaling keep it available and cost-efficient.",
+            "A local cache that holds the inspection when the network drops."
+          ],
+          "limitations": "Detection quality (precision, latency, confusion) was never measured.",
+          "changeNow": "Measure precision, latency and confusion."
+        },
+        "architecture": {
+          "host": "ECS Fargate",
+          "path": [
+            {
+              "label": "Next.js",
+              "note": "UI"
+            },
+            {
+              "label": "Express",
+              "note": "API"
+            }
+          ],
+          "branches": [
+            {
+              "label": "Bedrock Nova",
+              "note": "vision and voice"
+            },
+            {
+              "label": "OpenSearch",
+              "note": "index"
+            }
+          ],
+          "beside": [
+            {
+              "label": "GitHub Actions",
+              "note": "CI/CD to ECR"
+            }
+          ]
+        },
+        "media": [
+          {
+            "src": "/work/circuitmindai/inspection.webp",
+            "width": 1600,
+            "height": 613,
+            "alt": "CircuitMindAI inspecting a PCB photo: components U2 and U3 are outlined, and the model's diagnosis flags thermal discolouration on IC U1 as a warning.",
+            "caption": "Nova Pro's diagnosis beside the board, with the fix-it, voice and agent panels on the right."
+          }
+        ]
+      },
+      {
+        "slug": "rexcheck",
+        "name": "RexCheck",
+        "subtitle": "DeFi pool health scoring",
+        "date": "2026-04",
+        "origin": "Built with Chang Kai Zhe",
+        "category": "ml",
+        "group": "archive",
+        "repo": "https://github.com/Mizore66/RexCheck",
+        "tech": [
+          "Python",
+          "asyncio",
+          "Redis",
+          "Rails 8",
+          "Hotwire",
+          "PostgreSQL",
+          "XGBoost",
+          "MCP"
+        ],
+        "purpose": "New DeFi pools in, a health score and a trade recommendation out, for a live dashboard and for AI agents.",
+        "result": {
+          "claimId": "rexcheckScoring",
+          "line": "Pool health scoring over MCP"
+        },
+        "seo": {
+          "title": "RexCheck — DeFi pool health scoring",
+          "description": "A Python worker ingests new GeckoTerminal pools; Rails scores them with XGBoost or rules and serves a live dashboard and MCP tools for agents."
+        },
+        "caseStudy": {
+          "evidence": [
+            "rexcheckScoring"
+          ],
+          "team": "Built with Chang Kai Zhe; both of us committed to the repository.",
+          "problem": "A new liquidity pool can be drained within hours of launch. Someone about to trade it, or an agent about to recommend it, needs a risk read in the first hour, not after the fact.",
+          "decision": "Split ingestion from judgement. An async Python worker polls GeckoTerminal, drops pools it has already seen with a Bloom filter, and queues the rest in Redis. Rails 8 scores each pool, keeps its history in PostgreSQL, pushes it to the dashboard over Turbo Streams, and answers agents through an MCP server.",
+          "constraint": "Only what a pool shows in its first hour can feed the score.",
+          "example": "Input: a pool address and network. Output: a 0–100 health score, SAFE, WARNING or DANGER, a recommendation such as DO_NOT_TRADE, and flags such as critical_low_liquidity or wash_trading_suspected.",
+          "rejected": "A single-page frontend: the dashboard is server-rendered Hotwire, so a new scan reaches the page without a client app.",
+          "built": [
+            "An asyncio ingestion worker with a scalable Bloom filter for duplicates and back-off on GeckoTerminal rate limits.",
+            "A risk calculator that scores with an XGBoost classifier on five first-hour features, and falls back to liquidity, wash-trading and pool-age rules when the model is unavailable.",
+            "A live Hotwire dashboard, with the N+1 query on the pool list removed by tracking each pool's latest scan.",
+            "An MCP server with tools to analyse a token, get a pool's status, list tracked tokens and check the backend, with a static fallback when Rails is unreachable.",
+            "Dockerfiles for running the Rails app and the worker as separate ECS Fargate tasks."
+          ],
+          "limitations": "The classifier's near-perfect test scores come from the training pipeline's labelled set, which it can generate synthetically; they are not a measurement on live pools, so none is quoted here. The 500-user MCP load test is written but has no recorded run.",
+          "changeNow": "Label real pools that were drained, measure the classifier against them, and run the load test.",
+          "draft": true
+        },
+        "architecture": {
+          "path": [
+            {
+              "label": "GeckoTerminal",
+              "note": "new pools"
+            },
+            {
+              "label": "Python worker",
+              "note": "Bloom filter"
+            },
+            {
+              "label": "Redis",
+              "note": "queue"
+            },
+            {
+              "label": "Rails 8",
+              "note": "score"
+            }
+          ],
+          "branches": [
+            {
+              "label": "Hotwire",
+              "note": "live dashboard"
+            },
+            {
+              "label": "MCP server",
+              "note": "agent tools"
+            }
+          ],
+          "beside": [
+            {
+              "label": "PostgreSQL",
+              "note": "scan history"
+            }
+          ]
+        }
+      },
+      {
+        "slug": "veridian",
+        "name": "Veridian",
+        "subtitle": "MLOps tradeoff engine",
+        "date": "2026-04",
+        "origin": "Solo",
+        "category": "ml",
+        "group": "archive",
+        "tech": [
+          "Python",
+          "Terraform",
+          "BigQuery",
+          "GCP Vertex AI",
+          "GitLab Duo",
+          "MCP"
+        ],
+        "purpose": "Intercepts Terraform and Kubernetes and recommends a lower-carbon compute configuration before provisioning or a demand-driven scale event.",
+        "result": {
+          "claimId": "veridianEmissions",
+          "line": "−15% cloud emissions (Cloud Run evaluation)"
+        },
+        "seo": {
+          "title": "Veridian — MLOps tradeoff engine",
+          "description": "GitLab Duo intercepts Terraform; Vertex AI recommends a lower-carbon compute configuration; BigQuery keeps the carbon ledger off the request."
+        },
+        "caseStudy": {
+          "evidence": [
+            "veridianEmissions",
+            "veridianUptime"
+          ],
+          "problem": "Selecting compute after provisioning or a demand-driven scale event means remediation arrives after the expensive decision has already been made.",
+          "decision": "Inspect Terraform before provisioning. Vertex AI recommends a lower-carbon compute configuration. The carbon ledger stays off the request path.",
+          "constraint": "The ledger had to stay off the request path so a slow or missing carbon number could not stall a provision.",
+          "example": "Input: a Terraform intent. Output: a recommended compute configuration, with the carbon ledger written beside the request, not on it.",
+          "rejected": "Putting the ledger on the request path, which would stall provisioning; and selecting compute after provisioning, which arrives too late.",
+          "built": [
+            "GitLab Duo plus MCP intercept Terraform and Kubernetes changes.",
+            "Vertex AI recommends a quantised, lower-carbon compute configuration.",
+            "BigQuery holds the ESG ledger, off the request path."
+          ],
+          "limitations": "The evaluation period, sample size and emissions-calculation source were not recorded.",
+          "changeNow": "Record those three items."
+        },
+        "architecture": {
+          "host": "Cloud Run",
+          "path": [
+            {
+              "label": "GitLab Duo + MCP"
+            },
+            {
+              "label": "Vertex AI"
+            }
+          ],
+          "beside": [
+            {
+              "label": "BigQuery",
+              "note": "ESG ledger"
+            },
+            {
+              "label": "Python",
+              "note": "glue"
+            }
+          ]
+        }
+      },
+      {
+        "slug": "multi-agent-graphrag",
+        "name": "Multi-Agent GraphRAG",
+        "subtitle": "Policy-corpus retrieval",
+        "date": "2025-10",
+        "origin": "Solo",
+        "category": "ml",
+        "group": "archive",
+        "tech": [
+          "LangGraph",
+          "Neo4j",
+          "Vector DB",
+          "Knowledge Graphs",
+          "RAG"
+        ],
+        "purpose": "LangGraph over an independent university handbook and policy archive, with a vector fallback.",
+        "result": {
+          "claimId": "graphragRetrieval",
+          "line": "+35% retrieval vs vector-only"
+        },
+        "seo": {
+          "title": "Multi-Agent GraphRAG — Policy-corpus retrieval",
+          "description": "LangGraph over an independent university handbook and policy archive: agents write Cypher, check it, and fall back to a vector store. +35% retrieval."
+        },
+        "caseStudy": {
+          "evidence": [
+            "graphragRetrieval"
+          ],
+          "notes": [
+            "+45% is the Monash contract on university regulations. +35% is the independent GraphRAG project on a separate university handbook and policy archive. Same comparison — vector-only — different corpus."
+          ],
+          "problem": "A question about prerequisites has to walk the graph, not only the nearest paragraph.",
+          "decision": "The graph is the structured path for prerequisites and policy; the vector store is the fallback when no valid graph path is returned.",
+          "constraint": "Prerequisites and credit-transfer are edges, not another vector-only retrieval dump.",
+          "example": "Input: a policy question. Output: a neighbourhood of clauses from the independent handbook archive.",
+          "rejected": "Vector-only retrieval as the primary path.",
+          "built": [
+            "Agents write Cypher and check it.",
+            "Global-to-local retrieval for questions that span the whole handbook.",
+            "Ambiguous questions fall back to a broader semantic search."
+          ],
+          "limitations": "The query set, scoring rule and denominator were not recorded; this is not Recall@k.",
+          "changeNow": "Record them."
+        },
+        "architecture": {
+          "path": [
+            {
+              "label": "LangGraph",
+              "note": "orchestrates"
+            }
+          ],
+          "branches": [
+            {
+              "label": "Neo4j",
+              "note": "structured"
+            },
+            {
+              "label": "Vector DB",
+              "note": "unstructured"
+            }
+          ]
+        }
+      },
+      {
+        "slug": "mirrorfi",
+        "name": "MirrorFi",
+        "subtitle": "Solana vault strategy platform",
+        "date": "2025-05",
+        "origin": "Hackathon team of 6",
+        "category": "product",
+        "group": "archive",
+        "repo": "https://github.com/Mizore66/MirrorFi",
+        "tech": [
+          "Next.js",
+          "ShadCN",
+          "MongoDB",
+          "Solana",
+          "Node.js"
+        ],
+        "purpose": "A no-code builder for sharing and executing Solana yield strategies across Drift, Jupiter and Meteora.",
+        "result": {
+          "claimId": "mirrorfiPrize",
+          "line": "Grand Prize, Solana Megahack 2025"
+        },
+        "seo": {
+          "title": "MirrorFi — Solana vault strategy platform",
+          "description": "Grand Prize, Solana Megahack 2025: a no-code builder for sharing and executing Solana yield strategies across Drift, Jupiter and Meteora."
+        },
+        "caseStudy": {
+          "evidence": [
+            "mirrorfiPrize"
+          ],
+          "team": "Built in a team of 6. What was built below is my part.",
+          "problem": "Three protocol integrations, and a hand-off that lived in a document.",
+          "decision": "One schematic that builds, shares, and executes.",
+          "constraint": "A hackathon weekend.",
+          "built": [
+            "Built the strategy-builder page and its no-code interface, covering Drift, Jupiter and Meteora.",
+            "Designed the MongoDB schema that stores user-made strategies so others can share and copy them."
+          ],
+          "limitations": "The public repository is the remaining artifact."
+        }
+      },
+      {
+        "slug": "financial-risk-predictor",
+        "name": "Financial Risk Predictor",
+        "subtitle": "ML risk assessment",
+        "date": "2025-07",
+        "origin": "Solo",
+        "category": "ml",
+        "group": "archive",
+        "tech": [
+          "TensorFlow",
+          "XGBoost",
+          "LightGBM",
+          "BentoML",
+          "SHAP",
+          "Kafka"
+        ],
+        "purpose": "Daily credit-risk scores that have to be interpreted, served, and retrained.",
+        "result": {
+          "claimId": "riskAuc",
+          "line": "0.87 AUC-ROC"
+        },
+        "seo": {
+          "title": "Financial Risk Predictor — ML risk assessment",
+          "description": "Kafka feeds the daily tape. LightGBM and XGBoost score it at 0.87 AUC-ROC. SHAP writes why. BentoML serves the number."
+        },
+        "caseStudy": {
+          "evidence": [
+            "riskAuc"
+          ],
+          "problem": "Daily credit scores that a desk has to interpret, serve, and retrain — not a notebook that dies after the plot.",
+          "decision": "LightGBM and XGBoost, with SHAP explaining each score, served through BentoML. Kafka carries a daily retrain without taking the API down.",
+          "rejected": "A single offline notebook.",
+          "limitations": "Dataset size, split, leakage controls and prevalence were not recorded."
+        },
+        "architecture": {
+          "path": [
+            {
+              "label": "Kafka"
+            },
+            {
+              "label": "LightGBM / XGBoost"
+            },
+            {
+              "label": "BentoML"
+            }
+          ],
+          "beside": [
+            {
+              "label": "SHAP",
+              "note": "explains each score"
+            }
+          ]
+        }
+      },
+      {
+        "slug": "distributed-lead-scorer",
+        "name": "Distributed Lead Scorer",
+        "subtitle": "Large-scale data mining pipeline",
+        "date": "2025-05",
+        "origin": "Solo",
+        "category": "ml",
+        "group": "archive",
+        "tech": [
+          "PySpark",
+          "PyTorch DDP",
+          "Deep Interest Network"
+        ],
+        "purpose": "Scores conversion on a hundred million events a day, with checkpoints so a failed hour can resume.",
+        "result": {
+          "claimId": "leadThroughput",
+          "line": "100M-event capacity benchmark"
+        },
+        "seo": {
+          "title": "Distributed Lead Scorer — Large-scale data mining pipeline",
+          "description": "Capacity-benchmarked at 100M events/day. A Deep Interest Network on PyTorch DDP scores conversion. Checkpoints resume from the last completed slice."
+        },
+        "caseStudy": {
+          "evidence": [
+            "leadThroughput"
+          ],
+          "decision": "PySpark for features, and a Deep Interest Network on PyTorch DDP for scoring.",
+          "constraint": "A failed hour resumes from the last completed slice.",
+          "rejected": "Restarting the whole hour.",
+          "limitations": "Cluster size, input distribution and runtime were not recorded."
+        },
+        "architecture": {
+          "path": [
+            {
+              "label": "PySpark",
+              "note": "features"
+            },
+            {
+              "label": "PyTorch DDP",
+              "note": "Deep Interest Network"
+            }
+          ]
+        }
+      },
+      {
+        "slug": "slm-distillation-engine",
+        "name": "SLM Distillation Engine",
+        "subtitle": "Knowledge distillation and fine-tuning",
+        "date": "2025-07",
+        "origin": "Lab experiment",
+        "category": "ml",
+        "group": "lab",
+        "tech": [
+          "PyTorch",
+          "QLoRA",
+          "DeepSpeed",
+          "FlashAttention"
+        ],
+        "purpose": "A 70B teacher distilled into a 3B student with QLoRA, DeepSpeed and FlashAttention.",
+        "result": {
+          "claimId": "slmInference",
+          "line": "70B → 3B student"
+        },
+        "seo": {
+          "title": "SLM Distillation Engine — Knowledge distillation and fine-tuning",
+          "description": "A 70B teacher writes the traces; QLoRA, DeepSpeed and FlashAttention compress them into a 3B student. No speed-up claimed."
+        },
+        "caseStudy": {
+          "evidence": [
+            "slmInference"
+          ],
+          "notes": [
+            "The halved inference latency elsewhere on this site belongs to the Monash contract's graph-logic SLM, not to this project."
+          ],
+          "built": [
+            "A 70B teacher distilled into a 3B student using QLoRA, DeepSpeed and FlashAttention."
+          ],
+          "limitations": "No speed-up is claimed, because tokens/second, hardware and batch size were not measured."
+        }
+      }
+    ]
+  },
+  "resume": {
+    "note": "The v2 one-page résumé, generated as a PDF at /print-edition (US Letter default, ?paper=a4). This is the composed content; experience bullets are the primary résumé wording. v2 résumé included only the three most recent roles and two projects; brief §2 asks résumé mode to be complete (every role, project, number, qualifier, link).",
+    "pdfFilename": "Anas-Tarek-Qumhiyeh-resume.pdf",
+    "name": "Anas Tarek Qumhiyeh",
+    "summary": "Full-stack engineer building production services in Go, TypeScript and Python on PostgreSQL, Redis and Kubernetes, with digital-commerce experience in payment-gateway integration and merchant onboarding.",
+    "contact": [
+      {
+        "label": "anasqumhiyeh@gmail.com",
+        "href": "mailto:anasqumhiyeh@gmail.com"
+      },
+      {
+        "label": "+60 11-12983-246",
+        "href": "tel:+601112983246"
+      },
+      {
+        "label": "anasqumhiyeh.dev",
+        "href": "https://anasqumhiyeh.dev"
+      },
+      {
+        "label": "linkedin.com/in/anasqumhiyeh",
+        "href": "https://linkedin.com/in/anasqumhiyeh/"
+      },
+      {
+        "label": "github.com/Mizore66",
+        "href": "https://github.com/Mizore66"
+      }
+    ],
+    "status": "Bandar Sunway, Selangor, Malaysia. Malaysian citizen. Open to remote. Open to relocating to Singapore or Australia.",
+    "skills": [
+      {
+        "label": "Languages",
+        "items": "Go, TypeScript, Python, JavaScript, SQL, PHP, C#, HTML/CSS"
+      },
+      {
+        "label": "Frontend",
+        "items": "React, Next.js, Tailwind CSS, ShadCN, jQuery"
+      },
+      {
+        "label": "Backend and APIs",
+        "items": "Node.js, NestJS, FastAPI, Laravel, ASP.NET, REST APIs, WebSockets, WebRTC, Kafka, Microservices"
+      },
+      {
+        "label": "Data",
+        "items": "PostgreSQL, Redis, MySQL, MongoDB, Neo4j, Elasticsearch"
+      },
+      {
+        "label": "Cloud and DevOps",
+        "items": "Kubernetes (AWS EKS), Docker, AWS (EC2, EKS), Google Cloud (Cloud Run, Cloud Build, Firestore), Terraform, ArgoCD, GitHub Actions, GitLab CI/CD, Grafana, Loki"
+      },
+      {
+        "label": "AI/ML",
+        "items": "LangGraph, PyTorch, TensorFlow, pandas, NumPy"
+      }
+    ],
+    "experience": [
+      {
+        "heading": "AI Engineer, Deriv",
+        "meta": "Jun 2026 – present · Full-time",
+        "tech": "Go, FastAPI, Next.js, Kafka, Terraform, AWS EKS/EC2",
+        "bullets": [
+          "Cut customer-support (CX) costs by about 80%, and raised average customer satisfaction from 5/10 to 8/10, by shipping a full-stack customer-support system that proactively resolves user issues.",
+          "Built a Go microservice that unifies data from 4–6 internal services into a single response for the customer-support system. It was designed for about 8,000–10,000 requests a day and is now running in staging.",
+          "Built and operate Kafka- and API-based ingestion pipelines that handle about 20,000 complex events a day, so they can be reliably analysed downstream.",
+          "Built evaluation and debugging harnesses that reproduce failures and capture environment signals, cutting time-to-fix for production failures by about 50%.",
+          "Updated the team's Terraform configurations, cutting costs on maintained AWS resources by about 10–30% while scaling existing infrastructure and provisioning new services."
+        ]
+      },
+      {
+        "heading": "Software Engineer, Skribble Lab",
+        "meta": "Jan 2026 – Jun 2026 · Full-time",
+        "tech": "Laravel, PostgreSQL, Redis, Docker",
+        "bullets": [
+          "Owned the Xendit payment-gateway integration end to end, from requirements review through production support, enabling 5+ merchants to accept bank transfer, card and e-wallet payments.",
+          "Designed and shipped a merchant onboarding module for product and payment setup, and onboarded the primary client, Chung Ling Private High School (CLPHS), which serves 3,000+ students and parents.",
+          "Proactively hunted integration breakage and production defects, cutting weekly production errors by about 80%: from 16 of high or medium severity to 3 of low severity."
+        ]
+      },
+      {
+        "heading": "Full-Stack AI Engineer, Monash University",
+        "meta": "Nov 2025 – Feb 2026 · Contract",
+        "tech": "FastAPI, Neo4j, Next.js, LangGraph",
+        "bullets": [
+          "Built and independently owned a FastAPI and Neo4j graph service for university regulations, with a self-correcting Text-to-Cypher loop. It improved relational-policy retrieval accuracy by 45% over vector-only search.",
+          "Automated university-wide prerequisite and credit-transfer rule resolution through hybrid retrieval: embeddings plus multi-hop graph queries.",
+          "Profiled and simplified the reasoning pipeline, distilling it into a graph-logic SLM that halved inference latency (−50%) and surfaced contradictory policy data for administrators."
+        ]
+      }
+    ],
+    "projects": [
+      {
+        "heading": "FaultLine: Regression and leak-evidence CLI",
+        "meta": "Jul 2026 · Solo · Go, Docker, GitHub Actions, Sigstore",
+        "href": "https://anasqumhiyeh.dev/projects/faultline",
+        "bullets": [
+          "A solo Go CLI that replays a frozen, human-reviewed check across Git history in Docker sandboxes. It pinpoints the first reliable PASS→FAIL commit in 1–5 minutes.",
+          "It automates investigation, minimisation and CI attestation with GitHub Actions and Sigstore. This saves 1–3 hours per regression investigation compared with manual bisecting, on small-to-medium projects."
+        ]
+      },
+      {
+        "heading": "Gemini Teleportal: Voice-controlled desktop AI agent",
+        "meta": "Mar 2026 · Built with Kai · Next.js, TypeScript, Python, Gemini Live API, WebRTC, Firebase, Cloud Run",
+        "href": "https://anasqumhiyeh.dev/projects/gemini-teleportal",
+        "bullets": [
+          "A ReAct agent that clicks exact UI element ids from the Windows UI Automation tree and from annotated screenshots, with perceptual-hash verification. It completed 90%+ of demo desktop tasks unaided.",
+          "Phone audio and screen video are streamed over WebRTC to the Gemini Live API. The agent acts on spoken commands within about 2–5 seconds. Pairing needs no configuration, using Google OAuth and Firestore signalling."
+        ]
+      }
+    ],
+    "education": {
+      "heading": "Bachelor of Engineering (Honours), Software Engineering, Monash University",
+      "meta": "Graduated Apr 2026 · Bandar Sunway, Selangor, Malaysia",
+      "lines": [
+        "Minor in Artificial Intelligence. WAM 81.8, CGPA 3.78."
+      ]
+    },
+    "awards": [
+      "First Class Honours",
+      "Best Graduate Award",
+      "Dean's List",
+      "Grand Prize, Solana Megahack 2025 (MirrorFi, team of 6, out of 150+ teams)"
+    ]
+  },
+  "lab": {
+    "teaser": {
+      "claimId": "gateC",
+      "headline": "The learned evaluator underperformed PeSTO by 143.3 ±35.4 Elo at 50,000 nodes/move across 128 games.",
+      "meta": "128 games · 50 000 nodes/move · SPRT h0",
+      "annotation": "I published the loss, the confidence interval, and what failed.",
+      "links": [
+        {
+          "label": "Read the experiment",
+          "href": "/lab/learned-evaluator"
+        },
+        {
+          "label": "Play the annotated career",
+          "href": "/opening-preparation"
+        },
+        {
+          "label": "SLM Distillation Engine",
+          "href": "/projects/slm-distillation-engine"
+        }
+      ]
+    },
+    "article": {
+      "title": "The learned evaluator underperformed PeSTO by 143.3 ±35.4 Elo at 50,000 nodes/move across 128 games",
+      "description": "Gate C: a 768×2×256 net lost −143.3 ±35.4 Elo to handcrafted PeSTO at 50,000 nodes/move over 128 games; SPRT terminated for H0.",
+      "datePublished": "2026-08-29",
+      "dateModified": "2026-09-03",
+      "dek": "N = 128 games. SPRT terminated for H0.",
+      "resultLine": "sprt: −143.3 ±35.4 Elo @ 50000 nodes, 128 games, LLR −2.99 (h0)",
+      "tagline": "Result: Black was unconvinced.",
+      "netId": "nnue-lichess-cc0-768x2x256-32-1-2026-08-29",
+      "suiteId": "openings-v1",
+      "hypothesis": "Two evaluations, one search: would the playing 768×2×256 net — trained on 20 million quiet CC0 Lichess cloud evals, depth-12 labels — beat handcrafted PeSTO at the same node budget?",
+      "disclosure": "What was tested as “Learned” is not the net alone: it is the material count plus the net’s output, clamped to ±60 centipawns. The net can adjust a position by at most 0.6 of a pawn either way.",
+      "experiment": "Same search implementation. Fixed 50 000 nodes a move. The first 100 games on the fifty-opening suite stopped short of a bound (LLR −2.33 vs ±2.94). A continuation wrapped the suite until SPRT hit a bound. H0 = 0 Elo, H1 = +10 Elo.",
+      "result": "−143.3 ±35.4 Elo",
+      "failed": "LEARNED scored 2 wins, 74 draws, 52 losses in 128 games. LLR −2.99 against bounds ±2.94 terminated for H0. Gate A at the same cap was 0.0 Elo (17–66–17, every pair 1–1), so the −143 is not a colour or adjudication artefact. The retrained net lost harder at 50k than the v1 128 did at 1k. Causal ablations that isolate model capacity, training recipe, or features were not run.",
+      "causes": "Two explanations fit equally well and neither was isolated: the quality of the training data, and the integration itself, where a ±60 centipawn clamp on top of material leaves the net little room to change a decision.",
+      "learned": "A loss at the spec cap is still a result. Do not compare Gate C at 50 000 nodes with the earlier −100 at 1 000 nodes — that was the v1 128. Do not rematch this net: a new net still has to pass the data and progress gates first.",
+      "credits": [
+        "Handcrafted evaluation: the PeSTO piece-square tables by Ronald Friederich.",
+        "Lichess eval database, CC0-1.0. No Stockfish network weights are copied."
+      ],
+      "gates": [
+        {
+          "label": "Gate A · 50k",
+          "detail": "Handcrafted against itself, the control",
+          "elo": 0,
+          "err": 0,
+          "games": 100,
+          "record": "17–66–17"
+        },
+        {
+          "label": "Gate C · 256",
+          "detail": "Learned against handcrafted",
+          "elo": -143.3,
+          "err": 35.4,
+          "games": 128,
+          "record": "2–74–52"
+        }
+      ]
+    },
+    "perft": [
+      {
+        "depth": 1,
+        "nodes": 20
+      },
+      {
+        "depth": 2,
+        "nodes": 400
+      },
+      {
+        "depth": 3,
+        "nodes": 8902
+      }
+    ]
+  },
+  "chess": {
+    "line": {
+      "name": "Italian Game: Classical Variation, Greco Gambit, Anderssen Variation",
+      "eco": "C54",
+      "san": "1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3 Nf6 5. d4 exd4 6. e5 d5 7. Bb5 Ne4 8. cxd4 Bb4+ 9. Bd2 Bxd2+ 10. Nbxd2 Bg4",
+      "uci": [
+        "e2e4",
+        "e7e5",
+        "g1f3",
+        "b8c6",
+        "f1c4",
+        "f8c5",
+        "c2c3",
+        "g8f6",
+        "d2d4",
+        "e5d4",
+        "e4e5",
+        "d7d5",
+        "c4b5",
+        "f6e4",
+        "c3d4",
+        "c5b4",
+        "c1d2",
+        "b4d2",
+        "b1d2",
+        "c8g4"
+      ],
+      "mainlineSanFromGame": "1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3 Nf6 5. d4 exd4 6. e5 d5 7. Bb5 Ne4 8. cxd4 Bb4+ 9. Bd2 Bxd2+ 10. Nbxd2 Bg4"
+    },
+    "defaultMove": "d4",
+    "latestMove": "faultline",
+    "sectionMoves": {
+      "work": {
+        "move": "10…Bg4",
+        "sym": ""
+      },
+      "experience": {
+        "move": "10. Nbxd2",
+        "sym": ""
+      },
+      "education": {
+        "move": "8. cxd4",
+        "sym": ""
+      },
+      "contact": {
+        "move": "11. …",
+        "sym": ""
+      }
+    },
+    "careerEvals": {
+      "nodes": 6000,
+      "centipawnsWhiteView": {
+        "nf3": 27,
+        "bc4": -2,
+        "elephant": 51,
+        "nf6": 37,
+        "alekhine": 18,
+        "nc6": 27,
+        "bb6": 27,
+        "closed": 232,
+        "e5-push": 4,
+        "skribble-lab": -8,
+        "bc5": 49,
+        "teleportal": -18,
+        "d4": 37,
+        "graduation": -18,
+        "deriv": 38,
+        "faultline": 64
+      }
+    },
+    "careerTimeline": [
+      {
+        "nodeId": "nf3",
+        "move": "2. Nf3",
+        "evalCp": 27,
+        "kind": "role",
+        "label": "Petronas",
+        "start": "2024-11",
+        "href": "/about#petronas",
+        "end": "2025-02"
+      },
+      {
+        "nodeId": "bc4",
+        "move": "3. Bc4",
+        "evalCp": -2,
+        "kind": "role",
+        "label": "Western Digital",
+        "start": "2025-02",
+        "href": "/about#western-digital",
+        "end": "2025-12"
+      },
+      {
+        "nodeId": "elephant",
+        "move": "2…d5",
+        "evalCp": 51,
+        "kind": "project",
+        "label": "Distributed Lead Scorer",
+        "start": "2025-05",
+        "end": "2025-05",
+        "href": "/work#distributed-lead-scorer"
+      },
+      {
+        "nodeId": "nf6",
+        "move": "4…Nf6",
+        "evalCp": 37,
+        "kind": "project",
+        "label": "MirrorFi",
+        "start": "2025-05",
+        "end": "2025-05",
+        "href": "/work#mirrorfi"
+      },
+      {
+        "nodeId": "alekhine",
+        "move": "1…Nf6",
+        "evalCp": 18,
+        "kind": "project",
+        "label": "Financial Risk Predictor",
+        "start": "2025-07",
+        "end": "2025-07",
+        "href": "/work#financial-risk-predictor"
+      },
+      {
+        "nodeId": "nc6",
+        "move": "2…Nc6",
+        "evalCp": 27,
+        "kind": "role",
+        "label": "Setel",
+        "start": "2025-07",
+        "href": "/about#setel",
+        "end": "2025-12"
+      },
+      {
+        "nodeId": "bb6",
+        "move": "5…Bb6",
+        "evalCp": 27,
+        "kind": "project",
+        "label": "SLM Distillation Engine",
+        "start": "2025-07",
+        "end": "2025-07",
+        "href": "/projects/slm-distillation-engine"
+      },
+      {
+        "nodeId": "closed",
+        "move": "5…d6",
+        "evalCp": 232,
+        "kind": "project",
+        "label": "Multi-Agent GraphRAG",
+        "start": "2025-10",
+        "end": "2025-10",
+        "href": "/work#multi-agent-graphrag"
+      },
+      {
+        "nodeId": "e5-push",
+        "move": "6. e5",
+        "evalCp": 4,
+        "kind": "role",
+        "label": "Monash University",
+        "start": "2025-11",
+        "href": "/about#monash-university",
+        "end": "2026-02"
+      },
+      {
+        "nodeId": "skribble-lab",
+        "move": "7. Bb5",
+        "evalCp": -8,
+        "kind": "role",
+        "label": "Skribble Lab",
+        "start": "2026-01",
+        "href": "/about#skribble-lab",
+        "end": "2026-06"
+      },
+      {
+        "nodeId": "bc5",
+        "move": "3…Bc5",
+        "evalCp": 49,
+        "kind": "project",
+        "label": "CircuitMindAI",
+        "start": "2026-03",
+        "end": "2026-03",
+        "href": "/work#circuitmindai"
+      },
+      {
+        "nodeId": "teleportal",
+        "move": "7…Ne4",
+        "evalCp": -18,
+        "kind": "project",
+        "label": "Gemini Teleportal",
+        "start": "2026-03",
+        "end": "2026-03",
+        "href": "/work#gemini-teleportal"
+      },
+      {
+        "nodeId": "d4",
+        "move": "5. d4",
+        "evalCp": 37,
+        "kind": "project",
+        "label": "Veridian",
+        "start": "2026-04",
+        "end": "2026-04",
+        "href": "/work#veridian"
+      },
+      {
+        "nodeId": "graduation",
+        "move": "8. cxd4",
+        "evalCp": -18,
+        "kind": "education",
+        "label": "Graduation",
+        "start": "2026-04",
+        "end": "2026-04",
+        "href": "/about#education"
+      },
+      {
+        "nodeId": "deriv",
+        "move": "10. Nbxd2",
+        "evalCp": 38,
+        "kind": "role",
+        "label": "Deriv",
+        "start": "2026-06",
+        "href": "/about#deriv",
+        "end": null
+      },
+      {
+        "nodeId": "faultline",
+        "move": "10…Bg4",
+        "evalCp": 64,
+        "kind": "project",
+        "label": "FaultLine",
+        "start": "2026-07",
+        "end": "2026-07",
+        "href": "/work#faultline"
+      }
+    ],
+    "game": [
+      {
+        "label": "",
+        "id": "start",
+        "parent": null,
+        "type": "mainline",
+        "san": "",
+        "moveNumber": 0,
+        "color": null,
+        "sym": "",
+        "kind": "Start",
+        "title": "Opening Preparation",
+        "fact": "Italian Game: Classical Variation, Greco Gambit, Anderssen Variation. Jobs as moves; annotations as voice.",
+        "commentary": "What follows is the game I actually played — jobs as moves, annotations as voice. Chess is the content, never the lock.",
+        "eval": 0.2
+      },
+      {
+        "label": "1. e4",
+        "id": "e4",
+        "parent": "start",
+        "type": "mainline",
+        "uci": "e2e4",
+        "san": "e4",
+        "moveNumber": 1,
+        "color": "w",
+        "sym": "!",
+        "kind": "Education",
+        "title": "The University Opening",
+        "fact": "Bachelor of Engineering (Honours), Software Engineering, Minor in Artificial Intelligence. Monash University, Bandar Sunway, Selangor, Malaysia. First Class Honours, Best Graduate Award, Dean's List. Graduated Apr 2026. WAM 81.8, CGPA 3.78.",
+        "commentary": "Every open game starts by occupying the centre. I opened with software engineering — not because it was the only file, but because it was the one that let both bishops out.",
+        "eval": 0.35,
+        "links": [
+          {
+            "label": "Education",
+            "href": "/about#education"
+          }
+        ]
+      },
+      {
+        "label": "1…Nf6",
+        "id": "alekhine",
+        "parent": "e4",
+        "type": "variation",
+        "uci": "g8f6",
+        "san": "Nf6",
+        "moveNumber": 1,
+        "color": "b",
+        "sym": "!?",
+        "kind": "Project",
+        "title": "The ML Defence",
+        "fact": "Financial Risk Predictor, ML risk assessment. Solo, Jul 2025. Daily credit-risk scores that have to be interpreted, served, and retrained.",
+        "commentary": "I built models that had to be interpreted, deployed, and retrained every morning — not fitted once for a screenshot. The knight invites the centre forward: the ML line rather than the systems line.",
+        "links": [
+          {
+            "label": "Financial Risk Predictor",
+            "href": "/projects/financial-risk-predictor"
+          }
+        ],
+        "claims": [
+          "riskAuc"
+        ],
+        "career": {
+          "kind": "project",
+          "slug": "financial-risk-predictor"
+        }
+      },
+      {
+        "label": "1…e5",
+        "id": "e5",
+        "parent": "e4",
+        "type": "mainline",
+        "uci": "e7e5",
+        "san": "e5",
+        "moveNumber": 1,
+        "color": "b",
+        "sym": "",
+        "kind": "Identity",
+        "title": "Meeting e4 with e5",
+        "fact": "The classical answer: product engineering on one wing, the data path on the other.",
+        "commentary": "The classical answer. I did not decline into a closed system. Product engineering on one wing, the data path on the other.",
+        "eval": 0.3
+      },
+      {
+        "label": "2. Nf3",
+        "id": "nf3",
+        "parent": "e5",
+        "type": "mainline",
+        "uci": "g1f3",
+        "san": "Nf3",
+        "moveNumber": 2,
+        "color": "w",
+        "sym": "",
+        "kind": "Internship",
+        "title": "First Developed Piece",
+        "fact": "Petronas, Project Engineer Intern (Internship), Nov 2024 – Feb 2025. Replaced MATLAB-dependent back-end calculation and reporting functions with Python packages, removing paid runtime dependencies.",
+        "commentary": "Knights before bishops, they say. Petronas was the first industry square — I replaced MATLAB-dependent back-end calculation and reporting functions with Python packages, then wrote post-release acceptance cases for the migrated features.",
+        "eval": 0.4,
+        "links": [
+          {
+            "label": "Petronas",
+            "href": "/about#petronas"
+          }
+        ],
+        "career": {
+          "kind": "role",
+          "roleId": "petronas"
+        }
+      },
+      {
+        "label": "2…d5",
+        "id": "elephant",
+        "parent": "nf3",
+        "type": "variation",
+        "uci": "d7d5",
+        "san": "d5",
+        "moveNumber": 2,
+        "color": "b",
+        "sym": "!",
+        "kind": "Project",
+        "title": "The Elephant Gambit",
+        "fact": "Distributed Lead Scorer, Large-scale data mining pipeline. Solo, May 2025. Scores conversion on a hundred million events a day, with checkpoints so a failed hour can resume.",
+        "commentary": "A hundred million events a day had to keep moving even when a job died mid-run. 2…d5 is that impatience, with the checkpoint so the sacrifice is not a bluff.",
+        "links": [
+          {
+            "label": "Distributed Lead Scorer",
+            "href": "/projects/distributed-lead-scorer"
+          }
+        ],
+        "claims": [
+          "leadThroughput"
+        ],
+        "career": {
+          "kind": "project",
+          "slug": "distributed-lead-scorer"
+        }
+      },
+      {
+        "label": "2…d6",
+        "id": "philidor",
+        "parent": "nf3",
+        "type": "not-taken",
+        "uci": "d7d6",
+        "san": "d6",
+        "moveNumber": 2,
+        "color": "b",
+        "sym": "?!",
+        "kind": "Road not taken",
+        "title": "The Philidor, Declined",
+        "fact": "After Petronas the MATLAB world was still there — MathCAD, department code, a quieter engineering path with licences already paid.",
+        "commentary": "2…d6 keeps the position closed. I developed the knight instead. The dashed line is honest: I could have stayed in the MATLAB world, licences already paid. The other life stays on the page as a ghost — visible, declined, and not a regret. I did not stay."
+      },
+      {
+        "label": "2…Nc6",
+        "id": "nc6",
+        "parent": "nf3",
+        "type": "mainline",
+        "uci": "b8c6",
+        "san": "Nc6",
+        "moveNumber": 2,
+        "color": "b",
+        "sym": "",
+        "kind": "Internship",
+        "title": "Defending the Pawn",
+        "fact": "Setel, Software Engineer Intern (Internship), Jul 2025 – Dec 2025. Authorization and capture of stored payment methods on the payment engine, documented so a new developer could follow the path without a walkthrough.",
+        "commentary": "Payment-engine defects could travel all the way to checkout at the pump. I sat on that square and made sure the pawn could not be taken for free.",
+        "eval": 0.35,
+        "links": [
+          {
+            "label": "Setel",
+            "href": "/about#setel"
+          }
+        ],
+        "claims": [
+          "setelCoverage",
+          "setelDefects"
+        ],
+        "career": {
+          "kind": "role",
+          "roleId": "setel"
+        }
+      },
+      {
+        "label": "3. Bc4",
+        "id": "bc4",
+        "parent": "nc6",
+        "type": "mainline",
+        "uci": "f1c4",
+        "san": "Bc4",
+        "moveNumber": 3,
+        "color": "w",
+        "sym": "",
+        "kind": "Contract",
+        "title": "Pointing at f7",
+        "fact": "Western Digital, Full-stack Engineer (Contract), Feb 2025 – Dec 2025. Built the lab-operations dashboard used by 50+ lab staff, with WebSocket station-status and model-inference updates under 100 ms of UI-visible latency.",
+        "commentary": "The Italian bishop looks at the weakest point in the castled position. At WD the weakness was watching lab systems by hand. I put a bishop there.",
+        "eval": 0.5,
+        "links": [
+          {
+            "label": "Western Digital",
+            "href": "/about#western-digital"
+          }
+        ],
+        "claims": [
+          "wdOversight"
+        ],
+        "career": {
+          "kind": "role",
+          "roleId": "western-digital"
+        }
+      },
+      {
+        "label": "3…Bc5",
+        "id": "bc5",
+        "parent": "bc4",
+        "type": "mainline",
+        "uci": "f8c5",
+        "san": "Bc5",
+        "moveNumber": 3,
+        "color": "b",
+        "sym": "",
+        "kind": "Project",
+        "title": "Quiet Italian",
+        "fact": "CircuitMindAI, PCB inspection. Solo, Mar 2026. Images in, voice-guided inspection steps out, with cached results for network loss.",
+        "commentary": "CircuitMind sees faults in the copper and talks back over a live voice channel. Black develops the same way — vision on the board, voice on the file.",
+        "eval": 0.45,
+        "links": [
+          {
+            "label": "CircuitMindAI",
+            "href": "/projects/circuitmindai"
+          }
+        ],
+        "career": {
+          "kind": "project",
+          "slug": "circuitmindai"
+        }
+      },
+      {
+        "label": "4. c3",
+        "id": "c3",
+        "parent": "bc5",
+        "type": "mainline",
+        "uci": "c2c3",
+        "san": "c3",
+        "moveNumber": 4,
+        "color": "w",
+        "sym": "",
+        "kind": "Practice",
+        "title": "Reliability before the break",
+        "fact": "Reliability before the break: 92.5% unit-test coverage on Setel's checkout and capture; a live-status dashboard for 50+ Western Digital lab staff; 99.9% observed uptime in Veridian's Cloud Run evaluation.",
+        "commentary": "c3 is the quiet move that makes d4 possible. I ship the same way: tests and access control first, so the break has something behind it.",
+        "claims": [
+          "setelCoverage",
+          "veridianUptime"
+        ],
+        "draft": true
+      },
+      {
+        "label": "4…Nf6",
+        "id": "nf6",
+        "parent": "c3",
+        "type": "mainline",
+        "uci": "g8f6",
+        "san": "Nf6",
+        "moveNumber": 4,
+        "color": "b",
+        "sym": "!",
+        "kind": "Project",
+        "title": "The Knight Comes In",
+        "fact": "MirrorFi, Solana vault strategy platform. Hackathon team of 6, May 2025. A no-code builder for sharing and executing Solana yield strategies across Drift, Jupiter and Meteora. Grand Prize, Solana Megahack 2025.",
+        "commentary": "Grand prize is a symbol. The work was a product: shareable vault lines, a schema people could copy. Then the last minor piece develops.",
+        "eval": 0.5,
+        "links": [
+          {
+            "label": "MirrorFi",
+            "href": "/projects/mirrorfi"
+          }
+        ],
+        "career": {
+          "kind": "project",
+          "slug": "mirrorfi"
+        },
+        "puzzle": {
+          "prompt": "White to move — find the break.",
+          "target": "d2d4",
+          "hit": "!! — found over the board.",
+          "miss": "A developing move. The break was d4. — Ed."
+        }
+      },
+      {
+        "label": "5. d4",
+        "id": "d4",
+        "parent": "nf6",
+        "type": "mainline",
+        "uci": "d2d4",
+        "san": "d4",
+        "moveNumber": 5,
+        "color": "w",
+        "sym": "!!",
+        "kind": "Flagship",
+        "title": "The Central Break",
+        "fact": "Veridian, MLOps tradeoff engine. Solo, Apr 2026. Intercepts Terraform and Kubernetes and recommends a lower-carbon compute configuration before provisioning or a demand-driven scale event.",
+        "commentary": "You prepare with c3, then you break the centre. d4 is the move this scoresheet hangs on: agents that intercept infrastructure, measurements instead of demos. The double-exclaim is Informant’s, not mine — but I played it.",
+        "eval": 1.6,
+        "links": [
+          {
+            "label": "Veridian",
+            "href": "/projects/veridian"
+          }
+        ],
+        "claims": [
+          "veridianEmissions"
+        ],
+        "career": {
+          "kind": "project",
+          "slug": "veridian"
+        },
+        "draft": true
+      },
+      {
+        "label": "5…d6",
+        "id": "closed",
+        "parent": "d4",
+        "type": "variation",
+        "uci": "d7d6",
+        "san": "d6",
+        "moveNumber": 5,
+        "color": "b",
+        "sym": "?",
+        "kind": "Project",
+        "title": "The Closed Centre",
+        "fact": "Multi-Agent GraphRAG, Policy-corpus retrieval. Solo, Oct 2025. LangGraph over an independent university handbook and policy archive, with a vector fallback.",
+        "commentary": "Prerequisites and credit-transfer live as edges, not another vector-only retrieval. Black can refuse the capture and keep the centre closed — the graph is that kind of patience.",
+        "links": [
+          {
+            "label": "Multi-Agent GraphRAG",
+            "href": "/projects/multi-agent-graphrag"
+          }
+        ],
+        "claims": [
+          "graphragRetrieval"
+        ],
+        "career": {
+          "kind": "project",
+          "slug": "multi-agent-graphrag"
+        }
+      },
+      {
+        "label": "5…Bb6",
+        "id": "bb6",
+        "parent": "d4",
+        "type": "variation",
+        "uci": "c5b6",
+        "san": "Bb6",
+        "moveNumber": 5,
+        "color": "b",
+        "sym": "",
+        "kind": "Project",
+        "title": "Tucking the Bishop",
+        "fact": "SLM Distillation Engine, Knowledge distillation and fine-tuning. Lab experiment, Jul 2025. A 70B teacher distilled into a 3B student with QLoRA, DeepSpeed and FlashAttention.",
+        "commentary": "Distillation keeps GraphRAG retrieval on a smaller piece, cheaper to keep on the board. The Italian bishop steps back to b6 and still looks at the same diagonal.",
+        "links": [
+          {
+            "label": "SLM Distillation Engine",
+            "href": "/projects/slm-distillation-engine"
+          }
+        ],
+        "career": {
+          "kind": "project",
+          "slug": "slm-distillation-engine"
+        }
+      },
+      {
+        "label": "5…exd4",
+        "id": "exd4",
+        "parent": "d4",
+        "type": "mainline",
+        "uci": "e5d4",
+        "san": "exd4",
+        "moveNumber": 5,
+        "color": "b",
+        "sym": "",
+        "kind": "Method",
+        "title": "Taking on d4",
+        "fact": "The results on this site, each with its owner, evidence type and date:",
+        "commentary": "I would rather show the graph than the slogan. Accepting the pawn is accepting that the numbers have owners.",
+        "eval": 0.7,
+        "claims": [
+          "derivCxCost",
+          "skribbleErrors",
+          "monashRetrieval",
+          "faultlineLocate",
+          "teleportalTasks",
+          "setelDefects",
+          "gateC"
+        ]
+      },
+      {
+        "label": "6. e5",
+        "id": "e5-push",
+        "parent": "exd4",
+        "type": "mainline",
+        "uci": "e4e5",
+        "san": "e5",
+        "moveNumber": 6,
+        "color": "w",
+        "sym": "!",
+        "kind": "Contract",
+        "title": "Gaining Space",
+        "fact": "Monash University, Full-Stack AI Engineer (Contract), Nov 2025 – Feb 2026. Built a FastAPI and Neo4j graph service for university regulations with a self-correcting Text-to-Cypher loop.",
+        "commentary": "6. e5 gains space and asks the knight a question. The Monash contract asked university regulations one: could a graph answer a prerequisite instead of guessing from the nearest paragraph?",
+        "links": [
+          {
+            "label": "Monash University",
+            "href": "/about#monash-university"
+          }
+        ],
+        "claims": [
+          "monashRetrieval",
+          "slmLatency"
+        ],
+        "career": {
+          "kind": "role",
+          "roleId": "monash-university"
+        },
+        "draft": true
+      },
+      {
+        "label": "6…d5",
+        "id": "d5",
+        "parent": "e5-push",
+        "type": "mainline",
+        "uci": "d7d5",
+        "san": "d5",
+        "moveNumber": 6,
+        "color": "b",
+        "sym": "",
+        "kind": "Annotation",
+        "title": "The Counter-Strike",
+        "fact": "Black strikes back in the centre instead of retreating the knight.",
+        "commentary": "Every good position invites a counter. The answer is to keep developing.",
+        "draft": true
+      },
+      {
+        "label": "7. Bb5",
+        "id": "skribble-lab",
+        "parent": "d5",
+        "type": "mainline",
+        "uci": "c4b5",
+        "san": "Bb5",
+        "moveNumber": 7,
+        "color": "w",
+        "sym": "",
+        "kind": "Full-time",
+        "title": "The Pin",
+        "fact": "Skribble Lab, Software Engineer (Full-time), Jan 2026 – Jun 2026. Owned the Xendit payment-gateway integration end to end, from requirements review through production support.",
+        "commentary": "The bishop pins before it trades. At Skribble Lab I held one path, payments, end to end until it stopped breaking.",
+        "links": [
+          {
+            "label": "Skribble Lab",
+            "href": "/about#skribble-lab"
+          }
+        ],
+        "claims": [
+          "skribbleErrors",
+          "skribbleMerchants"
+        ],
+        "career": {
+          "kind": "role",
+          "roleId": "skribble-lab"
+        },
+        "draft": true
+      },
+      {
+        "label": "7…Ne4",
+        "id": "teleportal",
+        "parent": "skribble-lab",
+        "type": "mainline",
+        "uci": "f6e4",
+        "san": "Ne4",
+        "moveNumber": 7,
+        "color": "b",
+        "sym": "!",
+        "kind": "Project",
+        "title": "The Outpost",
+        "fact": "Gemini Teleportal, Voice-controlled desktop AI agent. Built with Kai, Mar 2026. Streams phone audio and screen video to the Gemini Live API, which drives the Windows desktop by exact UI element ids.",
+        "commentary": "The knight jumps into the centre with support behind it. Teleportal was built with Kai, and the square only held because both of us covered it.",
+        "links": [
+          {
+            "label": "Gemini Teleportal",
+            "href": "/projects/gemini-teleportal"
+          }
+        ],
+        "claims": [
+          "teleportalTasks"
+        ],
+        "career": {
+          "kind": "project",
+          "slug": "gemini-teleportal"
+        },
+        "draft": true
+      },
+      {
+        "label": "8. cxd4",
+        "id": "graduation",
+        "parent": "teleportal",
+        "type": "mainline",
+        "uci": "c3d4",
+        "san": "cxd4",
+        "moveNumber": 8,
+        "color": "w",
+        "sym": "",
+        "kind": "Education",
+        "title": "Taking Back the Centre",
+        "fact": "Graduated Apr 2026: Bachelor of Engineering (Honours), Software Engineering, Monash University. First Class Honours, Best Graduate Award, Dean's List.",
+        "commentary": "White takes the pawn back and the centre with it. Graduating closed the file that 1. e4 opened.",
+        "links": [
+          {
+            "label": "Education",
+            "href": "/about#education"
+          }
+        ],
+        "career": {
+          "kind": "education"
+        },
+        "draft": true
+      },
+      {
+        "label": "8…Bb4+",
+        "id": "bb4-check",
+        "parent": "graduation",
+        "type": "mainline",
+        "uci": "c5b4",
+        "san": "Bb4+",
+        "moveNumber": 8,
+        "color": "b",
+        "sym": "",
+        "kind": "Annotation",
+        "title": "Check",
+        "fact": "The bishop gives check.",
+        "commentary": "The position asks for an answer before anything else.",
+        "draft": true
+      },
+      {
+        "label": "9. Bd2",
+        "id": "bd2",
+        "parent": "bb4-check",
+        "type": "mainline",
+        "uci": "c1d2",
+        "san": "Bd2",
+        "moveNumber": 9,
+        "color": "w",
+        "sym": "",
+        "kind": "Annotation",
+        "title": "The Calm Block",
+        "fact": "White blocks the check with a developing move.",
+        "commentary": "The calm answer is usually the right one.",
+        "draft": true
+      },
+      {
+        "label": "9…Bxd2+",
+        "id": "bxd2",
+        "parent": "bd2",
+        "type": "mainline",
+        "uci": "b4d2",
+        "san": "Bxd2+",
+        "moveNumber": 9,
+        "color": "b",
+        "sym": "",
+        "kind": "Annotation",
+        "title": "The Trade",
+        "fact": "Black trades bishops, with check.",
+        "commentary": "Trading keeps the tension honest. White recaptures next.",
+        "draft": true
+      },
+      {
+        "label": "10. Nbxd2",
+        "id": "deriv",
+        "parent": "bxd2",
+        "type": "mainline",
+        "uci": "b1d2",
+        "san": "Nbxd2",
+        "moveNumber": 10,
+        "color": "w",
+        "sym": "",
+        "kind": "Full-time",
+        "title": "The Deepest Move",
+        "fact": "Deriv, AI Engineer (Full-time), Jun 2026 – present. Shipped a full-stack customer-support system that proactively resolves user issues.",
+        "commentary": "The recapture develops the last minor piece. Deriv is the deepest White move on the board so far, and the current one.",
+        "links": [
+          {
+            "label": "Deriv",
+            "href": "/about#deriv"
+          }
+        ],
+        "claims": [
+          "derivCxCost",
+          "derivCsat"
+        ],
+        "career": {
+          "kind": "role",
+          "roleId": "deriv"
+        },
+        "draft": true
+      },
+      {
+        "label": "10…Bg4",
+        "id": "faultline",
+        "parent": "deriv",
+        "type": "mainline",
+        "uci": "c8g4",
+        "san": "Bg4",
+        "moveNumber": 10,
+        "color": "b",
+        "sym": "",
+        "kind": "Project",
+        "title": "The Pin That Waits",
+        "fact": "FaultLine, Regression and leak-evidence CLI. Solo, Jul 2026. Replays a frozen, human-reviewed check across Git history in Docker sandboxes to find the first reliable PASS→FAIL commit.",
+        "commentary": "The bishop pins the knight and waits. FaultLine does the same with a regression: it holds one question still until the history answers it.",
+        "links": [
+          {
+            "label": "FaultLine",
+            "href": "/projects/faultline"
+          }
+        ],
+        "claims": [
+          "faultlineLocate"
+        ],
+        "career": {
+          "kind": "project",
+          "slug": "faultline"
+        },
+        "draft": true
+      },
+      {
+        "label": "11. …",
+        "id": "outlook",
+        "parent": "faultline",
+        "type": "mainline",
+        "san": "…",
+        "moveNumber": 11,
+        "color": "w",
+        "sym": "",
+        "kind": "Outlook",
+        "title": "The Open File",
+        "fact": "The scoresheet stands. What the next move writes is still to be played.",
+        "commentary": "Rooks belong on the open file. The work already points there; the next move is still to be written.",
+        "links": [
+          {
+            "label": "Email",
+            "href": "mailto:anasqumhiyeh@gmail.com"
+          },
+          {
+            "label": "GitHub",
+            "href": "https://github.com/Mizore66"
+          },
+          {
+            "label": "LinkedIn",
+            "href": "https://linkedin.com/in/anasqumhiyeh/"
+          },
+          {
+            "label": "Résumé",
+            "href": "/print-edition"
+          }
+        ]
+      },
+      {
+        "label": "4. O-O",
+        "id": "oo",
+        "parent": "bc5",
+        "type": "variation",
+        "uci": "e1g1",
+        "san": "O-O",
+        "moveNumber": 4,
+        "color": "w",
+        "sym": "!",
+        "kind": "Practice",
+        "title": "Castling",
+        "fact": "The earlier mainline castled here. It is kept as a variation so older links still land.",
+        "commentary": "Castling is not a retreat. It is the move that says king safety before the central break. I ship the same way — tests and access control before the spectacular sacrifice.",
+        "eval": 0.55
+      },
+      {
+        "label": "4…Nf6",
+        "id": "oo-nf6",
+        "parent": "oo",
+        "type": "variation",
+        "uci": "g8f6",
+        "san": "Nf6",
+        "moveNumber": 4,
+        "color": "b",
+        "sym": "",
+        "kind": "Annotation",
+        "title": "The Knight Comes In",
+        "fact": "Part of the earlier castled line.",
+        "commentary": "The same knight, one move later in the story.",
+        "draft": true
+      },
+      {
+        "label": "5. d4",
+        "id": "oo-d4",
+        "parent": "oo-nf6",
+        "type": "variation",
+        "uci": "d2d4",
+        "san": "d4",
+        "moveNumber": 5,
+        "color": "w",
+        "sym": "",
+        "kind": "Annotation",
+        "title": "The Break, Castled",
+        "fact": "Part of the earlier castled line.",
+        "commentary": "The same break, with the king already tucked away.",
+        "draft": true
+      },
+      {
+        "label": "5…exd4",
+        "id": "oo-exd4",
+        "parent": "oo-d4",
+        "type": "variation",
+        "uci": "e5d4",
+        "san": "exd4",
+        "moveNumber": 5,
+        "color": "b",
+        "sym": "",
+        "kind": "Annotation",
+        "title": "Taking on d4",
+        "fact": "Part of the earlier castled line.",
+        "commentary": "Black accepts, as in the mainline.",
+        "draft": true
+      },
+      {
+        "label": "6. Re1",
+        "id": "re1",
+        "parent": "oo-exd4",
+        "type": "variation",
+        "uci": "f1e1",
+        "san": "Re1",
+        "moveNumber": 6,
+        "color": "w",
+        "sym": "",
+        "kind": "Outlook",
+        "title": "The Open File",
+        "fact": "The earlier mainline ended here. The outlook now sits after 10…Bg4.",
+        "commentary": "The rook still belongs on the open file; the game simply went further.",
+        "eval": 0.8,
+        "links": [
+          {
+            "label": "Go to the outlook",
+            "href": "/opening-preparation?move=outlook"
+          }
+        ],
+        "draft": true
+      }
+    ],
+    "notes": [
+      "White's moves are career (roles, education), Black's are projects. Facts in roman, commentary in italic (v2 convention).",
+      "game[].eval is an authored annotation eval (pawns). careerEvals are the engine's handcrafted search at 6,000 nodes, White's view in centipawns; they are what the v2 eval graph plotted.",
+      "Nodes oo, oo-nf6, oo-d4, oo-exd4, re1 are the pre-September castled line, kept only so old ?move= links resolved.",
+      "5…d6 is marked '?' (confirmed by owner). ECO C54 checked against the Lichess opening database.",
+      "The puzzle on node nf6 asks the visitor to find 5. d4."
+    ]
+  },
+  "links": {
+    "email": "anasqumhiyeh@gmail.com",
+    "phone": {
+      "display": "+60 11-12983-246",
+      "tel": "+601112983246"
+    },
+    "linkedin": "https://linkedin.com/in/anasqumhiyeh/",
+    "github": "https://github.com/Mizore66",
+    "site": "https://anasqumhiyeh.dev",
+    "repos": {
+      "faultline": "https://github.com/Mizore66/faultline",
+      "gemini-teleportal": "https://github.com/Kaiz404/Teleportal",
+      "circuitmindai": "https://github.com/Mizore66/CircuitMindAI",
+      "rexcheck": "https://github.com/Mizore66/RexCheck",
+      "mirrorfi": "https://github.com/Mizore66/MirrorFi"
+    },
+    "privateRepos": [
+      "veridian",
+      "multi-agent-graphrag",
+      "financial-risk-predictor",
+      "distributed-lead-scorer",
+      "slm-distillation-engine"
+    ],
+    "externalCredits": [
+      "Handcrafted evaluation: the PeSTO piece-square tables by Ronald Friederich.",
+      "Lichess eval database, CC0-1.0. No Stockfish network weights are copied."
+    ]
+  },
+  "urls": {
+    "note": "Public URLs on v2. Some are linked from LinkedIn, READMEs and shared links; the redesign should keep them resolving (redirect or keep).",
+    "routes": [
+      "/",
+      "/work",
+      "/work?path=ml|product|devtools",
+      "/about",
+      "/lab",
+      "/lab/learned-evaluator",
+      "/projects/{slug}",
+      "/opening-preparation",
+      "/opening-preparation?move={gameNodeId}",
+      "/colophon",
+      "/print-edition",
+      "/print-edition?paper=a4"
+    ],
+    "redirects": [
+      {
+        "from": "/archive",
+        "to": "/work#archive",
+        "permanent": true
+      },
+      {
+        "from": "/?move={id}",
+        "to": "/opening-preparation?move={id}"
+      },
+      {
+        "from": "/?path={p}",
+        "to": "/work?path={p}"
+      },
+      {
+        "from": "www and the production vercel.app alias",
+        "to": "apex anasqumhiyeh.dev",
+        "status": 308,
+        "where": "src/proxy.ts + src/lib/canonical-host.ts (kept as project config)"
+      }
+    ],
+    "fragments": {
+      "about": [
+        "deriv",
+        "skribble-lab",
+        "monash-university",
+        "western-digital",
+        "setel",
+        "petronas",
+        "education"
+      ],
+      "projectPage": [
+        "measurement",
+        "problem",
+        "decision",
+        "constraint",
+        "example",
+        "rejected",
+        "apparatus",
+        "line",
+        "limitations",
+        "retrospective",
+        "links"
+      ]
+    }
+  },
+  "analytics": {
+    "provider": "Vercel Web Analytics (cookieless), only when process.env.VERCEL is set.",
+    "customEvents": [
+      "email_click",
+      "copy_email",
+      "resume_open {paper}",
+      "case_study_open {slug}",
+      "engine_start"
+    ]
+  },
+  "metadata": {
+    "siteTitle": "Anas Qumhiyeh — Software engineer",
+    "siteDescription": "Anas Qumhiyeh, AI Engineer at Deriv. Production services in Go, TypeScript and Python: AI support systems, payments, and graph retrieval.",
+    "ogAlt": "Anas Qumhiyeh, AI Engineer at Deriv: I like systems that have to survive measurement.",
+    "pageTitles": {
+      "/about": "About · Anas Qumhiyeh",
+      "/work": "Selected work · Anas Qumhiyeh",
+      "/lab": "Lab · Anas Qumhiyeh",
+      "/lab/learned-evaluator": "The learned evaluator lost to PeSTO by 143 Elo · Anas Qumhiyeh",
+      "/colophon": "How this site was made · Anas Qumhiyeh",
+      "/opening-preparation": "Opening Preparation · Anas Qumhiyeh",
+      "404": "Correction · Anas Qumhiyeh"
+    },
+    "structuredData": {
+      "person": {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Anas Tarek Qumhiyeh",
+        "alternateName": "Anas Qumhiyeh",
+        "url": "https://anasqumhiyeh.dev",
+        "image": "https://anasqumhiyeh.dev/opengraph-image",
+        "email": "mailto:anasqumhiyeh@gmail.com",
+        "telephone": "+601112983246",
+        "jobTitle": "AI Engineer",
+        "worksFor": {
+          "@type": "Organization",
+          "name": "Deriv"
+        },
+        "description": "Full-stack engineer building production services in Go, TypeScript and Python on PostgreSQL, Redis and Kubernetes, with digital-commerce experience in payment-gateway integration and merchant onboarding.",
+        "homeLocation": {
+          "@type": "Place",
+          "name": "Bandar Sunway, Selangor, Malaysia",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Bandar Sunway",
+            "addressRegion": "Selangor",
+            "addressCountry": "MY"
+          }
+        },
+        "alumniOf": {
+          "@type": "CollegeOrUniversity",
+          "name": "Monash University"
+        },
+        "sameAs": [
+          "https://github.com/Mizore66",
+          "https://linkedin.com/in/anasqumhiyeh"
+        ]
+      },
+      "website": {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Anas Qumhiyeh",
+        "url": "https://anasqumhiyeh.dev",
+        "author": {
+          "@type": "Person",
+          "name": "Anas Tarek Qumhiyeh"
+        }
+      }
+    }
+  },
+  "pageCopy": {
+    "note": "UI and page copy that lived in components rather than content files. Raw material, not binding.",
+    "nav": [
+      "Work",
+      "About",
+      "Lab",
+      "Contact"
+    ],
+    "footer": [
+      "email · LinkedIn · GitHub · Résumé",
+      "How this site was made",
+      "The annotated career"
+    ],
+    "heroActions": [
+      "See the work",
+      "Contact"
+    ],
+    "onward": [
+      "Selected work",
+      "Experience",
+      "The engine experiment"
+    ],
+    "contact": {
+      "resumeLinks": "Résumé as PDF: US Letter or A4",
+      "buttons": [
+        "Email",
+        "Copy email",
+        "LinkedIn",
+        "GitHub"
+      ],
+      "copyFailed": "Copy failed, select the address above",
+      "clockLabels": [
+        "You",
+        "Anas"
+      ],
+      "clockZone": "Asia/Kuala_Lumpur"
+    },
+    "experience": {
+      "earlierHeading": "Earlier experience"
+    },
+    "projectPageSections": {
+      "measurement": "Result and evidence",
+      "problem": "Problem",
+      "decision": "Decision",
+      "constraint": "Constraint",
+      "example": "Example",
+      "rejected": "Considered and rejected",
+      "apparatus": "Architecture",
+      "line": "What was built",
+      "limitations": "Limitations",
+      "retrospective": "What I would change now",
+      "links": "Links",
+      "sourceLink": "Source on GitHub",
+      "privateRepo": "The source is in a private repository.",
+      "back": "Back to all work"
+    },
+    "openingPreparation": {
+      "title": "Opening Preparation",
+      "intro": "A playable career timeline told through an Italian Game.",
+      "status": "The résumé is literal; the chess is annotation. Moves in roman are facts; lines in italic are my commentary.",
+      "actions": [
+        "Read the scoresheet",
+        "Résumé"
+      ],
+      "sections": [
+        "The scoresheet",
+        "The engine behind the board"
+      ]
+    },
+    "learnedEvaluator": {
+      "dates": [
+        "Published 29 Aug 2026",
+        "SPRT continued 3 Sep 2026"
+      ],
+      "sections": [
+        "Hypothesis",
+        "Experiment",
+        "Result",
+        "What failed",
+        "What I learned",
+        "Compare the two evaluations",
+        "Credits"
+      ],
+      "tryIt": "The same board and search as the match. Start the engine, then switch between Handcrafted and Learned to see where they disagree.",
+      "tryItPosition": "Position after 5. d4"
+    },
+    "notFound": {
+      "headline": "The page you requested was a misprint.",
+      "subline": "The front page still holds the work.",
+      "actions": [
+        "Back to the front page",
+        "Résumé",
+        "Contact"
+      ]
+    },
+    "colophon": {
+      "purpose": "An analysis board: the career as facts, the commentary kept apart, and a chess engine you can actually play.",
+      "publishing": "All content lives in typed files in the repository. The same files feed every page, the résumé PDF, the structured data, the sitemap and the preview images. A change goes live with a git push; every pull request gets its own preview deployment for review first. There is no content management system.",
+      "tests": [
+        "Every number on the site is registered in one claims ledger, with an evidence type, an owner and a date.",
+        "The hero carries no metric, +45% and +35% are never merged, and −50% appears only under Monash.",
+        "Every chess move is legal under the engine's own move generator, the mainline equals the canonical line, and every old ?move= link still resolves.",
+        "The résumé PDF fits one page in both paper sizes, is tagged, and renders −, →, ± and é as text.",
+        "No engine file or worker loads until the engine is started; a keyboard move gets an engine reply.",
+        "With WebGL off every board stays a printed diagram and no 3D code loads; with reduced motion nothing animates.",
+        "Every public page has zero automated accessibility violations and no sideways scrolling at 320 px."
+      ],
+      "engine": "Move generation, alpha-beta search, the handcrafted PeSTO evaluation and a learned NNUE evaluation are written from scratch in TypeScript. The net was trained on CC0 Lichess evaluations, exported with quantisation-aware training and runs through a small WebAssembly module. It starts only when you ask, runs in a Web Worker and pauses when the tab is hidden.",
+      "credits": [
+        "Handcrafted evaluation: the PeSTO piece-square tables by Ronald Friederich.",
+        "Lichess eval database, CC0-1.0. No Stockfish network weights are copied.",
+        "Chess pieces are glyphs from Noto Sans Symbols 2 (SIL Open Font License).",
+        "The 3D pieces are turned from profiles written in code and the mat is drawn in code: no third-party models, scans or textures.",
+        "The 3D board uses three.js, React Three Fiber and drei; motion uses GSAP and Lenis; the board state is kept in Zustand.",
+        "Built with Next.js, React and Tailwind CSS; hosted on Vercel with cookieless Vercel Web Analytics."
+      ]
+    }
+  },
+  "assets": {
+    "images": [
+      {
+        "project": "faultline",
+        "file": "content/assets/work/faultline/proof-page.webp",
+        "originalPublicPath": "/work/faultline/proof-page.webp",
+        "width": 1600,
+        "height": 992,
+        "alt": "FaultLine's read-only proof page, headed 'Where this frozen predicate first failed', reporting 18 declared files checked, 9 recorded executions, 3 Git states and 2 stable transitions.",
+        "caption": "The read-only proof view of a verified package. It checks every declared file before rendering and never reruns repository code.",
+        "usedAsThumbnail": true,
+        "kind": "product screenshot (brief §4: not to be used raw as project imagery)"
+      },
+      {
+        "project": "faultline",
+        "file": "content/assets/work/faultline/codex-session.webp",
+        "originalPublicPath": "/work/faultline/codex-session.webp",
+        "width": 1532,
+        "height": 1122,
+        "alt": "A Codex session log: FaultLine confirmed the human freeze, then refused to localise the regression without a digest-pinned runtime image.",
+        "caption": "FaultLine inside a Codex session on a real CI failure. After the human freeze it refused to run without a digest-pinned runtime image, a fail-closed stop rather than a guess.",
+        "usedAsThumbnail": false,
+        "kind": "product screenshot (brief §4: not to be used raw as project imagery)"
+      },
+      {
+        "project": "gemini-teleportal",
+        "file": "content/assets/work/gemini-teleportal/sign-in.webp",
+        "originalPublicPath": "/work/gemini-teleportal/sign-in.webp",
+        "width": 720,
+        "height": 1021,
+        "alt": "Gemini Teleportal's phone sign-in screen: 'Sign in with the Google account you use on your desktop to connect.'",
+        "caption": "Pairing is the Google sign-in. The phone and the desktop find each other through the same account.",
+        "usedAsThumbnail": false,
+        "kind": "product screenshot (brief §4: not to be used raw as project imagery)"
+      },
+      {
+        "project": "gemini-teleportal",
+        "file": "content/assets/work/gemini-teleportal/live-session.webp",
+        "originalPublicPath": "/work/gemini-teleportal/live-session.webp",
+        "width": 616,
+        "height": 1234,
+        "alt": "Teleportal on a phone during a session: the desktop's screen streams live at the top while the assistant listens, with voice input and output on.",
+        "caption": "A live session: the desktop streams to the phone while the assistant listens for a spoken task.",
+        "usedAsThumbnail": true,
+        "kind": "product screenshot (brief §4: not to be used raw as project imagery)"
+      },
+      {
+        "project": "circuitmindai",
+        "file": "content/assets/work/circuitmindai/inspection.webp",
+        "originalPublicPath": "/work/circuitmindai/inspection.webp",
+        "width": 1600,
+        "height": 613,
+        "alt": "CircuitMindAI inspecting a PCB photo: components U2 and U3 are outlined, and the model's diagnosis flags thermal discolouration on IC U1 as a warning.",
+        "caption": "Nova Pro's diagnosis beside the board, with the fix-it, voice and agent panels on the right.",
+        "usedAsThumbnail": true,
+        "kind": "product screenshot (brief §4: not to be used raw as project imagery)"
+      }
+    ],
+    "generatedInCode": [
+      "Site and per-project OG images (next/og, Schibsted Grotesk)",
+      "Favicon (src/app/icon.tsx)",
+      "3D pieces and mat (procedural, no model files)"
+    ],
+    "engineFiles": "public/engine/: NNUE nets (.bin/.json, three nets) and nnue.wasm, ~1 MB. See the keep/delete decision."
+  },
+  "legacyDesignV2": {
+    "warning": "The v2 design system, recorded only so the colophon history is complete. Not binding and not a starting point for v3 (brief §0, §4).",
+    "type": [
+      {
+        "name": "Schibsted Grotesk",
+        "role": "Facts and interface",
+        "license": "SIL OFL"
+      },
+      {
+        "name": "Schibsted Grotesk Italic",
+        "role": "Commentary only",
+        "license": "SIL OFL"
+      },
+      {
+        "name": "Commit Mono",
+        "role": "Notation and figures",
+        "license": "SIL OFL"
+      },
+      {
+        "name": "Noto Sans Symbols 2",
+        "role": "Chess pieces (subset to 12 glyphs)",
+        "license": "SIL OFL"
+      }
+    ],
+    "palette": {
+      "Paper": "#F1F2EC",
+      "Ink": "#161B19",
+      "Pencil": "#57605B",
+      "Hairline": "#D2D6CE",
+      "Tournament green": "#3B6A4B",
+      "Buff": "#E8E2C9"
+    },
+    "rules": [
+      "Eval bars stay pure black and white (chess convention; forced-colours users rely on it).",
+      "v2 used no generated images: every picture was a real screenshot or drawn from data."
+    ]
+  },
+  "openQuestions": [
+    "docs/copy-desk.md (LinkedIn About text) says graduated May 2026, WAM 82.1, CGPA 3.82. The site's content says April 2026, WAM 81.8, CGPA 3.78. Which is correct?",
+    "Many case-study and game-commentary fields are draft: true (agent-written). Rewrite before they are used as voice?",
+    "identity.about and identity.contactHeading were also flagged as drafts in the 2026-09-25 owner review."
+  ]
+}
