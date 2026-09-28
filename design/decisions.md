@@ -129,3 +129,9 @@ Review page: `design/assets/index.html`. Everything is procedural and made for t
 - **Sound:** four synthesized cues (place, break, seam, tick), 51 KB in total, wired behind every prototype's opt-in toggle.
 
 **Gate 4 approved (2026-09-28).** The owner approved the asset renders. **Sound ships:** off by default, opt-in via the visible toggle, using the four cues (51 KB). Phase 5 (build) starts only on the owner's go-ahead.
+
+## Phase 5 (2026-09-28)
+
+- **Step 1, skeleton and résumé mode:** approved.
+- **Step 2, hero and signature moment:** approved (Gate 5, `design/build/hero.html`). The hero matches its prototype to 0.07% before the blast; the rest is font rasterisation. Added from the brief: quality stepping, a slow-device skip, and an idle loop that stops on slow frames.
+- **Step 3, navigation and transitions:** built; review page `design/build/nav.html`. Every page change is the seam sweeping away a view-transition snapshot of the leaving page. Pairs the storyboard does not name use the hero-to-Work numbers scaled by distance. Three open questions for the owner are on the review page: a change with no travel, what is left when the seam lands short of an edge, and the pause while the hero's 3D stage is rebuilt.
