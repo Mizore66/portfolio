@@ -128,4 +128,4 @@ Review page: `design/assets/index.html`. Everything is procedural and made for t
 - **Type:** Archivo 2.001 and JetBrains Mono 2.211, both SIL OFL 1.1, checked in each font's name table. The official licence texts are in `design/assets/licenses/`.
 - **Sound:** four synthesized cues (place, break, seam, tick), 51 KB in total, wired behind every prototype's opt-in toggle.
 
-**Waiting on Gate 4:** the owner approves the asset renders, and decides whether the site ships with sound.
+**Gate 4 approved (2026-09-28).** The owner approved the asset renders. **Sound ships:** off by default, opt-in via the visible toggle, using the four cues (51 KB). Phase 5 (build) starts only on the owner's go-ahead.

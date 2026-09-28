@@ -292,6 +292,6 @@ Every motion above has a still or a cut, and nothing breaks: the site becomes it
 
 1. **The hero:** replaced by the exploding board (section 1). The round 1 swing question no longer applies.
 2. **Role pages:** every move is animated, played whole at hand speed when its scroll point is crossed.
-3. **Sound:** decided in Phase 4, once the cues exist to be heard. There is still no sound in the prototypes.
+3. **Sound:** ships, off by default and opt-in (decided at Gate 4). Cues: place, break, seam and tick; 51 KB in total.
 
 **Gate 3 approved.**
