@@ -4,44 +4,63 @@
 <style>.tag.p { transform: translate(-50%, 0); } .tag.p::after { display:none; } .ctr { position:absolute; bottom:48px; font-family: var(--font-mono); font-size:12px; white-space:nowrap; }
   .mask { position:absolute; left:48px; overflow:hidden; padding-bottom:.12em; } .mask i { display:block; font-style:normal; } .t1 { top:104px; font-size:112px; } .t2 { top:96px; font-size:180px; }
   .pm { position:absolute; left:52px; top:270px; font-size:22px; font-weight:700; } .pm div { font-size:13px; font-weight:400; color:var(--fg2); margin-top:6px; }
-  .n1 { top:370px; left:48px; max-width:38ch; } .n2 { bottom:48px; left:48px; max-width:30ch; }</style>
+  .n1 { top:370px; left:48px; max-width:38ch; } .n1 .m { display:none; } .n2 { bottom:48px; left:48px; max-width:30ch; }  @media (max-width: 600px) {
+    .chap { left:20px; top:62px; font-size:11px; } .note { font-size:11px; } .tag { font-size:11px; }
+    .mask { left:18px; } .t1 { top:78px; font-size:42px; } .t2 { top:212px; font-size:24.5vw; }
+    .pm { left:18px; top:312px; font-size:18px; } .pm div { font-size:12px; margin-top:4px; }
+    .n1 { top:166px; left:20px; right:20px; max-width:none; } .n1 .d { display:none; } .n1 .m { display:inline; } .n2 { top:376px; bottom:auto; left:20px; right:20px; max-width:none; }
+    .ctr { left:20px !important; bottom:24px; font-size:11px; }
+  }
+</style>
 </head><body><div class="frame" id="f">
 <div id="ink"><nav class="nav"><span>Roles</span><span>Work</span><span aria-current="page">Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
   <div class="chap">05 / 06</div>
   <div class="mask t1 display"><i>Then the<br>match.</i></div><div class="mask t2 display"><i>−143.3</i></div>
   <div class="pm">±35.4 Elo<div>Controlled benchmark</div></div>
-  <p class="note n1"><b>LEARNED AGAINST HANDCRAFTED</b>Same search, 50,000 nodes a move, the same 50 openings from both sides. Set to stop the moment the evidence was decisive.</p>
+  <p class="note n1"><b>LEARNED AGAINST HANDCRAFTED</b><span class="d">Same search, 50,000 nodes a move, the same 50 openings from both sides. Set to stop the moment the evidence was decisive.</span><span class="m">Same search, 50,000 nodes a move, 50 openings from both sides. It stops once the evidence is decisive.</span></p>
   <p class="note n2"><b>STOPPED AT GAME 128</b>The evidence crossed the line: LLR −2.99, past the −2.94 bound. The learned net lost.</p>
   <div class="ctr"></div><div id="tags"></div>
 </div></div>
 <script type="module">
-import { gsap, liveSeam, run } from "./_kit.js"; import { matchScene, pileTags, placeStones } from "/design/keyframes/_shared/match.js";
+import { gsap, liveSeam, run, per, mobile } from "./_kit.js"; import { matchScene, pileTags, placeStones } from "/design/keyframes/_shared/match.js";
 const D = await (await fetch("/design/keyframes/_shared/lab-data.json")).json(), R = D.gateC.games; await document.fonts.ready;
-const root = document.getElementById("f"), S = liveSeam(root, { dark: "transparent" });
+const root = document.getElementById("f"), S = liveSeam(root, { dark: "transparent", dir: mobile ? "h" : "v" });
+const MPILES = [{ key: "w", x: -2.95, z: 3.6, seed: 3 }, { key: "d", x: 0, z: -3.4, seed: 5 }, { key: "l", x: 2.45, z: 3.8, seed: 9 }];
 // two renders of one scene, day and night, split by the same seam
 const scenes = ["day", "night"].map((theme) => { const c = document.createElement("canvas"); c.style.zIndex = 1; root.querySelector("#ink").before(c); if (theme === "night") c.dataset.night = 1;
-  return matchScene(c, theme, { counts: D.gateC.wdl, view: [-.16, -.1] }); });
+  return mobile ? matchScene(c, theme, { counts: D.gateC.wdl, view: [0, -.235], piles: MPILES, camera: { pos: [0, 27, 31], look: [0, 0, .2], fov: 36 } })
+                : matchScene(c, theme, { counts: D.gateC.wdl, view: [-.16, -.1] }); });
 const night = root.querySelector("canvas[data-night]");
-let tags = pileTags(scenes[0].cam, { w: "wins", d: "draws", l: "losses" }); document.querySelectorAll("#tags").forEach((t) => t.innerHTML = tags);
+const PL = mobile ? MPILES : undefined; let tags = pileTags(scenes[0].cam, { w: "wins", d: "draws", l: "losses" }, PL); document.querySelectorAll("#tags").forEach((t) => t.innerHTML = tags);
 const T0 = .9, T1 = 8.4, FALL = .42, H0 = 7.5, key = (s) => (s === 1 ? "w" : s === 0 ? "l" : "d");
 const land = R.map((_, k) => T0 + (T1 - T0) * Math.pow((k + 1) / R.length, .92)); // a steady scroll, a little faster at the end
 const idxIn = []; { const c = { w: 0, d: 0, l: 0 }; R.forEach((s, k) => { idxIn[k] = c[key(s)]++; }); }
 const st = { t: 0, out: 0, in2: 0 };
+const EVERY = 16, CP = [{ t: land[0], v: .5 }];
+for (let n = EVERY; n <= R.length; n += EVERY) CP.push({ t: land[n - 1], v: R.slice(0, n).reduce((a, b) => a + b, 0) / n });
+const seamEase = gsap.parseEase("seam");
+function seamAt(t) { // glide from checkpoint to checkpoint, each glide spanning the games between them
+  if (t <= CP[0].t) return CP[0].v;
+  for (let i = 1; i < CP.length; i++) if (t < CP[i].t) { const a = CP[i - 1], b = CP[i], u = (t - a.t) / (b.t - a.t); return a.v + (b.v - a.v) * seamEase(u); }
+  return CP.at(-1).v;
+}
+const lastCp = (t) => CP.filter((c, i) => i && c.t <= t).at(-1);
 function render() {
   const t = st.t, started = { w: 0, d: 0, l: 0 }, drops = { w: {}, d: {}, l: {} }; let done = 0, sum = 0;
   R.forEach((s, k) => { const u = (t - (land[k] - FALL)) / FALL; if (u < 0) return; const kk = key(s); started[kk]++; drops[kk][idxIn[k]] = u >= 1 ? 0 : H0 * (1 - u * u); if (u >= 1) { done++; sum += s; } });
-  const share = done ? sum / done : .5;
+  // The seam does not report every game: it glides between checkpoints, the running score after every 16th game.
+  const share = seamAt(t);
   for (const sc of scenes) { for (const kk of ["w", "d", "l"]) placeStones(sc.heaps[kk], started[kk], (i) => drops[kk][i] ?? 0); sc.r.render(sc.scene, sc.cam); }
   S.set(share); const W = root.clientWidth, x = share * W; night.style.clipPath = S.inv.style.clipPath;
-  document.querySelectorAll(".ctr").forEach((c) => { c.style.left = x + 16 + "px"; c.textContent = `game ${Math.max(1, done)} of 128 · ${(share * 100).toFixed(1)}%`; });
-  if (done === R.length && tags.indexOf("2 wins") < 0) { tags = pileTags(scenes[0].cam, { w: "2 wins", d: "74 draws", l: "52 losses" }); document.querySelectorAll("#tags").forEach((e) => e.innerHTML = tags); }
-  if (done < R.length && tags.indexOf("2 wins") >= 0) { tags = pileTags(scenes[0].cam, { w: "wins", d: "draws", l: "losses" }); document.querySelectorAll("#tags").forEach((e) => e.innerHTML = tags); }
+  document.querySelectorAll(".ctr").forEach((c) => { if (!mobile) c.style.left = x + 16 + "px"; const c1 = lastCp(t); c.textContent = `game ${Math.max(1, done)} of 128` + (c1 ? ` · after ${CP.indexOf(c1) * EVERY}: ${(c1.v * 100).toFixed(1)}%` : ``); });
+  if (done === R.length && tags.indexOf("2 wins") < 0) { tags = pileTags(scenes[0].cam, { w: "2 wins", d: "74 draws", l: "52 losses" }, PL); document.querySelectorAll("#tags").forEach((e) => e.innerHTML = tags); }
+  if (done < R.length && tags.indexOf("2 wins") >= 0) { tags = pileTags(scenes[0].cam, { w: "wins", d: "draws", l: "losses" }, PL); document.querySelectorAll("#tags").forEach((e) => e.innerHTML = tags); }
 }
-gsap.set(".t2 i", { yPercent: 110 }); gsap.set(".pm, .n2", { opacity: 0, y: 10 });
+gsap.set(".t2 i", { yPercent: 135 }); gsap.set(".pm, .n2", { opacity: 0, y: 10 });
 const tl = gsap.timeline({ paused: true });
 tl.to(st, { t: T1 + .3, duration: T1 + .3, ease: "none", onUpdate: render }, 0)
-  .to(".t1 i, .n1", { yPercent: -110, opacity: 0, duration: .5, ease: "seam", stagger: .06 }, T1 + .1)
+  .to(".t1 i, .n1", { yPercent: -110, opacity: 0, duration: .5, ease: "seam", stagger: per(.06) }, T1 + .1)
   .to(".t2 i", { yPercent: 0, duration: .7, ease: "arrive" }, T1 + .35)
-  .to(".pm, .n2", { opacity: 1, y: 0, duration: .5, ease: "arrive", stagger: .1 }, T1 + .7).to({}, { duration: 1 });
+  .to(".pm, .n2", { opacity: 1, y: 0, duration: .5, ease: "arrive", stagger: per(.1) }, T1 + .7).to({}, { duration: 1 });
 run(tl, { render });
 </script></body></html>

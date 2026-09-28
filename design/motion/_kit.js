@@ -13,6 +13,8 @@ CustomEase.create("arrive", "M0,0 C0.16,0.84 0.3,1 1,1");
 const K = 7, NORM = 1 - (1 + K) * Math.exp(-K);
 export const evalStep = (t) => (1 - (1 + K * t) * Math.exp(-K * t)) / NORM;
 
+/** Phones get their own composition: the seam turns horizontal, white on top. */
+export const mobile = innerWidth < 600;
 export const capture = new URLSearchParams(location.search).has("capture");
 export const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches || new URLSearchParams(location.search).has("reduced");
 
@@ -31,7 +33,7 @@ export function liveSeam(root, { dir = "v", under = false, dark = "var(--ink)", 
     state.at = at; state.tilt = tilt;
     const W = root.clientWidth, H = root.clientHeight;
     let d, l;
-    if (dir === "h") { const y = at * H; d = `polygon(0 ${y}px,${W}px ${y}px,${W}px ${H}px,0 ${H}px)`; l = `polygon(0 0,${W}px 0,${W}px ${y}px,0 ${y}px)`; }
+    if (dir === "h") { const y = at * H, o = Math.tan(tilt * Math.PI / 180) * W / 2; d = `polygon(0 ${y - o}px,${W}px ${y + o}px,${W}px ${H + 400}px,0 ${H + 400}px)`; l = `polygon(0 -400px,${W}px -400px,${W}px ${y + o}px,0 ${y - o}px)`; }
     else { const x = at * W, o = Math.tan(tilt * Math.PI / 180) * H / 2; d = `polygon(${x - o}px 0,${W + 400}px 0,${W + 400}px ${H}px,${x + o}px ${H}px)`; l = `polygon(-400px 0,${x - o}px 0,${x + o}px ${H}px,-400px ${H}px)`; }
     bg.style.clipPath = under ? l : d; inv.style.clipPath = d;
   }
@@ -48,3 +50,12 @@ export function run(tl, { render = () => {}, loop = false } = {}) {
   if (loop) tl.repeat(-1).repeatDelay(1.2);
   gsap.ticker.add(render); tl.play(0); window.__ready = true;
 }
+
+/** Tween the same selector in both seam layers, staggered within each layer, so the inverted copy moves in step. */
+export function both(tl, sel, vars, pos) {
+  for (const id of ["ink", "ink-inv"]) { const els = document.querySelectorAll(`#${id} ${sel}`); if (els.length) tl.to(els, { ...vars }, pos); }
+  return tl;
+}
+
+/** A stagger that counts within each seam layer: pass as `stagger: per(.05)`. */
+export const per = (each) => (i, el, list) => { const L = !!el.closest("#ink-inv"); let k = 0; for (let j = 0; j < i; j++) if (!!list[j].closest("#ink-inv") === L) k++; return k * each; };

@@ -35,6 +35,7 @@ Stagger between letters is 28 ms; between lines, 60 to 80 ms; between list items
 ## Global
 
 ### Type entrances
+- Staggers count within each seam layer, so a letter and its inverted copy always move together.
 - Display type rises out of its own line mask (`yPercent 105 → 0`, 600 to 750 ms, `arrive`), letter by letter at 28 ms for names and titles, line by line for sentences.
 - It leaves the same way, upward (`yPercent 0 → −135`, 500 ms, `seam`). The −135 clears descenders such as the y in Qumhiyeh.
 - Because the seam clones the page into an inverted layer, every entrance plays on both layers at once and inverts correctly across the seam.
@@ -188,7 +189,7 @@ Always in the top-right corner, from the loader's first frame. It is never anima
 
 - **Trigger:** scroll. The page is pinned. Scrolling moves through the game from the first move to the table's famous position (16. Nd5 for Tal vs Larsen, 31 plies), over about 4 screens of scroll.
 - **Each move:** plays at hand speed when its scroll threshold is crossed, not scrubbed. Scrubbing a piece across the board looks like dragging; a hand plays each move whole.
-  - The piece lifts, travels and sets down in 280 ms (`seam` for travel, a sine arc of 0.55 units for the lift).
+  - The piece lifts, travels and sets down in 380 ms (`seam` for travel, a sine arc of 0.55 units for the lift). It never jumps to its square.
   - A captured piece lifts off and is taken away (rises 1.6 units and shrinks to nothing).
   - For castling, the rook follows the king 120 ms later.
   - The squares of the last move stay lit amber.
@@ -213,11 +214,11 @@ Always in the top-right corner, from the loader's first frame. It is never anima
 | 02 The data | 35.4 M sheets stand at full height. Each filter plane slides in, and the sheets above it fall off to the white side, one filter at a time. The stack settles at 20 M, and one sheet slides out as the hold-out. | falls to 56.6% as the stack falls |
 | 03 Training | The three casts turn together. The camera moves along them from clay to glaze, and each score rises as its cast is reached. | none: all white |
 | 04 Gate A | The 50 boards set up one after another, pieces dropping onto the squares of each opening, then all 100 games play at once, fast. The seam stays dead still at 50%. | 50% |
-| 05 Gate C | *(prototype: `gatec.html`)* 128 stones drop into three heaps in game order, each falling in 420 ms. The seam follows the running score and settles at 30.5%. "Then the match." leaves, and "−143.3" rises. | 50% to 30.5% |
+| 05 Gate C | *(prototype: `gatec.html`)* 128 stones drop into three heaps in game order, each falling in 420 ms. The seam glides between checkpoints, the running score after every 16th game, each glide spanning the games between them (`seam`). "Then the match." leaves, and "−143.3" rises. | 50% to 30.5% |
 | 06 What failed | The plinths rise to scale, queen first. The net's copper plinth rises last, and the clamp brackets close on it: ±60. | none: gallery black |
 | 07 Play | The camera lands overhead on the board. The seam arrives through the board at the net's eval. | the eval, +0.43 |
 
-**Gate C, the real data:** the seam falls fast in the first games (43.8% after 8, 29.7% after 32) and then steadies near 30%. That is the true running score, not a smoothed curve.
+**Gate C, the real data, without the jitter:** following the score after every game made the seam jump around in the first games. It now moves only between checkpoints, the true running score after games 16, 32, 48 and so on: 50% → 28.1% → 29.7% → 31.2% → 28.9% → 30.0% → 30.2% → 29.9% → 30.5%. Every stop is a real value; only the path between them is eased. The counter says which checkpoint the seam is heading to (`after 64: 28.9%`).
 
 **Reduced motion:** each chapter shows its end state as a still, as in the key frames.
 
@@ -236,10 +237,18 @@ Always in the top-right corner, from the loader's first frame. It is never anima
 
 ## 13. Mobile
 
+Every prototype has its phone composition at 390 × 844, and every frame at both sizes passes an automatic text-clash check (`design/motion/_clash.cjs`: overlapping text, text off-screen, type still hidden in its mask excluded).
+
+
 - **The seam is horizontal:** white on top, black below. Every sweep runs vertically: to Work the black rises from the bottom, and to Roles the paper falls from the top.
 - **Tilt:** 8° instead of 13°, because the screen is narrow.
 - **No pointer effects:** the cursor, the pointer light and hover do not exist on touch. What hover shows is shown by default, or on tap.
 - **Pinned chapters:** pin for 1 screen instead of 1.5.
+- **Hero:** the hairline draws across, the black rises from the bottom to 50%. The drag card sits at the bottom, in place of the sentence, because a card riding a horizontal seam would cross the name.
+- **Work:** the camera looks along the floor from the g-file side, so the three pieces stack down the screen and each label has its own row. "Work" moves to the top.
+- **Role page:** title, then the fact, then the board in the lower half, clear of the scrubber. The board bleeds at the edges, as on desktop.
+- **Gate C:** the heaps sit in a triangle. The note is shortened so it stays above the seam's whole range (28% to 50%), so the seam never cuts a line of small text.
+- **Contact:** "11." and "Your move." on the white side; the clock and the links on the black side.
 
 ## Reduced motion, summary
 

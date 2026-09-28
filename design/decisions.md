@@ -107,4 +107,9 @@ Approved set: the eight picks in `picks.html` (with the round 2 fixes in `round2
 
 The hero's swing uses the kept engine's evaluation after each ply of the line at 6,000 nodes (handcrafted), recomputed for Phase 3. It matches the stored career evals exactly, ending at +0.64. The real range is 48.3% to 55.9%, so the swing is a tremble before the lean.
 
+**Owner notes, round 1 (2026-09-28):**
+- Role page: pieces must visibly move for every move, not jump. Fixed: each move's tween recorded its start from the move before, so pieces jumped; each now lifts, travels and sets down in 380 ms.
+- Gate C: the seam following the score after every game felt jittery. It now glides between checkpoints, the real running score after every 16th game.
+- Mobile: every prototype now has its phone composition, and all of them pass an automatic text-clash check every half second at both sizes (the hero every 0.1 s). The check found and fixed a skip link overlapping the hero sentence, and a stagger bug where the inverted copy of each letter moved late.
+
 **Waiting on Gate 3:** the owner approves the motion character, the loader and the signature moment, and answers the three questions at the end of `motion.md`.

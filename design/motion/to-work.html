@@ -12,6 +12,12 @@
   .label .n { margin-top: 8px; font-size: 14px; color: #c9c2b5; line-height: 1.35; } .label .q { margin-top: 6px; font-size: 12px; color: #77726a; }
   .dot { position: absolute; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: #e8a33d; z-index: 9; pointer-events: none; }
   #ink .nav span, #ink-inv .nav span { transition: none; }
+  @media (max-width: 600px) {
+    .name { left: 18px; top: calc(55.9% - 1.3em); font-size: 29.5vw; } .l2 { font-size: .56em; margin-top: .08em; }
+    .line { left: 20px; bottom: 76px; font-size: 17px; } .ev { left: 20px; bottom: 26px; font-size: 12px; }
+    .ttlw { left: 16px; top: 62px; bottom: auto; font-size: 24vw; }
+    .label b { font-size: 13px; } .label.on b { font-size: 16px; } .label .n { font-size: 12px; } .label .q { font-size: 11px; }
+  }
 </style></head><body>
 <div class="frame" id="f"><canvas id="c"></canvas><div id="ink">
   <nav class="nav"><span>Roles</span><span id="nw">Work</span><span>Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
@@ -22,23 +28,28 @@
   <div class="ttlw display"><i>Work</i></div>
 </div><div class="dot" id="dot"></div></div>
 <script type="module">
-import { gsap, liveSeam, run, share } from "./_kit.js"; import { gallery } from "/design/keyframes/_shared/gallery.js"; import { THREE } from "/design/keyframes/_shared/chess3d.js";
+import { gsap, liveSeam, run, share, per, mobile } from "./_kit.js"; import { gallery } from "/design/keyframes/_shared/gallery.js"; import { THREE } from "/design/keyframes/_shared/chess3d.js";
 await document.fonts.ready;
 const root = document.getElementById("f"), W = innerWidth, H = innerHeight;
 const g = gallery(document.getElementById("c"), { layout: "plan", light: 1 });
 const lights = []; g.scene.traverse((o) => { if (o.isLight) lights.push({ o, base: o.intensity, focus: o.isSpotLight && o.target.position.distanceTo(new THREE.Vector3(...[g.anchors.faultline.x, 0, g.anchors.faultline.z])) < 3 }); });
-const envBase = g.scene.environmentIntensity, camEnd = g.cam.position.clone(), look = new THREE.Vector3(-.4, 0, -.2);
+if (mobile) { // portrait: look along the floor from the g-file side, so the three pieces stack down the screen
+  g.cam.fov = 34; g.cam.position.set(19, 17, 1.2); g.cam.lookAt(.6, 0, 0); g.cam.setViewOffset(W, H, 0, -.02 * H, W, H); g.cam.updateProjectionMatrix(); g.cam.updateMatrixWorld();
+  g.scene.traverse((o) => { if (o.userData?.slug === "teleportal") o.rotation.y = Math.atan2(19 - o.position.x, 1.2 - o.position.z) - .45; });
+}
+const envBase = g.scene.environmentIntensity, camEnd = g.cam.position.clone(), look = mobile ? new THREE.Vector3(.6, 0, 0) : new THREE.Vector3(-.4, 0, -.2);
+if (mobile) for (const k in g.anchors) { const a = g.anchors[k]; a.set(a.x + .96, a.y, a.z - .96); } // the plinth's front faces +x on phones
 document.querySelectorAll("#ink .label").forEach((el) => { const p = g.toScreen(g.anchors[el.dataset.k]); el.style.left = p.x + "px"; el.style.top = p.y + 14 + "px"; });
-const S = liveSeam(root, { under: true }); // the dark side is a window onto the gallery
+const S = liveSeam(root, { under: true, dir: mobile ? "h" : "v" }); // the dark side is a window onto the gallery
 document.querySelectorAll("#ink-inv .label").forEach((el, i) => { const s = document.querySelectorAll("#ink .label")[i]; el.style.left = s.style.left; el.style.top = s.style.top; });
 const st = { p: 0, room: 0, focus: 0, cam: 0, dx: W * .6, dy: H * .5 }, dot = document.getElementById("dot");
 gsap.set(".label", { opacity: 0, y: 8 }); gsap.set(".ttlw i", { yPercent: 130 });
 function render() {
-  const at = share(64) + (.015 - share(64)) * st.p, tilt = -13 * Math.sin(Math.PI * st.p);
+  const at = share(64) + ((mobile ? 0 : .015) - share(64)) * st.p, tilt = (mobile ? -8 : -13) * Math.sin(Math.PI * st.p);
   S.set(at, tilt);
   for (const l of lights) l.o.intensity = l.base * (l.focus ? Math.max(st.room * .42, st.focus) : st.room);
   g.scene.environmentIntensity = envBase * (.15 + .85 * st.room);
-  g.cam.position.copy(camEnd).add(new THREE.Vector3(0, 3.2, 3.6).multiplyScalar(1 - st.cam)); g.cam.lookAt(look);
+  g.cam.position.copy(camEnd).add(new THREE.Vector3(0, 3.2, 3.6).multiplyScalar(1 - st.cam)); g.cam.lookAt(look); if (mobile) g.cam.setViewOffset(W, H, 0, -.02 * H, W, H);
   g.r.render(g.scene, g.cam); dot.style.left = st.dx + "px"; dot.style.top = st.dy + "px";
 }
 const nav = document.querySelectorAll(".nav span:nth-child(2)"), nw = document.getElementById("nw").getBoundingClientRect();
@@ -50,10 +61,10 @@ tl.to(st, { dx: nw.left + nw.width / 2, dy: nw.bottom + 10, duration: .55, ease:
   .to(st, { room: 1, duration: 1.1, ease: "arrive", onUpdate: render }, 1.05)
   .to(st, { focus: 1, duration: .55, ease: "arrive", onUpdate: render }, 1.25)
   .to(st, { cam: 1, duration: 1.8, ease: "arrive", onUpdate: render }, .62)
-  .to(".name i, .line i", { yPercent: -135, duration: .5, ease: "seam", stagger: .05 }, 1.35)
+  .to(".name i, .line i", { yPercent: -135, duration: .5, ease: "seam", stagger: per(.05) }, 1.35)
   .to(".ev", { opacity: 0, duration: .25 }, 1.2)
   .to(".ttlw i", { yPercent: 0, duration: .7, ease: "arrive" }, 1.75)
-  .to(".label", { opacity: 1, y: 0, duration: .5, ease: "arrive", stagger: .08 }, 2.05)
+  .to(".label", { opacity: 1, y: 0, duration: .5, ease: "arrive", stagger: per(.08) }, 2.05)
   .to(dot, { opacity: 0, duration: .2 }, 2.2).to({}, { duration: .8 });
 run(tl, { render });
 </script></body></html>

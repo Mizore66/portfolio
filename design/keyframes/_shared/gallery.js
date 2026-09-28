@@ -24,7 +24,7 @@ export function gallery(canvas, { layout = "row", focus = "faultline", light = 1
   wall.position.set(0, 12, -12); wall.receiveShadow = true; scene.add(wall);
   let camPos = [0, 3.6, 15];
   const place = (f, x, z, H, scale, I) => {
-    plinth(x, z, 1.9, H); const s = f.make(); s.scale.setScalar(scale); s.position.set(x, H, z); scene.add(s);
+    plinth(x, z, 1.9, H); const s = f.make(); s.scale.setScalar(scale); s.position.set(x, H, z); s.userData.slug = f.slug; scene.add(s);
     if (f.slug === "teleportal") s.rotation.y = Math.atan2(camPos[0] - x, camPos[2] - z) - .45;
     const on = f.slug === focus ? 1 : .42;
     spot(scene, { pos: [x - 4.5, 11, z + 4.5], target: [x, H + 1.1, z], intensity: I * on * light, angle: .2, penumbra: .8 });
