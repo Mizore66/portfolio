@@ -2,6 +2,7 @@
 // Board: one square = 1 unit, centred on the origin. Files a..h run -x to +x; White sits at +z.
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { mergeGeometries, mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
 
 export { THREE };
 
@@ -26,20 +27,69 @@ export function profileRadius(type, y) {
   return 0;
 }
 
-function knightHead() {
+// The knight: a Staunton head in profile (facing +x), inflated into a rounded volume.
+// Thinner at the muzzle and ears, fuller at the neck; a braided mane on the rim, eyes and a mouth line.
+function knightShape() {
   const s = new THREE.Shape();
-  s.moveTo(-.26, .20); s.lineTo(.22, .20);
-  s.bezierCurveTo(.20, .34, .10, .46, .18, .56);
-  s.lineTo(.36, .62);
-  s.bezierCurveTo(.44, .66, .46, .74, .42, .80);
-  s.bezierCurveTo(.36, .86, .24, .92, .18, 1.00);
-  s.lineTo(.14, 1.10); s.lineTo(.10, 1.22); s.lineTo(.02, 1.12);
-  s.bezierCurveTo(-.10, 1.12, -.22, 1.04, -.28, .92);
-  s.bezierCurveTo(-.34, .78, -.32, .56, -.26, .44);
-  s.bezierCurveTo(-.22, .34, -.28, .26, -.26, .20);
-  const g = new THREE.ExtrudeGeometry(s, { depth: .16, bevelEnabled: true, bevelThickness: .065, bevelSize: .04, bevelSegments: 8, curveSegments: 40 });
-  g.translate(0, 0, -.08);
-  return g;
+  s.moveTo(.22, .20);
+  s.bezierCurveTo(.24, .28, .14, .36, .16, .44);
+  s.bezierCurveTo(.18, .52, .24, .54, .30, .56);
+  s.bezierCurveTo(.36, .57, .44, .58, .44, .64);
+  s.bezierCurveTo(.46, .68, .46, .73, .42, .76);
+  s.bezierCurveTo(.36, .82, .28, .88, .22, .96);
+  s.bezierCurveTo(.18, 1.02, .16, 1.08, .14, 1.12);
+  s.lineTo(.10, 1.24);
+  s.bezierCurveTo(.06, 1.18, .03, 1.14, .02, 1.10);
+  s.bezierCurveTo(-.06, 1.10, -.16, 1.06, -.22, .98);
+  s.bezierCurveTo(-.28, .88, -.32, .74, -.30, .62);
+  s.bezierCurveTo(-.28, .46, -.30, .30, -.27, .20);
+  s.lineTo(.22, .20);
+  return s;
+}
+const KPOLY = knightShape().getSpacedPoints(420);
+const sstep = (a, b, v) => { const t = Math.min(1, Math.max(0, (v - a) / (b - a))); return t * t * (3 - 2 * t); };
+function edgeDist(x, y) {
+  let m = Infinity;
+  for (let i = 1; i < KPOLY.length; i++) {
+    const a = KPOLY[i - 1], b = KPOLY[i], dx = b.x - a.x, dy = b.y - a.y, L = dx * dx + dy * dy || 1e-9;
+    const t = Math.max(0, Math.min(1, ((x - a.x) * dx + (y - a.y) * dy) / L)), ex = a.x + t * dx - x, ey = a.y + t * dy - y;
+    m = Math.min(m, ex * ex + ey * ey);
+  }
+  return Math.sqrt(m);
+}
+/** Half-thickness of the knight's head at (x, y) in its own profile plane. */
+export function knightHalfDepth(x, y) {
+  const T = .17 - .075 * sstep(.12, .42, x) * sstep(.45, .62, y) - .07 * sstep(.95, 1.2, y) + .025 * (1 - sstep(.2, .4, y));
+  const k = Math.min(edgeDist(x, y) / .1, 1);
+  return T * Math.sqrt(1 - (1 - k) ** 2);
+}
+let KNIGHT_GEO = null;
+function knightHead() {
+  if (KNIGHT_GEO) return KNIGHT_GEO;
+  // conforming mesh: the silhouette is star-shaped about a point in the neck, so build it as concentric rings
+  const contour = KPOLY.slice(0, -1), C = new THREE.Vector2(.0, .66), K = 28, n = contour.length;
+  const ring = (k, i) => { const q = contour[i % n], t = k / K; return [C.x + (q.x - C.x) * t, C.y + (q.y - C.y) * t]; };
+  const pos = [], push = (side, pts) => { for (const [x, y] of side > 0 ? pts : [pts[0], pts[2], pts[1]]) pos.push(x, y, side * knightHalfDepth(x, y)); };
+  for (const side of [1, -1]) for (let k = 0; k < K; k++) for (let i = 0; i < n; i++) {
+    const a = ring(k, i), b = ring(k + 1, i), c = ring(k + 1, i + 1), d = ring(k, i + 1);
+    push(side, [a, b, c]); if (k > 0) push(side, [a, c, d]);
+  }
+  const both = new THREE.BufferGeometry(); both.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  const m = mergeVertices(both, 1e-5); m.computeVertexNormals();
+  return (KNIGHT_GEO = m);
+}
+function knightDetails(add, mat) {
+  // the mane: a braid of flattened beads along the back of the neck
+  for (let i = 0; i <= 10; i++) {
+    const t = i / 10, y = 1.04 - t * .5, p = KPOLY.filter((q) => q.x < -.05 && Math.abs(q.y - y) < .02).sort((a, b) => a.x - b.x)[0];
+    if (!p) continue;
+    const b = add(new THREE.SphereGeometry(.05, 24, 16), mat); b.position.set(p.x + .018, y, 0); b.scale.set(.75, 1.05, 1.35); b.rotation.z = -.35;
+  }
+  for (const z of [1, -1]) {
+    const e = add(new THREE.SphereGeometry(.026, 24, 16), mat); e.position.set(.2, .87, z * (knightHalfDepth(.2, .87) - .01));
+    const mouth = []; for (let i = 0; i <= 12; i++) { const t = i / 12, x = .43 - t * .12, y = .625 - t * .01; mouth.push(new THREE.Vector3(x, y, z * (knightHalfDepth(x, y) - .002))); }
+    const g = add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(mouth), 24, .006, 6, false), MAT.dark()); g.castShadow = false;
+  }
 }
 
 export const MAT = {
@@ -92,7 +142,7 @@ export function piece(type, mat) {
   if (type === "R") {
     for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2, m = add(new THREE.BoxGeometry(.11, .13, .1)); m.position.set(Math.cos(a) * .225, .985, Math.sin(a) * .225); m.rotation.y = -a; }
   }
-  if (type === "N") add(knightHead());
+  if (type === "N") { add(knightHead()); knightDetails(add, mat); }
   return g;
 }
 

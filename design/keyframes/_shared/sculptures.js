@@ -1,5 +1,5 @@
 // The three featured project pieces, each in the material that argues for it.
-import { THREE, piece, profileRadius, MAT } from "./chess3d.js";
+import { THREE, piece, profileRadius, MAT, knightHalfDepth } from "./chess3d.js";
 
 function surfaceTube(type, pts, radius, mat, lift = .004) {
   const v = pts.map(([y, a]) => { const r = profileRadius(type, y) + lift; return new THREE.Vector3(Math.sin(a) * r, y, Math.cos(a) * r); });
@@ -40,12 +40,13 @@ export function circuitmind() {
 export function learnedKnight() {
   const g = piece("N", MAT.basalt()), cu = MAT.copper();
   const paths = [[[-.15, .28], [-.15, .6], [.1, .6], [.1, .72], [.3, .72]], [[-.15, .6], [-.15, .88], [.05, .88], [.05, 1.02]], [[.1, .6], [.1, .44], [-.02, .44]]];
-  for (const z of [.152, -.152]) {
+  for (const side of [1, -1]) {
     for (const p of paths) {
-      const curve = new THREE.CurvePath();
-      for (let i = 1; i < p.length; i++) curve.add(new THREE.LineCurve3(new THREE.Vector3(p[i - 1][0], p[i - 1][1], z), new THREE.Vector3(p[i][0], p[i][1], z)));
-      g.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 64, .011, 8, false), cu));
-      [p[0], p.at(-1)].forEach(([x, y]) => { const n = new THREE.Mesh(new THREE.CylinderGeometry(.03, .03, .012, 24), cu); n.rotation.x = Math.PI / 2; n.position.set(x, y, z); g.add(n); });
+      const pts = [];
+      for (let i = 1; i < p.length; i++) for (let k = 0; k < 12; k++) { const t = k / 12, x = p[i - 1][0] + (p[i][0] - p[i - 1][0]) * t, y = p[i - 1][1] + (p[i][1] - p[i - 1][1]) * t; pts.push(new THREE.Vector3(x, y, side * (knightHalfDepth(x, y) + .004))); }
+      const [x1, y1] = p.at(-1); pts.push(new THREE.Vector3(x1, y1, side * (knightHalfDepth(x1, y1) + .004)));
+      g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, false, "catmullrom", .05), 160, .011, 8, false), cu));
+      [p[0], p.at(-1)].forEach(([x, y]) => { const n = new THREE.Mesh(new THREE.CylinderGeometry(.03, .03, .014, 24), cu); n.rotation.x = Math.PI / 2; n.position.set(x, y, side * (knightHalfDepth(x, y) + .003)); g.add(n); });
     }
   }
   const ring = []; for (let i = 0; i <= 64; i++) ring.push([.12, (i / 64) * Math.PI * 2]);

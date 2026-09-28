@@ -1,0 +1,13 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><title>Knight study</title><link rel="stylesheet" href="_shared/tokens.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script></head><body><div class="frame"><canvas id="c"></canvas></div>
+<script type="module">
+import { THREE, renderer, applyEnv, piece, MAT, done } from "./_shared/chess3d.js"; import { teleportal, learnedKnight } from "./_shared/sculptures.js";
+const { r, envTex } = renderer(document.getElementById("c")), scene = new THREE.Scene(); scene.background = new THREE.Color(0xe9e8e4); applyEnv(scene, envTex, .5);
+scene.add(new THREE.HemisphereLight(0xffffff, 0xcfccc4, .6));
+const key = new THREE.DirectionalLight(0xfff6ea, 2.8); key.position.set(-6, 9, 8); key.castShadow = true; key.shadow.mapSize.set(4096, 4096); key.shadow.bias = -.0004; Object.assign(key.shadow.camera, { left: -10, right: 10, top: 10, bottom: -10 }); scene.add(key);
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), new THREE.MeshStandardMaterial({ color: 0xdedcd6, roughness: .9 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const items = [[piece("N", MAT.ivory()), -.5], [piece("N", MAT.ivory()), -1.4], [piece("N", MAT.ivory()), .6], [piece("N", MAT.ebony()), -.5], [teleportal(), null], [learnedKnight(), -.3]];
+items.forEach(([k, ry], i) => { k.scale.setScalar(1.6); k.position.set(-6.25 + i * 2.5, 0, 0); if (ry !== null) k.rotation.y = ry; scene.add(k); });
+const cam = new THREE.PerspectiveCamera(24, innerWidth / innerHeight, .1, 100); cam.position.set(0, 3.2, 18); cam.lookAt(0, 1.1, 0);
+done(r, scene, cam);
+</script></body></html>

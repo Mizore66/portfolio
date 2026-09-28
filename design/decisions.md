@@ -78,7 +78,7 @@ Owner decisions for the v3 redesign, newest last.
 **Still rough in the Lab frames (fix during round 2 or in the build):**
 - ~~02: the spilled sheets are low contrast on the white side.~~ Fixed in round 2 (darker sheet edges).
 - ~~05: the heaps read slightly like columns rather than piles.~~ Fixed in round 2 (wider settling).
-- All knights use the placeholder silhouette; Phase 4 models it properly.
+- ~~All knights use the placeholder silhouette.~~ Fixed before closing Gate 2 (see below).
 - The camera's dive between chapters is motion only (Phase 3), so no frame shows it.
 - Trees in 00 are still seeded placeholders; the build draws the kept engine's real search.
 
@@ -92,3 +92,11 @@ Review page: `design/keyframes/round2.html`. The picks stay stable; only the §5
 **Owner decisions (2026-09-28):**
 - The Lab chapters may run past the 20-word rule, about 40 to 70 words each, because they carry the technical story.
 - The Lab gets phone compositions: `lab-a-m` and `lab2-1-m` to `lab2-7-m`. On phones the seam turns horizontal, white on top, at the same share as on desktop, as the hero does. Chapter 02 puts the seam exactly on the top of the kept stack; 03 recedes the casts so the playing net is largest; 06 uses a long lens so the plinths stay true to scale.
+
+## Gate 2 (2026-09-28)
+
+**The owner approved the key frames.** Before closing, the knight was modelled properly: the Staunton silhouette inflated into a rounded volume (thinner at the muzzle and ears, fuller at the neck) with a braided mane, eyes and a mouth line. The learned knight's circuit follows the curved surface. Every frame was re-rendered with it. `design/keyframes/final.html` shows before and after for the knight and for the two Lab fixes from round 2.
+
+Approved set: the eight picks in `picks.html` (with the round 2 fixes in `round2.html`) and the Lab chapters with their phone frames in `lab-round2.html`.
+
+**Gate 2 closed.** Next is Phase 3, which starts only on the owner's go-ahead.
