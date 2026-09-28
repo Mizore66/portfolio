@@ -1,0 +1,33 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Other lines A: the side board</title>
+<link rel="stylesheet" href="_shared/tokens.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>
+  body { background: var(--gallery); }
+  #ink { color: #ece6da; }
+  .ttl { position: absolute; left: 64px; top: 128px; font-size: 7.2vw; color: #ece6da; }
+  .sheet { position: absolute; left: 66px; top: 300px; width: 400px; list-style: none; }
+  .sheet li { display: grid; grid-template-columns: 70px 1fr; gap: 0 14px; padding: 13px 0; border-top: 1px solid #242424; }
+  .sheet .mv { font: 13px var(--font-mono); color: #8c877e; padding-top: 2px; }
+  .sheet b { font-size: 16px; font-weight: 600; color: #ece6da; }
+  .sheet .r { grid-column: 2; margin-top: 3px; font-size: 14px; color: #c9c2b5; } .sheet .q { grid-column: 2; margin-top: 2px; font-size: 12px; color: #77726a; }
+  .sheet li.on b { color: #fff; } .sheet li.on .mv { color: var(--move); }
+  .tag { position: absolute; transform: translateX(-50%); font: 12px var(--font-mono); color: #b9b2a6; white-space: nowrap; text-shadow: 0 1px 3px #000; }
+  .tag.on { color: var(--move); }
+  .aside { position: absolute; transform: translateX(-50%); font: 11px var(--font-mono); color: #5d5953; white-space: nowrap; text-align: center; }
+</style></head><body>
+<div class="frame"><canvas id="c"></canvas><div id="ink">
+  <nav class="nav"><span>Roles</span><span aria-current="page">Work</span><span>Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
+  <div class="ttl display">Other lines</div><ol class="sheet" id="sheet"></ol><div id="tags"></div>
+</div></div>
+<script type="module">
+import { seam } from "./_shared/seam.js"; import { done } from "./_shared/chess3d.js";
+import { sideBoard, ON_BOARD } from "./_shared/sideboard.js"; import { copy, moveTag } from "./_shared/sideline-copy.js";
+await document.fonts.ready;
+const S = await copy(), focus = "slm-distillation-engine";
+const g = sideBoard(document.getElementById("c"), { cam: { pos: [3.6, 9.2, 8.6], look: [-1.3, .3, -.9], fov: 30, offset: [-innerWidth * .215, -innerHeight * .02] } });
+document.getElementById("sheet").innerHTML = S.map((s) => `<li class="${s.slug === focus ? "on" : ""}"><span class="mv">${s.move ?? "—"}</span><b>${s.name}</b><span class="r">${s.result}</span><span class="q">${s.qualifier}</span></li>`).join("");
+document.getElementById("tags").innerHTML = S.map((s) => { const p = g.toScreen(g.anchors[s.slug]); const off = !ON_BOARD.includes(s.slug);
+  return `<div class="tag${s.slug === focus ? " on" : ""}" style="left:${p.x}px;top:${p.y + 6}px">${s.move ?? "no move yet"}</div>` + (off ? `<div class="aside" style="left:${p.x}px;top:${p.y + 24}px">${s.move ? "another game" : ""}</div>` : ""); }).join("");
+seam({ at: .015, tilt: 0, under: true });
+done(g.r, g.scene, g.cam);
+</script></body></html>

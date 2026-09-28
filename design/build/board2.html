@@ -1,0 +1,65 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gate: the second board</title><link rel="stylesheet" href="/design/keyframes/_shared/fonts.css">
+<style>* { box-sizing: border-box; margin: 0; padding: 0; } body { font-family: "Archivo", sans-serif; background: #1b1b1a; color: #f3f3f1; padding: 48px 48px 120px; }
+h1 { font-size: 44px; font-weight: 900; font-variation-settings: "wdth" 112; letter-spacing: -.03em; } .lede { margin-top: 10px; color: #a9a59c; max-width: 84ch; line-height: 1.5; }
+code { font-family: "JetBrains Mono", monospace; font-size: .92em; color: #e8a33d; }
+section { margin-top: 56px; } h2 { font-size: 26px; font-weight: 800; letter-spacing: -.02em; } h3 { font-size: 17px; font-weight: 700; margin-top: 26px; } .n { font-family: "JetBrains Mono", monospace; font-size: 13px; color: #e8a33d; }
+.note { margin-top: 8px; color: #b9b5ad; font-size: 14px; max-width: 92ch; line-height: 1.5; }
+.pair { display: grid; grid-template-columns: minmax(0, 1fr) 230px; gap: 12px; margin-top: 12px; max-width: 1400px; align-items: start; }
+figure { font: 11px "JetBrains Mono", monospace; color: #77726a; } figure img { display: block; width: 100%; border-radius: 6px; margin-bottom: 4px; background: #000; }
+.wide { margin-top: 12px; max-width: 1400px; } .shots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; max-width: 1400px; } .shots.m { grid-template-columns: repeat(3, 180px); }
+table { margin-top: 14px; border-collapse: collapse; font-size: 14px; max-width: 1240px; } td { text-align: left; vertical-align: top; padding: 8px 18px 8px 0; border-top: 1px solid #333; line-height: 1.45; } td:first-child { color: #e8a33d; font: 12px "JetBrains Mono", monospace; padding-top: 10px; white-space: nowrap; }
+ol.q { margin: 12px 0 0 20px; max-width: 92ch; line-height: 1.55; color: #d8d4cc; font-size: 15px; } ol.q li { margin-top: 10px; } ol.q b { color: #f3f3f1; }
+@media (max-width: 700px) { body { padding: 24px 16px 80px; } h1 { font-size: 32px; } .pair, .shots, .shots.m { grid-template-columns: minmax(0, 1fr); } td:first-child { white-space: normal; } }</style>
+<script>if (location.protocol === "file:") addEventListener("DOMContentLoaded", () => { document.body.innerHTML = '<div style="font:16px/1.5 system-ui;padding:48px;max-width:60ch">This page needs the local server. From the portfolio folder run <code>python3 design/serve.py</code>, then open <a href="http://127.0.0.1:4173/design/build/board2.html">http://127.0.0.1:4173/design/build/board2.html</a>.</div>'; });</script></head><body>
+<h1>The step 4a answers, and the second board</h1>
+<p class="lede">Answers 1, 3 and 4 are built (commit <code>4f36f7f</code>). Answer 2, the seven other projects as new pieces on a different board, is designed here as three comps, and nothing of it is built. The positions on every board were checked in the site's own engine (<code>src/lib/chess/engine.ts</code>).</p>
+
+<section><div class="n">Answer 1</div><h2>Work to a project: the rest is cut on landing</h2>
+<p class="note">Only for Work to a project. The bishop stays where it is; the plinth and the light change in one frame, when the seam lands. Every other pair still lifts what is left. Frames at 0 to 3.6 s, FaultLine.</p>
+<figure class="wide"><img src="board2/cut-strip.webp" alt="Fifteen frames of Work to FaultLine">0.00, 0.15, 0.30 … 3.60 s</figure></section>
+
+<section><div class="n">Answer 3</div><h2>The product, near the end of each case study</h2>
+<p class="note">A new section before the links, captioned. Tall screens sit side by side, wide ones take the full width. The heading "The product" is new copy (question 6).</p>
+<div class="shots"><figure><img src="board2/circuitmindai-1440.webp" alt="">CircuitMindAI, 1440</figure><figure><img src="board2/faultline-1440.webp" alt="">FaultLine, 1440</figure><figure><img src="board2/gemini-teleportal-1440.webp" alt="">Teleportal, 1440</figure></div>
+<div class="shots m"><figure><img src="board2/circuitmindai-390.webp" alt="">390</figure><figure><img src="board2/faultline-390.webp" alt="">390</figure><figure><img src="board2/gemini-teleportal-390.webp" alt="">390</figure></div></section>
+
+<section><div class="n">Answer 4</div><h2>Annotations</h2>
+<p class="note">The FaultLine and Teleportal drafts are gone from the pages and from <code>content/voice.md</code>. CircuitMindAI's decision now reads "Vision on the board and voice for the operator; results are cached locally …". Its annotation, in your words, is the only one left (question 5).</p></section>
+
+<section><div class="n">Answer 2</div><h2>Seven new pieces</h2>
+<p class="note">Each piece is its project's move in the career game, and each material argues for the project, without reusing the featured three's porcelain, aluminium, basalt or copper.</p>
+<figure class="wide"><img src="board2/lineup.webp" alt="The seven pieces in a row"></figure>
+<table>
+<tr><td>1…Nf6</td><td><b>Financial Risk Predictor</b>: a cast bronze knight. Alekhine's Defence, another game, so it stands off the board.</td></tr>
+<tr><td>2…d5</td><td><b>Distributed Lead Scorer</b>: an ivory pawn cut into thirty slices, each carrying its share. The Elephant Gambit.</td></tr>
+<tr><td>4…Nf6</td><td><b>MirrorFi</b>: a mirror-polished knight; it shows the room back to itself (question 7).</td></tr>
+<tr><td>5. d4</td><td><b>Veridian</b>: a pawn in pale ash. Measured emissions, grown material.</td></tr>
+<tr><td>5…Bb6</td><td><b>SLM Distillation Engine</b>: a glass bishop with a small ivory bishop inside it, 70B around 3B.</td></tr>
+<tr><td>5…d6</td><td><b>Multi-Agent GraphRAG</b>: a pawn drawn as a graph, brass edges between nodes on its surface. The "?" move.</td></tr>
+<tr><td>none</td><td><b>RexCheck</b>: an obsidian king. It has no move yet, and "rex" is the king (question 8).</td></tr>
+</table></section>
+
+<section><div class="n">Comp A</div><h2>Every other line, on one board</h2>
+<p class="note">A walnut board after 5. d4, with every sideline's move laid on it at once, highlighted as it would be in an analysis program. The scoresheet on the left is the list; hovering a row lifts its piece. The two with no place on this board, Alekhine's Defence and RexCheck, stand aside behind rank 8. The seam sits at the far left edge, as on Work.</p>
+<div class="pair"><figure><img src="board2/side-a.webp" alt="">1440×900</figure><figure><img src="board2/side-a-m.webp" alt="">390×844</figure></div></section>
+
+<section><div class="n">Comp B</div><h2>A simul: seven boards down one table</h2>
+<p class="note">Each project gets its own board, in its own position, lit where its piece stands; the rest of each set is plain and dark. Scrolling walks the camera along the table and each board's card comes up as it reaches the front. On the phone the table runs away from you and the nearest board is captioned.</p>
+<div class="pair"><figure><img src="board2/side-b.webp" alt="">1440×900</figure><figure><img src="board2/side-b-m.webp" alt="">390×844</figure></div></section>
+
+<section><div class="n">Comp C</div><h2>The analysis page</h2>
+<p class="note">Comp A's layout, on the paper side: the board is a printed diagram (hatched dark squares, coordinates, ink arrows for each move) with only the seven pieces standing on it. The row being read turns its arrow amber. The paper floods, as on Roles: this is the day side of the same idea.</p>
+<div class="pair"><figure><img src="board2/side-c.webp" alt="">1440×900</figure><figure><img src="board2/side-c-m.webp" alt="">390×844</figure></div></section>
+
+<section><div class="n">Questions for the owner</div><h2>Before anything is built</h2>
+<ol class="q">
+<li><b>Which comp:</b> A (one walnut board), B (the simul) or C (the printed analysis)? Or parts of more than one.</li>
+<li><b>Where it lives:</b> below the three featured projects on /work (the old <code>/archive</code> redirect already points to <code>/work#archive</code>), or a second room of its own?</li>
+<li><b>The title:</b> "Other lines" is my draft and is not in content.json. content.json calls these projects the "archive" group. Keep the draft, use "Archive", or give me yours.</li>
+<li><b>Clicking a piece:</b> does each of the seven open its own page (as the featured three do), or show its card in place?</li>
+<li><b>CircuitMindAI's annotation:</b> it is the only annotation left. Keep it alone, or drop it too?</li>
+<li><b>"The product":</b> the new heading for the screenshot section. Keep it, or change it?</li>
+<li><b>MirrorFi's chrome</b> is close to Teleportal's brushed aluminium. Keep it, or change it (for example to black glass, which also reflects)?</li>
+<li><b>RexCheck as a king</b> with no move yet. Is that the right reading?</li>
+</ol></section>
+</body></html>

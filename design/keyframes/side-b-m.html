@@ -1,0 +1,32 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Other lines B: the simul (phone)</title>
+<link rel="stylesheet" href="_shared/tokens.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>
+  body { background: var(--gallery); }
+  .ttl { position: absolute; left: 18px; top: 72px; font-size: 14vw; color: #ece6da; }
+  .lab { position: absolute; text-align: left; white-space: nowrap; }
+  .lab .mv { font: 11px var(--font-mono); color: #8c877e; } .lab b { display: block; margin-top: 3px; font-size: 14px; font-weight: 600; color: #ece6da; }
+  .lab .r { display: block; margin-top: 2px; font-size: 12px; color: #c9c2b5; } .lab .q { display: block; margin-top: 1px; font-size: 10px; color: #77726a; }
+  .lab.on .mv { color: var(--move); } .lab.on b { color: #fff; }
+  .lab b { font-size: 18px !important; } .lab .r { font-size: 14px !important; } .lab .q { font-size: 11px !important; }
+  .cap { position: absolute; left: 0; right: 0; bottom: 0; height: 190px; background: linear-gradient(rgb(9 9 10 / 0), rgb(9 9 10 / .92) 60%); }
+</style></head><body>
+<div class="frame"><canvas id="c"></canvas><div id="ink">
+  <nav class="nav"><span>Roles</span><span aria-current="page">Work</span><span>Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
+  <div class="ttl display" id="ttl">Other lines</div><div id="labs"></div>
+</div></div>
+<script type="module">
+import { seam } from "./_shared/seam.js"; import { done } from "./_shared/chess3d.js";
+import { simul } from "./_shared/sideboard.js"; import { copy, moveTag } from "./_shared/sideline-copy.js";
+await document.fonts.ready;
+const S = await copy(), focus = "financial-risk-predictor";
+// on a phone the row recedes up the screen: the nearest board at the bottom
+const grid = [0, 1, 2, 3, 4, 5, 6].map((i) => [0, -i]);
+const g = simul(document.getElementById("c"), { grid, gap: 10.4, cam: { pos: [6.5, 15, 13.5], look: [-1.2, 0, -16], fov: 50 } });
+// the labels of boards further down the row wait until the walk along the table reaches them
+// on a phone one caption, for the board nearest the eye; it changes as the walk moves along the row
+const f = S.find((x) => x.slug === focus);
+document.getElementById("labs").innerHTML = `<div class="cap"></div><div class="lab on" style="left:20px;bottom:28px"><span class="mv">${moveTag(f)}</span><b>${f.name}</b><span class="r">${f.result}</span><span class="q">${f.qualifier}</span></div>`;
+seam({ at: 0, dir: "h", under: true });
+done(g.r, g.scene, g.cam);
+</script></body></html>

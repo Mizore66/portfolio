@@ -1,0 +1,33 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Other lines C: the analysis, by day</title>
+<link rel="stylesheet" href="_shared/tokens.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>
+  body { background: var(--paper); }
+  #ink { color: var(--ink); }
+  .ttl { position: absolute; left: 64px; top: 128px; font-size: 7.2vw; color: var(--ink); }
+  .sheet { position: absolute; left: 66px; top: 300px; width: 400px; list-style: none; }
+  .sheet li { display: grid; grid-template-columns: 70px 1fr; gap: 0 14px; padding: 13px 0; border-top: 1px solid #d9d7d0; }
+  .sheet .mv { font: 13px var(--font-mono); color: var(--pencil); padding-top: 2px; }
+  .sheet b { font-size: 16px; font-weight: 600; color: var(--ink); }
+  .sheet .r { grid-column: 2; margin-top: 3px; font-size: 14px; color: #3a3733; } .sheet .q { grid-column: 2; margin-top: 2px; font-size: 12px; color: #6d6860; }
+  .sheet li.on .mv { color: #a86a14; }
+  .tag { position: absolute; transform: translateX(-50%); font: 12px var(--font-mono); color: #3a3733; white-space: nowrap; }
+  .tag.on { color: #a86a14; }
+  .aside { position: absolute; transform: translateX(-50%); font: 11px var(--font-mono); color: #6d6860; white-space: nowrap; text-align: center; }
+</style></head><body>
+<div class="frame"><canvas id="c"></canvas><div id="ink">
+  <nav class="nav"><span>Roles</span><span aria-current="page">Work</span><span>Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
+  <div class="ttl display">Other lines</div><ol class="sheet" id="sheet"></ol><div id="tags"></div>
+</div></div>
+<script type="module">
+import { seam } from "./_shared/seam.js"; import { done } from "./_shared/chess3d.js";
+import { analysis as sideBoard, ON_BOARD } from "./_shared/sideboard.js"; import { copy, moveTag } from "./_shared/sideline-copy.js";
+await document.fonts.ready;
+const S = await copy(), focus = "slm-distillation-engine";
+const g = sideBoard(document.getElementById("c"), { focus, cam: { pos: [3.4, 12.4, 10.2], look: [-.4, 0, -1.3], fov: 33, offset: [-innerWidth * .2, innerHeight * .01] } });
+document.getElementById("sheet").innerHTML = S.map((s) => `<li class="${s.slug === focus ? "on" : ""}"><span class="mv">${s.move ?? "—"}</span><b>${s.name}</b><span class="r">${s.result}</span><span class="q">${s.qualifier}</span></li>`).join("");
+document.getElementById("tags").innerHTML = S.map((s) => { const p = g.toScreen(g.anchors[s.slug]); const off = !ON_BOARD.includes(s.slug);
+  return `<div class="tag${s.slug === focus ? " on" : ""}" style="left:${p.x}px;top:${p.y + 6}px">${s.move ?? "no move yet"}</div>` + (off ? `<div class="aside" style="left:${p.x}px;top:${p.y + 24}px">${s.move ? "another game" : ""}</div>` : ""); }).join("");
+seam({ at: 1, tilt: 0 }); // by day: the paper floods
+done(g.r, g.scene, g.cam);
+</script></body></html>
