@@ -17,10 +17,17 @@ const seam = (page: Page) => page.locator(".hero").evaluate((e) => parseFloat(ge
 
 test.describe("hero", () => {
   test("plays the opening and comes to rest on the seam", async ({ page }) => {
+    test.setTimeout(60_000);
     const errors = watchErrors(page);
+    // record every state the hero passes through: CPU-rendered WebGL can stall the page past a short one
+    await page.addInitScript(() => {
+      const seen: string[] = ((window as unknown as { __intro: string[] }).__intro = []);
+      new MutationObserver(() => { const v = document.querySelector(".hero")?.getAttribute("data-intro"); if (v && seen.at(-1) !== v) seen.push(v); })
+        .observe(document, { subtree: true, attributes: true, attributeFilter: ["data-intro"], childList: true });
+    });
     await page.goto("/");
-    await expect(page.locator(".hero")).toHaveAttribute("data-intro", "play", { timeout: 15_000 });
-    await expect(page.locator(".hero")).toHaveAttribute("data-intro", "done", { timeout: 30_000 });
+    await expect(page.locator(".hero")).toHaveAttribute("data-intro", "done", { timeout: 45_000 });
+    expect(await page.evaluate(() => (window as unknown as { __intro: string[] }).__intro)).toContain("play");
     expect(await seam(page)).toBe(SEAM);
     expect(await page.evaluate(() => sessionStorage.getItem("hero-opening-seen"))).toBe("1");
     expect(errors).toEqual([]);

@@ -42,6 +42,6 @@ test.describe("résumé mode", () => {
 
   test("every page links to it", async ({ page }) => {
     await page.goto("/");
-    await expect(page.locator('a.resume-link[href="/resume"]')).toBeVisible();
+    await expect(page.locator('.chrome [data-layer=ink] a.resume-link[href="/resume"]')).toBeVisible();
   });
 });

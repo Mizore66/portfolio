@@ -3,6 +3,8 @@ import { SECURITY_HEADERS } from "./src/lib/security-headers";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
+  // Page changes are the seam sweeping away a view-transition snapshot (src/lib/seam/sweep.ts).
+  experimental: { viewTransition: true },
   async headers() {
     return [{ source: "/:path*", headers: SECURITY_HEADERS }];
   },

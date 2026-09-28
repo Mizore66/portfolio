@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import { Analytics } from "@vercel/analytics/next";
 import { content } from "@/content/site";
 import { SITE_URL } from "@/lib/site";
+import { Shell } from "@/components/shell/Shell";
 import "./globals.css";
 
 // Self-hosted subsets of the official variable fonts (SIL OFL 1.1, see /licenses).
@@ -32,7 +33,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en-GB" className={`${archivo.variable} ${jetbrains.variable}`}>
       <body>
-        {children}
+        <Shell>{children}</Shell>
         {process.env.VERCEL ? <Analytics /> : null}
       </body>
     </html>

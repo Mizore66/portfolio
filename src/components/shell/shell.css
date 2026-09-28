@@ -1,0 +1,76 @@
+/* The site frame. --seam and --seam-o are the live seam (src/lib/seam/seam.ts). */
+.site { position: relative; min-height: 100vh; }
+
+/* The two sides, for any full-viewport layer. On phones the seam is horizontal: white on top. */
+.seam-dark { clip-path: polygon(calc(var(--seam) - var(--seam-o)) 0, calc(100% + 400px) 0, calc(100% + 400px) 100%, calc(var(--seam) + var(--seam-o)) 100%); }
+@media (max-width: 600px) {
+  .seam-dark { clip-path: polygon(0 calc(var(--seam) - var(--seam-o)), 100% calc(var(--seam) + var(--seam-o)), 100% calc(100% + 400px), 0 calc(100% + 400px)); }
+}
+
+/* Chrome: the nav in ink, and again in paper on the dark side. */
+.chrome-frame { position: fixed; inset: 0; z-index: 40; pointer-events: none; }
+.chrome-layer { position: absolute; inset: 0; pointer-events: none; --fg: var(--ink); color: var(--fg); }
+.chrome-layer[data-layer="inv"] { --fg: var(--paper); }
+.chrome-layer[data-layer="inv"] { clip-path: polygon(calc(var(--seam) - var(--seam-o)) 0, calc(100% + 400px) 0, calc(100% + 400px) 100%, calc(var(--seam) + var(--seam-o)) 100%); }
+.chrome .nav { position: absolute; top: 40px; left: 48px; display: flex; gap: 28px; font-size: 14px; font-weight: 500; list-style: none; pointer-events: auto; }
+.chrome .nav a { position: relative; text-decoration: none; display: inline-block; padding-bottom: 3px; }
+/* the underline moves at once: the old one shrinks as the new one grows (150 ms) */
+.chrome .nav a::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 1.5px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform .15s cubic-bezier(.16, .84, .3, 1); }
+.chrome .nav a:hover::after, .chrome .nav a[aria-current="page"]::after { transform: scaleX(1); }
+.chrome .skip { pointer-events: auto; }
+/* inside the chrome the résumé link inverts with the seam, like the nav, instead of blending */
+.chrome .resume-link { position: absolute; z-index: auto; mix-blend-mode: normal; color: var(--fg); pointer-events: auto; }
+@media (max-width: 600px) {
+  .chrome-layer[data-layer="inv"] { clip-path: polygon(0 calc(var(--seam) - var(--seam-o)), 100% calc(var(--seam) + var(--seam-o)), 100% calc(100% + 400px), 0 calc(100% + 400px)); }
+  .chrome .nav { top: 24px; left: 20px; gap: 16px; font-size: 13px; }
+}
+/* the hero's loader holds the nav back until the name has arrived */
+.site:has(.hero[data-intro="pending"]) .chrome .nav { visibility: hidden; }
+
+/* The cursor: the legal-move dot, then the capture ring. */
+html.has-cursor, html.has-cursor * { cursor: none; }
+html.has-cursor :is(p, li, dd, blockquote):not(nav *), html.has-cursor :is(p, li, dd, blockquote):not(nav *) * { cursor: auto; }
+.cursor { position: fixed; left: 0; top: 0; z-index: 60; pointer-events: none; width: 0; height: 0; }
+.cursor::before { content: ""; position: absolute; left: -4px; top: -4px; width: 8px; height: 8px; border-radius: 50%; background: var(--move); box-shadow: 0 0 0 0 var(--move); transition: transform .15s cubic-bezier(.16, .84, .3, 1), background-color .15s, box-shadow .15s; }
+.cursor[data-state="ring"]::before { transform: scale(3); background: transparent; box-shadow: inset 0 0 0 .5px var(--move); }
+.cursor[data-state="off"]::before { opacity: 0; }
+
+/* View transitions. The root is not captured, so the arriving page is live beneath the leaving snapshot;
+   the snapshot never takes the pointer. Every animation is scripted (sweep.ts): the defaults are off. */
+:root { view-transition-name: none; }
+::view-transition { pointer-events: none; }
+::view-transition-group(*), ::view-transition-image-pair(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none; }
+::view-transition-group(.vt-line) { overflow: clip; }
+/* The chrome and the cursor are named so they paint above the leaving snapshot. Their old image stays up
+   until the sweep starts (it covers a slow commit), then only the live image shows (sweep.ts). */
+.chrome-frame { view-transition-name: chrome; }
+.cursor { view-transition-name: cursor; }
+
+/* Rooms not yet built (Phase 5, step 4): the resting seam, the title, and a note. */
+.room { position: relative; height: 100vh; height: 100dvh; min-height: 520px; overflow: hidden; background: var(--paper); }
+/* at rest the dark side is laid out, not clipped, so audits see the real background; it tilts only while moving */
+.room-dark { position: absolute; inset: 0 0 0 var(--seam); background: var(--dark); }
+.site[data-seam-moving] .room-dark { inset: 0; }
+.site:not([data-seam-moving]) .room-dark { clip-path: none; }
+.room-layer { position: absolute; inset: 0; --fg: var(--ink); --fg2: var(--pencil); color: var(--fg); }
+.room-layer[data-layer="inv"] { --fg: var(--paper); --fg2: #b9b5ad; pointer-events: none; }
+.room .ln { display: block; overflow: hidden; padding-bottom: .16em; margin-bottom: -.16em; }
+.room .ln > span { display: block; }
+.room-title { position: absolute; font-size: 12vw; }
+.room-note { position: absolute; font-size: 13px; color: var(--fg2); max-width: 36ch; line-height: 1.5; }
+.room[data-room="work"] .room-title { left: 4.2vw; top: 16vh; }
+.room[data-room="work"] .room-note { left: 4.4vw; bottom: 6.8vh; }
+.room[data-room="roles"] .room-title { left: 4.2vw; top: 16vh; }
+.room[data-room="roles"] .room-note { left: 4.4vw; bottom: 6.8vh; }
+.room[data-room="lab"] .room-title { left: 3.2vw; top: 15vh; font-size: 9vw; }
+.room[data-room="lab"] .room-note { left: calc(30.5% + 24px); bottom: 6.8vh; }
+.room[data-room="contact"] .room-title { left: 4.2vw; top: 16vh; }
+.room[data-room="contact"] .room-note { left: calc(55.9% + 24px); bottom: 6.8vh; }
+@media (max-width: 600px) {
+  .room-dark { inset: var(--seam) 0 0 0; }
+  .site[data-seam-moving] .room-dark { inset: 0; }
+  .room-title { font-size: 21vw; }
+  .room .room-title, .room[data-room] .room-title { left: 18px; top: 92px; }
+  .room[data-room="lab"] .room-title { font-size: 17vw; }
+  .room .room-note, .room[data-room] .room-note { left: 20px; bottom: 26px; font-size: 12px; max-width: calc(100% - 40px); }
+}
