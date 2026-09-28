@@ -1,0 +1,52 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><title>Gate 5: the hero, built</title><link rel="stylesheet" href="/design/keyframes/_shared/fonts.css">
+<style>* { box-sizing: border-box; margin: 0; padding: 0; } body { font-family: "Archivo", sans-serif; background: #1b1b1a; color: #f3f3f1; padding: 48px 48px 120px; }
+h1 { font-size: 44px; font-weight: 900; font-variation-settings: "wdth" 112; letter-spacing: -.03em; } .lede { margin-top: 10px; color: #a9a59c; max-width: 80ch; line-height: 1.5; }
+code { font-family: "JetBrains Mono", monospace; font-size: .92em; color: #e8a33d; }
+section { margin-top: 56px; } h2 { font-size: 26px; font-weight: 800; letter-spacing: -.02em; } .n { font-family: "JetBrains Mono", monospace; font-size: 13px; color: #e8a33d; }
+.note { margin-top: 8px; color: #b9b5ad; font-size: 14px; max-width: 90ch; line-height: 1.5; }
+table { margin-top: 14px; border-collapse: collapse; font-size: 14px; max-width: 1200px; } td, th { text-align: left; vertical-align: top; padding: 8px 18px 8px 0; border-top: 1px solid #333; line-height: 1.45; } th { font: 11px "JetBrains Mono", monospace; color: #77726a; font-weight: 400; } td:first-child { white-space: nowrap; color: #e8a33d; font: 12px "JetBrains Mono", monospace; padding-top: 10px; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin-top: 14px; max-width: 1400px; } .two.m { grid-template-columns: repeat(2, 200px); }
+figure { font: 11px "JetBrains Mono", monospace; color: #77726a; } figure img, figure video { display: block; width: 100%; border-radius: 6px; margin-bottom: 4px; background: #000; }
+.row { display: grid; grid-template-columns: 70px minmax(0, 1fr) minmax(0, 1fr) 150px 150px 70px; gap: 10px; align-items: center; margin-top: 10px; max-width: 1400px; } .row .t { font: 12px "JetBrains Mono", monospace; color: #e8a33d; } .row .d { font: 12px "JetBrains Mono", monospace; color: #b9b5ad; }
+.row img { display: block; width: 100%; border-radius: 4px; } .head { font: 11px "JetBrains Mono", monospace; color: #77726a; }
+.vids { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 14px; margin-top: 14px; max-width: 1200px; align-items: start; }</style>
+<script>if (location.protocol === "file:") addEventListener("DOMContentLoaded", () => { document.body.innerHTML = '<div style="font:16px/1.5 system-ui;padding:48px;max-width:60ch">This page needs the local server. From the portfolio folder run <code>python3 design/serve.py</code>, then open <a href="http://127.0.0.1:4173/design/build/hero.html">http://127.0.0.1:4173/design/build/hero.html</a>.</div>'; });</script></head><body>
+<h1>Gate 5: the hero, built</h1>
+<p class="lede">Phase 5, step 2. The exploding-board opening from <code>design/motion/hero-3d.html</code>, built into the site (<code>src/components/hero/</code>). Below: the approved key frame against the built end state, then the prototype and the build at the same instants, with the share of pixels that differ. All frames are captured frame by frame from the live pages at 1440×900 and 390×844.</p>
+
+<section><div class="n">Differences</div><h2>Everything that differs from the approved prototype</h2>
+<table>
+<tr><th>What</th><th>Prototype</th><th>Build</th><th>Why</th></tr>
+<tr><td>type rendering</td><td>the full Archivo and JetBrains Mono files</td><td>the self-hosted woff2 subsets</td><td>Same fonts, same positions (every box matches to 0.01 px). Glyph edges rasterise about 1 px differently. This is almost all of the 0.7% after 5 s.</td></tr>
+<tr><td>shadow maps</td><td>4096 px</td><td>2048 px</td><td>A quarter of the GPU memory; the shadows on the board are indistinguishable at both sizes (0.02-0.07% before the blast).</td></tr>
+<tr><td>nav</td><td>text</td><td>real links to <code>/roles</code>, <code>/work</code>, <code>/lab</code>, <code>/contact</code></td><td>The pages behind them come in step 4; until then they 404.</td></tr>
+<tr><td>"Sound off"</td><td>working toggle</td><td>a static label</td><td>The toggle and the four cues arrive in step 5 with the loader polish.</td></tr>
+<tr><td>quality stepping</td><td>none</td><td>new</td><td>From the brief (≥ 45 fps on a mid-range phone). If the opening runs under 45 fps, the resolution steps down 2 → 1.5 → 1. Below about 4 fps it skips to the end state instead of playing in slow motion. The idle bob stops on a still frame where a frame takes over 250 ms.</td></tr>
+<tr><td>plays once</td><td>every load</td><td>once per session</td><td>As in <code>design/motion.md</code>: later visits in the same session, reduced motion, no WebGL and no JavaScript all show the end state at once.</td></tr>
+</table></section>
+
+<section><div class="n">Key frame</div><h2>The approved key frame (hero-a) against the built end state</h2>
+<div class="two"><figure><img src="hero/key.png">key frame, hero-a</figure><figure><img src="hero/build-7.7.png">build at 7.7 s</figure></div>
+<div class="two m"><figure><img src="hero/key-m.png">key frame, hero-a-m</figure><figure><img src="hero/build-m-7.7.png">build at 7.7 s</figure></div></section>
+
+<section><div class="n">Prototype and build</div><h2>The same instants, side by side</h2>
+<p class="note">Difference: the share of pixels where any channel differs by more than 40 of 255.</p>
+<div class="row head"><span>time</span><span>prototype, desktop</span><span>build, desktop</span><span>prototype, phone</span><span>build, phone</span><span>diff</span></div>
+<div id="rows"></div></section>
+
+<section><div class="n">Videos</div><h2>The build, frame by frame</h2>
+<div class="vids"><figure><video src="hero/build.webm" controls muted playsinline loop></video>desktop, 1440×900</figure><figure><video src="hero/build-m.webm" controls muted playsinline loop></video>phone, 390×844</figure></div>
+<p class="note">To see it at full speed, run <code>npm run dev</code> and open <a style="color:#f3f3f1" href="http://localhost:3000/">localhost:3000</a>. It plays once per session: open a new tab, or clear session storage, to replay it.</p></section>
+
+<section><div class="n">Checks</div><h2>What was verified</h2>
+<table>
+<tr><td>text clashes</td><td>None at 1440×900 and 390×844 across 9 instants, or at 1024×768 and 360×640 in the end state.</td></tr>
+<tr><td>production build</td><td>No CSP errors; the hero hydrates under the nonce. Fast 4G: first paint 0.29 s; the opening starts at 1.2 s on a laptop and 2.3 s with the CPU slowed 4× (budget 2.5 s). JavaScript 316 KB.</td></tr>
+<tr><td>frame rate</td><td>Mac GPU, both sizes: median 8 ms a frame, 95th percentile 16 ms.</td></tr>
+<tr><td>tests</td><td><code>e2e/hero.spec.ts</code>: the opening plays and rests on the seam; it plays once per session; reduced motion shows the end state and passes axe with one heading and one navigation; without JavaScript the name, line and links show. 54 unit tests, 9 e2e tests pass.</td></tr>
+</table></section>
+
+<script type="module">
+const r = await (await fetch("hero/report.json")).json(), d = r.sizes["1440x900"].diff, dm = r.sizes["390x844"].diff;
+document.getElementById("rows").innerHTML = r.times.map((t, i) => `<div class="row"><span class="t">${t} s</span><img src="hero/proto-${t}.png"><img src="hero/build-${t}.png"><img src="hero/proto-m-${t}.png"><img src="hero/build-m-${t}.png"><span class="d">${d[i].toFixed(2)}%<br>${dm[i].toFixed(2)}%</span></div>`).join("");
+</script></body></html>
