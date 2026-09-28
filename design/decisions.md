@@ -112,4 +112,6 @@ The hero's swing uses the kept engine's evaluation after each ply of the line at
 - Gate C: the seam following the score after every game felt jittery. It now glides between checkpoints, the real running score after every 16th game.
 - Mobile: every prototype now has its phone composition, and all of them pass an automatic text-clash check every half second at both sizes (the hero every 0.1 s). The check found and fixed a skip link overlapping the hero sentence, and a stagger bug where the inverted copy of each letter moved late.
 
+**Owner direction, the signature moment (2026-09-28):** the round 1 loader was less exciting than the other pages. The new opening is a high-resolution 3D board: the game plays and tightens, the board explodes, the pieces float as the hero's background (after a Thorgal reference the owner supplied) and the name arrives. All other pages stay as they are. To keep them unchanged, the new hero ends exactly on hero-a: the paper sweeps in to 55.9% and the name crosses the seam over the floating field. Prototype: `design/motion/hero-3d.html`.
+
 **Waiting on Gate 3:** the owner approves the motion character, the loader and the signature moment, and answers the three questions at the end of `motion.md`.

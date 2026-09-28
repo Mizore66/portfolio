@@ -27,6 +27,8 @@ Stagger between letters is 28 ms; between lines, 60 to 80 ms; between list items
 
 ### What never happens
 
+(One exception, approved with the new hero: the floating pieces bob while the hero is on screen.)
+
 - No page fades out and back in. Every page change is the seam sweeping, so both states are on screen together.
 - No scroll-jacking. Chapters pin while their scene plays, but the scroll never stops answering the trackpad. Lenis smooths wheel input at `lerp .1`; touch scroll is native.
 - No looping idle animation except the contact caret and the running clock, both of which mean something.
@@ -65,7 +67,39 @@ Always in the top-right corner, from the loader's first frame. It is never anima
 
 ---
 
-## 1. Loader and signature moment *(prototype: `hero.html`)*
+## 1. Loader and signature moment: the board explodes *(prototype: `hero-3d.html`, owner's direction)*
+
+**Trigger:** first visit to any page. Later visits within the session open at the end state.
+
+| Time | What happens |
+|---|---|
+| 0 to 700 ms | Darkness (gallery black). "Résumé" top right, "Skip to résumé" bottom left. A spot finds a lit board: rounded maple and walnut tiles with a grain, a walnut frame, the Staunton set. Seen high and wide. **This is the loader.** |
+| 750 to 2,940 ms | **The game.** The real line plays, 20 plies, starting at 210 ms a move and getting 7% faster each move. The camera pushes in low toward g4 (`seam`) and the spot narrows. The two checks (8…Bb4+ and 9…Bxd2+) jolt the camera. Each move lifts and sets down; captured pieces are set beside the board. The ply is named in mono at the foot of the screen. |
+| 2,940 ms | 10…Bg4 lands. g4 flashes amber, the colour of the move being played. |
+| 3,330 ms | **The board detonates from g4.** A shockwave runs outward (28 ms per unit of distance): tiles, the eight frame parts, the pieces and the captured pieces are thrown up with spin, and the camera kicks back. |
+| 3.3 to 5.2 s | Everything slows into a hover (exponential ease-out, no overshoot) and the camera settles back on the floating field. The field is composed like the reference: big pieces cropped at the edges, middle pieces around the name, small pieces far off and faded by distance. |
+| 4,180 to 5,080 ms | The paper sweeps in from the left to 55.9% (`seam`). The white side shows the field lit by day; the black side shows it lit by night. |
+| 4,580 ms onward | "Anas Qumhiyeh" rises letter by letter, then the sentence, the eval label and the nav. The hero now matches hero-a exactly, so every transition out of it is unchanged. |
+| Idle | Each object bobs slowly (5 to 17 cm, periods of 14 to 30 s). This is the one idle motion on the site besides the caret and the clock. It pauses when the tab is hidden. |
+
+**Composition rules:**
+- No near or middle object may sit behind the name.
+- Nothing, at any depth, may sit behind small text: the nav, résumé, sentence, eval label or sound toggle.
+- Objects far enough away may pass behind the name, but fog fades them toward the background colour, so the name stays readable.
+
+**Loader limits:**
+- The first 700 ms is the loader. If the scene or fonts are not ready by then, the board holds in the spot.
+- The page proceeds by 2,500 ms regardless, with the fallback font if needed.
+- The skip link is live throughout.
+- The scene is procedural (lathe pieces, rounded boxes, drawn grain), so it downloads almost nothing beyond three.js.
+
+**Reduced motion:** the final floating composition as a still: no game, no blast, no bob.
+
+**Mobile:** the camera starts higher and pulls back further. The paper comes down from the top to 55.9%, as in hero-a-m. The keep-clear zones follow the phone layout.
+
+**Performance:** about 100 objects, drawn twice (day and night) only while something is moving; the idle bob drops to 30 fps. drei `PerformanceMonitor` halves shadow maps first.
+
+## 1a. Round 1 loader *(prototype: `hero.html`, replaced by 1)*
 
 **Trigger:** first visit to any page. On later visits within the session, the page opens directly at its end state.
 
