@@ -1,0 +1,40 @@
+import type { Metadata, Viewport } from "next";
+import localFont from "next/font/local";
+import { connection } from "next/server";
+import { Analytics } from "@vercel/analytics/next";
+import { content } from "@/content/site";
+import { SITE_URL } from "@/lib/site";
+import "./globals.css";
+
+// Self-hosted subsets of the official variable fonts (SIL OFL 1.1, see /licenses).
+const archivo = localFont({
+  src: [
+    { path: "./fonts/Archivo.woff2", weight: "100 900", style: "normal" },
+    { path: "./fonts/Archivo-Italic.woff2", weight: "100 900", style: "italic" },
+  ],
+  variable: "--font-archivo",
+  display: "swap",
+  declarations: [{ prop: "font-stretch", value: "62% 125%" }],
+});
+const jetbrains = localFont({ src: "./fonts/JetBrainsMono.woff2", weight: "100 800", variable: "--font-jetbrains", display: "swap" });
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: { default: content.metadata.siteTitle.replace(" — ", ", "), template: "%s · Anas Qumhiyeh" },
+  description: content.metadata.siteDescription,
+};
+
+export const viewport: Viewport = { themeColor: "#f3f3f1" };
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Every page carries a per-request CSP nonce (src/proxy.ts), which only dynamic rendering can apply.
+  await connection();
+  return (
+    <html lang="en-GB" className={`${archivo.variable} ${jetbrains.variable}`}>
+      <body>
+        {children}
+        {process.env.VERCEL ? <Analytics /> : null}
+      </body>
+    </html>
+  );
+}

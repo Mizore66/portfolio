@@ -8,7 +8,11 @@ const nextConfig: NextConfig = {
   },
   // Kept from v2 so old shared links still land. Revisit when the v3 routes exist.
   async redirects() {
-    return [{ source: "/archive", destination: "/work#archive", permanent: true }];
+    return [
+      { source: "/archive", destination: "/work#archive", permanent: true },
+      // v2 printed the résumé at /print-edition; résumé mode replaces it.
+      { source: "/print-edition", destination: "/resume", permanent: true },
+    ];
   },
 };
 

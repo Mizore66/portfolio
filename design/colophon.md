@@ -7,10 +7,10 @@ Recorded in Phase 4 for the site's colophon page. Each licence was checked in th
 | Font | Version | Licence | Source | Checked in |
 |---|---|---|---|---|
 | Archivo (variable, width 62–125, weight 100–900, roman and italic) | 2.001 | SIL Open Font License 1.1 | Omnibus-Type, github.com/Omnibus-Type/Archivo | the font's name table (copyright and licence URL); full text in `design/assets/licenses/Archivo-OFL.txt` |
-| JetBrains Mono (regular) | 2.211 | SIL Open Font License 1.1 | JetBrains, github.com/JetBrains/JetBrainsMono | the font's name table; full text in `design/assets/licenses/JetBrainsMono-OFL.txt` |
+| JetBrains Mono (variable, weight 100–800) | 2.305 | SIL Open Font License 1.1 | JetBrains, github.com/JetBrains/JetBrainsMono | the font's name table; full text in `design/assets/licenses/JetBrainsMono-OFL.txt` |
 
-- Both are self-hosted as `woff2` subsets (latin and latin-ext). The OFL allows this, provided the licence text travels with the fonts, so the build ships both OFL files next to them.
-- Neither font is renamed or modified, so the Reserved Font Name clause does not apply.
+- Both are self-hosted as `woff2` subsets built with fontTools from the official variable fonts (Latin, Latin Extended-A, punctuation, arrows and math signs, so `→`, `−` and `≈` render in the real font). The OFL allows this, provided the licence text travels with the fonts, so the build ships both OFL files next to them.
+- Subsetting counts as a modification under the OFL. Neither font declares a Reserved Font Name (checked in both licence headers), so the subsets may keep their original names.
 
 ## Code
 

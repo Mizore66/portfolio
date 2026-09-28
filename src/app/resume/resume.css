@@ -1,0 +1,81 @@
+/* Résumé mode: plain, fast, complete. No WebGL, no animation. Prints on A4 and US Letter. */
+.resume { --col: 148px; min-height: 100vh; padding: 0 6vw 96px; border-right: 22px solid var(--ink); }
+.resume .bar { display: flex; justify-content: space-between; align-items: center; padding: 40px 0 0; font-size: 14px; font-weight: 500; }
+.resume .back { text-decoration: none; }
+.resume .back::before { content: "← "; }
+.resume .back:hover, .resume .print-button:hover { text-decoration: underline; text-underline-offset: 4px; }
+.resume .print-button { font: inherit; background: none; border: 0; color: inherit; cursor: pointer; padding: 0; }
+.resume main { max-width: 860px; }
+.resume .head { padding: 72px 0 8px; }
+.resume h1 { font-size: clamp(44px, 7vw, 88px); }
+.resume .role { margin-top: 18px; font-size: 20px; font-weight: 600; letter-spacing: -.01em; }
+.resume .contact { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 20px; margin-top: 16px; font-size: 13px; }
+.resume .contact a { text-decoration: none; border-bottom: 1px solid var(--rule); }
+.resume .contact a:hover { border-color: var(--ink); }
+.resume .status { margin-top: 10px; font-size: 14px; color: var(--pencil); }
+.resume section { margin-top: 56px; }
+.resume h2 { font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--graphite); padding-bottom: 10px; border-bottom: 2px solid var(--ink); }
+.resume .summary { margin-top: 18px; font-size: 18px; line-height: 1.5; max-width: 62ch; }
+.resume .entry { display: grid; grid-template-columns: var(--col) minmax(0, 1fr); gap: 0 24px; padding: 22px 0; border-bottom: 1px solid var(--rule); break-inside: avoid; }
+.resume .when { font-size: 12px; color: var(--graphite); padding-top: 5px; }
+.resume h3 { font-size: 20px; font-weight: 700; letter-spacing: -.015em; }
+.resume .sub { margin-top: 2px; font-size: 15px; color: var(--pencil); }
+.resume .tech { margin-top: 6px; font-size: 12px; color: var(--graphite); }
+.resume .bullets { margin-top: 12px; padding-left: 1.1em; font-size: 15px; line-height: 1.5; }
+.resume .bullets li + li { margin-top: 4px; }
+.resume .purpose { margin-top: 10px; font-size: 15px; line-height: 1.5; max-width: 64ch; }
+.resume .results { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 12px; }
+.resume .results li { display: flex; align-items: baseline; gap: 8px; }
+.resume .figure { font-size: 15px; font-weight: 700; }
+.resume .qual { font-size: 11px; color: var(--graphite); }
+.resume .link { margin-top: 10px; font-size: 12px; color: var(--graphite); }
+.resume .link a { text-decoration: none; border-bottom: 1px solid var(--rule); }
+.resume .note { margin-top: 14px; font-size: 13px; line-height: 1.5; color: var(--pencil); max-width: 72ch; }
+.resume .plain { list-style: none; margin-top: 16px; font-size: 15px; line-height: 1.8; }
+.resume .skills { margin-top: 12px; }
+.resume .skills div { display: grid; grid-template-columns: var(--col) minmax(0, 1fr); gap: 0 24px; padding: 8px 0; border-bottom: 1px solid var(--rule); }
+.resume .skills dt { font-size: 12px; color: var(--graphite); padding-top: 3px; }
+.resume .skills dd { font-size: 15px; line-height: 1.5; }
+.resume .foot { margin-top: 48px; font-size: 12px; color: var(--graphite); }
+
+@media (max-width: 640px) {
+  .resume { padding: 0 20px 64px; border-right-width: 10px; }
+  .resume .bar { padding-top: 24px; font-size: 13px; }
+  .resume .head { padding-top: 48px; }
+  .resume .entry, .resume .skills div { grid-template-columns: 1fr; }
+  .resume .when { padding: 0 0 6px; }
+}
+
+@page { margin: 14mm 14mm 16mm; }
+@media print {
+  body { background: #fff; }
+  .resume { padding: 0; border: 0; min-height: 0; font-size: 10pt; }
+  .resume .bar, .resume .skip { display: none; }
+  .resume main { max-width: none; }
+  .resume .head { padding-top: 0; }
+  .resume h1 { font-size: 30pt; }
+  .resume .role { font-size: 12pt; margin-top: 8pt; }
+  .resume .contact { font-size: 8.5pt; margin-top: 8pt; }
+  .resume .contact a, .resume .link a { border: 0; }
+  .resume .status { font-size: 9pt; }
+  .resume section { margin-top: 11pt; }
+  .resume h2 { font-size: 7.5pt; padding-bottom: 4pt; border-bottom-width: 1.5pt; }
+  .resume .summary { font-size: 10pt; margin-top: 8pt; }
+  .resume .entry { --col: 24mm; padding: 5pt 0; gap: 0 5mm; break-inside: auto; }
+  .resume .entry h3, .resume .entry .sub, .resume .entry .tech { break-after: avoid; }
+  .resume .bullets li, .resume .results li { break-inside: avoid; }
+  .resume .bullets, .resume .purpose, .resume .note, .resume .skills dd, .resume .summary { line-height: 1.35; }
+  .resume .bullets li + li { margin-top: 1pt; }
+  .resume .results { gap: 2pt 14pt; }
+  .resume p { orphans: 3; widows: 3; }
+  .resume .summary, .resume .purpose, .resume .note { max-width: none; }
+  .resume h2 { break-after: avoid; }
+  .resume .results, .resume .link { break-before: avoid; }
+  .resume .when, .resume .tech, .resume .link, .resume .qual { font-size: 7.5pt; }
+  .resume h3 { font-size: 11pt; }
+  .resume .sub, .resume .bullets, .resume .purpose, .resume .figure, .resume .plain, .resume .skills dd { font-size: 9pt; }
+  .resume .bullets, .resume .purpose, .resume .results { margin-top: 4pt; }
+  .resume .note, .resume .foot { font-size: 8pt; }
+  .resume .skills div { --col: 24mm; padding: 2.5pt 0; }
+  .resume .plain { line-height: 1.5; margin-top: 6pt; }
+}

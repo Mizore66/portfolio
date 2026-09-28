@@ -1,0 +1,34 @@
+/* Design tokens, from the approved key frames (design/keyframes/_shared/tokens.css). */
+:root {
+  --paper: #f3f3f1;
+  --ink: #0d0d0c;
+  --pencil: #57534c;
+  --graphite: #6d6860; /* 4.97:1 on paper; the key frames used #77726a (4.3:1), below AA for small text */
+  --rule: #d9d7d0;
+  --gallery: #09090a;
+  --gallery-text: #ece6da;
+  --gallery-dim: #8c877e;
+  --search: #0b0e14;
+  --move: #e8a33d;
+  --font-display: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, Menlo, monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body { background: var(--paper); color: var(--ink); font-family: var(--font-display); font-variation-settings: "wdth" 100; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--move); outline-offset: 3px; }
+
+.mono { font-family: var(--font-mono); letter-spacing: 0; }
+.display { font-weight: 900; font-variation-settings: "wdth" 112; line-height: .86; letter-spacing: -.035em; }
+
+/* The résumé link: same corner on every screen. */
+.resume-link { position: fixed; top: 40px; right: 48px; z-index: 50; font-size: 14px; font-weight: 500; text-decoration: none; mix-blend-mode: difference; color: #fff; }
+.resume-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+@media (max-width: 600px) { .resume-link { top: 24px; right: 20px; font-size: 13px; } }
+
+.skip { position: absolute; left: -9999px; top: 0; }
+.skip:focus { left: 16px; top: 16px; z-index: 100; background: var(--ink); color: var(--paper); padding: 8px 12px; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
