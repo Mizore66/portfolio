@@ -114,4 +114,4 @@ The hero's swing uses the kept engine's evaluation after each ply of the line at
 
 **Owner direction, the signature moment (2026-09-28):** the round 1 loader was less exciting than the other pages. The new opening is a high-resolution 3D board: the game plays and tightens, the board explodes, the pieces float as the hero's background (after a Thorgal reference the owner supplied) and the name arrives. All other pages stay as they are. To keep them unchanged, the new hero ends exactly on hero-a: the paper sweeps in to 55.9% and the name crosses the seam over the floating field. Prototype: `design/motion/hero-3d.html`.
 
-**Waiting on Gate 3:** the owner approves the motion character, the loader and the signature moment, and answers the three questions at the end of `motion.md`.
+**Gate 3 approved (2026-09-28).** The owner approved the motion character, including the new loader and signature moment (the exploding board) and every other prototype. Sound is decided in Phase 4. Phase 4 (asset production) starts only on the owner's go-ahead.

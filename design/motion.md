@@ -288,8 +288,10 @@ Every prototype has its phone composition at 390 × 844, and every frame at both
 
 Every motion above has a still or a cut, and nothing breaks: the site becomes its key frames. The prototypes show this with `?reduced`, for example `hero.html?reduced`.
 
-## For the owner to decide at Gate 3
+## Gate 3 decisions (2026-09-28)
 
-1. **The hero swing is small (48 to 56%).** Keep it honest (recommended), or drop the tremble and go straight from 50% to 55.9%?
-2. **Replay speed on role pages:** each move plays whole when its scroll point is crossed (recommended), or pieces follow the scroll exactly?
-3. **Sound:** keep the three cues, or ship without sound?
+1. **The hero:** replaced by the exploding board (section 1). The round 1 swing question no longer applies.
+2. **Role pages:** every move is animated, played whole at hand speed when its scroll point is crossed.
+3. **Sound:** decided in Phase 4, once the cues exist to be heard. There is still no sound in the prototypes.
+
+**Gate 3 approved.**
