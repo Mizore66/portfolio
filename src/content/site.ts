@@ -39,8 +39,17 @@ export interface Project {
   tech: string[];
   purpose: string;
   result: { claimId: string; line: string };
-  caseStudy?: { evidence?: string[]; team?: string };
+  caseStudy?: {
+    evidence?: string[]; team?: string; draft?: boolean; notes?: string[];
+    problem?: string; decision?: string; constraint?: string; example?: string; rejected?: string;
+    built?: string[]; limitations?: string; changeNow?: string;
+  };
+  architecture?: { host?: string; path: Step[]; branches?: (Step & { from?: number })[]; beside?: Step[] };
 }
+
+export interface Step { label: string; note?: string }
+
+export interface CareerNode { nodeId: string; move: string; evalCp: number; kind: string; label: string; start: string; end: string | null; href: string }
 
 interface Content {
   identity: { legalName: string; displayName: string; heroHeadline: string; summary: string; availability: string };
@@ -51,7 +60,9 @@ interface Content {
   claims: Claim[];
   projects: { featuredOrder: string[]; categoryLabels: Record<string, string>; notes: Record<string, string>; list: Project[] };
   resume: { name: string; summary: string; status: string; pdfFilename: string; contact: { label: string; href: string }[]; awards: string[] };
-  links: { email: string; linkedin: string; github: string; site: string; privateRepos: string[] };
+  chess: { careerTimeline: CareerNode[] };
+  pageCopy: { projectPageSections: Record<string, string> };
+  links: { email: string; linkedin: string; github: string; site: string; privateRepos: string[]; repos?: Record<string, string> };
   metadata: { siteTitle: string; siteDescription: string };
 }
 

@@ -13,7 +13,14 @@ export interface Room {
   dark: string;
 }
 
-const HERO = 0.5 + 0.5 * Math.tanh((0.00368208 * 64) / 2); // share(+0.64), 55.9%
+const share = (cp: number) => 0.5 + 0.5 * Math.tanh((0.00368208 * cp) / 2);
+const HERO = share(64); // +0.64 after 10…Bg4: 55.9%
+
+/**
+ * Each project page rests at the eval after its own move (content.json chess.careerTimeline; a unit test
+ * keeps these in step). Kept here, not read from content.json, so the client bundle stays small.
+ */
+export const PROJECT_CP: Record<string, number> = { faultline: 64, "gemini-teleportal": -18, circuitmindai: 49 };
 
 /** Each route's resting seam, from its approved key frame. `null`: résumé mode, which has no seam. */
 export function roomFor(path: string): Room | null {
@@ -21,7 +28,9 @@ export function roomFor(path: string): Room | null {
   if (path === "/work") return { at: 0.015, atPhone: 0, dark: "var(--gallery)" }; // work-c: a 22 px paper edge
   if (path === "/roles") return { at: 1, atPhone: 1, dark: "var(--gallery)" }; // the paper floods: the day hall
   if (path === "/lab") return { at: 0.305, atPhone: 0.305, dark: "var(--search)" }; // lab-a: the match score
-  return { at: HERO, atPhone: HERO, dark: "var(--gallery)" }; // hero, contact, project and role pages
+  const project = /^\/work\/([^/]+)$/.exec(path)?.[1];
+  if (project && project in PROJECT_CP) { const at = share(PROJECT_CP[project]); return { at, atPhone: at, dark: "var(--gallery)" }; }
+  return { at: HERO, atPhone: HERO, dark: "var(--gallery)" }; // hero, contact and role pages
 }
 
 export const PHONE = "(max-width: 600px)";

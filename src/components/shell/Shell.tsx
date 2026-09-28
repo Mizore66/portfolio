@@ -4,6 +4,8 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { bindSeam, restColours, restFor, roomFor, setSeam } from "@/lib/seam/seam";
 import { beginNav } from "@/lib/seam/sweep";
+import Lenis from "lenis";
+import "lenis/dist/lenis.css";
 import { Chrome } from "./Chrome";
 import { Cursor } from "./Cursor";
 import "./shell.css";
@@ -24,7 +26,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
     const onClick = (e: MouseEvent) => {
       if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const a = (e.target as Element | null)?.closest?.("a[href]") as HTMLAnchorElement | null;
-      if (!a || a.target || a.hasAttribute("download")) return;
+      // a link that plays its own exit first (a piece in the Work room) begins the page change itself
+      if (!a || a.target || a.hasAttribute("download") || a.hasAttribute("data-nav-hold")) return;
       const u = new URL(a.href);
       if (u.origin === location.origin && u.pathname !== current.current) beginNav(u.pathname, current.current);
     };
@@ -40,12 +43,15 @@ export function Shell({ children }: { children: React.ReactNode }) {
       beginNav(to, from, { restoreScroll: true });
       router.replace(location.pathname + location.search + location.hash, { scroll: false });
     };
+    // Smooth wheel scrolling (design/motion.md: Lenis at lerp .1). Touch scroll stays native, and under
+    // reduced motion the scroll is the browser's own. The scroll never stops answering the trackpad.
+    const lenis = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? null : new Lenis({ autoRaf: true, lerp: 0.1, stopInertiaOnNavigate: true });
     const onResize = () => { if (!site.current?.hasAttribute("data-seam-moving")) restColours(true); };
     document.fonts.ready.then(onResize);
     window.addEventListener("resize", onResize);
     document.addEventListener("click", onClick, true);
     window.addEventListener("popstate", onPop, true);
-    return () => { window.removeEventListener("resize", onResize); document.removeEventListener("click", onClick, true); window.removeEventListener("popstate", onPop, true); bindSeam(null, 0.5); };
+    return () => { window.removeEventListener("resize", onResize); document.removeEventListener("click", onClick, true); window.removeEventListener("popstate", onPop, true); lenis?.destroy(); bindSeam(null, 0.5); };
   }, [initial, router]);
 
   return (

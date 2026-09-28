@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { roomFor, sides, intersect } from "./seam";
+import { roomFor, sides, intersect, PROJECT_CP } from "./seam";
+import { featured } from "@/content/work";
 import { plan } from "./sweep";
 
 describe("resting seams", () => {
@@ -10,6 +11,12 @@ describe("resting seams", () => {
     expect(roomFor("/lab")).toMatchObject({ at: 0.305, dark: "var(--search)" });
     expect(roomFor("/contact")!.at).toBeCloseTo(roomFor("/")!.at);
     expect(roomFor("/resume")).toBeNull();
+  });
+  it("rest each project page at its own move's eval", () => {
+    for (const f of featured) expect(PROJECT_CP[f.slug]).toBe(f.cp);
+    expect(roomFor("/work/faultline")!.at).toBeCloseTo(0.5586, 4); // 10…Bg4 +0.64, proj-a
+    expect(roomFor("/work/gemini-teleportal")!.at).toBeCloseTo(0.4834, 4); // 7…Ne4 −0.18
+    expect(roomFor("/work/circuitmindai")!.at).toBeCloseTo(0.545, 3); // 3…Bc5 +0.49
   });
 });
 

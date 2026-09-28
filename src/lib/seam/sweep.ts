@@ -7,6 +7,7 @@
  */
 import { gsap } from "gsap";
 import { registerEases } from "@/lib/motion/ease";
+import { now } from "@/lib/motion/slowmo";
 import { seam, setSeam, sides, css, intersect, isPhone, restFor, restColours } from "./seam";
 
 export interface Plan {
@@ -61,7 +62,8 @@ export function beginNav(to: string, from: string, { restoreScroll = false } = {
       const r = e.getBoundingClientRect();
       const cs = getComputedStyle(e);
       if (r.width < 1 || r.bottom < 0 || r.top > innerHeight || cs.visibility === "hidden" || +cs.opacity < 0.05) return;
-      const ink = !e.closest("[data-layer=inv]"), name = `vl-${i}`;
+      // paper type on the dark side: the inverted copy, or a page's only copy where it never meets the seam
+      const ink = !e.closest("[data-layer=inv], [data-on=dark]"), name = `vl-${i}`;
       e.style.viewTransitionName = name; (e.style as CSSStyleDeclaration & { viewTransitionClass: string }).viewTransitionClass = "vt-line";
       lines.push({ name, ink, x: r.left, y: r.top, order: ink ? count.ink++ : count.inv++ });
     });
@@ -70,7 +72,8 @@ export function beginNav(to: string, from: string, { restoreScroll = false } = {
   const r = page?.getBoundingClientRect();
   let start: (t0: number) => void = () => {};
   const started = new Promise<number>((res) => { start = res; });
-  if (reduced) start(performance.now());
+  if (reduced) start(now());
+  begun = now();
   pending = current = { plan: p, page: r ? { x: r.left, y: r.top } : null, lines, reduced, started, start };
 }
 
@@ -89,11 +92,15 @@ export function arrival(path: string): Arrival | null {
     reduced: job.reduced,
     rise: (fn) => {
       let live = true;
-      job.started.then((t0) => { if (live) fn(job.reduced ? 0 : Math.max(0, job.plan.rise - (performance.now() - t0) / 1000)); });
+      job.started.then((t0) => { if (live) fn(job.reduced ? 0 : Math.max(0, job.plan.rise - (now() - t0) / 1000)); });
       return () => { live = false; };
     },
   };
 }
+
+/** A page change is under way (from the click until its sweep is over): the seam belongs to the sweep. */
+export const navigating = () => current != null && (running != null || now() - begun < 6000); // a change that never commits lets go
+let begun = 0;
 
 /** The arriving page has mounted: put the live seam where the old page left it. */
 export function arrived(path: string) {
@@ -126,7 +133,7 @@ export function startSweep(oldGroup: string | null) {
 function run(job: Pending, oldGroup: string | null, hold: Animation | null) {
   const { plan: p, page, lines } = job;
   registerEases();
-  job.start(performance.now());
+  job.start(now());
   const ease = gsap.parseEase("seam"), W = innerWidth, H = innerHeight;
   const at = (t: number) => { const q = p.dur ? ease(Math.min(1, t / p.dur)) : 1; return { at: p.A + (p.B - p.A) * q, tilt: p.tilt * Math.sin(Math.PI * q) }; };
   const lift = (t: number) => H * ease(Math.min(1, Math.max(0, (t - p.liftAt) / p.liftDur)));

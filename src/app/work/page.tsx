@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { Room } from "@/components/shell/Room";
+import { featured } from "@/content/work";
+import { WorkIndex } from "@/components/work/WorkIndex";
 
-export const metadata: Metadata = { title: "Work" };
+export const metadata: Metadata = { title: "Work", description: featured.map((f) => `${f.name}: ${f.subtitle}`).join(". ") + "." };
 
 export default function Page() {
-  return <Room id="work" title="Work" note="The gallery: FaultLine, Teleportal and CircuitMind. Built in Phase 5, step 4." />;
+  return <WorkIndex pieces={featured.map((f) => ({ slug: f.slug, name: f.name, square: f.square, move: f.move, result: f.result, qualifier: f.claim.qualifier }))} />;
 }

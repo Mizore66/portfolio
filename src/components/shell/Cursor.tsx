@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-const CLICKABLE = "a[href], button, [role=button], input, select, textarea, label, summary";
+const CLICKABLE = "a[href], button, [role=button], input, select, textarea, label, summary, [data-hot]";
 
 /**
  * The legal-move dot from an analysis board (design/motion.md, "Cursor"): 8 px amber, exactly on the

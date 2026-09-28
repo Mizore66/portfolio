@@ -134,6 +134,7 @@ function smooth(pts: Pt[], passes = 4): Pt[] {
 }
 
 const GEO: Record<string, THREE.BufferGeometry> = {}, FELT = new THREE.MeshStandardMaterial({ color: 0x171a17, roughness: 1 });
+FELT.userData.shared = true; // one felt for every set on the page: never disposed with a scene
 export function piece(type: PieceType, mat: THREE.Material): THREE.Group {
   const g = new THREE.Group();
   const add: Add = (geo, m = mat) => { const mesh = new THREE.Mesh(geo, m); mesh.castShadow = true; mesh.receiveShadow = true; g.add(mesh); return mesh; };
