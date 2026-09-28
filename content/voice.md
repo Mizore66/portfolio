@@ -49,9 +49,8 @@ Lines from the v2 site and the owner's own copy that carry the owner's voice. Ra
 - "c3 is the quiet move that makes d4 possible. I ship the same way: tests and access control first, so the break has something behind it." [4. c3]
 - "d4 is the move this scoresheet hangs on: agents that intercept infrastructure, measurements instead of demos. The double-exclaim is Informant's, not mine — but I played it." [5. d4, Veridian]
 - "The bishop pins before it trades. At Skribble Lab I held one path, payments, end to end until it stopped breaking." [7. Bb5]
-- "Teleportal was built with Kai, and the square only held because both of us covered it." [7…Ne4]
-- "The bishop pins the knight and waits. FaultLine does the same with a regression: it holds one question still until the history answers it." [10…Bg4]
 - "Deriv is the deepest White move on the board so far, and the current one." [10. Nbxd2]
+- (The drafts for 7…Ne4, Teleportal, and 10…Bg4, FaultLine, were dropped by the owner at step 4a, 2026-09-28.)
 
 ## Role annotations (the "why" behind a job)
 

@@ -798,7 +798,7 @@
             "circuitmindInspection"
           ],
           "problem": "An operator inspecting a board needs to see the copper fault and hear inspection guidance, including when the network drops. A detector that fails with connectivity loss is not dependable enough for the inspection floor.",
-          "decision": "Vision on the board and voice for the operator … results are cached locally so the floor can keep working when the network drops.",
+          "decision": "Vision on the board and voice for the operator; results are cached locally so the floor can keep working when the network drops.",
           "constraint": "The inspection has to survive a dropped network.",
           "example": "Input: a board image and operator audio. Output: a fault overlay on the copper, with inspection guidance still audible when the network drops.",
           "rejected": "A server-only detector, rejected because it would fail when connectivity drops.",
@@ -2642,6 +2642,7 @@
       "line": "What was built",
       "limitations": "Limitations",
       "retrospective": "What I would change now",
+      "screens": "The product",
       "links": "Links",
       "sourceLink": "Source on GitHub",
       "privateRepo": "The source is in a private repository.",

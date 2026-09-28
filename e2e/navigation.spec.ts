@@ -79,9 +79,17 @@ test.describe("navigation", () => {
     test.use({ contextOptions: { reducedMotion: "reduce" } });
     test("a page change is a cut", async ({ page }) => {
       await page.goto("/");
+      // a cut: the seam never moves on its own (no sweep), it is simply at the new page's rest
+      await page.evaluate(() => {
+        const w = window as unknown as { __swept: boolean }; w.__swept = false;
+        new MutationObserver(() => { if (document.querySelector(".site[data-seam-moving]")) w.__swept = true; })
+          .observe(document.body, { subtree: true, attributes: true, attributeFilter: ["data-seam-moving"] });
+      });
       await nav(page, "Work").click();
       await expect(page).toHaveURL(/\/work$/);
-      await expect.poll(() => seam(page), { timeout: 500 }).toBe(REST["/work"]);
+      // generous: the Work room's first build can hold CPU-drawn WebGL for a moment
+      await expect.poll(() => seam(page), { timeout: 5_000 }).toBe(REST["/work"]);
+      expect(await page.evaluate(() => (window as unknown as { __swept: boolean }).__swept)).toBe(false);
     });
   });
 

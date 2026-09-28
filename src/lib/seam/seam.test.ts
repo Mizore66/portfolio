@@ -34,6 +34,14 @@ describe("the sweep", () => {
     expect(p.tilt).toBeCloseTo(7.5, 0);
     expect(p.dur).toBeLessThan(1.15);
   });
+  it("cuts what is left when going from Work into a project, and only then", () => {
+    const into = plan("/work", "/work/faultline", 0.015, 0.559, false);
+    expect(into.cut).toBe(true);
+    expect(into.total).toBeLessThan(plan("/", "/lab", 0.559, 0.305, false).total + 1);
+    expect(into.total).toBeGreaterThan(into.dur); // the old lines still leave
+    expect(plan("/work/faultline", "/work", 0.559, 0.015, false).cut).toBe(false);
+    expect(plan("/", "/work", 0.559, 0.015, false).cut).toBe(false);
+  });
   it("uses 8 degrees on phones", () => {
     expect(plan("/", "/work", 0.559, 0, true).tilt).toBe(-8);
   });

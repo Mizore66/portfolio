@@ -97,6 +97,21 @@ export function Study({ f }: { f: Featured }) {
         </section>
       ) : null}
 
+      {p.media?.length ? (
+        <section className="st-sec st-screens">
+          <h2 className="st-h mono">{S.screens}</h2>
+          {/* landscape screens run the width of the column; phone screens stand side by side */}
+          <div className="st-shots">
+            {p.media.map((m) => (
+              <figure key={m.src} className={m.height > m.width ? "tall" : "wide"}>
+                <Image src={m.src} width={m.width} height={m.height} sizes={m.height > m.width ? "(max-width: 600px) 50vw, 320px" : "(max-width: 600px) 100vw, 960px"} alt={m.alt} />
+                <figcaption>{prose(m.caption)}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       <section className="st-sec st-end">
         {cs.team ? <p className="st-team">{prose(cs.team)}</p> : null}
         <p className="st-tech mono">{p.tech.join(" · ")}</p>

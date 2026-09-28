@@ -63,6 +63,13 @@
 .st-steps.path li + li::before { content: "→"; position: absolute; left: 0; top: 0; color: var(--move); }
 .st-steps b { font-size: 17px; font-weight: 600; }
 .st-steps .mono { font-size: 12px; color: var(--gallery-dim); }
+.st-screens { max-width: 960px; }
+.st-shots { display: flex; flex-wrap: wrap; gap: 48px 32px; align-items: flex-start; }
+.st-shots figure { margin: 0; }
+.st-shots .wide { flex: 1 1 100%; }
+.st-shots .tall { flex: 0 1 300px; }
+.st-shots img { display: block; width: 100%; height: auto; border-radius: 6px; box-shadow: 0 0 0 1px rgb(236 230 218 / .1); }
+.st-shots figcaption { margin-top: 14px; font-size: 15px; line-height: 1.5; color: var(--gallery-dim); max-width: 62ch; }
 .st-end { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
 .st-tech { font-size: 13px; color: var(--gallery-dim); line-height: 1.7; }
 .st-links { list-style: none; display: flex; flex-wrap: wrap; gap: 12px 32px; font-size: 16px; }
@@ -105,4 +112,7 @@
   .st-steps.path li + li::before { content: "↓"; top: 0; }
   .st-next .display { font-size: 11vw; white-space: normal; }
   .st-claims b { overflow-wrap: anywhere; }
+  .st-shots { gap: 36px 14px; }
+  .st-shots .tall { flex: 1 1 calc(50% - 7px); }
+  .st-shots figcaption { font-size: 14px; }
 }

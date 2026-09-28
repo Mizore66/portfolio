@@ -20,9 +20,8 @@ export interface Featured {
 }
 
 // content/voice.md, "Work, told through moves". Drafts are agent-written and still flagged for the owner.
+// The owner's own words. The FaultLine and Teleportal drafts were dropped at step 4a.
 const NOTES: Record<string, Featured["note"]> = {
-  faultline: { text: "The bishop pins the knight and waits. FaultLine does the same with a regression: it holds one question still until the history answers it.", draft: true },
-  "gemini-teleportal": { text: "Teleportal was built with Kai, and the square only held because both of us covered it.", draft: true },
   circuitmindai: { text: "CircuitMind sees faults in the copper and talks back over a live voice channel.", draft: false },
 };
 

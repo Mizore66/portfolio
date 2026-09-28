@@ -39,6 +39,8 @@ export interface Project {
   tech: string[];
   purpose: string;
   result: { claimId: string; line: string };
+  /** product screenshots, shown as captioned evidence near the end of the case study */
+  media?: { src: string; width: number; height: number; alt: string; caption: string }[];
   caseStudy?: {
     evidence?: string[]; team?: string; draft?: boolean; notes?: string[];
     problem?: string; decision?: string; constraint?: string; example?: string; rejected?: string;

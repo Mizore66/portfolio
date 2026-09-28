@@ -14,6 +14,8 @@ export interface Plan {
   from: string; to: string; A: number; B: number; phone: boolean;
   /** seconds from the start of the sweep */
   dur: number; tilt: number; typeAt: number; liftAt: number; liftDur: number; rise: number; total: number;
+  /** Work to one of its projects: what is left of the old page is cut when the seam lands, not lifted */
+  cut: boolean;
 }
 
 /** The storyboard's hero-to-Work numbers (1.15 s, 13 degrees at a 0.44 travel) scaled by distance. */
@@ -25,7 +27,11 @@ export function plan(from: string, to: string, A: number, B: number, phone: bool
   // with nothing to travel, the whole page leaves upward once its lines have gone
   const liftAt = moving ? dur - 0.15 : 0.3, liftDur = moving ? 0.5 : 0.6;
   const rise = moving ? dur - 0.02 : 0.7;
-  return { from, to, A, B, phone, dur, tilt, typeAt, liftAt, liftDur, rise, total: Math.max(dur, liftAt + liftDur, typeAt + 0.9) };
+  // The owner's call at step 4a: from the gallery into a project the camera has already stepped down to the
+  // project's framing, so the piece stays put and the rest is a cut (only the plinth and the light change).
+  const cut = moving && from === "/work" && to.startsWith("/work/");
+  const total = Math.max(dur, cut ? 0 : liftAt + liftDur, typeAt + 0.9);
+  return { from, to, A, B, phone, dur, tilt, typeAt, liftAt, liftDur, rise, total, cut };
 }
 
 interface Line { name: string; ink: boolean; x: number; y: number; order: number }
@@ -136,7 +142,7 @@ function run(job: Pending, oldGroup: string | null, hold: Animation | null) {
   job.start(now());
   const ease = gsap.parseEase("seam"), W = innerWidth, H = innerHeight;
   const at = (t: number) => { const q = p.dur ? ease(Math.min(1, t / p.dur)) : 1; return { at: p.A + (p.B - p.A) * q, tilt: p.tilt * Math.sin(Math.PI * q) }; };
-  const lift = (t: number) => H * ease(Math.min(1, Math.max(0, (t - p.liftAt) / p.liftDur)));
+  const lift = (t: number) => (p.cut ? 0 : H * ease(Math.min(1, Math.max(0, (t - p.liftAt) / p.liftDur))));
 
   const st = { t: 0 };
   const site = document.querySelector<HTMLElement>(".site");
@@ -160,7 +166,10 @@ function run(job: Pending, oldGroup: string | null, hold: Animation | null) {
   // only what was inside the region stays visible (the region, intersected with itself shifted up).
   root.animate(frames((t) => { const r = closing(t), d = lift(t); return css(intersect(r, r.map(([x, y]) => [x, y - d] as [number, number])), dx, dy); }),
     { duration: ms, fill: "both", pseudoElement: `::view-transition-group(${oldGroup})` });
-  root.animate([{ transform: "translateY(0)" }, { transform: `translateY(${-H}px)` }], {
+  if (p.cut) {
+    const k = p.dur / p.total; // gone on the frame the seam lands
+    root.animate([{ opacity: 1 }, { opacity: 1, offset: k }, { opacity: 0, offset: k }, { opacity: 0 }], { duration: ms, fill: "both", pseudoElement: `::view-transition-old(${oldGroup})` });
+  } else root.animate([{ transform: "translateY(0)" }, { transform: `translateY(${-H}px)` }], {
     duration: p.liftDur * 1000, delay: p.liftAt * 1000, fill: "both", easing: "cubic-bezier(.7,0,.13,1)", pseudoElement: `::view-transition-image-pair(${oldGroup})`,
   });
   hold?.cancel();
