@@ -3,7 +3,7 @@ import AxeBuilder from "@axe-core/playwright";
 
 // design/motion.md, "Navigation": every page change is the seam sweeping from where it is to where the
 // next page rests. The URL changes at the start; Back and Forward play the same sweep.
-const REST: Record<string, string> = { "/": "55.9", "/work": "1.5", "/roles": "100.0", "/lab": "30.5", "/contact": "55.9" };
+const REST: Record<string, string> = { "/": "55.9", "/work": "1.5", "/roles": "98.5", "/lab": "30.5", "/contact": "55.9" };
 const seam = (page: Page) => page.locator(".site").evaluate((e) => parseFloat(getComputedStyle(e).getPropertyValue("--seam")).toFixed(1));
 const nav = (page: Page, name: string) => page.locator(".chrome [data-layer=ink] .nav").getByRole("link", { name, exact: true });
 
@@ -13,14 +13,14 @@ test.beforeEach(async ({ page }) => {
 
 test.describe("navigation", () => {
   test("each nav item sweeps the seam to its page and marks it current", async ({ page }) => {
-    test.setTimeout(90_000);
+    test.setTimeout(180_000);
     const errors: string[] = [];
     page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
     await page.goto("/");
     for (const [name, path] of [["Work", "/work"], ["Lab", "/lab"], ["Contact", "/contact"], ["Roles", "/roles"]]) {
       await nav(page, name).click();
       await expect(page).toHaveURL(new RegExp(`${path}$`));
-      await expect.poll(() => seam(page), { timeout: 25_000 }).toBe(REST[path]);
+      await expect.poll(() => seam(page), { timeout: 40_000 }).toBe(REST[path]);
       await expect(nav(page, name)).toHaveAttribute("aria-current", "page");
       await expect(page.getByRole("heading", { level: 1 })).toHaveText(name);
     }
@@ -68,6 +68,7 @@ test.describe("navigation", () => {
   });
 
   test("every room is accessible", async ({ page }) => {
+    test.setTimeout(90_000); // four rooms, three of them WebGL, drawn by the CPU here
     for (const path of ["/work", "/roles", "/lab", "/contact"]) {
       await page.goto(path);
       const a11y = await new AxeBuilder({ page }).analyze();

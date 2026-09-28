@@ -1,0 +1,36 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gate 5: Roles</title><link rel="stylesheet" href="/design/keyframes/_shared/fonts.css"><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:"Archivo",sans-serif;background:#1b1b1a;color:#f3f3f1;padding:48px 48px 120px;max-width:1500px}h1{font-size:40px;font-weight:900;letter-spacing:-.03em}h2{font-size:24px;font-weight:800;margin-top:52px}p,li{margin-top:10px;color:#b9b5ad;max-width:90ch;line-height:1.5}ul{margin-left:20px}img{display:inline-block;max-width:100%;border-radius:6px;margin:12px 8px 0 0;vertical-align:top}code{font-family:"JetBrains Mono",monospace;color:#e8a33d}@media(max-width:700px){body{padding:24px 16px}}</style></head><body>
+<h1>Gate 5, step 4b: the Roles hall and the role pages</h1>
+<p>The hall (key frame roles-b) and the seven role pages (key frame role-a, replay prototype <code>design/motion/role.html</code>) are built. Stills are from the dev build at 2×. The questions are in the review doc.</p>
+<h2>The hall, against its key frame</h2>
+<div><img src="roles/hall.webp" alt="The hall at 1440"></div>
+<div><img src="roles/key-roles-b.webp" alt="roles-b, approved"></div>
+<p>Reading a name lights its table's lamp and eases the camera toward it by up to 1.5 units. The dates show on hover; "now" stays on Deriv. On phones the row recedes up the screen and the names are a list below it.</p>
+<div><img src="roles/hall-read.webp" alt="Reading Western Digital"></div>
+<div><img src="roles/hall-m.webp" width="260" alt="The hall on a phone"></div>
+<h2>Sitting down: Deriv</h2>
+<p>The camera circles the table as it comes down to the role page's low corner, so it never passes through a table. Then the page cuts in, framed the same. The frames run from 0 to 3.6 s.</p>
+<div><img src="roles/sit-deriv.webp" alt="Frames of sitting down at Deriv"></div>
+<h2>The replay: Deriv</h2>
+<p>Scrolling replays Tal vs Larsen. Each move is played whole at hand speed as its scroll point is crossed, with lifts, captures and castling. The facts arrive one at a time in the margin. The game reaches 16. Nd5 at 80% of the pinned scroll, and the rest of the game plays over the last screen.</p>
+<div><img src="roles/deriv-start.webp" alt="At the start"></div>
+<div><img src="roles/deriv-replay.webp" alt="Replaying"></div>
+<div><img src="roles/deriv-famous.webp" alt="At 16. Nd5"></div>
+<div><img src="roles/key-role-a.webp" alt="role-a, approved"></div>
+<div><img src="roles/deriv-famous-m.webp" width="260" alt="Deriv on a phone"> <img src="roles/monash-m.webp" width="260" alt="Monash on a phone"></div>
+<p>With reduced motion, the famous position is shown still, every fact is listed, and the scrubber steps the board without animation:</p>
+<div><img src="roles/deriv-reduced.webp" alt="Reduced motion"></div>
+<p>The page ends on the next table:</p>
+<div><img src="roles/deriv-end.webp" alt="The end of the page"></div>
+<h2>The other six tables, at the first move</h2>
+<div><img src="roles/education.webp" alt="Monash, degree"></div>
+<div><img src="roles/petronas.webp" alt="Petronas"></div>
+<div><img src="roles/western-digital.webp" alt="Western Digital"></div>
+<div><img src="roles/setel.webp" alt="Setel"></div>
+<div><img src="roles/monash-university.webp" alt="Monash, contract"></div>
+<div><img src="roles/skribble-lab.webp" alt="Skribble Lab"></div>
+<h2>Checks</h2>
+<ul><li>No sideways scrolling and no text clash at 1440, 390 and 320 px.</li></ul>
+<ul><li>Tests: 53 of 53 end-to-end tests pass, including new Roles tests for the order, the links, the seams, the facts, the replay, reduced motion and accessibility. 69 of 69 unit tests pass.</li></ul>
+<ul><li>The production build passes.</li></ul>
+<ul><li>The hall's seven sets are merged into a few draw calls and use coarser pieces, which look the same at that size. Its sun shadow is drawn once, because nothing in the hall moves.</li></ul>
+</body></html>

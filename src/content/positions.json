@@ -1,0 +1,74 @@
+{
+ "Rotlewi-Rubinstein": {
+  "fen": "...r..k./.b...ppp/pb..p.../.p..P.../.P..BPnq/P.r...P./.B..Q..P/R....R.K",
+  "last": [
+   "c8",
+   "c3"
+  ],
+  "label": "22…Rxc3",
+  "game": "Rotlewi vs Rubinstein, Łódź 1907"
+ },
+ "Byrne-Fischer": {
+  "fen": "r...r.k./pp...pbp/.qp.b.p./..B...../..BP..../Q.n..N../P....PPP/...R.K.R",
+  "last": [
+   "g4",
+   "e6"
+  ],
+  "label": "17…Be6",
+  "game": "Byrne vs Fischer, New York 1956"
+ },
+ "Tal-Larsen": {
+  "fen": "rqb..rk./...nbppp/p..pp.../...N..P./.p.BPP../...B.Q../PPP....P/..KR...R",
+  "last": [
+   "c3",
+   "d5"
+  ],
+  "label": "16. Nd5",
+  "game": "Tal vs Larsen, Bled 1965"
+ },
+ "Nimzowitsch-Tarrasch": {
+  "fen": "...r.rk./p...qp.p/..b...p./..p...../...P..../.P....../PBQN.PPb/..R..RK.",
+  "last": [
+   "d6",
+   "h2"
+  ],
+  "label": "19…Bxh2+",
+  "game": "Nimzowitsch vs Tarrasch, St Petersburg 1914"
+ },
+ "Paulsen-Morphy": {
+  "fen": "....r.k./p.pb.ppp/Qbp.r.../......../.P....../..P..q../R..P.PPP/..B..RK.",
+  "last": [
+   "d3",
+   "f3"
+  ],
+  "label": "17…Qxf3",
+  "game": "Paulsen vs Morphy, New York 1857"
+ },
+ "Nimzowitsch-Alapin": {
+  "fen": "r.b.kb.r/.p...ppp/p.n..Bq./......../......../.....B../PPPQ.P.P/..KR...R",
+  "last": [
+   "d4",
+   "f6"
+  ],
+  "label": "14. Bf6",
+  "game": "Nimzowitsch vs Alapin, St Petersburg 1914"
+ },
+ "Botvinnik-Vidmar": {
+  "fen": "..r..rk./pp..bNpp/...q.n../...n.RB./...P..../.B.....Q/PP....PP/...R..K.",
+  "last": [
+   "e5",
+   "f7"
+  ],
+  "label": "20. Nxf7",
+  "game": "Botvinnik vs Vidmar, Nottingham 1936"
+ },
+ "career": {
+  "fen": "r..qk..r/ppp..ppp/..n...../.B.pP.../...Pn.b./.....N../PP.N.PPP/R..QK..R",
+  "last": [
+   "c8",
+   "g4"
+  ],
+  "label": "10…Bg4",
+  "game": "Italian Game, C54"
+ }
+}

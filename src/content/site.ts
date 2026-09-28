@@ -63,7 +63,7 @@ interface Content {
   projects: { featuredOrder: string[]; categoryLabels: Record<string, string>; notes: Record<string, string>; list: Project[] };
   resume: { name: string; summary: string; status: string; pdfFilename: string; contact: { label: string; href: string }[]; awards: string[] };
   chess: { careerTimeline: CareerNode[] };
-  pageCopy: { projectPageSections: Record<string, string>; work: { othersTitle: string; othersLabel: string; noMove: string; aside: string } };
+  pageCopy: { projectPageSections: Record<string, string>; work: { othersTitle: string; othersLabel: string; noMove: string; aside: string }; roles: Record<"title" | "sub" | "degree" | "contract" | "now" | "listLabel" | "graduated" | "next" | "back" | "start", string> };
   links: { email: string; linkedin: string; github: string; site: string; privateRepos: string[]; repos?: Record<string, string> };
   metadata: { siteTitle: string; siteDescription: string };
 }

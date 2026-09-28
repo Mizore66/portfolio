@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import { arrived, startSweep, sweepWithoutSnapshot } from "@/lib/seam/sweep";
 import { after } from "@/lib/motion/slowmo";
 
-/** Routes under /work have their own template (app/work/template.tsx), so moving between the index and a project remounts. */
-const WORK = /^\/work(\/|$)/;
+/** Routes under /work and /roles have their own templates (app/work, app/roles), so moving between an index and its pages remounts. */
+const WORK = /^\/(work|roles)(\/|$)/;
 
 /**
  * Wraps every page (it is rendered by app/template.tsx, so it remounts on each navigation). The leaving

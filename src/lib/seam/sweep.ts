@@ -26,10 +26,11 @@ export function plan(from: string, to: string, A: number, B: number, phone: bool
   const typeAt = moving ? 0.73 * (dur / 1.15) : 0;
   // with nothing to travel, the whole page leaves upward once its lines have gone
   const liftAt = moving ? dur - 0.15 : 0.3, liftDur = moving ? 0.5 : 0.6;
-  const rise = moving ? dur - 0.02 : 0.7;
+  const rise = moving ? dur - 0.02 : from === "/roles" && to.startsWith("/roles/") ? 0.1 : 0.7;
   // The owner's call at step 4a: from the gallery into a project the camera has already stepped down to the
   // project's framing, so the piece stays put and the rest is a cut (only the plinth and the light change).
-  const cut = moving && from === "/work" && to.startsWith("/work/");
+  // At step 4b the same for the hall: sitting down at a table has already brought the camera to the role page's view.
+  const cut = (moving && from === "/work" && to.startsWith("/work/")) || (from === "/roles" && to.startsWith("/roles/"));
   const total = Math.max(dur, cut ? 0 : liftAt + liftDur, typeAt + 0.9);
   return { from, to, A, B, phone, dur, tilt, typeAt, liftAt, liftDur, rise, total, cut };
 }

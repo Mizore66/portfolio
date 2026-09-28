@@ -2654,6 +2654,18 @@
       "noMove": "No move yet",
       "aside": "another game"
     },
+    "roles": {
+      "title": "Roles",
+      "sub": "Seven famous games, one per role.",
+      "degree": "degree",
+      "contract": "contract",
+      "now": "now",
+      "listLabel": "Roles, in career order",
+      "graduated": "graduated",
+      "next": "Next table",
+      "back": "Back to all roles",
+      "start": "Start"
+    },
     "openingPreparation": {
       "title": "Opening Preparation",
       "intro": "A playable career timeline told through an Italian Game.",

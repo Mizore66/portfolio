@@ -64,11 +64,11 @@ export function knightHalfDepth(x: number, y: number): number {
   const k = Math.min(edgeDist(x, y) / .1, 1);
   return T * Math.sqrt(1 - (1 - k) ** 2);
 }
-let KNIGHT_GEO: THREE.BufferGeometry | null = null;
-function knightHead() {
-  if (KNIGHT_GEO) return KNIGHT_GEO;
+let KNIGHT_GEO: THREE.BufferGeometry | null = null, KNIGHT_LOD: THREE.BufferGeometry | null = null;
+function knightHead(lod = false) {
+  if (lod ? KNIGHT_LOD : KNIGHT_GEO) return (lod ? KNIGHT_LOD : KNIGHT_GEO)!;
   // conforming mesh: the silhouette is star-shaped about a point in the neck, so build it as concentric rings
-  const contour = KPOLY.slice(0, -1), C = new THREE.Vector2(.0, .66), K = 28, n = contour.length;
+  const contour = (lod ? KPOLY.filter((_, i) => i % 4 === 0) : KPOLY).slice(0, -1), C = new THREE.Vector2(.0, .66), K = lod ? 10 : 28, n = contour.length;
   const ring = (k: number, i: number): Pt => { const q = contour[i % n], t = k / K; return [C.x + (q.x - C.x) * t, C.y + (q.y - C.y) * t]; };
   const pos: number[] = [], push = (side: number, pts: Pt[]) => { for (const [x, y] of side > 0 ? pts : [pts[0], pts[2], pts[1]]) pos.push(x, y, side * knightHalfDepth(x, y)); };
   for (const side of [1, -1]) for (let k = 0; k < K; k++) for (let i = 0; i < n; i++) {
@@ -77,7 +77,7 @@ function knightHead() {
   }
   const both = new THREE.BufferGeometry(); both.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
   const m = mergeVertices(both, 1e-5); m.computeVertexNormals();
-  return (KNIGHT_GEO = m);
+  return lod ? (KNIGHT_LOD = m) : (KNIGHT_GEO = m);
 }
 type Add = (geo: THREE.BufferGeometry, m?: THREE.Material) => THREE.Mesh;
 function knightDetails(add: Add, mat: THREE.Material) {
@@ -135,10 +135,11 @@ function smooth(pts: Pt[], passes = 4): Pt[] {
 
 const GEO: Record<string, THREE.BufferGeometry> = {}, FELT = new THREE.MeshStandardMaterial({ color: 0x171a17, roughness: 1 });
 FELT.userData.shared = true; // one felt for every set on the page: never disposed with a scene
-export function piece(type: PieceType, mat: THREE.Material): THREE.Group {
+/** `lod`: fewer segments round the axis, for pieces seen small (the day hall's seven sets). */
+export function piece(type: PieceType, mat: THREE.Material, { lod = false } = {}): THREE.Group {
   const g = new THREE.Group();
   const add: Add = (geo, m = mat) => { const mesh = new THREE.Mesh(geo, m); mesh.castShadow = true; mesh.receiveShadow = true; g.add(mesh); return mesh; };
-  add(new THREE.LatheGeometry((SMOOTH[type] ??= smooth(PROFILES[type])).map(([r, y]) => V(r, y)), 96));
+  add(new THREE.LatheGeometry((SMOOTH[type] ??= smooth(PROFILES[type])).map(([r, y]) => V(r, y)), lod ? 28 : 96));
   if (type === "P") add(new THREE.SphereGeometry(.16, 48, 32)).position.y = .68;
   if (type === "B") {
     add(new THREE.SphereGeometry(.05, 24, 16)).position.y = 1.33;
@@ -164,7 +165,7 @@ export function piece(type: PieceType, mat: THREE.Material): THREE.Group {
         const e = new THREE.ExtrudeGeometry(sh, { depth: .12, bevelEnabled: true, bevelThickness: .012, bevelSize: .01, bevelSegments: 3, curveSegments: 16 }); e.rotateX(-Math.PI / 2); parts.push(e); }
       return mergeGeometries(parts); })()).position.y = .905;
   }
-  if (type === "N") { add(knightHead()); knightDetails(add, mat); add(GEO.nCollar ??= new THREE.LatheGeometry(smooth([[0, .19], [.3, .19], [.305, .22], [.285, .265], [.22, .295], [0, .295]]).map(([r, y]) => V(r, y)), 96)); }
+  if (type === "N") { add(knightHead(lod)); knightDetails(add, mat); add(GEO.nCollar ??= new THREE.LatheGeometry(smooth([[0, .19], [.3, .19], [.305, .22], [.285, .265], [.22, .295], [0, .295]]).map(([r, y]) => V(r, y)), 96)); }
   const felt = add(GEO.felt ??= new THREE.CylinderGeometry(.285, .285, .008, 64).translate(0, .004, 0), FELT); felt.castShadow = false; felt.position.y = -.002;
   return g;
 }
