@@ -2,7 +2,7 @@
 // motion (src/lib/motion/slowmo.ts: GSAP and the page-change clocks; WAAPI through CDP), and frames are
 // taken at known instants of animation time, so a slow CPU frame cannot distort what is shown.
 // Usage: node design/build/_frames.cjs <out dir> <name> <from> <action> [w h] [slow]
-//   action: "nav:Work" (a nav item), "piece:CircuitMindAI" (a Work label), "link:<name regexp>", "back"
+//   action: "nav:Work" (a nav item), "piece:CircuitMindAI" (a Work label), "row:MirrorFi" (an Other Projects row), "link:<name regexp>", "back"
 //   SCROLL=<screens> scrolls the first page down before acting
 //   from may be "a>b": open a, navigate to b by its nav item, then act (for "back")
 const { chromium } = require("playwright"); const fs = require("fs"); const path = require("path");
@@ -11,7 +11,7 @@ const EXE = process.env.CHROMIUM || "/opt/pw-browsers/chromium";
   const [out, name, from, action, w = 1440, h = 900, slow = 30] = process.argv.slice(2);
   let at = [0, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9, 1.05, 1.2, 1.4, 1.7, 2.2]; // seconds of animation time
   // a piece first steps down to its page (1 s) before the page change starts
-  if (action.startsWith("piece:")) at.push(2.6, 3.1, 3.6);
+  if (action.startsWith("piece:") || action.startsWith("row:")) at.push(2.6, 3.1, 3.6);
   fs.mkdirSync(out, { recursive: true });
   const b = await chromium.launch({ executablePath: fs.existsSync(EXE) ? EXE : undefined, args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
   const p = await b.newPage({ viewport: { width: +w, height: +h } }), errs = [];
@@ -28,6 +28,7 @@ const EXE = process.env.CHROMIUM || "/opt/pw-browsers/chromium";
   const t0 = Date.now();
   if (kind === "nav") await p.locator(".chrome [data-layer=ink] .nav a", { hasText: arg }).click();
   else if (kind === "piece") await p.locator(".piece a", { hasText: arg }).click();
+  else if (kind === "row") await p.locator(".others .sheet a", { hasText: arg }).click();
   else if (kind === "back") await p.goBack();
   else if (kind === "link") await p.getByRole("link", { name: new RegExp(arg) }).first().click();
   const shots = [];

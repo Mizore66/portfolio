@@ -2648,6 +2648,12 @@
       "privateRepo": "The source is in a private repository.",
       "back": "Back to all work"
     },
+    "work": {
+      "othersTitle": "Other Projects",
+      "othersLabel": "Other projects",
+      "noMove": "No move yet",
+      "aside": "another game"
+    },
     "openingPreparation": {
       "title": "Opening Preparation",
       "intro": "A playable career timeline told through an Italian Game.",

@@ -20,7 +20,11 @@ const HERO = share(64); // +0.64 after 10…Bg4: 55.9%
  * Each project page rests at the eval after its own move (content.json chess.careerTimeline; a unit test
  * keeps these in step). Kept here, not read from content.json, so the client bundle stays small.
  */
-export const PROJECT_CP: Record<string, number> = { faultline: 64, "gemini-teleportal": -18, circuitmindai: 49 };
+export const PROJECT_CP: Record<string, number> = {
+  faultline: 64, "gemini-teleportal": -18, circuitmindai: 49,
+  "financial-risk-predictor": 18, "distributed-lead-scorer": 51, mirrorfi: 37, veridian: 37, "slm-distillation-engine": 27, "multi-agent-graphrag": 232,
+  rexcheck: 0, // no move yet: the start of the game, level
+};
 
 /** Each route's resting seam, from its approved key frame. `null`: résumé mode, which has no seam. */
 export function roomFor(path: string): Room | null {

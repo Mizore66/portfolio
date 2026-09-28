@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { claim, content, prose, type Step } from "@/content/site";
-import { evalLabel, featured, type Featured } from "@/content/work";
+import { evalLabel, featured, others, type Entry } from "@/content/work";
 
-const S = content.pageCopy.projectPageSections;
+const S = content.pageCopy.projectPageSections, W = content.pageCopy.work;
 
 /** Covers (Phase 4, approved at Gate 4): each product's own screen made physical beside its sculpture. */
 const COVER: Record<string, string> = {
@@ -24,28 +24,32 @@ function Steps({ steps, arrow }: { steps: Step[]; arrow?: boolean }) {
 
 /**
  * The case study: one column on the gallery black, beside the seam's hairline (design/motion.md §8).
- * Roman is fact; the move's annotation, in italic, is voice.
+ * The featured three and the other seven each lead on to the next of their own group.
  */
-export function Study({ f }: { f: Featured }) {
+export function Study({ f }: { f: Entry }) {
   const p = f.project, cs = p.caseStudy ?? {}, arch = p.architecture;
-  const i = featured.indexOf(f), next = featured[(i + 1) % featured.length];
+  const group = f.featured ? featured : others, i = group.indexOf(f), next = group[(i + 1) % group.length];
+  const move = f.move ? `${f.move} ${evalLabel(f.cp)}` : W.noMove;
   const repo = p.repo ?? content.links.repos?.[p.slug];
   const words: [string, string | undefined][] = [
     [S.problem, cs.problem], [S.decision, cs.decision], [S.constraint, cs.constraint], [S.example, cs.example], [S.rejected, cs.rejected],
   ];
   return (
     <article className="study">
-      <p className="st-mark mono" aria-hidden="true">{f.move} {evalLabel(f.cp)}</p>
+      <p className="st-mark mono" aria-hidden="true">{move}</p>
 
       <header className="st-open">
-        <p className="st-move display" aria-label={`The move: ${f.move}`}>{f.move}</p>
-        <p className="st-eval mono">{evalLabel(f.cp)}, the engine&rsquo;s eval after {f.move}. The seam rests there.</p>
-        {f.note ? <p className="st-note"><i>{f.note.text}</i></p> : null}
+        {f.move ? (<>
+          <p className="st-move display" aria-label={`The move: ${f.move}`}>{f.move}</p>
+          <p className="st-eval mono">{evalLabel(f.cp)}, the engine&rsquo;s eval after {f.move}. The seam rests there.</p>
+        </>) : <p className="st-move display">{W.noMove}</p>}
       </header>
 
-      <figure className="st-cover">
-        <Image src={`/work/${p.slug}/cover.webp`} width={2400} height={1500} sizes="(max-width: 600px) 100vw, 76vw" alt={COVER[p.slug]} />
-      </figure>
+      {COVER[p.slug] ? (
+        <figure className="st-cover">
+          <Image src={`/work/${p.slug}/cover.webp`} width={2400} height={1500} sizes="(max-width: 600px) 100vw, 76vw" alt={COVER[p.slug]} />
+        </figure>
+      ) : null}
 
       <section className="st-sec">
         <h2 className="st-h mono">{S.measurement}</h2>
@@ -63,14 +67,14 @@ export function Study({ f }: { f: Featured }) {
         </ul>
       </section>
 
-      <section className="st-sec">
+      {words.some(([, v]) => v) ? <section className="st-sec">
         <h2 className="st-h mono">The case</h2>
         <dl className="st-dl">
           {words.filter(([, v]) => v).map(([k, v]) => (
             <div key={k}><dt className="mono">{k}</dt><dd>{prose(v!)}</dd></div>
           ))}
         </dl>
-      </section>
+      </section> : null}
 
       {arch ? (
         <section className="st-sec">
@@ -120,7 +124,7 @@ export function Study({ f }: { f: Featured }) {
           <li><Link href="/work">{S.back}</Link></li>
         </ul>
         <Link className="st-next" href={`/work/${next.slug}`}>
-          <span className="mono">Next, {next.move}</span>
+          <span className="mono">Next, {next.move ?? W.noMove.toLowerCase()}</span>
           <span className="display">{next.name}</span>
         </Link>
       </section>

@@ -1,7 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { claim, prose } from "../src/content/site";
-import { featured } from "../src/content/work";
+import { aside, entries, featured, others } from "../src/content/work";
 
 // Phase 5, step 4: the Work room (work-c) and the project pages (proj-a). design/motion.md §7 and §8.
 const seam = (page: Page) => page.locator(".site").evaluate((e) => parseFloat(getComputedStyle(e).getPropertyValue("--seam")));
@@ -56,16 +56,62 @@ test.describe("the Work room", () => {
 
   test.describe("without JavaScript", () => {
     test.use({ javaScriptEnabled: false });
-    test("lists the three projects", async ({ page }) => {
+    test("lists all ten projects", async ({ page }) => {
       await page.goto("/work");
-      for (const f of featured) await expect(page.getByRole("link", { name: new RegExp(`^${f.name}`) })).toBeVisible();
+      for (const f of entries) await expect(page.locator(`main a[href="/work/${f.slug}"]`).first()).toBeVisible();
+    });
+  });
+});
+
+// Step 4a, comp A: the seven others on the second board, below the gallery.
+test.describe("Other Projects", () => {
+  test("is the scoresheet of the seven, in move order, each a link to its page", async ({ page }) => {
+    test.setTimeout(60_000); // a second WebGL room: slow under software GL with other tests running
+    const errors = errorsOf(page);
+    await page.goto("/work#archive");
+    await expect(page.getByRole("heading", { level: 2, name: "Other Projects" })).toBeVisible();
+    const rows = page.getByRole("list", { name: "Other projects" }).getByRole("link");
+    await expect(rows).toHaveCount(7);
+    expect(others.map((o) => o.move)).toEqual(["1…Nf6", "2…d5", "4…Nf6", "5. d4", "5…Bb6", "5…d6", null]);
+    for (const [i, o] of others.entries()) {
+      await expect(rows.nth(i)).toHaveAttribute("href", `/work/${o.slug}`);
+      await expect(rows.nth(i)).toContainText(o.name);
+      await expect(rows.nth(i)).toContainText(o.claim.qualifier);
+    }
+    // 1…Nf6 is another game (f6 is MirrorFi's), and RexCheck has no move: those two stand aside
+    expect([...aside].sort()).toEqual(["financial-risk-predictor", "rexcheck"]);
+    await expect(page.locator(".others-tags .tag")).toHaveCount(7, { timeout: 30_000 });
+    expect(errors).toEqual([]);
+  });
+
+  test("the old archive address lands on it", async ({ page }) => {
+    await page.goto("/archive");
+    await expect(page).toHaveURL(/\/work#archive$/);
+  });
+
+  test("is accessible", async ({ page }) => {
+    test.setTimeout(60_000);
+    await page.goto("/work#archive");
+    await expect(page.locator(".others-tags .tag")).toHaveCount(7, { timeout: 30_000 });
+    const a11y = await new AxeBuilder({ page }).include(".others").analyze();
+    expect(a11y.violations.map((v) => v.id)).toEqual([]);
+  });
+
+  test.describe("with reduced motion", () => {
+    test.use({ contextOptions: { reducedMotion: "reduce" } });
+    test("opening a row is a cut to its page", async ({ page }) => {
+      await page.goto("/work#archive");
+      await page.getByRole("list", { name: "Other projects" }).getByRole("link", { name: /MirrorFi/ }).click();
+      await expect(page).toHaveURL(/\/work\/mirrorfi$/);
+      await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName("MirrorFi");
+      await expect.poll(() => seam(page), { timeout: 5_000 }).toBeCloseTo(share(37), 1);
     });
   });
 });
 
 test.describe("a project page", () => {
-  for (const f of featured) {
-    test(`${f.name}: the piece on the seam at ${f.move}, then the case study`, async ({ page }) => {
+  for (const f of entries) {
+    test(`${f.name}: the piece on the seam at ${f.move ?? "no move"}, then the case study`, async ({ page }) => {
       test.setTimeout(60_000);
       const errors = errorsOf(page);
       const res = await page.goto(`/work/${f.slug}`);
@@ -103,15 +149,15 @@ test.describe("a project page", () => {
     expect(a11y.violations.map((v) => v.id)).toEqual([]);
   });
 
-  test("only the three featured projects have pages", async ({ page }) => {
-    const res = await page.goto("/work/rexcheck");
-    expect(res!.status()).toBe(404);
+  test("every project has a page, and nothing else does", async ({ page }) => {
+    expect((await page.goto("/work/rexcheck"))!.status()).toBe(200);
+    expect((await page.goto("/work/not-a-project"))!.status()).toBe(404);
   });
 
   test("no sideways scrolling at 320 px", async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 640 });
-    for (const f of featured) {
-      await page.goto(`/work/${f.slug}`);
+    for (const f of [...entries.map((e) => `/work/${e.slug}`), "/work"]) {
+      await page.goto(f);
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
     }
   });

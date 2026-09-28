@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef } from "react";
+import { Fragment, useLayoutEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { gsap } from "gsap";
 import { registerEases, perLayer } from "@/lib/motion/ease";
@@ -9,7 +9,7 @@ import { arrival, navigating } from "@/lib/seam/sweep";
 import { createProjectStage, type ProjectStage } from "./stage";
 import "./project.css";
 
-export interface ProjectHead { slug: string; name: string[]; meta: string; subtitle: string; claim: string; qualifier: string; move: string }
+export interface ProjectHead { slug: string; name: string[]; /** word indices that start a new line on desktop */ breaks?: number[]; meta: string; subtitle: string; claim: string; qualifier: string; move: string }
 
 const TURN = (20 * Math.PI) / 180, SWING = (15 * Math.PI) / 180;
 /** how far down the page (in screens) the seam starts to narrow, and where it is a hairline */
@@ -26,7 +26,7 @@ function Type({ head, inv }: { head: ProjectHead; inv?: boolean }) {
     <div className={`proj-layer${inv ? " seam-dark" : ""}`} data-layer={inv ? "inv" : "ink"} aria-hidden={inv || undefined} inert={inv || undefined}>
       <div className="proj-head">
         <H className="proj-name display" aria-label={inv ? undefined : head.name.join(" ")}>
-          {head.name.map((w) => <span key={w} className="ln" data-vt-line=""><Letters word={w} /></span>)}
+          {head.name.map((w, i) => <Fragment key={w}>{head.breaks?.includes(i) ? <br /> : null}<span className="ln" data-vt-line=""><Letters word={w} /></span></Fragment>)}
         </H>
         <p className="proj-meta"><span className="ln" data-vt-line=""><span data-rise="">{head.meta}</span></span></p>
       </div>
@@ -58,7 +58,9 @@ export function Project({ head, children }: { head: ProjectHead; children: React
     // The stage is built on the next frame, outside the commit (see WorkIndex): the snapshot covers the wait.
     let stage: ProjectStage | null = null, failed = false, dead = false, raf = 0;
     const draw = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; stage?.render(); }); };
-    const seat = () => stage?.seat(rest(), phoneQ.matches);
+    // On phones the piece is centred on the seam; past 60% (GraphRAG, +2.32) it would stand on the claim below,
+    // so there it stops at 60% and stands just above the seam.
+    const seat = () => stage?.seat(phoneQ.matches ? Math.min(rest(), 0.6) : rest(), phoneQ.matches);
     const build = () => {
       if (stage || failed || dead) return;
       try { stage = createProjectStage(canvas.current!, head.slug); } catch { failed = true; el.dataset.gl = "off"; return; }

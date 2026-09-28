@@ -136,11 +136,11 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
   };
 
   return (
-    <main ref={root} id="main" tabIndex={-1} className="work">
+    <section ref={root} className="work" aria-labelledby="work-title">
       <canvas ref={canvas} className="work-canvas" aria-hidden="true" onPointerMove={onPointer} onClick={onCanvasClick} />
       <div className="work-paper" />
       <div className="work-layer" data-on="dark">
-        <h1 className="work-title display"><span className="ln" data-vt-line=""><span data-rise="">Work</span></span></h1>
+        <h1 id="work-title" className="work-title display"><span className="ln" data-vt-line=""><span data-rise="">Work</span></span></h1>
         <ul className="work-pieces" aria-label="Selected work">
           {pieces.map((p) => {
             const at = pos[p.slug];
@@ -161,6 +161,6 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
         </ul>
       </div>
       <noscript><style>{".work .work-pieces{position:absolute;left:64px;top:22vh;display:grid;gap:28px}html .work:not([data-gl]) .piece:not([data-placed]){visibility:visible}.work .piece .more{opacity:1}@media (max-width:600px){.work .work-pieces{left:20px;top:190px}.work .piece{left:auto;max-width:none;transform:none}}"}</style></noscript>
-    </main>
+    </section>
   );
 }

@@ -9,10 +9,17 @@ import { SCULPTURE, disposeScene } from "@/lib/three/sculptures";
 import { renderer } from "@/lib/three/env";
 
 const SCALE = 1.9, HEIGHT = 1.45;
+/** the king stands taller than the bishops, and the glass bishop sits under a two-line name: both are scaled down so they clear it */
+const SIZE: Record<string, number> = { rexcheck: 1.3, "slm-distillation-engine": 1.7 };
+export const stageScale = (slug: string) => SIZE[slug] ?? SCALE;
+/** the piece's turn about its axis as the page first shows it */
+export const stageTurn = (slug: string) => ROT[slug] ?? 0;
 /** proj-a's framing; the knight turns to show its profile */
-const ROT: Record<string, number> = { faultline: 0, "gemini-teleportal": 0.35, circuitmindai: -0.5 };
-/** metal reads as metal only with something to reflect */
-const ENV: Record<string, number> = { "gemini-teleportal": 0.3 };
+const ROT: Record<string, number> = { faultline: 0, "gemini-teleportal": 0.35, circuitmindai: -0.5, mirrorfi: -0.15, "financial-risk-predictor": 0.6 };
+/** metal and glass read as themselves only with something to reflect */
+const ENV: Record<string, number> = {
+  "gemini-teleportal": 0.3, mirrorfi: 0.35, "financial-risk-predictor": 0.3, "multi-agent-graphrag": 0.3, "slm-distillation-engine": 0.3, rexcheck: 0.25,
+};
 
 export interface ProjectStage {
   /** the seam's share (0..1) and direction; the piece stands on it */
@@ -31,7 +38,7 @@ export function createProjectStage(canvas: HTMLCanvasElement, slug: string): Pro
   const pm = new THREE.PMREMGenerator(r), env = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose();
   scene.environment = env; scene.environmentIntensity = ENV[slug] ?? 0.025;
   const s = SCULPTURE[slug](), base = ROT[slug] ?? 0;
-  s.scale.setScalar(SCALE); s.traverse((o) => { if ((o as THREE.Mesh).isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+  s.scale.setScalar(stageScale(slug)); s.traverse((o) => { if ((o as THREE.Mesh).isMesh) { o.castShadow = true; o.receiveShadow = true; } });
   scene.add(s);
   const key = new THREE.SpotLight(0xfff1dc, 160, 0, 0.45, 0.5, 1.4), K0 = new THREE.Vector3(5.2, 12, -1.6);
   key.position.copy(K0); key.target.position.set(0, HEIGHT * SCALE * 0.55, 0); scene.add(key.target);

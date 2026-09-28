@@ -40,6 +40,7 @@ Lines from the v2 site and the owner's own copy that carry the owner's voice. Ra
 - "Payment-engine defects could travel all the way to checkout at the pump. I sat on that square and made sure the pawn could not be taken for free." [2…Nc6, Setel]
 - "The Italian bishop looks at the weakest point in the castled position. At WD the weakness was watching lab systems by hand. I put a bishop there." [3. Bc4, Western Digital]
 - "CircuitMind sees faults in the copper and talks back over a live voice channel." [3…Bc5]
+  (Not shown on the CircuitMindAI page: the owner dropped every project-page annotation at step 4a, 2026-09-29.)
 - "Grand prize is a symbol. The work was a product: shareable vault lines, a schema people could copy." [4…Nf6, MirrorFi]
 - "Prerequisites and credit-transfer live as edges, not another vector-only retrieval." [5…d6, GraphRAG]
 - "Castling is not a retreat. It is the move that says king safety before the central break. I ship the same way — tests and access control before the spectacular sacrifice." [old 4. O-O]

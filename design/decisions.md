@@ -144,3 +144,15 @@ Review page: `design/assets/index.html`. Everything is procedural and made for t
 3. Product screenshots: **add them as captioned evidence** near the end of each case study (the captions in content.json).
 4. (a) The FaultLine and Teleportal move annotations (agent drafts in voice.md): **drop them.** CircuitMindAI's annotation is the owner's own words; whether it stays alone is to be asked. (b) CircuitMindAI's decision text: replace the mid-sentence "…" with a **semicolon**.
 5. The gallery's light: **keep work-c's** neutral environment.
+
+**Step 4a, answers 1, 3 and 4 built (2026-09-29, `4f36f7f`), and three comps for the second board** (`design/build/board2.html`, `design/keyframes/side-{a,b,c}.html`).
+
+**Step 4a, owner's picks for the second board (2026-09-29, given in the review doc https://claude.ai/code/artifact/fccb2c12-1139-4074-8fd9-999dc93ef9df):**
+1. **Comp A**, one walnut board.
+2. It lives **below the featured three on /work** (`/work#archive`).
+3. Title: **"Other Projects"** (`pageCopy.work.othersTitle`).
+4. Each of the seven **opens its own page**: "content is small for now but we can fill it up as time passes".
+5. CircuitMindAI's annotation: **drop it too.** No project page has an annotation now.
+6. "The product": **keep.**
+7. MirrorFi: **black glass** instead of the mirror chrome.
+8. RexCheck as a king with no move yet: **yes, for now.**
