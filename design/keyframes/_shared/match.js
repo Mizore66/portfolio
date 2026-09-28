@@ -29,17 +29,26 @@ export function matchScene(canvas, theme, { counts, falling = null, view, piles 
   const rim = new THREE.DirectionalLight(day ? 0xffffff : 0x9fb4d8, day ? .4 : .9); rim.position.set(6, 4, -10); scene.add(rim);
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(300, 300), new THREE.MeshStandardMaterial({ color: day ? 0xe8e6e0 : 0x0b0f16, roughness: .8 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
   const mats = { w: MAT.porcelain(), d: new THREE.MeshPhysicalMaterial({ color: 0x3b3e45, roughness: .78, clearcoat: 0, clearcoatRoughness: .4 }), l: new THREE.MeshPhysicalMaterial({ color: 0x16171a, roughness: .3, clearcoat: 1, clearcoatRoughness: .12 }) };
+  const heaps = {};
   for (const p of piles) { const pz = p.z ?? 0;
     const ring = new THREE.Mesh(new THREE.RingGeometry(2.55, 2.58, 128), new THREE.MeshBasicMaterial({ color: day ? 0x57534c : 0x8f98a8, transparent: true, opacity: .45 })); ring.rotation.x = -Math.PI / 2; ring.position.set(p.x, .005, pz); ring.scale.z = .8; scene.add(ring);
     const list = heap(counts[p.key], p.seed), m = new THREE.InstancedMesh(STONE, mats[p.key], Math.max(1, list.length)); m.count = list.length;
     const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), E = new THREE.Euler(), one = new THREE.Vector3(1, 1, 1);
     list.forEach((s, i) => { M.compose(new THREE.Vector3(p.x + s.x, s.y, pz + s.z), Q.setFromEuler(E.set(s.rx, s.ry, s.rz)), one); m.setMatrixAt(i, M); });
-    m.castShadow = m.receiveShadow = true; scene.add(m);
+    m.castShadow = m.receiveShadow = true; scene.add(m); heaps[p.key] = { m, list, x: p.x, z: pz };
   }
   if (falling) { const s = new THREE.Mesh(STONE, mats[falling.key]); { const f = piles.find((p) => p.key === falling.key); s.position.set(f.x, falling.y, f.z ?? 0); } s.rotation.set(.5, .3, -.35); s.castShadow = true; scene.add(s); }
   const cam = new THREE.PerspectiveCamera(camera.fov, innerWidth / innerHeight, .1, 200); cam.position.set(...camera.pos); cam.lookAt(...camera.look);
   cam.setViewOffset(innerWidth, innerHeight, view[0] * innerWidth, view[1] * innerHeight, innerWidth, innerHeight); cam.updateMatrixWorld();
-  return { r, scene, cam };
+  return { r, scene, cam, heaps };
+}
+
+/** Place stones 0..n-1 of a heap; `drop(i)` gives stone i's height above its rest (0 when landed). */
+export function placeStones(h, n, drop = () => 0) {
+  const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), E = new THREE.Euler(), one = new THREE.Vector3(1, 1, 1);
+  h.m.count = Math.min(n, h.list.length);
+  for (let i = 0; i < h.m.count; i++) { const s = h.list[i], d = drop(i); M.compose(new THREE.Vector3(h.x + s.x, s.y + d, h.z + s.z), Q.setFromEuler(E.set(s.rx + d * .12, s.ry + d * .3, s.rz)), one); h.m.setMatrixAt(i, M); }
+  h.m.instanceMatrix.needsUpdate = true;
 }
 
 export function pileTags(cam, labels, piles = PILES) {

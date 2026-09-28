@@ -100,3 +100,11 @@ Review page: `design/keyframes/round2.html`. The picks stay stable; only the §5
 Approved set: the eight picks in `picks.html` (with the round 2 fixes in `round2.html`) and the Lab chapters with their phone frames in `lab-round2.html`.
 
 **Gate 2 closed.** Next is Phase 3, which starts only on the owner's go-ahead.
+
+## Phase 3 (2026-09-28)
+
+`design/motion.md` storyboards every transition and interaction. Six prototypes are in `design/motion/`, reviewed on `design/motion/index.html` with video, film strips, the live page and its reduced-motion version: the loader and signature moment, drag the seam, hero to Work, the role-page replay, Lab Gate C, and contact.
+
+The hero's swing uses the kept engine's evaluation after each ply of the line at 6,000 nodes (handcrafted), recomputed for Phase 3. It matches the stored career evals exactly, ending at +0.64. The real range is 48.3% to 55.9%, so the swing is a tremble before the lean.
+
+**Waiting on Gate 3:** the owner approves the motion character, the loader and the signature moment, and answers the three questions at the end of `motion.md`.
