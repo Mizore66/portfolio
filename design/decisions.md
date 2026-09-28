@@ -115,3 +115,17 @@ The hero's swing uses the kept engine's evaluation after each ply of the line at
 **Owner direction, the signature moment (2026-09-28):** the round 1 loader was less exciting than the other pages. The new opening is a high-resolution 3D board: the game plays and tightens, the board explodes, the pieces float as the hero's background (after a Thorgal reference the owner supplied) and the name arrives. All other pages stay as they are. To keep them unchanged, the new hero ends exactly on hero-a: the paper sweeps in to 55.9% and the name crosses the seam over the floating field. Prototype: `design/motion/hero-3d.html`.
 
 **Gate 3 approved (2026-09-28).** The owner approved the motion character, including the new loader and signature moment (the exploding board) and every other prototype. Sound is decided in Phase 4. Phase 4 (asset production) starts only on the owner's go-ahead.
+
+## Phase 4 (2026-09-28)
+
+Review page: `design/assets/index.html`. Everything is procedural and made for this site; credits and licences are in `design/colophon.md`.
+- **3D:**
+  - The set: new rook merlons, queen coronet, king cross, knight collar and felt pads.
+  - Materials: satin anodised aluminium; pitted basalt; a finer FaultLine crack.
+  - Three art-directed environment maps: studio, gallery and hall (`design/assets/env.js`).
+  - The hero board's key light is moved toward the camera, with a fill added, so ivory keeps its shape. The opening's videos are re-captured.
+- **Covers:** each product's own screenshot made physical beside its sculpture (a proof sheet, a phone, a PCB plate).
+- **Type:** Archivo 2.001 and JetBrains Mono 2.211, both SIL OFL 1.1, checked in each font's name table. The official licence texts are in `design/assets/licenses/`.
+- **Sound:** four synthesized cues (place, break, seam, tick), 51 KB in total, wired behind every prototype's opt-in toggle.
+
+**Waiting on Gate 4:** the owner approves the asset renders, and decides whether the site ships with sound.

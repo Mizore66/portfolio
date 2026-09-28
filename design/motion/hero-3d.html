@@ -44,11 +44,11 @@ const day = new THREE.Group(), night = new THREE.Group(); scene.add(day, night);
 day.add(new THREE.HemisphereLight(0xffffff, 0xd8d5ce, 1.1));
 const sun = new THREE.DirectionalLight(0xfff8ee, 2.2); sun.position.set(-9, 16, 8); sun.castShadow = true; sun.shadow.mapSize.set(4096, 4096); sun.shadow.bias = -.0004;
 Object.assign(sun.shadow.camera, { left: -16, right: 16, top: 16, bottom: -16, near: 1, far: 60 }); day.add(sun);
-const spot = new THREE.SpotLight(0xfff0dc, 0, 0, .5, .55, 1.3); spot.position.set(0, 15, 3); spot.target.position.set(.4, 0, 0); spot.castShadow = true; spot.shadow.mapSize.set(4096, 4096); spot.shadow.bias = -.0003;
+const spot = new THREE.SpotLight(0xfff0dc, 0, 0, .5, .55, 1.3); spot.position.set(2.5, 14, 8); spot.target.position.set(.4, 0, 0); spot.castShadow = true; spot.shadow.mapSize.set(4096, 4096); spot.shadow.bias = -.0003;
 night.add(spot, spot.target);
 const floatKey = new THREE.DirectionalLight(0xffe9cf, 0), rim = new THREE.DirectionalLight(0x9fb4d8, 0); floatKey.position.set(10, 12, 12); rim.position.set(-12, 6, -10); night.add(floatKey, rim);
 const amber = new THREE.PointLight(0xe8a33d, 0, 9, 1.6); amber.position.set(sq("g4").x, .5, sq("g4").z); night.add(amber);
-const nightHemi = new THREE.HemisphereLight(0x2a3040, 0x050505, .0); night.add(nightHemi);
+const nightHemi = new THREE.HemisphereLight(0x8a90a0, 0x2a2622, .0); night.add(nightHemi);
 
 // A premium board: rounded maple and walnut tiles with a drawn grain, a walnut frame in eight parts.
 function grain(base, dark, seed) { const c = document.createElement("canvas"); c.width = c.height = 256; const g = c.getContext("2d"), rr = rng(seed);
@@ -146,9 +146,9 @@ function render(t) {
   cam.position.set(pos[0] + shake, pos[1] + shake * .6, pos[2]); cam.lookAt(...look);
   // light: a spot finds the board, narrows as the game tightens; g4 flashes amber; the float is keyed and rimmed
   const lit = arrive(Math.min(1, t / .7)), blast = Math.max(0, t - T_BLAST), after2 = Math.min(1, blast / 1.2);
-  spot.intensity = 230 * lit * (1 - after2 * .7); spot.angle = .5 - .16 * push; spot.penumbra = .55;
+  spot.intensity = 140 * lit * (1 - after2 * .7); spot.angle = .5 - .16 * push; spot.penumbra = .55;
   amber.intensity = t > T_END - .05 ? 60 * Math.exp(-Math.max(0, t - T_END + .05) * 4) : 0;
-  floatKey.intensity = 1.6 * after2; rim.intensity = 1.1 * after2; nightHemi.intensity = .35 * after2;
+  floatKey.intensity = 1.6 * after2; rim.intensity = 1.1 * after2; nightHemi.intensity = .5 + .1 * after2;
   // render twice: day under the paper, night under the black
   day.visible = true; night.visible = false; scene.background = new THREE.Color(0xf3f3f1); scene.fog = new THREE.Fog(0xf3f3f1, 16, 44); rDay.render(scene, cam);
   day.visible = false; night.visible = true; scene.background = new THREE.Color(0x09090a); scene.fog = t > T_BLAST ? new THREE.Fog(0x09090a, 18, 48) : null; rNight.render(scene, cam);

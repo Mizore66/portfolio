@@ -14,7 +14,7 @@ export function faultline() {
   const g = piece("B", MAT.porcelain());
   const pts = [];
   for (let i = 0; i <= 40; i++) { const y = .18 + i * .026; pts.push([y, .22 + Math.sin(i * 1.7) * .018 + Math.sin(i * .45) * .05]); }
-  g.add(surfaceTube("B", pts, .0024, new THREE.MeshStandardMaterial({ color: 0x6a6258, roughness: .5 }), .001));
+  g.add(surfaceTube("B", pts, .0014, new THREE.MeshStandardMaterial({ color: 0x9a9186, roughness: .5 }), .0005));
   return g;
 }
 

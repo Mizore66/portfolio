@@ -92,12 +92,23 @@ function knightDetails(add, mat) {
   }
 }
 
+// A pitted stone texture for basalt: fine speckle plus a few vesicles (gas pockets), tiling.
+let STONE = null;
+function stone() {
+  if (STONE) return STONE;
+  const c = document.createElement("canvas"); c.width = c.height = 512; const g = c.getContext("2d"), d = g.createImageData(512, 512);
+  let seed = 7; const r = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  for (let i = 0; i < d.data.length; i += 4) { const v = 150 + (r() - .5) * 70; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; }
+  g.putImageData(d, 0, 0);
+  for (let k = 0; k < 260; k++) { const x = r() * 512, y = r() * 512, rad = .6 + r() ** 3 * 4; g.fillStyle = `rgba(20,20,20,${.5 + r() * .4})`; g.beginPath(); g.arc(x, y, rad, 0, 7); g.fill(); }
+  STONE = new THREE.CanvasTexture(c); STONE.wrapS = STONE.wrapT = THREE.RepeatWrapping; STONE.repeat.set(3, 3); return STONE;
+}
 export const MAT = {
   ivory: () => new THREE.MeshPhysicalMaterial({ color: 0xeee7d8, roughness: .38, clearcoat: .5, clearcoatRoughness: .3 }),
   ebony: () => new THREE.MeshPhysicalMaterial({ color: 0x1d1a17, roughness: .32, clearcoat: .7, clearcoatRoughness: .2 }),
   porcelain: () => new THREE.MeshPhysicalMaterial({ color: 0xf4f1ea, roughness: .16, clearcoat: 1, clearcoatRoughness: .06, sheen: .4, sheenColor: new THREE.Color(0xfff6e8) }),
-  aluminium: () => new THREE.MeshStandardMaterial({ color: 0xc9ced4, metalness: 1, roughness: .26 }),
-  basalt: () => new THREE.MeshStandardMaterial({ color: 0x333335, roughness: .88 }),
+  aluminium: () => new THREE.MeshStandardMaterial({ color: 0xbfc4ca, metalness: 1, roughness: .42 }),
+  basalt: () => new THREE.MeshStandardMaterial({ color: 0x3a3a3c, roughness: .9, roughnessMap: stone(), bumpMap: stone(), bumpScale: 1.6 }),
   copper: () => new THREE.MeshStandardMaterial({ color: 0xb87333, metalness: 1, roughness: .32 }),
   dark: () => new THREE.MeshStandardMaterial({ color: 0x141312, roughness: .9 }),
 };
@@ -120,6 +131,7 @@ function smooth(pts, passes = 4) {
   return p;
 }
 
+const GEO = {}, FELT = new THREE.MeshStandardMaterial({ color: 0x171a17, roughness: 1 });
 export function piece(type, mat) {
   const g = new THREE.Group();
   const add = (geo, m = mat) => { const mesh = new THREE.Mesh(geo, m); mesh.castShadow = true; mesh.receiveShadow = true; g.add(mesh); return mesh; };
@@ -131,18 +143,26 @@ export function piece(type, mat) {
     const cut = []; for (let i = 0; i <= 40; i++) { const t = i / 40, y = 1.0 + t * .15, a = -.62 + t * .8, r = profileRadius("B", y) - .002; cut.push(new THREE.Vector3(Math.sin(a) * r, y, Math.cos(a) * r)); }
     const groove = add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(cut), 80, .0075, 8, false), MAT.dark()); groove.castShadow = false;
   }
-  if (type === "Q") {
-    for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2; add(new THREE.SphereGeometry(.045, 20, 12)).position.set(Math.cos(a) * .2, 1.4, Math.sin(a) * .2); }
-    add(new THREE.SphereGeometry(.07, 24, 16)).position.y = 1.52;
+  if (type === "Q") { // a coronet of eight points leaning out from the rim, and a ball on a short neck
+    GEO.qPoint ??= mergeGeometries([new THREE.ConeGeometry(.036, .075, 20).translate(0, .037, 0), new THREE.SphereGeometry(.03, 20, 12).translate(0, .085, 0)]);
+    for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2, m = add(GEO.qPoint); m.position.set(Math.cos(a) * .2, 1.39, Math.sin(a) * .2); m.rotation.set(Math.sin(a) * .22, 0, -Math.cos(a) * .22); }
+    add(GEO.qNeck ??= new THREE.LatheGeometry([[0, 0], [.05, 0], [.035, .05], [0, .06]].map(([r, y]) => V(r, y)), 32)).position.y = 1.43;
+    add(GEO.qBall ??= new THREE.SphereGeometry(.058, 32, 20)).position.y = 1.52;
   }
-  if (type === "K") {
-    add(new THREE.BoxGeometry(.07, .22, .07)).position.y = 1.61;
-    add(new THREE.BoxGeometry(.19, .06, .07)).position.y = 1.64;
+  if (type === "K") { // a bevelled cross pattée
+    add(GEO.kCross ??= (() => { const c = new THREE.Shape(), w = .045, a = .13, f = .075;
+      c.moveTo(-w, -a); c.lineTo(w, -a); c.lineTo(w * .7, -w); c.lineTo(a, -f); c.lineTo(a, f); c.lineTo(w * .7, w); c.lineTo(w, a); c.lineTo(-w, a); c.lineTo(-w * .7, w); c.lineTo(-a, f); c.lineTo(-a, -f); c.lineTo(-w * .7, -w); c.closePath();
+      const g = new THREE.ExtrudeGeometry(c, { depth: .05, bevelEnabled: true, bevelThickness: .014, bevelSize: .012, bevelSegments: 4 }); g.translate(0, 0, -.025); return g; })()).position.y = 1.64;
+    add(GEO.kNeck ??= new THREE.LatheGeometry([[0, 0], [.06, 0], [.04, .05], [.045, .09], [0, .1]].map(([r, y]) => V(r, y)), 32)).position.y = 1.47;
   }
-  if (type === "R") {
-    for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2, m = add(new THREE.BoxGeometry(.11, .13, .1)); m.position.set(Math.cos(a) * .225, .985, Math.sin(a) * .225); m.rotation.y = -a; }
+  if (type === "R") { // six merlons cut from one ring, with bevelled edges
+    add(GEO.rTop ??= (() => { const parts = []; for (let i = 0; i < 6; i++) { const a0 = (i / 6) * Math.PI * 2 + .16, a1 = a0 + (Math.PI * 2 / 6) - .32, sh = new THREE.Shape();
+        sh.absarc(0, 0, .28, a0, a1, false); sh.absarc(0, 0, .175, a1, a0, true);
+        const e = new THREE.ExtrudeGeometry(sh, { depth: .12, bevelEnabled: true, bevelThickness: .012, bevelSize: .01, bevelSegments: 3, curveSegments: 16 }); e.rotateX(-Math.PI / 2); parts.push(e); }
+      return mergeGeometries(parts); })()).position.y = .905;
   }
-  if (type === "N") { add(knightHead()); knightDetails(add, mat); }
+  if (type === "N") { add(knightHead()); knightDetails(add, mat); add(GEO.nCollar ??= new THREE.LatheGeometry(smooth([[0, .19], [.3, .19], [.305, .22], [.285, .265], [.22, .295], [0, .295]]).map(([r, y]) => V(r, y)), 96)); }
+  const felt = add(GEO.felt ??= new THREE.CylinderGeometry(.285, .285, .008, 64).translate(0, .004, 0), FELT); felt.castShadow = false; felt.position.y = -.002;
   return g;
 }
 

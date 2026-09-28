@@ -1,0 +1,18 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><title>Asset: the Staunton set</title><link rel="stylesheet" href="/design/keyframes/_shared/tokens.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>.lab { position:absolute; bottom:40px; font:12px var(--font-mono); color:#77726a; transform:translateX(-50%); z-index:3; } h1 { position:absolute; left:48px; top:40px; font-size:28px; z-index:3; }</style></head><body><div class="frame"><canvas id="c"></canvas><h1 class="display">The set</h1><div id="labs"></div></div>
+<script type="module">
+import { THREE, renderer, applyEnv, piece, MAT, done } from "/design/keyframes/_shared/chess3d.js";
+import { studio } from "./env.js";
+const { r } = renderer(document.getElementById("c"), { exposure: 1 }), scene = new THREE.Scene(), W = innerWidth, H = innerHeight;
+scene.background = new THREE.Color(0xe9e8e4); scene.environment = studio(r); scene.environmentIntensity = .38;
+const key = new THREE.DirectionalLight(0xfff6ea, 2.2); key.position.set(-6, 9, 7); key.castShadow = true; key.shadow.mapSize.set(4096, 4096); key.shadow.radius = 6; key.shadow.bias = -.0004; Object.assign(key.shadow.camera, { left: -8, right: 8, top: 8, bottom: -8 }); scene.add(key);
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), new THREE.ShadowMaterial({ opacity: .18 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const T = ["P", "N", "B", "R", "Q", "K"], cam = new THREE.PerspectiveCamera(22, W / H, .1, 100); cam.position.set(0, 2.6, 20.5); cam.lookAt(0, 1.05, 0); cam.updateMatrixWorld();
+const labs = [];
+T.forEach((t, i) => { const x = -5.6 + i * 2.24;
+  for (const [w, dz] of [[true, .55], [false, -.75]]) { const p = piece(t, w ? MAT.ivory() : MAT.ebony()); p.scale.setScalar(1.25); p.position.set(x + (w ? -.42 : .42), 0, dz); p.rotation.y = t === "N" ? (w ? -.5 : -2.6) : .4; scene.add(p); }
+  const q = new THREE.Vector3(x, 0, .55).project(cam); labs.push(`<div class="lab" style="left:${(q.x + 1) / 2 * W}px;top:${(1 - q.y) / 2 * H + 18}px;bottom:auto">${["pawn", "knight", "bishop", "rook", "queen", "king"][i]}</div>`); });
+document.getElementById("labs").innerHTML = labs.join("");
+done(r, scene, cam);
+</script></body></html>
