@@ -156,3 +156,5 @@ Review page: `design/assets/index.html`. Everything is procedural and made for t
 6. "The product": **keep.**
 7. MirrorFi: **black glass** instead of the mirror chrome.
 8. RexCheck as a king with no move yet: **yes, for now.**
+
+**Step 4a, Other Projects: Gate 5 approved (2026-09-29, `9fecce7`, review `design/build/others.md`).** Yes to all six calls: RexCheck's page rests level (50%); GraphRAG's piece stops at 60% on phones; the glass bishop and the king are scaled down on their pages; MirrorFi's black glass and RexCheck's obsidian both stay; the new copy ("No move yet", "another game", "Other projects") stays. Covers and screenshots for the seven: **not expected now**. The owner will supply them as a new feature after the redesign. Step 4a is closed; step 4b (Roles) starts.
