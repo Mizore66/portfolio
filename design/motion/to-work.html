@@ -18,7 +18,7 @@
     .ttlw { left: 16px; top: 62px; bottom: auto; font-size: 24vw; }
     .label b { font-size: 13px; } .label.on b { font-size: 16px; } .label .n { font-size: 12px; } .label .q { font-size: 11px; }
   }
-</style><script>if (location.protocol === "file:") addEventListener("DOMContentLoaded", () => { document.body.innerHTML = '<div style="font:16px/1.5 system-ui;padding:48px;max-width:60ch">This prototype needs the local server, because browsers block its modules on file:// pages. From the portfolio folder run <code>python3 -m http.server 4173 --bind 127.0.0.1</code>, then open <a href="http://127.0.0.1:4173/design/motion/index.html">http://127.0.0.1:4173/design/motion/index.html</a>.</div>'; });</script></head><body>
+</style><script>if (location.protocol === "file:") addEventListener("DOMContentLoaded", () => { document.body.innerHTML = '<div style="font:16px/1.5 system-ui;padding:48px;max-width:60ch">This prototype needs the local server, because browsers block its modules on file:// pages. From the portfolio folder run <code>python3 design/serve.py</code>, then open <a href="http://127.0.0.1:4173/design/motion/index.html">http://127.0.0.1:4173/design/motion/index.html</a>.</div>'; });</script></head><body>
 <div class="frame" id="f"><canvas id="c"></canvas><div id="ink">
   <nav class="nav"><span>Roles</span><span id="nw">Work</span><span>Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
   <h1 class="name display"><span class="ln"><i>Anas</i></span><span class="ln l2"><i>Qumhiyeh</i></span></h1>
@@ -28,7 +28,7 @@
   <div class="ttlw display"><i>Work</i></div>
 </div><div class="dot" id="dot"></div></div>
 <script type="module">
-import { gsap, liveSeam, run, share, per, mobile } from "./_kit.js"; import { gallery } from "/design/keyframes/_shared/gallery.js"; import { THREE } from "/design/keyframes/_shared/chess3d.js";
+import { gsap, liveSeam, run, share, per, mobile, sfx, soundToggle } from "./_kit.js"; import { gallery } from "/design/keyframes/_shared/gallery.js"; import { THREE } from "/design/keyframes/_shared/chess3d.js";
 await document.fonts.ready;
 const root = document.getElementById("f"), W = innerWidth, H = innerHeight;
 const g = gallery(document.getElementById("c"), { layout: "plan", light: 1 });
@@ -66,5 +66,6 @@ tl.to(st, { dx: nw.left + nw.width / 2, dy: nw.bottom + 10, duration: .55, ease:
   .to(".ttlw i", { yPercent: 0, duration: .7, ease: "arrive" }, 1.75)
   .to(".label", { opacity: 1, y: 0, duration: .5, ease: "arrive", stagger: per(.08) }, 2.05)
   .to(dot, { opacity: 0, duration: .2 }, 2.2).to({}, { duration: .8 });
-run(tl, { render });
+tl.call(() => sfx("seam"), null, .62);
+run(tl, { render }); soundToggle(() => tl.restart());
 </script></body></html>

@@ -19,7 +19,7 @@
     .hair { left: 0; right: 0; top: 50%; bottom: auto; width: auto; height: 1px; transform-origin: left; }
     .card { left: 20px !important; bottom: 76px; } .card b { font-size: 19px; } .grab { left: 72% !important; }
   }
-</style><script>if (location.protocol === "file:") addEventListener("DOMContentLoaded", () => { document.body.innerHTML = '<div style="font:16px/1.5 system-ui;padding:48px;max-width:60ch">This prototype needs the local server, because browsers block its modules on file:// pages. From the portfolio folder run <code>python3 -m http.server 4173 --bind 127.0.0.1</code>, then open <a href="http://127.0.0.1:4173/design/motion/index.html">http://127.0.0.1:4173/design/motion/index.html</a>.</div>'; });</script></head><body>
+</style><script>if (location.protocol === "file:") addEventListener("DOMContentLoaded", () => { document.body.innerHTML = '<div style="font:16px/1.5 system-ui;padding:48px;max-width:60ch">This prototype needs the local server, because browsers block its modules on file:// pages. From the portfolio folder run <code>python3 design/serve.py</code>, then open <a href="http://127.0.0.1:4173/design/motion/index.html">http://127.0.0.1:4173/design/motion/index.html</a>.</div>'; });</script></head><body>
 <div class="frame" id="f"><div class="hair" id="hair"></div><div id="ink">
   <nav class="nav"><span>Roles</span><span>Work</span><span>Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
   <div class="skip mono">Skip to résumé</div>
@@ -29,7 +29,7 @@
 </div><div class="grab" id="grab"></div></div>
 <div class="t" id="t"></div>
 <script type="module">
-import { gsap, liveSeam, run, evalStep, share, capture, mobile, per } from "./_kit.js"; import { LINE, LINE_CP, career, fmt } from "./_data.js";
+import { gsap, liveSeam, run, evalStep, share, capture, mobile, per, sfx, soundToggle } from "./_kit.js"; import { LINE, LINE_CP, career, fmt } from "./_data.js";
 document.querySelectorAll(".ln").forEach((l) => l.innerHTML = [...l.dataset.w].map((c) => `<span class="ch">${c}</span>`).join(""));
 await document.fonts.ready;
 const demo = new URLSearchParams(location.search).get("demo"), C = await career(), root = document.getElementById("f");
@@ -79,5 +79,6 @@ if (demo !== "drag") {
   move(x0 - 9 * STEP, x0, 4.4, 6.2);
   tl.to(st, { hold: 0, duration: .45, ease: evalStep, onUpdate: render }, 6.35).to(grab, { opacity: 0, duration: .2 }, 6.35).to(".card", { opacity: 0, duration: .3 }, 7.1).to({}, { duration: .4 });
 }
-run(tl, { render });
+if (demo !== "drag") tl.call(() => sfx("seam", { gain: .7 }), null, .38);
+run(tl, { render }); soundToggle(() => tl.restart());
 </script></body></html>

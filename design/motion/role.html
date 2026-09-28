@@ -17,7 +17,7 @@
     .fact p { font-size: 15px; } .fact b { font-size: 21px; margin-top: 14px; }
     .scrub { left: 20px; bottom: 28px; } .ticks { gap: 4px; } .bar { right: 16px; }
   }
-</style><script>if (location.protocol === "file:") addEventListener("DOMContentLoaded", () => { document.body.innerHTML = '<div style="font:16px/1.5 system-ui;padding:48px;max-width:60ch">This prototype needs the local server, because browsers block its modules on file:// pages. From the portfolio folder run <code>python3 -m http.server 4173 --bind 127.0.0.1</code>, then open <a href="http://127.0.0.1:4173/design/motion/index.html">http://127.0.0.1:4173/design/motion/index.html</a>.</div>'; });</script></head><body>
+</style><script>if (location.protocol === "file:") addEventListener("DOMContentLoaded", () => { document.body.innerHTML = '<div style="font:16px/1.5 system-ui;padding:48px;max-width:60ch">This prototype needs the local server, because browsers block its modules on file:// pages. From the portfolio folder run <code>python3 design/serve.py</code>, then open <a href="http://127.0.0.1:4173/design/motion/index.html">http://127.0.0.1:4173/design/motion/index.html</a>.</div>'; });</script></head><body>
 <div class="frame"><canvas id="c"></canvas><div class="edge"></div>
   <nav class="nav"><span aria-current="page">Roles</span><span>Work</span><span>Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
   <div class="role"><h1 class="display">Deriv</h1><p>AI Engineer, Jun 2026 to now</p></div><div class="count"></div>
@@ -25,7 +25,7 @@
   <div class="scrub"><div class="mv mono" id="mv"></div><div class="ticks" id="ticks"></div><div class="g mono" id="gt"></div></div>
 </div><div class="bar"><i id="bar"></i></div>
 <script type="module">
-import { gsap, run, mobile } from "./_kit.js"; import { THREE, renderer, applyEnv, board, position, sq } from "/design/keyframes/_shared/chess3d.js";
+import { gsap, run, mobile, sfx, soundToggle } from "./_kit.js"; import { THREE, renderer, applyEnv, board, position, sq } from "/design/keyframes/_shared/chess3d.js";
 const G = (await (await fetch("./_games.json")).json())["Tal-Larsen"], C = await (await fetch("/content/content.json")).json();
 const role = C.roles.find((r) => r.employer === "Deriv"), claims = Object.fromEntries(C.claims.map((c) => [c.id, c]));
 const FACTS = [["derivCxCost", 0], ["derivCsat", null], ["derivEvents", 2], ["derivTimeToFix", 3]].map(([id, b]) => ({ text: b === null ? claims[id].context : role.bullets[b], big: claims[id].display, q: claims[id].qualifier }));
@@ -82,6 +82,7 @@ tl.to(st, { orbit: 1, scroll: 1, duration: T + .4, ease: "none", onUpdate: rende
 FACTS.forEach((_, i) => { const t = .3 + i * (T - .6) / FACTS.length;
   if (i) tl.to(facts[i - 1], { opacity: 0, x: 18, duration: .28, ease: "seam" }, t - .34);
   tl.call(() => { st.fact = i; }, null, t).to(facts[i], { opacity: 1, x: 0, duration: .55, ease: "arrive" }, t).to(facts[i].querySelector("hr"), { scaleX: 1, duration: .5, ease: "arrive" }, t); });
+for (let k = 0; k <= END; k++) tl.call(() => sfx("place", { gain: G.plies[k].cap ? 1 : .75, rate: .96 + (k % 4) * .03 }), null, .4 + k * STEP + STEP * .92 * .92);
 tl.to({}, { duration: .8 });
-run(tl, { render });
+run(tl, { render }); soundToggle(() => tl.restart());
 </script></body></html>

@@ -16,7 +16,7 @@
     .skip { left: 20px; top: 24px; bottom: auto; font-size: 12px; } .ply { bottom: 26px; font-size: 12px; }
   }
 </style>
-<script>if (location.protocol === "file:") addEventListener("DOMContentLoaded", () => { document.body.innerHTML = '<div style="font:16px/1.5 system-ui;padding:48px;max-width:60ch;color:#fff">This prototype needs the local server, because browsers block its modules on file:// pages. From the portfolio folder run <code>python3 -m http.server 4173 --bind 127.0.0.1</code>, then open <a style="color:#e8a33d" href="http://127.0.0.1:4173/design/motion/index.html">http://127.0.0.1:4173/design/motion/index.html</a>.</div>'; });</script>
+<script>if (location.protocol === "file:") addEventListener("DOMContentLoaded", () => { document.body.innerHTML = '<div style="font:16px/1.5 system-ui;padding:48px;max-width:60ch;color:#fff">This prototype needs the local server, because browsers block its modules on file:// pages. From the portfolio folder run <code>python3 design/serve.py</code>, then open <a style="color:#e8a33d" href="http://127.0.0.1:4173/design/motion/index.html">http://127.0.0.1:4173/design/motion/index.html</a>.</div>'; });</script>
 </head><body>
 <div class="frame" id="f"><div id="ink">
   <nav class="nav"><span>Roles</span><span>Work</span><span>Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
@@ -26,7 +26,7 @@
   <div class="ev mono">10…Bg4 +0.64</div><div class="sound dim">Sound off</div>
 </div></div>
 <script type="module">
-import { gsap, liveSeam, run, share, per, mobile } from "./_kit.js"; import { LINE } from "./_data.js"; import { rng } from "/design/keyframes/_shared/rng.js";
+import { gsap, liveSeam, run, share, per, mobile, sfx, soundToggle } from "./_kit.js"; import { LINE } from "./_data.js"; import { rng } from "/design/keyframes/_shared/rng.js";
 import { THREE, renderer, applyEnv, piece, MAT, sq } from "/design/keyframes/_shared/chess3d.js";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 document.querySelectorAll(".ln").forEach((l) => l.innerHTML = [...l.dataset.w].map((c) => `<span class="ch">${c}</span>`).join(""));
@@ -167,6 +167,8 @@ tl.to(st, { t: T_TOTAL, duration: T_TOTAL, ease: "none", onUpdate: draw }, 0)
   .to(".line i", { yPercent: 0, duration: .6, ease: "arrive", stagger: per(.08) }, T_NAME + .45)
   .to(".ev", { opacity: 1, duration: .4 }, T_NAME + .6)
   .to(".nav span, .sound", { opacity: 1, duration: .4, ease: "arrive", stagger: per(.05) }, T_NAME + .7);
+PLIES.forEach((_, i) => tl.call(() => sfx("place", { gain: .55 + .45 * i / PLIES.length, rate: .95 + (i % 3) * .04 }), null, T_AT[i] + D[i] * .85));
+tl.call(() => sfx("break"), null, T_BLAST).call(() => sfx("seam", { gain: .8 }), null, T_PAPER);
 window.__timing = { T_BLAST, T_PAPER, T_NAME, T_TOTAL };
-run(tl, { render: draw });
+run(tl, { render: draw }); soundToggle(() => tl.restart());
 </script></body></html>

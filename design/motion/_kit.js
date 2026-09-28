@@ -59,3 +59,25 @@ export function both(tl, sel, vars, pos) {
 
 /** A stagger that counts within each seam layer: pass as `stagger: per(.05)`. */
 export const per = (each) => (i, el, list) => { const L = !!el.closest("#ink-inv"); let k = 0; for (let j = 0; j < i; j++) if (!!list[j].closest("#ink-inv") === L) k++; return k * each; };
+
+// ---- Sound (opt-in, off by default). Prototype convenience: turning it on replays the page's motion. ----
+let ctx = null, on = false; const BUF = {}, NAMES = ["place", "tick", "seam", "break"];
+async function load() {
+  ctx ??= new AudioContext(); await ctx.resume();
+  await Promise.all(NAMES.map(async (n) => { if (!BUF[n]) BUF[n] = await ctx.decodeAudioData(await (await fetch(`/design/assets/sound/${n}.m4a`)).arrayBuffer()); }));
+}
+/** Play a cue if sound is on: `sfx("place", { gain: .6, rate: 1.1 })`. Silent in capture and reduced motion. */
+export function sfx(name, { gain = 1, rate = 1 } = {}) {
+  if (!on || capture || reduced || !BUF[name]) return;
+  const s = ctx.createBufferSource(), g = ctx.createGain(); s.buffer = BUF[name]; s.playbackRate.value = rate; g.gain.value = gain; s.connect(g).connect(ctx.destination); s.start();
+}
+/** Wire every "Sound off" label on the page (adding one if the page has none). */
+export function soundToggle(onEnable = () => {}) {
+  if (capture) return;
+  if (!document.querySelector(".sound")) { const b = document.createElement("div"); b.className = "sound"; b.style.cssText = "position:fixed;right:24px;bottom:18px;z-index:20;color:#fff;mix-blend-mode:difference;font-size:13px"; document.body.appendChild(b); }
+  const els = document.querySelectorAll(".sound"), label = () => els.forEach((e) => { e.textContent = on ? "Sound on" : "Sound off"; });
+  els.forEach((e) => { e.style.cursor = "pointer"; e.style.pointerEvents = "auto"; e.setAttribute("role", "button"); e.tabIndex = 0;
+    const go = async () => { on = !on; label(); if (on) { await load(); onEnable(); } };
+    e.addEventListener("click", go); e.addEventListener("keydown", (k) => (k.key === "Enter" || k.key === " ") && go()); });
+  label();
+}
