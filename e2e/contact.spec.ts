@@ -41,6 +41,7 @@ test.describe("Contact", () => {
     test.setTimeout(90_000);
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     await page.goto("/contact");
+    await expect(page.locator(".site[data-seam-bound]")).toBeAttached({ timeout: 60_000 }); // hydrated: the button is live
     const button = ink(page).getByRole("button", { name: "Copy email" });
     await button.click();
     await expect(ink(page).getByRole("button", { name: "Copied" })).toBeVisible({ timeout: 30_000 });

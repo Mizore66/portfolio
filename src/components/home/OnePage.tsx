@@ -24,14 +24,15 @@ export function OnePage() {
     const tops = () => [...main.querySelectorAll<HTMLElement>(":scope > section[id]")];
     const at = (id: string) => { const el = document.getElementById(id); return el ? el.getBoundingClientRect().top + window.scrollY : null; };
 
-    // the address and the underline follow the section under the middle of the screen
+    // the address and the underline follow the section under the middle of the screen: the address names the part
+    // itself (/#archive for Other Projects, so a shared link comes back to it), the underline the nav item it is under
     let raf = 0;
     const follow = () => {
       raf = 0;
       const mid = innerHeight / 2;
       let id = "top";
-      for (const s of tops()) if (s.getBoundingClientRect().top <= mid) id = OWNER[s.id] ?? id;
-      section.set(id);
+      for (const s of tops()) if (s.getBoundingClientRect().top <= mid && s.id in OWNER) id = s.id;
+      section.set(OWNER[id]);
       const want = id === "top" ? "/" : `/#${id}`;
       if (location.pathname === "/" && location.pathname + location.hash !== want) history.replaceState(history.state, "", want);
     };

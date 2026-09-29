@@ -17,7 +17,7 @@ const seam = (page: Page) => page.locator(".hero").evaluate((e) => parseFloat(ge
 
 test.describe("hero", () => {
   test("plays the opening and comes to rest on the seam", async ({ page }) => {
-    test.setTimeout(60_000);
+    test.setTimeout(120_000);
     const errors = watchErrors(page);
     // record every state the hero passes through: CPU-rendered WebGL can stall the page past a short one
     await page.addInitScript(() => {

@@ -71,7 +71,7 @@ test.describe("the Work room", () => {
 // Step 4a, comp A: the seven others on the second board, below the gallery.
 test.describe("Other Projects", () => {
   test("is the scoresheet of the seven, in move order, each a link to its page", async ({ page }) => {
-    test.setTimeout(60_000); // a second WebGL room: slow under software GL with other tests running
+    test.setTimeout(120_000); // a second WebGL room: slow under software GL with other tests running
     const errors = errorsOf(page);
     await page.goto("/#archive");
     await expect(page.getByRole("heading", { level: 2, name: "Other Projects" })).toBeVisible();
@@ -95,7 +95,7 @@ test.describe("Other Projects", () => {
   });
 
   test("is accessible", async ({ page }) => {
-    test.setTimeout(60_000);
+    test.setTimeout(120_000);
     await page.goto("/#archive");
     await expect(page.locator(".others-tags .tag")).toHaveCount(7, { timeout: 30_000 });
     const a11y = await new AxeBuilder({ page }).include(".others").analyze();
@@ -117,7 +117,7 @@ test.describe("Other Projects", () => {
 test.describe("a project page", () => {
   for (const f of entries) {
     test(`${f.name}: the piece on the seam at ${f.move ?? "no move"}, then the case study`, async ({ page }) => {
-      test.setTimeout(60_000);
+      test.setTimeout(120_000);
       const errors = errorsOf(page);
       const res = await page.goto(`/work/${f.slug}`);
       // every page under /work/ carries its own CSP nonce (the proxy used to skip the folder)
@@ -144,7 +144,7 @@ test.describe("a project page", () => {
   }
 
   test("is accessible, at rest and in the case study", async ({ page }) => {
-    test.setTimeout(60_000);
+    test.setTimeout(120_000);
     await page.goto("/work/faultline");
     let a11y = await new AxeBuilder({ page }).analyze();
     expect(a11y.violations.map((v) => v.id)).toEqual([]);

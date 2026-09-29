@@ -14,7 +14,7 @@ test.beforeEach(async ({ page }) => { await page.addInitScript(() => sessionStor
 
 test.describe("the Roles hall", () => {
   test("names the seven tables in career order, each a link to its page, with now on Deriv", async ({ page }) => {
-    test.setTimeout(60_000); // the hall's seven sets are slow to draw under software GL
+    test.setTimeout(120_000); // the hall's seven sets are slow to draw under software GL
     const errors = errorsOf(page);
     await page.goto("/roles"); // the one page's Roles section (/#roles)
     await expect(page).toHaveURL(/\/#roles$/);
@@ -50,7 +50,7 @@ test.describe("the Roles hall", () => {
 test.describe("a role page", () => {
   for (const t of tables) {
     test(`${t.name}: the facts and the game`, async ({ page }) => {
-      test.setTimeout(60_000);
+      test.setTimeout(120_000);
       const errors = errorsOf(page);
       const res = await page.goto(`/roles/${t.slug}`);
       expect(res!.headers()["content-security-policy"]).toMatch(/'nonce-[^']+'/);
@@ -77,7 +77,7 @@ test.describe("a role page", () => {
   });
 
   test("is accessible, at the start and at the famous position", async ({ page }) => {
-    test.setTimeout(60_000);
+    test.setTimeout(120_000);
     await page.goto("/roles/deriv");
     let a11y = await new AxeBuilder({ page }).analyze();
     expect(a11y.violations.map((v) => v.id)).toEqual([]);
