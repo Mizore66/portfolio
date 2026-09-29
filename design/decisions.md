@@ -178,3 +178,4 @@ Review page: `design/assets/index.html`. Everything is procedural and made for t
 4. **Addresses (the designer's call, since /lab keeps the six chapters):** the sections are `/#roles`, `/#work`, `/#lab` and `/#contact`. The old /roles, /work and /contact redirect to them. /lab stays the full Lab page, and the detail pages keep their addresses (`/roles/<id>`, `/work/<id>`).
 
 Also reported: after the engine moved in Play, the board ignored clicks for 2 to 3 s. Fixed (`6e720fa`): the board is the visitor's the moment the engine's move lands.
+- **The one page, built** (`fc81dd8`, `ce51e1d`, `51c59c6`; review `design/build/onepage.md`). As directed, plus two calls asked at its gate: the nav steps away while the page scrolls down (so titles never run under it) and returns on the way up, on landing and on focus; the hero's opening plays only at the top of the page. The 404 (C, Taken) is built (`319704a`).
