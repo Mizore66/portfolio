@@ -7,6 +7,7 @@ import { arrival } from "@/lib/seam/sweep";
 import { gsap } from "gsap";
 import { registerEases, share, perLayer } from "@/lib/motion/ease";
 import { createStage, T, type Stage } from "./stage";
+import { cue } from "@/lib/sound/sound";
 import "./hero.css";
 
 /** The eval after 10…Bg4, where the hero settles (content.json chess.careerEvals.faultline). */
@@ -33,7 +34,6 @@ function Type({ first, last, headline, inverted }: { first: string; last: string
         </h1>
         <p className="line">{headline.map((l) => <span key={l} data-vt-line=""><i>{l}</i></span>)}</p>
         <p className="ev mono" data-vt-line="">10…Bg4 +0.64</p>
-        <p className="sound" data-vt-line="">Sound off</p>
       </div>
     </div>
   );
@@ -60,6 +60,7 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
     if (mobile === null) return;
     const el = root.current!, q = (s: string) => el.querySelectorAll<HTMLElement>(s);
     const nav = document.querySelectorAll<HTMLElement>(".chrome .nav"); // the site nav lives in the chrome
+    const toggle = [...document.querySelectorAll<HTMLElement>(".chrome .sound-toggle")]; // and so does the sound toggle
     const site = el.closest<HTMLElement>(".site");
     registerEases();
     let stage: Stage;
@@ -69,10 +70,14 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
     const seen = sessionStorage.getItem(SEEN) === "1";
     const arrive = arrival("/");
     const st = { t: 0, at: 0 };
+    let heard = { t: -1, ply: "" }; // the cues play only while the game runs forward, not on a jump to its end
     const draw = () => {
       if (!arrive) setSeam(st.at);
       stage.render(st.t);
-      const ply = stage.ply(st.t);
+      const ply = stage.ply(st.t), running = heard.t >= 0 && st.t > heard.t && st.t - heard.t < 0.5;
+      if (running && ply && ply !== heard.ply) cue("place");
+      if (running && heard.t < T.blast && st.t >= T.blast) cue("break");
+      heard = { t: st.t, ply };
       q(".ply").forEach((p) => { p.textContent = ply; p.style.opacity = String(st.t < T.blast ? 1 : Math.max(0, 1 - (st.t - T.blast) * 3)); });
     };
 
@@ -92,7 +97,7 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
     const finish = () => {
       st.t = T.total; st.at = share(SETTLE_CP);
       gsap.set(q(".ch"), { yPercent: 0 }); gsap.set(q(".line i"), { yPercent: 0 });
-      gsap.set(q(".sound, .ev"), { opacity: 1 }); gsap.set(nav, { opacity: 1 }); gsap.set(q(".skip-resume"), { opacity: 0 });
+      gsap.set(q(".ev"), { opacity: 1 }); gsap.set(toggle, { clearProps: "opacity" }); gsap.set(nav, { opacity: 1 }); gsap.set(q(".skip-resume"), { opacity: 0 });
       draw(); el.dataset.intro = "done"; startIdle();
       if (!arrive) restColours(true);
     };
@@ -119,17 +124,17 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
       // the name rises as the seam lands, as every arriving page's title does
       sessionStorage.setItem(SEEN, "1"); finish();
       if (!arrive.reduced) {
-        gsap.set(q(".ch"), { yPercent: 135 }); gsap.set(q(".line i"), { yPercent: 130 }); gsap.set(q(".ev, .sound"), { opacity: 0 });
+        gsap.set(q(".ch"), { yPercent: 135 }); gsap.set(q(".line i"), { yPercent: 130 }); gsap.set([...q(".ev"), ...toggle], { opacity: 0 });
         cancelRise = arrive.rise((d) => {
           rise = gsap.timeline()
             .to(q(".ch"), { yPercent: 0, duration: 0.7, ease: "arrive", stagger: perLayer(0.028) }, d)
             .to(q(".line i"), { yPercent: 0, duration: 0.6, ease: "arrive", stagger: perLayer(0.08) }, d + 0.3)
-            .to(q(".ev, .sound"), { opacity: 1, duration: 0.4 }, d + 0.5);
+            .to(q(".ev"), { opacity: 1, duration: 0.4 }, d + 0.5).to(toggle, { opacity: 0.62, duration: 0.4, clearProps: "opacity" }, d + 0.5);
         });
       }
     } else if (reduced || seen) finish();
     else {
-      gsap.set(q(".ch"), { yPercent: 135 }); gsap.set(q(".line i"), { yPercent: 130 }); gsap.set(q(".sound, .ev"), { opacity: 0 }); gsap.set(nav, { opacity: 0 });
+      gsap.set(q(".ch"), { yPercent: 135 }); gsap.set(q(".line i"), { yPercent: 130 }); gsap.set([...q(".ev"), ...toggle], { opacity: 0 }); gsap.set(nav, { opacity: 0 });
       draw(); el.dataset.intro = "play"; site?.setAttribute("data-seam-moving", ""); restColours(false);
       tl.to(st, { t: T.total, duration: T.total, ease: "none", onUpdate: draw }, 0)
         .to(st, { at: share(SETTLE_CP), duration: 0.9, ease: "seam", onUpdate: draw }, T.paper)
@@ -137,7 +142,7 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
         .to(q(".skip-resume"), { opacity: 0, duration: 0.25 }, T.name)
         .to(q(".line i"), { yPercent: 0, duration: 0.6, ease: "arrive", stagger: perLayer(0.08) }, T.name + 0.45)
         .to(q(".ev"), { opacity: 1, duration: 0.4 }, T.name + 0.6)
-        .to([...nav, ...q(".sound")], { opacity: 1, duration: 0.4, ease: "arrive", stagger: perLayer(0.05) }, T.name + 0.7);
+        .to(nav, { opacity: 1, duration: 0.4, ease: "arrive", stagger: perLayer(0.05) }, T.name + 0.7).to(toggle, { opacity: 0.62, duration: 0.4, ease: "arrive", clearProps: "opacity" }, T.name + 0.75);
       // The first 0.7 s is the loader: hold until the fonts are in (at most 2.5 s), then play.
       const fonts = Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 2500))]);
       if (process.env.NODE_ENV !== "production" && new URLSearchParams(location.search).has("capture")) {
@@ -150,7 +155,7 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
 
     const onResize = () => { stage.resize(); draw(); };
     window.addEventListener("resize", onResize);
-    return () => { tl.kill(); cancelRise(); rise?.kill(); gsap.set(nav, { clearProps: "opacity" }); gsap.ticker.remove(guard); cancelAnimationFrame(raf); io.disconnect(); window.removeEventListener("resize", onResize); stage.dispose(); };
+    return () => { tl.kill(); cancelRise(); rise?.kill(); gsap.set([...nav, ...toggle], { clearProps: "opacity" }); gsap.ticker.remove(guard); cancelAnimationFrame(raf); io.disconnect(); window.removeEventListener("resize", onResize); stage.dispose(); };
   }, [mobile]);
 
   return (

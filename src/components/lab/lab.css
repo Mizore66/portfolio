@@ -133,12 +133,12 @@
 .play .start-note { position: static; margin-top: 20px; }
 .play .ev { position: absolute; bottom: 48px; left: var(--seam); transform: translateX(12px); font-size: 12px; white-space: nowrap; }
 .play .ev.low { bottom: 200px; }
-.play .ev.end { transform: translateX(calc(-100% - 12px)); }
+.play .ev.end { transform: translateX(calc(-100% - 12px)); bottom: 72px; } /* clear of the sound toggle */
 
 @media (max-width: 600px) {
   .ch[data-ch="2"] .p1 { left: 20px; right: 20px; top: 86px; max-width: 32ch; }
-  .ch[data-ch="2"] .p2 { left: 20px; right: 20px; bottom: 26px; }
-  .ch[data-ch="2"] .big { left: 16px; bottom: 70px; font-size: 57px; }
+  .ch[data-ch="2"] .p2 { left: 20px; right: 20px; bottom: 50px; } /* one line above the sound toggle */
+  .ch[data-ch="2"] .big { left: 16px; bottom: 94px; font-size: 57px; }
   .ch[data-ch="2"] .tag { font-size: 10px; }
   .ch[data-ch="2"] .tag.r span { width: 14px; margin-left: 6px; }
   .ch[data-ch="3"] .ttl { left: 18px; top: 84px; font-size: 44px; }

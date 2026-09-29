@@ -9,6 +9,7 @@ import { PHONE } from "@/lib/seam/seam";
 import { arrival } from "@/lib/seam/sweep";
 import type { Fact, GamePly } from "@/content/roles";
 import { createReplay, type Replay } from "./replay";
+import { cue } from "@/lib/sound/sound";
 import "./roles.css";
 
 export interface RoleView {
@@ -82,7 +83,7 @@ export function RolePage({ v }: { v: RoleView }) {
       if (!fwd) { st.cur -= 1; st.f = 1; }
       tw = gsap.to(st, {
         f: fwd ? 1 : 0, duration: HAND / k, ease: "none", onUpdate: show,
-        onComplete: () => { tw = null; if (fwd) { st.cur += 1; st.f = 0; } else st.f = 0; show(); if (st.cur === target) speed = 1; step(); },
+        onComplete: () => { tw = null; if (fwd) { st.cur += 1; st.f = 0; } else st.f = 0; show(); cue("place", { gain: k > 1 ? 0.6 : 1 }); if (st.cur === target) speed = 1; step(); },
       });
     };
     const top = () => el.querySelector<HTMLElement>(".role-top")!;

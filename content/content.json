@@ -3018,6 +3018,10 @@
         "The 3D board uses three.js, React Three Fiber and drei; motion uses GSAP and Lenis; the board state is kept in Zustand.",
         "Built with Next.js, React and Tailwind CSS; hosted on Vercel with cookieless Vercel Web Analytics."
       ]
+    },
+    "sound": {
+      "off": "Sound off",
+      "on": "Sound on"
     }
   },
   "assets": {

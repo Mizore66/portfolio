@@ -98,7 +98,7 @@
   .proj-foot .proj-sub { font-size: 13px; margin-bottom: 12px; }
   .proj-claim { font-size: 22px; }
   .proj-q { font-size: 12px; }
-  .proj-ev { right: 20px; bottom: 28px; font-size: 12px; }
+  .proj-ev { right: 20px; bottom: 50px; font-size: 12px; } /* one line above the sound toggle */
   .study { background: var(--gallery); padding: 14vh 20px 18vh; }
   .st-mark { display: none; }
   .proj-veil { left: 0; height: 76px; }

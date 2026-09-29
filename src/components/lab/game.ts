@@ -9,6 +9,7 @@ import type { Ply } from "@/lib/opening/types";
 import DATA from "@/content/lab-data.json";
 import { playStage, type PlayStage } from "./ch7";
 import { share } from "./kit";
+import { cue } from "@/lib/sound/sound";
 import type { PlayIn, PlayOut } from "./play.worker";
 
 export type Phase = "idle" | "loading" | "you" | "thinking" | "won" | "lost" | "drawn";
@@ -64,7 +65,7 @@ export function mountPlay(pin: HTMLElement, reduced: boolean): { start(): void; 
   const hand = (p: Ply, t: number) => {
     const k = rowsOf(pos).split("/")[8 - +p.from[1]]["abcdefgh".indexOf(p.from[0])].toUpperCase() === "K", d = p.to.charCodeAt(0) - p.from.charCodeAt(0);
     const rook = k && Math.abs(d) === 2 ? stage?.move((d > 0 ? "h" : "a") + p.from[1], (d > 0 ? "f" : "d") + p.from[1], ms(t)) : undefined;
-    return Promise.all([stage?.move(p.from, p.to, ms(t)), rook]);
+    return Promise.all([stage?.move(p.from, p.to, ms(t)), rook]).then(() => cue("place"));
   };
   const ask = (m: PlayIn extends infer T ? T extends PlayIn ? Omit<T, "id"> : never : never) => new Promise<PlayOut>((res) => {
     const n = ++id; replies.set(n, res);

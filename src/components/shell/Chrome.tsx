@@ -1,16 +1,29 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { sound as store } from "@/lib/sound/sound";
 
 export const NAV = [["Roles", "/roles"], ["Work", "/work"], ["Lab", "/lab"], ["Contact", "/contact"]] as const;
+export interface SoundLabels { off: string; on: string }
+
+/** "Sound off" in the bottom-right corner, "Sound on" once turned on (motion.md, "Sound"). Off by default. */
+function SoundToggle({ labels, inv }: { labels: SoundLabels; inv: boolean }) {
+  const on = useSyncExternalStore(store.sub, store.get, store.server);
+  return (
+    <button type="button" className="sound-toggle" aria-pressed={on} tabIndex={inv ? -1 : undefined} data-vt-line="" onClick={() => store.set(!on)}>
+      {on ? labels.on : labels.off}
+    </button>
+  );
+}
 
 /**
  * What stays on screen through every page change: the nav and the résumé link (never animated, covered
  * or moved), drawn in ink and again in paper clipped to the dark side of the live seam.
  * It is never part of a view-transition snapshot, so it answers clicks during a sweep.
  */
-export function Chrome() {
+export function Chrome({ sound }: { sound: SoundLabels }) {
   const path = usePathname();
   if (path === "/resume") return null;
   const cur = NAV.findIndex(([, h]) => path === h || path.startsWith(`${h}/`));
@@ -32,6 +45,7 @@ export function Chrome() {
             </ul>
           </nav>
           <Link className="resume-link" href="/resume" tabIndex={layer === "inv" ? -1 : undefined} data-vt-line="">Résumé</Link>
+          <SoundToggle labels={sound} inv={layer === "inv"} />
         </Layer>
         );
       })}

@@ -18,7 +18,6 @@
 .hero .ev { position: absolute; left: calc(55.9% + 20px); bottom: 6.8vh; font-size: 14px; white-space: nowrap; }
 .hero .skip-resume { position: absolute; left: 4.4vw; bottom: 6.8vh; font-size: 13px; text-decoration: none; }
 .hero .ply { position: absolute; left: 50%; bottom: 6.8vh; transform: translateX(-50%); font-size: 13px; white-space: nowrap; }
-.hero .sound { position: absolute; bottom: 40px; right: 48px; font-size: 13px; color: var(--fg2); }
 
 @media (max-width: 600px) {
   .hero { background: linear-gradient(180deg, var(--paper) var(--seam), var(--gallery) var(--seam)); }
@@ -29,5 +28,4 @@
   .hero .ev { left: 20px; bottom: 26px; font-size: 12px; }
   .hero .skip-resume { left: 20px; top: 24px; bottom: auto; font-size: 12px; }
   .hero .ply { bottom: 26px; font-size: 12px; }
-  .hero .sound { bottom: 24px; right: 20px; font-size: 12px; }
 }

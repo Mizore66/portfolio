@@ -20,12 +20,17 @@
 .chrome .skip { pointer-events: auto; }
 /* inside the chrome the résumé link inverts with the seam, like the nav, instead of blending */
 .chrome .resume-link { position: absolute; z-index: auto; mix-blend-mode: normal; color: var(--fg); pointer-events: auto; }
+/* the sound toggle: bottom right on every page, quiet until it is on */
+.chrome .sound-toggle { all: unset; position: absolute; right: 48px; bottom: 40px; font-size: 13px; color: var(--fg); opacity: .62; cursor: pointer; pointer-events: auto; transition: opacity .2s; }
+.chrome .sound-toggle:hover, .chrome .sound-toggle[aria-pressed="true"] { opacity: 1; }
+.chrome .sound-toggle:focus-visible { outline: 2px solid var(--move); outline-offset: 4px; opacity: 1; }
 @media (max-width: 600px) {
+  .chrome .sound-toggle { right: 20px; bottom: 24px; font-size: 12px; }
   .chrome-layer[data-layer="inv"] { clip-path: polygon(0 calc(var(--seam) - var(--seam-o)), 100% calc(var(--seam) + var(--seam-o)), 100% calc(100% + 400px), 0 calc(100% + 400px)); }
   .chrome .nav { top: 24px; left: 20px; gap: 16px; font-size: 13px; }
 }
 /* the hero's loader holds the nav back until the name has arrived */
-.site:has(.hero[data-intro="pending"]) .chrome .nav { visibility: hidden; }
+.site:has(.hero[data-intro="pending"]) .chrome :is(.nav, .sound-toggle) { visibility: hidden; }
 
 /* The cursor: the legal-move dot, then the capture ring. */
 html.has-cursor, html.has-cursor * { cursor: none; }

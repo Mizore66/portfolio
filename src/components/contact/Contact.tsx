@@ -1,6 +1,7 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
+import { cue } from "@/lib/sound/sound";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { gsap } from "gsap";
@@ -30,6 +31,7 @@ const noReduce = () => () => {};
 function Clock({ copy }: { copy: ContactCopy }) {
   const reduced = useSyncExternalStore(noReduce, () => window.matchMedia("(prefers-reduced-motion: reduce)").matches, () => false);
   const tick = useNow(reduced);
+  useEffect(() => { if (tick && !reduced) cue("tick", { gain: tick % 2 ? 0.28 : 0.35 }); }, [tick, reduced]); // one tick a second, low
   // the server has no clock to show: both faces read --:-- until the first client tick
   const now = tick ? new Date() : null, kl = now ? hm(now, copy.zone) : null;
   return (

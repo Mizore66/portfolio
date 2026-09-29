@@ -6,12 +6,12 @@ import { bindSeam, restColours, restFor, roomFor, setSeam } from "@/lib/seam/sea
 import { beginNav } from "@/lib/seam/sweep";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
-import { Chrome } from "./Chrome";
+import { Chrome, type SoundLabels } from "./Chrome";
 import { Cursor } from "./Cursor";
 import "./shell.css";
 
 /** The site frame: the live seam, the chrome, the cursor, and the hooks that start a page change. */
-export function Shell({ children }: { children: React.ReactNode }) {
+export function Shell({ children, sound }: { children: React.ReactNode; sound: SoundLabels }) {
   const path = usePathname(), router = useRouter();
   const site = useRef<HTMLDivElement>(null), current = useRef(path);
   // The resting seam is server-rendered for the first paint; after that, the seam is driven from script only.
@@ -57,7 +57,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div ref={site} className="site" style={{ "--seam": `${initial * 100}%`, "--seam-o": "0px" } as React.CSSProperties}>
       {/* first in the tab order: the skip link, then the nav */}
-      <Chrome />
+      <Chrome sound={sound} />
       {children}
       <Cursor />
     </div>

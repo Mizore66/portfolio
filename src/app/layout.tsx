@@ -33,7 +33,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en-GB" className={`${archivo.variable} ${jetbrains.variable}`}>
       <body>
-        <Shell>{children}</Shell>
+        <Shell sound={(content.pageCopy as unknown as { sound: { off: string; on: string } }).sound}>{children}</Shell>
         {process.env.VERCEL ? <Analytics /> : null}
       </body>
     </html>

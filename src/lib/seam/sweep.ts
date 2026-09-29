@@ -9,6 +9,7 @@ import { gsap } from "gsap";
 import { registerEases } from "@/lib/motion/ease";
 import { now } from "@/lib/motion/slowmo";
 import { seam, setSeam, sides, css, intersect, isPhone, restFor, restColours } from "./seam";
+import { cue } from "@/lib/sound/sound";
 
 export interface Plan {
   from: string; to: string; A: number; B: number; phone: boolean;
@@ -141,6 +142,7 @@ function run(job: Pending, oldGroup: string | null, hold: Animation | null) {
   const { plan: p, page, lines } = job;
   registerEases();
   job.start(now());
+  if (p.dur) cue("seam", { gain: 0.7 }); // a felt swish under the sweep (a cut is silent)
   const ease = gsap.parseEase("seam"), W = innerWidth, H = innerHeight;
   const at = (t: number) => { const q = p.dur ? ease(Math.min(1, t / p.dur)) : 1; return { at: p.A + (p.B - p.A) * q, tilt: p.tilt * Math.sin(Math.PI * q) }; };
   const lift = (t: number) => (p.cut ? 0 : H * ease(Math.min(1, Math.max(0, (t - p.liftAt) / p.liftDur))));
