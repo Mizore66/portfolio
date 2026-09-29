@@ -139,7 +139,7 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
   };
 
   return (
-    <section ref={root} id="work" className="work" data-rest="0.015" data-rest-phone="0" aria-labelledby="work-title">
+    <section ref={root} id="work" className="work" data-rest="0" data-rest-phone="0" aria-labelledby="work-title">
       <canvas ref={canvas} className="work-canvas" aria-hidden="true" onPointerMove={onPointer} onClick={onCanvasClick} />
       <div className="work-paper" />
       <div className="work-layer" data-on="dark">

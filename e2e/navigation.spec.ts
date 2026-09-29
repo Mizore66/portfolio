@@ -3,7 +3,7 @@ import AxeBuilder from "@axe-core/playwright";
 
 // The one page (owner direction, 2026-09-29): the nav glides to each section and the seam follows the scroll; the
 // address follows the section in view. Project and role pages still sweep in, and Back returns to the same place.
-const REST: Record<string, string> = { top: "55.9", roles: "100.0", work: "1.5", lab: "30.5", contact: "55.9" };
+const REST: Record<string, string> = { top: "55.9", roles: "100.0", work: "0.0", lab: "30.5", contact: "55.9" };
 const seam = (page: Page) => page.locator(".site").evaluate((e) => parseFloat(getComputedStyle(e).getPropertyValue("--seam")).toFixed(1));
 const nav = (page: Page, name: string) => page.locator(".chrome [data-layer=ink] .nav").getByRole("link", { name, exact: true });
 const top = (page: Page, id: string) => page.evaluate((id) => Math.round(document.getElementById(id)!.getBoundingClientRect().top), id);
@@ -40,10 +40,10 @@ test.describe("the one page", () => {
     test.setTimeout(180_000);
     await page.goto("/");
     const y = await page.evaluate(() => document.getElementById("work")!.getBoundingClientRect().top + scrollY);
-    // halfway across the boundary from Roles (100%) to Work (1.5%): the seam is between them
+    // halfway across the boundary from Roles (100%) to Work (0%): the seam is between them
     await page.evaluate((y) => scrollTo(0, y - innerHeight / 2), y);
     await expect.poll(async () => Number(await seam(page)), { timeout: 60_000 }).toBeLessThan(99);
-    expect(Number(await seam(page))).toBeGreaterThan(2);
+    expect(Number(await seam(page))).toBeGreaterThan(1);
     await page.evaluate((y) => scrollTo(0, y), y);
     await expect.poll(() => seam(page), { timeout: 60_000 }).toBe(REST.work);
     await expect(page).toHaveURL(/\/#work$/);

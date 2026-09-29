@@ -32,7 +32,7 @@ export function roomFor(path: string): Room | null {
   // the one page's sections (/#roles …) rest as their old pages did
   const section = /^\/#([\w-]+)$/.exec(path)?.[1];
   if (section) path = section === "top" ? "/" : `/${section}`;
-  if (path === "/work") return { at: 0.015, atPhone: 0, dark: "var(--gallery)" }; // work-c: a 22 px paper edge
+  if (path === "/work") return { at: 0, atPhone: 0, dark: "var(--gallery)" }; // all gallery (the owner dropped work-c's 22 px paper edge, 2026-09-29)
   // the paper floods: the day hall and its tables (the owner kept the full flood over the key frames' ink edge, step 4b)
   if (path === "/roles" || path.startsWith("/roles/")) return { at: 1, atPhone: 1, dark: "var(--gallery)" };
   if (path === "/lab") return { at: 0.305, atPhone: 0.305, dark: "var(--search)" }; // lab-a: the match score

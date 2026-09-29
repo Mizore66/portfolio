@@ -2,7 +2,6 @@
    blocks.ts then lets what is on screen share the live seam. Phones: Work's paper edge is none. */
 .home > #top, .home > #contact { --seam: 55.9%; }
 .home > #roles { --seam: 100%; }
-.home > #work, .home > #archive { --seam: 1.5%; }
+.home > #work, .home > #archive { --seam: 0%; } /* all gallery: the owner dropped work-c's paper edge on the one page */
 .home > #lab .lab-open { --seam: 30.5%; }
 .home > #lab .ch-pin { --seam: 52.9%; } /* Play: the learned net's +0.31 at the start position */
-@media (max-width: 600px) { .home > #work, .home > #archive { --seam: 0%; } }

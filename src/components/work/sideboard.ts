@@ -112,7 +112,11 @@ export function createSideboard(canvas: HTMLCanvasElement, list: { slug: string;
   const cam = new THREE.PerspectiveCamera(30, 1, 0.1, 200);
   const view: Frame = { ...FRAME.desk, pos: [...FRAME.desk.pos], look: [...FRAME.desk.look] };
   const place = () => {
-    cam.position.set(...view.pos); cam.fov = view.fov; cam.aspect = W() / H();
+    // framed at 16:10 (side-a); in a narrower desktop window the field widens so the board stays clear of the list,
+    // fading out as the camera steps down to a project (fov 22). Phones have their own frame.
+    const aspect = W() / H(), fit = Math.max(1, 1.6 / aspect), desk = !window.matchMedia("(max-width: 600px)").matches;
+    const k = desk ? Math.min(1, Math.max(0, (view.fov - 22) / 8)) : 0, wide = (2 * Math.atan(Math.tan((view.fov * Math.PI) / 360) * fit) * 180) / Math.PI;
+    cam.position.set(...view.pos); cam.fov = view.fov + (wide - view.fov) * k; cam.aspect = aspect;
     cam.setViewOffset(W(), H(), (0.5 - view.sx) * W(), (0.5 - view.sy) * H(), W(), H());
     cam.updateProjectionMatrix(); cam.lookAt(...view.look); cam.updateMatrixWorld();
   };

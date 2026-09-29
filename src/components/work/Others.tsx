@@ -132,7 +132,7 @@ export function Others({ list, copy }: { list: Other[]; copy: OthersCopy }) {
   const read = (slug: string | null) => () => { if (!leaving.current) setFocus(slug); };
 
   return (
-    <section ref={root} id="archive" className="others" data-rest="0.015" data-rest-phone="0" aria-labelledby="others-title">
+    <section ref={root} id="archive" className="others" data-rest="0" data-rest-phone="0" aria-labelledby="others-title">
       <canvas ref={canvas} className="others-canvas" aria-hidden="true" onPointerMove={onPointer} onPointerLeave={read(null)} onClick={onCanvasClick} />
       <div className="others-paper" />
       <div className="others-layer" data-on="dark">

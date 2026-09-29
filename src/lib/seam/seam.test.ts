@@ -6,7 +6,7 @@ import { plan } from "./sweep";
 describe("resting seams", () => {
   it("come from the approved key frames", () => {
     expect(roomFor("/")!.at).toBeCloseTo(0.5586, 4); // share(+0.64)
-    expect(roomFor("/work")).toMatchObject({ at: 0.015, atPhone: 0 });
+    expect(roomFor("/work")).toMatchObject({ at: 0, atPhone: 0 });
     expect(roomFor("/roles")).toMatchObject({ at: 1, atPhone: 1 }); // the paper floods
     expect(roomFor("/roles/deriv")).toMatchObject({ at: 1, atPhone: 1 });
     expect(roomFor("/lab")).toMatchObject({ at: 0.305, dark: "var(--search)" });

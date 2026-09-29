@@ -83,7 +83,11 @@ export function createGallery(canvas: HTMLCanvasElement, slugs: { slug: string; 
   const lights: Record<string, number> = Object.fromEntries(slugs.map((s) => [s.slug, 0]));
   const room = { k: 0, fill: 1 };
   const place = () => {
-    cam.position.copy(view.pos); cam.fov = view.fov; cam.aspect = W() / H();
+    // The room is framed at 16:10 (work-c). In a narrower window the vertical field widens so the three pieces keep
+    // their width on screen; the widening fades out as the camera steps down to a project (fov 22), whose page it cuts to.
+    const aspect = W() / H(), k = view.phone ? 0 : Math.min(1, Math.max(0, (view.fov - 22) / 16)), fit = Math.max(1, 1.6 / aspect);
+    const fov = fit > 1 ? (2 * Math.atan(Math.tan((view.fov * Math.PI) / 360) * fit) * 180) / Math.PI : view.fov;
+    cam.position.copy(view.pos); cam.fov = view.fov + (fov - view.fov) * k; cam.aspect = aspect;
     const d = 0.5 - view.shift;
     if (Math.abs(d) < 1e-4) cam.clearViewOffset();
     else if (view.phone) cam.setViewOffset(W(), H(), 0, d * H(), W(), H());
