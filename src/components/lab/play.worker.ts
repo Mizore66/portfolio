@@ -17,7 +17,7 @@ export type PlayIn =
   | { type: "think"; id: number; plies: Ply[]; mode: EvalMode };
 export type PlayOut =
   | { type: "loaded"; id: number; ok: boolean }
-  | { type: "thought"; id: number; best: Ply | null; san: string | null; cp: number; mode: EvalMode };
+  | { type: "thought"; id: number; best: Ply | null; san: string | null; pv: string[]; cp: number; mode: EvalMode };
 
 const NODES = 50_000;
 let net: NnueNet | null = null;
@@ -37,5 +37,5 @@ self.onmessage = async (e: MessageEvent<PlayIn>) => {
   const pos = startPos(); // replayed from the start, so castling rights and en passant are exact
   for (const p of m.plies) playPly(pos, p);
   const r = searchMove(pos, { nodes: NODES, evalMode: mode, net: mode === "learned" ? net : null });
-  self.postMessage({ type: "thought", id: m.id, best: r.best, san: r.pv[0] ?? null, cp: r.score, mode } satisfies PlayOut);
+  self.postMessage({ type: "thought", id: m.id, best: r.best, san: r.pv[0] ?? null, pv: r.pv, cp: r.score, mode } satisfies PlayOut);
 };

@@ -29,6 +29,7 @@ function status(c: ChapterCopy, s: PlayState, phone: boolean) {
     case "won": case "lost": case "drawn": return t(s.phase);
     case "idle": if (!s.white) return t("statusWait");
   }
+  if (s.phase === "you" && !s.best) return t("yourMove"); // its line was too short to name your reply yet
   return t(phone ? "statusPhone" : "status");
 }
 

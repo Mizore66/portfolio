@@ -79,27 +79,32 @@ export function mountPlay(pin: HTMLElement, reduced: boolean): { start(): void; 
     return (o === "1-0") === state.white ? "won" : "lost";
   };
 
-  // after a move lands: the game may be over; otherwise the side to move is analysed and, if it is the engine, plays
+  // after your move: the engine thinks and plays, and the board is yours again as soon as its move lands. Its own
+  // search has already scored the position and named your best reply (the second move of its line), so nothing waits
+  // on a second search; one runs behind only where the seam needs the learned net's view or the line was too short.
   const next = async () => {
     const end = over();
     if (end) { put({ phase: end, sans: sansOf() }); return; }
-    // a reset while the engine thinks or moves makes whatever comes back stale
-    const mode = state.opp, g = game, live = () => alive && g === game;
+    if (yourTurn()) { put({ phase: "you", sans: sansOf() }); return; }
+    const mode = state.opp, g = game, live = () => alive && g === game; // a reset makes whatever comes back stale
     put({ phase: "thinking", sans: sansOf() });
     const r = await ask({ type: "think", plies, mode });
-    if (!live() || r.type !== "thought") return;
-    if (!yourTurn()) {
-      if (!r.best) return;
-      if (mode === "learned") { put({ seamCp: r.cp }); stage?.eval(r.cp); }
-      busy = true; await hand(r.best, HAND); busy = false;
-      if (!live()) return;
-      playPly(pos, r.best); plies.push(r.best); draw();
-      return next();
-    }
-    // your move: the opponent's evaluator names its score and its move for you; the seam takes the learned net's
-    let seamCp = r.cp;
-    if (mode !== "learned") { const l = await ask({ type: "think", plies, mode: "learned" }); if (!live()) return; if (l.type === "thought") seamCp = l.cp; }
-    put({ phase: "you", cp: r.cp, best: r.san ?? "", seamCp }); stage?.eval(seamCp);
+    if (!live() || r.type !== "thought" || !r.best) return;
+    if (mode === "learned") { put({ seamCp: r.cp }); stage?.eval(r.cp); }
+    busy = true; await hand(r.best, HAND); busy = false;
+    if (!live()) return;
+    playPly(pos, r.best); plies.push(r.best); draw();
+    const done = over();
+    if (done) { put({ phase: done, sans: sansOf() }); return; }
+    const reply = r.pv[1] ?? "";
+    put({ phase: "you", sans: sansOf(), cp: r.cp, best: reply });
+    if (mode !== "learned") void behind("learned", (x) => { put({ seamCp: x.cp }); stage?.eval(x.cp); });
+    if (!reply) void behind(mode, (x) => put({ cp: x.cp, best: x.san ?? "" }));
+  };
+  // a search for the position on the board that the visitor need not wait for; dropped if a move or a reset beats it
+  const behind = async (mode: EvalMode, apply: (r: Extract<PlayOut, { type: "thought" }>) => void) => {
+    const g = game, n = plies.length, r = await ask({ type: "think", plies, mode });
+    if (alive && g === game && plies.length === n && state.phase === "you" && r.type === "thought") apply(r);
   };
 
   // the hand: press lifts, the dots show; drop on a dot plays, anywhere else goes home; click-click works too

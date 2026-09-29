@@ -2954,7 +2954,8 @@
           "lost": "Checkmate. The {net} net wins.",
           "drawn": "Stalemate. A draw.",
           "again": "Play again",
-          "seamLabel": "seam"
+          "seamLabel": "seam",
+          "yourMove": "Your move."
         }
       ]
     },
