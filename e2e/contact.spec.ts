@@ -37,8 +37,10 @@ test.describe("Contact", () => {
     await expect(faces.nth(0).locator("sup")).not.toHaveText(s0!, { timeout: 30_000 }); // the page builds its scenes in idle time after load, slow under software GL
   });
 
-  test("Copy email puts the address on the clipboard", async ({ page, context }) => {
+  test("Copy email puts the address on the clipboard", async ({ page, context, browserName }) => {
     test.setTimeout(90_000);
+    // only Chromium lets a test grant the clipboard and read it back, so this runs there alone
+    test.skip(browserName !== "chromium", "the clipboard can be granted to a test only in Chromium");
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     await page.goto("/contact");
     await expect(page.locator(".site[data-seam-bound]")).toBeAttached({ timeout: 60_000 }); // hydrated: the button is live

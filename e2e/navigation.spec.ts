@@ -83,14 +83,15 @@ test.describe("the one page", () => {
     await expect.poll(() => top(page, "lab"), { timeout: 60_000 }).toBeLessThan(3);
   });
 
-  test("the nav and the résumé link work from the keyboard", async ({ page }) => {
+  test("the nav and the résumé link work from the keyboard", async ({ page, browserName }) => {
     test.setTimeout(120_000); // arriving on a section builds the scenes around it at once, slow under software GL
+    const tab = browserName === "webkit" ? "Alt+Tab" : "Tab"; // Safari's Tab skips links unless the user asks; Option-Tab reaches them
     await page.goto("/lab");
-    await page.keyboard.press("Tab");
+    await page.keyboard.press(tab);
     await expect(page.locator(":focus")).toHaveText("Skip to content");
-    await page.keyboard.press("Tab");
+    await page.keyboard.press(tab);
     await expect(page.locator(":focus")).toHaveText("Roles");
-    await page.keyboard.press("Tab");
+    await page.keyboard.press(tab);
     await page.keyboard.press("Enter");
     await expect(page).toHaveURL(/\/#work$/, { timeout: 60_000 });
     await expect.poll(() => seam(page), { timeout: 60_000 }).toBe(REST.work);
