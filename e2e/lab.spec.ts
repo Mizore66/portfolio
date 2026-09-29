@@ -46,14 +46,14 @@ test.describe("the Lab", () => {
     await page.goto("/lab");
     await to(page, 7);
     const play = ink(page, 7);
-    await expect(play.locator(".moves:not(.ev-ph)")).toHaveText("1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5");
-    await expect(play.locator(".status .wide")).toHaveText("Your move. At 50,000 nodes the learned net rates this +0.43 for White, and would play c3.");
-    await expect(play.locator(".ev")).toHaveText("+0.43 · 53.9%");
+    await expect(play.locator(".moves:not(.ev-ph)")).toHaveText("");
+    await expect(play.locator(".status .wide")).toHaveText("Your move. At 50,000 nodes the learned net rates this +0.31 for White, and would play e4.");
+    await expect(play.locator(".ev")).toHaveText("+0.31 · 52.9%");
     await play.getByRole("button", { name: "Start the engine" }).click();
     await expect(play.getByRole("button", { name: "Start the engine" })).toHaveCount(0, { timeout: 30_000 });
     await play.getByRole("button", { name: "Black" }).click();
     await expect(play.getByRole("button", { name: "Black" })).toHaveAttribute("aria-pressed", "true");
-    await expect(play.locator(".moves:not(.ev-ph)")).toHaveText(/3\. Bc4 Bc5 4\. \S+$/, { timeout: 60_000 });
+    await expect(play.locator(".moves:not(.ev-ph)")).toHaveText(/^1\. \S+$/, { timeout: 60_000 });
     await expect(play.locator(".status .wide")).toHaveText(/^Your move\. .* for Black, and would play \S+\.$/, { timeout: 60_000 });
     expect(errors).toEqual([]);
   });

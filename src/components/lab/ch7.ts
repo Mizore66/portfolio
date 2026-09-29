@@ -7,9 +7,10 @@ import { gsap } from "gsap";
 import { piece, sq, MAT, type PieceType } from "@/lib/three/pieces";
 import { board as makeBoard, squares, ROLE } from "@/lib/three/board";
 import { evalStep } from "@/lib/motion/ease";
+import DATA from "@/content/lab-data.json";
 import { stage, frame, size, compile, disposeStage, share, type Chapter, type ChapterFactory, type Frame, type Stage } from "./kit";
 
-export const START = "r.bqk.nr/pppp.ppp/..n...../..b.p.../..B.P.../.....N../PPPP.PPP/RNBQK..R";
+export const START = "rnbqkbnr/pppppppp/......../......../......../......../PPPPPPPP/RNBQKBNR";
 const LIFT = 0.35;
 
 export interface PlayStage extends Chapter {
@@ -62,7 +63,7 @@ export const chapter7: ChapterFactory = (dayCanvas, nightCanvas, o) => {
   const sides = [side(dayCanvas, true), ...(nightCanvas ? [side(nightCanvas, false)] : [])];
   const mats = { w: MAT.ivory(), b: MAT.ebony() };
   const c = compile(sides.map((x) => x.s));
-  let white = true, lifted: string | null = null, shown = at0;
+  let white = true, lifted: string | null = null, shown = share(DATA.start.learned.evalCp); // the start position, as game.ts begins
   const dotM = new THREE.MeshBasicMaterial({ color: 0x0d0d0c, transparent: true, opacity: 0.32 });
   const dotG = new THREE.CircleGeometry(0.14, 40), ringG = new THREE.RingGeometry(0.36, 0.44, 48);
 
@@ -178,7 +179,7 @@ export const chapter7: ChapterFactory = (dayCanvas, nightCanvas, o) => {
       cancelAnimationFrame(raf); c.ready.then(() => sides.forEach((x) => disposeStage(x.s)));
     },
   };
-  place(); set(START, ["f8", "c5"]);
+  place(); set(START, null);
   current = api; listeners.forEach((fn) => fn(api));
   return api;
 };

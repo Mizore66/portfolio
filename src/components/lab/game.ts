@@ -1,7 +1,8 @@
 /**
  * Play (motion.md §12): the game behind the board. One controller per page owns the position, the worker and the
  * hand on the board; the two copies of the controls (ink and paper) read the same state. The game starts from the
- * key frame's line, the Italian after 3…Bc5, with the learned net's score of it already known (lab-data.json).
+ * start position (the owner's choice at the Lab gate, over the key frame's Italian), with both evaluators' scores
+ * of it already known (lab-data.json, start).
  */
 import { legalPlies, playPly, sanOf, startPos, rowsOf, gameOutcome, type EnginePos, type EvalMode } from "@/lib/chess/engine";
 import type { Ply } from "@/lib/opening/types";
@@ -20,12 +21,13 @@ export interface PlayState {
   seamCp: number;
 }
 
-const HOME: Ply[] = [["e2", "e4"], ["e7", "e5"], ["g1", "f3"], ["b8", "c6"], ["f1", "c4"], ["f8", "c5"]].map(([from, to]) => ({ from, to }));
-const known = (opp: EvalMode) => { const d = DATA[opp]; return { cp: d.evalCp, best: d.pv[0] }; };
+const HOME: Ply[] = [];
+const known = (opp: EvalMode) => { const d = DATA.start[opp]; return { cp: d.evalCp, best: d.best }; };
+export const START_CP = DATA.start.learned.evalCp;
 const HAND = 280, DROP = 200, BACK = 250, RESET = 600;
 
 const HOME_SANS = (() => { const q = startPos(); return HOME.map((p) => { const t = sanOf(q, p); playPly(q, p); return t; }); })();
-let state: PlayState = { opp: "learned", white: true, started: false, phase: "idle", sans: HOME_SANS, cp: known("learned").cp, best: known("learned").best, seamCp: DATA.learned.evalCp };
+let state: PlayState = { opp: "learned", white: true, started: false, phase: "idle", sans: HOME_SANS, cp: known("learned").cp, best: known("learned").best, seamCp: START_CP };
 const subs = new Set<() => void>();
 const put = (s: Partial<PlayState>) => { state = { ...state, ...s }; subs.forEach((f) => f()); };
 export const store = {
@@ -144,12 +146,12 @@ export function mountPlay(pin: HTMLElement, reduced: boolean): { start(): void; 
   const reset = async () => {
     const g = ++game; from = null; busy = true; stage?.lift(null, [], []); home();
     stage?.orient(state.white);
-    await stage?.slide(rowsOf(pos), [plies.at(-1)!.from, plies.at(-1)!.to], ms(RESET));
+    await stage?.slide(rowsOf(pos), null, ms(RESET));
     if (g !== game) return;
     busy = false;
     const k = known(state.opp);
-    put({ sans: sansOf(), cp: k.cp, best: k.best, seamCp: DATA.learned.evalCp, phase: state.started ? "you" : "idle" });
-    stage?.eval(DATA.learned.evalCp);
+    put({ sans: sansOf(), cp: k.cp, best: k.best, seamCp: START_CP, phase: state.started ? "you" : "idle" });
+    stage?.eval(START_CP);
     if (state.started && !yourTurn()) void next();
   };
 
