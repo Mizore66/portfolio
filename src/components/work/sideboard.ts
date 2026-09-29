@@ -7,10 +7,12 @@
  */
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
+import { patchSpots } from "@/lib/three/lights";
 import { RectAreaLightUniformsLib } from "three/examples/jsm/lights/RectAreaLightUniformsLib.js";
 import { sq } from "@/lib/three/pieces";
 import { SCULPTURE, disposeScene } from "@/lib/three/sculptures";
 import { renderer } from "@/lib/three/env";
+import { warmScenes } from "@/lib/three/warm";
 import { stageScale, stageTurn } from "@/components/project/stage";
 
 type V3 = [number, number, number];
@@ -46,6 +48,8 @@ export interface Sideboard {
   facing(slug: string, at: number, phone: boolean): Frame;
   ready: Promise<void>;
   render(): void; resize(): void; dispose(): void;
+  /** one draw of everything in it, into a pixel, so its first real frame is like any other (warmScenes) */
+  warm(): void;
 }
 
 function board(highlight: string[]) {
@@ -139,6 +143,7 @@ export function createSideboard(canvas: HTMLCanvasElement, list: { slug: string;
 
   function resize() { r.setSize(W(), H(), false); place(); }
   resize();
+  patchSpots(scene, "dark-spots"); // the pieces' own lights sit at 0 until a row is read: skipped, not evaluated
   let compiled = false, gone = false;
   const ready = r.compileAsync(scene, cam).then(() => { compiled = true; }, () => { compiled = true; });
 
@@ -160,6 +165,7 @@ export function createSideboard(canvas: HTMLCanvasElement, list: { slug: string;
       const p = at[slug], k = 1 / stageScale(slug);
       return { pos: [p.x, p.y + 1.25 * k, p.z + 11.5 * k], look: [p.x, p.y + 1.3 * k, p.z], fov: phone ? 30 : 22, sx: phone ? 0.5 : share, sy: phone ? share : 0.5 };
     },
+    warm() { if (compiled && !gone) warmScenes([{ r, scene }], () => this.render()); },
     render() {
       if (!compiled || gone) return;
       place();

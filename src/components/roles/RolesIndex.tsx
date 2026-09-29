@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
 import { registerEases, perLayer } from "@/lib/motion/ease";
 import { beginNav, navigating } from "@/lib/seam/sweep";
-import { buildAhead, firstView } from "@/lib/motion/firstView";
+import { buildAhead, firstView, nearScreen } from "@/lib/motion/firstView";
 import { PHONE } from "@/lib/seam/seam";
 import { after } from "@/lib/motion/slowmo";
 import { createHall, FRAME, type Frame, type Hall } from "./hall";
@@ -25,7 +25,11 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
   const h = useRef<Hall | null>(null), frame = useRef(0), leaving = useRef(false), home = useRef<Frame>(FRAME.desk);
   const [focus, setFocus] = useState<string | null>(null);
 
-  const draw = () => { if (!frame.current) frame.current = requestAnimationFrame(() => { frame.current = 0; h.current?.render(); }); };
+  const away = useRef({ near: true, owed: false }); // off screen, a frame is owed, not drawn (nearScreen)
+  const draw = () => {
+    if (!away.current.near) { away.current.owed = true; return; }
+    if (!frame.current) frame.current = requestAnimationFrame(() => { frame.current = 0; h.current?.render(); });
+  };
 
   useLayoutEffect(() => {
     const el = root.current!, c = canvas.current!;
@@ -40,11 +44,11 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
       try { hall = createHall(c, list); } catch { failed = true; el.dataset.gl = "off"; return null; }
       h.current = hall; setView(hall, phone() ? FRAME.phone : FRAME.desk);
       if (arriving) { const f = home.current; hall.cam.pos = [f.pos[0], f.pos[1] + 3, f.pos[2]]; } // from 3 units higher (motion.md §4)
-      hall.ready.then(draw);
+      hall.ready.then(() => { h.current?.warm(); h.current?.render(); }); // its first frame, drawn ahead wherever the page is
       return hall;
     };
     // on the one page the hall is built when it comes within a screen, not at load
-    const stopAhead = buildAhead(el, build, { order: 0 });
+    const stopAhead = buildAhead(el, build, { order: 0 }), stopNear = nearScreen(el, away.current, draw);
     let cancel = () => {};
     if (arriving) {
       gsap.set(rise, { yPercent: 135 }); gsap.set(names, { opacity: 0, y: 10 });
@@ -60,7 +64,7 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
     const onResize = () => { if (!hall) return; hall.resize(); setView(hall, phone() ? FRAME.phone : FRAME.desk); draw(); };
     window.addEventListener("resize", onResize);
     return () => {
-      dead = true; stopAhead(); cancel(); tl?.kill();
+      dead = true; stopAhead(); stopNear(); cancel(); tl?.kill();
       gsap.set([...rise, ...names], { clearProps: "transform,opacity" });
       window.removeEventListener("resize", onResize); cancelAnimationFrame(frame.current); frame.current = 0;
       h.current = null; hall?.dispose();

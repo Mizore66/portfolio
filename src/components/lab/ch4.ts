@@ -7,6 +7,7 @@
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { piece, MAT, type PieceType } from "@/lib/three/pieces";
+import { patchSpots, spotChunk } from "@/lib/three/lights";
 import OPENINGS from "@/content/openings.json";
 import { stage, frame, size, compile, disposeStage, span, arrive, clamp, type ChapterFactory, type Frame, type Stage } from "./kit";
 
@@ -35,6 +36,26 @@ function pieceGeo(t: PieceType) {
 }
 /** a small integer hash, so the hops are the same on every scroll */
 const hash = (a: number, b: number, c: number) => { let h = (a * 374761393 + b * 668265263 + c * 2147483647) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return (h ^ (h >>> 16)) >>> 0; };
+
+/**
+ * The night's pools as one light: every material in the scene evaluates its one SpotLight at the spot nearest the
+ * pixel (the spots differ only in where they stand; colour, cone, decay and direction are the same). The spots' and
+ * their targets' view-space positions are set before each draw.
+ */
+function lit(s: Stage, pools: { from: THREE.Vector3; to: THREE.Vector3 }[]) {
+  const n = pools.length, from = pools.map(() => new THREE.Vector3()), to = pools.map(() => new THREE.Vector3());
+  const nearest = `{ int k = 0; float best = 1e20;
+		  for ( int j = 0; j < ${n}; j ++ ) { vec3 d = geometryPosition - uPoolTo[ j ]; float q = dot( d, d ); if ( q < best ) { best = q; k = j; } }
+		  spotLight.position = uPoolFrom[ k ]; }`;
+  patchSpots(s.scene, `pools${n}`, spotChunk(nearest), (sh) => {
+    sh.uniforms.uPoolFrom = { value: from }; sh.uniforms.uPoolTo = { value: to };
+    sh.fragmentShader = `uniform vec3 uPoolFrom[ ${n} ];\nuniform vec3 uPoolTo[ ${n} ];\n` + sh.fragmentShader;
+  });
+  s.scene.onBeforeRender = (_r, _s, cam) => {
+    cam.updateMatrixWorld();
+    pools.forEach((p, i) => { from[i].copy(p.from).applyMatrix4(cam.matrixWorldInverse); to[i].copy(p.to).applyMatrix4(cam.matrixWorldInverse); });
+  };
+}
 
 const SET_END = 0.6, PLAY = [0.62, 0.96] as const, HOPS = 5, PER = 3;
 
@@ -69,7 +90,12 @@ export const chapter4: ChapterFactory = (dayCanvas, nightCanvas, o) => {
     if (o.phone) Object.assign(key.shadow.camera, { left: -60, right: 60, top: 70, bottom: -70, near: 1, far: 220 });
     else { key.shadow.radius = 3; Object.assign(key.shadow.camera, { left: -70, right: 70, top: 50, bottom: -50, near: 1, far: 200 }); }
     s.scene.add(key);
-    if (!day) at.forEach(([x, z], i) => { if (i % 3) return; const sp = new THREE.SpotLight(0xffe2b8, 900, 0, 0.16, 0.8, 1.6); sp.position.set(x + 6, 30, z + 8); sp.target.position.set(x, 0, z); s.scene.add(sp.target, sp); });
+    // night: a pool of light on every third board. The cones never overlap (their footprints are ~5 units across,
+    // the nearest two ~15 apart) and a spot gives exactly nothing outside its cone, so each pixel is lit by the spot
+    // nearest it and no other: one SpotLight is in the scene, and the shader moves it to that spot (lit() below).
+    // Seventeen spots, each evaluated at every pixel, were most of the frame (86 of 119 ms at 2x on a laptop GPU).
+    const pools = at.filter((_, i) => i % 3 === 0).map(([x, z]) => ({ from: new THREE.Vector3(x + 6, 30, z + 8), to: new THREE.Vector3(x, 0, z) }));
+    if (!day) { const sp = new THREE.SpotLight(0xffe2b8, 900, 0, 0.16, 0.8, 1.6); sp.position.copy(pools[0].from); sp.target.position.copy(pools[0].to); s.scene.add(sp.target, sp); }
     const fs = o.phone ? 900 : 800;
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(fs, fs), new THREE.MeshStandardMaterial({ color: day ? 0xe6e4de : 0x0d1118, roughness: day ? 0.9 : 0.35, metalness: day ? 0 : 0.2 }));
     floor.rotation.x = -Math.PI / 2; floor.position.y = -0.17; floor.receiveShadow = true; s.scene.add(floor);
@@ -78,16 +104,21 @@ export const chapter4: ChapterFactory = (dayCanvas, nightCanvas, o) => {
     const inst = (geo: THREE.BufferGeometry, mat: THREE.Material, n: number) => {
       const m = new THREE.InstancedMesh(geo, mat, n); m.castShadow = m.receiveShadow = true; m.frustumCulled = false; s.scene.add(m); return m;
     };
-    return {
+    const side = {
       s,
       tl: inst(TILE, new THREE.MeshStandardMaterial({ color: c.light, roughness: 0.55 }), tileL.length * boards.length),
       td: inst(TILE, new THREE.MeshStandardMaterial({ color: c.dark, roughness: 0.5 }), tileD.length * boards.length),
       fr: inst(FRAME, new THREE.MeshStandardMaterial({ color: c.frame, roughness: 0.5 }), boards.length),
       pc: keys.map((kk, i) => inst(pieceGeo(kk[0] as PieceType), kk[1] === "w" ? white : black, counts[i])),
     };
+    if (!day) lit(s, pools);
+    return side;
   };
   const d = build(dayCanvas, true), n = nightCanvas ? build(nightCanvas, false) : null;
   const sides = n ? [d, n] : [d], stages = sides.map((x) => x.s), c = compile(stages);
+  // the key light never moves, so the two 8192² shadow maps are drawn again only when a board or a piece has
+  let shade = true;
+  for (const x of stages) x.r.shadowMap.autoUpdate = false;
 
   // the drop and hop heights last written, so a scroll only rewrites what moved
   const last = boards.map((bd) => bd.pieces.map(() => NaN));
@@ -125,7 +156,7 @@ export const chapter4: ChapterFactory = (dayCanvas, nightCanvas, o) => {
         for (const x of sides) x.pc[pc.mesh].setMatrixAt(pc.i, W);
       });
     }
-    if (dirty) for (const x of sides) for (const m of [x.tl, x.td, x.fr, ...x.pc]) m.instanceMatrix.needsUpdate = true;
+    if (dirty) { shade = true; for (const x of sides) for (const m of [x.tl, x.td, x.fr, ...x.pc]) m.instanceMatrix.needsUpdate = true; }
   };
   place(); update();
 
@@ -134,7 +165,11 @@ export const chapter4: ChapterFactory = (dayCanvas, nightCanvas, o) => {
     progress(v) { p = o.reduced ? 1 : v; update(); },
     seam: () => 0.5,
     tags: () => [],
-    render() { if (!c.done()) return; place(); for (const x of stages) x.r.render(x.scene, x.cam); },
+    render() {
+      if (!c.done()) return; place();
+      for (const x of stages) { if (shade) x.r.shadowMap.needsUpdate = true; x.r.render(x.scene, x.cam); }
+      shade = false;
+    },
     resize: place,
     dispose() { c.ready.then(() => stages.forEach(disposeStage)); },
   };

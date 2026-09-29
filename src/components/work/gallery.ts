@@ -9,6 +9,7 @@ import { sq } from "@/lib/three/pieces";
 import { SCULPTURE, disposeScene } from "@/lib/three/sculptures";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { renderer } from "@/lib/three/env";
+import { warmScenes } from "@/lib/three/warm";
 
 const TILE = 2.2, PLINTH = 0.7, SCALE = 1.9, SPOT = 150;
 type V3 = [number, number, number];
@@ -36,6 +37,8 @@ export interface Gallery {
   /** resolves once the shaders are compiled (off the main thread where the browser can); render() waits for it */
   ready: Promise<void>;
   render(): void; resize(): void; dispose(): void;
+  /** one draw of everything in it, into a pixel, so its first real frame is like any other (warmScenes) */
+  warm(): void;
 }
 
 export function createGallery(canvas: HTMLCanvasElement, slugs: { slug: string; square: string }[]): Gallery {
@@ -122,6 +125,7 @@ export function createGallery(canvas: HTMLCanvasElement, slugs: { slug: string; 
       const p = at[slug];
       return { pos: [p.x, p.y + 1.25, p.z + 11.5], look: [p.x, p.y + 1.3, p.z], fov: phone ? 30 : 22, shift: share };
     },
+    warm() { if (compiled && !gone) warmScenes([{ r, scene }], () => this.render()); },
     render() {
       if (!compiled || gone) return;
       place();

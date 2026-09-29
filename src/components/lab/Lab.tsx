@@ -119,8 +119,24 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
     let raf = 0;
     // only the chapters on screen are drawn; one coming on screen is drawn as it arrives
     const onScreen = new Set<number>();
-    const drawAll = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; live3d.forEach((c, id) => { if (onScreen.has(id)) c.render(); }); }); };
-    const seen = new IntersectionObserver((es) => { for (const e of es) { const id = +(e.target as HTMLElement).dataset.ch!; if (e.isIntersecting) onScreen.add(id); else onScreen.delete(id); } drawAll(); });
+    // a chapter's scene is a function of its scroll progress: it is drawn again only when that has moved (a canvas
+    // keeps its last frame), or when forced, after a build, a resize or a return to the screen. Play draws itself
+    // as its board changes (ch7); a scroll through the Lab section redrew its two boards every frame for nothing.
+    const drawn = new Map<number, number>();
+    let forced = false;
+    const drawAll = (force = false) => {
+      forced ||= force;
+      if (!raf) raf = requestAnimationFrame(() => {
+        raf = 0; const all = forced; forced = false;
+        live3d.forEach((c, id) => {
+          if (!onScreen.has(id)) return;
+          const p = c.still ? 0 : progressOf(sections.find((x) => +x.dataset.ch! === id)!);
+          if (!all && drawn.get(id) === p) return;
+          drawn.set(id, p); c.render();
+        });
+      });
+    };
+    const seen = new IntersectionObserver((es) => { for (const e of es) { const id = +(e.target as HTMLElement).dataset.ch!; if (e.isIntersecting) onScreen.add(id); else onScreen.delete(id); } drawAll(true); });
 
     const progressOf = (s: HTMLElement) => { const run = s.offsetHeight - innerHeight, t = top(s); return run > 0 ? Math.min(1, Math.max(0, (window.scrollY - t) / run)) : window.scrollY >= t ? 1 : 0; };
     // the chapter in charge: the last one whose top has reached the middle of the screen
@@ -140,7 +156,7 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
       try { const c = spec.make(day, night, { phone, reduced }); live3d.set(id, c); c.progress(progressOf(s)); c.ready.then(() => {
         // warm it: its end state, with everything in it, drawn through warm() (one instance each, one pixel), so shadow
         // programs and buffers are ready before it is first seen (that first draw cost the scroll up to 270 ms)
-        if (live3d.get(id) === c && !onScreen.has(id)) { c.progress(1); warm(() => c.render()); c.progress(progressOf(s)); } if (live3d.get(id) !== c) return; hud(s, c); place(); drawAll(); if (!blend) tick(); }); }
+        if (live3d.get(id) === c && !onScreen.has(id)) { c.progress(1); warm(() => c.render()); c.progress(progressOf(s)); } if (live3d.get(id) !== c) return; hud(s, c); place(); drawAll(true); if (!blend) tick(); }); }
       catch { s.dataset.gl = "off"; }
     };
     const near = new IntersectionObserver((es) => {
@@ -212,7 +228,7 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
     // Play moves the seam with the eval between scrolls (ch7); follow it
     const onEval = () => { if (!blend) tick(); };
     window.addEventListener("lab:seam", onEval);
-    const onResize = () => { live3d.forEach((c) => c.resize()); place(); drawAll(); };
+    const onResize = () => { live3d.forEach((c) => c.resize()); place(); drawAll(true); };
     window.addEventListener("resize", onResize);
 
     // On the one page the opening and Play are blocks: the opening rests at the match score, Play at its eval.

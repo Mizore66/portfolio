@@ -26,3 +26,18 @@ export function buildAhead(el: Element, build: () => void, { order = 0, margin =
   function stop() { io.disconnect(); clearTimeout(t); if (typeof cancelIdleCallback === "function") cancelIdleCallback(idle); else clearTimeout(idle); }
   return () => { done = true; stop(); };
 }
+
+/**
+ * Keeps `state.near` true while `el` is on screen or within `margin` of it. A scene's draw checks it and, while it is
+ * away, owes the frame instead of drawing it (an arrival still animating as the visitor scrolls on would draw every
+ * frame for nothing, alongside the scene they scrolled to); the owed frame is drawn as it comes near again, before
+ * it is seen. Returns the cleanup.
+ */
+export function nearScreen(el: Element, state: { near: boolean; owed: boolean }, draw: () => void, margin = "25% 0px"): () => void {
+  const io = new IntersectionObserver((es) => {
+    state.near = es.some((e) => e.isIntersecting);
+    if (state.near && state.owed) { state.owed = false; draw(); }
+  }, { rootMargin: margin });
+  io.observe(el);
+  return () => { io.disconnect(); state.near = true; state.owed = false; };
+}

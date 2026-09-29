@@ -6,6 +6,7 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { renderer } from "@/lib/three/env";
+import { warmScenes } from "@/lib/three/warm";
 import { disposeScene } from "@/lib/three/sculptures";
 
 export type Theme = "day" | "night";
@@ -21,32 +22,19 @@ export interface Chapter {
   tags(): Tag[];
   render(): void; resize(): void; dispose(): void;
   ready: Promise<void>;
+  /** its scene does not follow the scroll (Play): it draws itself when it changes */
+  still?: boolean;
 }
 export type ChapterFactory = (day: HTMLCanvasElement, night: HTMLCanvasElement | null, o: Opts) => Chapter;
 
 export interface Stage { r: THREE.WebGLRenderer; scene: THREE.Scene; cam: THREE.PerspectiveCamera; env: THREE.Texture; canvas: HTMLCanvasElement }
 
-/** A renderer and scene for one side, with the key frames' RoomEnvironment at `env`. */
 const stages = new Set<Stage>();
 
-/**
- * Warm a scene before it is first seen: `draw` renders it as usual, shadow pass included, but with each instanced
- * mesh drawing one instance and the frame cut to one pixel. Its programs compile and its buffers upload, so its
- * first real frame costs no more than any other, without the cost of drawing it (chapter 4's end state, two 8192²
- * shadow maps of 1,599 pieces, is seconds of fill for a software renderer).
- */
-export function warm(draw: () => void) {
-  const counts: [THREE.InstancedMesh, number][] = [];
-  for (const st of stages) {
-    st.scene.traverse((o) => { if ((o as THREE.InstancedMesh).isInstancedMesh) { const m = o as THREE.InstancedMesh; counts.push([m, m.count]); m.count = Math.min(m.count, 1); } });
-    st.r.setScissorTest(true); st.r.setScissor(0, 0, 1, 1);
-  }
-  try { draw(); } finally {
-    for (const [m, n] of counts) m.count = n;
-    for (const st of stages) { st.r.setScissorTest(false); st.r.shadowMap.needsUpdate = true; }
-  }
-}
+/** Warm every stage, while `draw` renders a chapter (warmScenes). */
+export function warm(draw: () => void) { warmScenes([...stages], draw); }
 
+/** A renderer and scene for one side, with the key frames' RoomEnvironment at `env`. */
 export function stage(canvas: HTMLCanvasElement, { exposure = 1, env = 0.5, bg = 0xf3f3f1, fov = 30 } = {}): Stage {
   const r = renderer(canvas, exposure);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(bg);

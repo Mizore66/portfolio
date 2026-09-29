@@ -94,6 +94,7 @@ export const chapter7: ChapterFactory = (dayCanvas, nightCanvas, o) => {
   const api: PlayStage = {
     ready: c.ready,
     progress() {}, // Play is not scrubbed: the camera is already overhead (motion.md §11, 07)
+    still: true,
     seam: () => shown,
     tags: () => [],
     set,

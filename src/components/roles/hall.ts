@@ -7,6 +7,7 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { disposeScene } from "@/lib/three/sculptures";
 import { renderer } from "@/lib/three/env";
+import { warmScenes } from "@/lib/three/warm";
 import { board, position, HALL } from "@/lib/three/board";
 import { MAT } from "@/lib/three/pieces";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
@@ -51,6 +52,8 @@ export interface Hall {
   pick(x: number, y: number): string | null;
   ready: Promise<void>;
   render(): void; resize(): void; dispose(): void;
+  /** one draw of everything in it, into a pixel, so its first real frame is like any other (warmScenes) */
+  warm(): void;
 }
 
 function table(fen: string, last: string[], current: boolean) {
@@ -155,6 +158,7 @@ export function createHall(canvas: HTMLCanvasElement, list: { slug: string; fen:
       ray.setFromCamera(new THREE.Vector2((x / W()) * 2 - 1, 1 - (y / H()) * 2), cam);
       return (ray.intersectObjects(hit, true)[0]?.object.userData.slug as string) ?? null;
     },
+    warm() { if (compiled && !gone) warmScenes([{ r, scene }], () => this.render()); },
     render() {
       if (!compiled || gone) return;
       place();

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
 import { registerEases, perLayer } from "@/lib/motion/ease";
 import { beginNav } from "@/lib/seam/sweep";
-import { buildAhead, firstView } from "@/lib/motion/firstView";
+import { buildAhead, firstView, nearScreen } from "@/lib/motion/firstView";
 import { PHONE, restFor } from "@/lib/seam/seam";
 import { after } from "@/lib/motion/slowmo";
 import { createGallery, VIEW, type Gallery, type View } from "./gallery";
@@ -30,7 +30,9 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
   const [pos, setPos] = useState<Record<string, { x: number; y: number }>>({});
   const leaving = useRef(false);
 
+  const away = useRef({ near: true, owed: false }); // off screen, a frame is owed, not drawn (nearScreen)
   const draw = useCallback(() => {
+    if (!away.current.near) { away.current.owed = true; return; }
     if (frame.current) return;
     frame.current = requestAnimationFrame(() => { frame.current = 0; g.current?.render(); });
   }, []);
@@ -55,11 +57,11 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
       g.current = gal; setView(gal, view());
       if (arriving) { gal.room.k = 0; lit(gal, 0); const v = view(); gal.cam.pos.set(v.pos[0], v.pos[1] + 4.8, v.pos[2] + 3.2); } // lights off, camera high
       else { gal.room.k = 1; lit(gal, 1); }
-      place(); gal.ready.then(draw);
+      place(); gal.ready.then(() => { g.current?.warm(); g.current?.render(); }); // its first frame, drawn ahead wherever the page is
       return gal;
     };
     // on the one page the room is built when it comes within a screen, not at load (seven scenes would compile at once)
-    const stopAhead = buildAhead(el, build, { order: 1 });
+    const stopAhead = buildAhead(el, build, { order: 1 }), stopNear = nearScreen(el, away.current, draw);
 
     let cancel = () => {};
     if (arriving) {
@@ -87,7 +89,7 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
     const onResize = () => { if (!gal) return; gal.resize(); setView(gal, view()); place(); draw(); };
     window.addEventListener("resize", onResize);
     return () => {
-      dead = true; stopAhead();
+      dead = true; stopAhead(); stopNear();
       cancel(); tl?.kill(); gsap.set(rise, { clearProps: "transform" }); gsap.set(labels, { clearProps: "opacity,transform" });
       window.removeEventListener("resize", onResize); cancelAnimationFrame(frame.current); frame.current = 0;
       g.current = null; gal?.dispose();
