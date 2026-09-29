@@ -24,7 +24,7 @@ test.describe("Contact", () => {
     expect(errors).toEqual([]);
   });
 
-  test("the clock: your face runs to the second, Anas's is stopped at Kuala Lumpur time", async ({ page, context }) => {
+  test("the clock: your face runs to the second, Anas's runs in Kuala Lumpur time", async ({ page, context }) => {
     await context.clearCookies();
     await page.goto("/contact");
     const faces = page.locator(".clock .face");
@@ -33,6 +33,16 @@ test.describe("Contact", () => {
     await expect(faces.nth(1).locator("b")).toHaveText(kl);
     const s0 = await faces.nth(0).locator("sup").textContent();
     await expect(faces.nth(0).locator("sup")).not.toHaveText(s0!, { timeout: 3000 });
+  });
+
+  test("Copy email puts the address on the clipboard", async ({ page, context }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.goto("/contact");
+    const button = ink(page).getByRole("button", { name: "Copy email" });
+    await button.click();
+    await expect(ink(page).getByRole("button", { name: "Copied" })).toBeVisible();
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("anasqumhiyeh@gmail.com");
+    await expect(ink(page).getByRole("button", { name: "Copy email" })).toBeVisible({ timeout: 5000 });
   });
 
   test("the caret blinks once the page has arrived", async ({ page }) => {

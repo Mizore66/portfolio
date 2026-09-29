@@ -7,7 +7,7 @@ Contact (key frame contact-a, prototype `design/motion/contact.html`, storyboard
 ![Contact at 1440](contact/desk.webp)
 ![contact-a, approved](contact/key-contact-a.webp)
 
-The seam rests at 55.9%, the position after 10…Bg4. The caret after "11." blinks at 1 Hz, hard on and off. Your face of the clock runs to the second with its flag lit, because it is your move. Anas's face stopped at the time in Kuala Lumpur when you arrived. The address underlines left to right on hover.
+The seam rests at 55.9%, the position after 10…Bg4. The caret after "11." blinks at 1 Hz, hard on and off. Your face of the clock runs to the second with its flag lit, because it is your move. Anas's face runs in Kuala Lumpur time (the owner's choice at the gate). "Copy email" sits beside the address. The address underlines left to right on hover.
 
 ## Arriving, from the Lab
 

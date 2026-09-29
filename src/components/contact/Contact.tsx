@@ -13,10 +13,11 @@ export interface ContactCopy {
   move: string; yourMove: string; email: string; reply: string;
   links: { label: string; href: string; external?: boolean }[];
   you: string; anas: string; zone: string; zoneLabel: string;
+  copy: string; copied: string; copyFailed: string;
 }
 
-// The chess clock (contact-a; motion.md §6): your face runs, with its flag lit, because it is your move; Anas's face
-// stopped when Black moved, at the time in Kuala Lumpur when you arrived. Reduced motion: it updates each minute.
+// The chess clock (contact-a; motion.md §6): both faces run, yours to the second with its flag lit, because it is your
+// move, and Anas's in Kuala Lumpur (the owner's choice at the Contact gate). Reduced motion: it updates each minute.
 const hm = (d: Date, zone?: string) => d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: zone });
 function useNow(reduced: boolean) {
   return useSyncExternalStore(
@@ -28,13 +29,13 @@ function useNow(reduced: boolean) {
 const noReduce = () => () => {};
 function Clock({ copy }: { copy: ContactCopy }) {
   const reduced = useSyncExternalStore(noReduce, () => window.matchMedia("(prefers-reduced-motion: reduce)").matches, () => false);
-  const tick = useNow(reduced), [arrived] = useState(() => new Date());
+  const tick = useNow(reduced);
   // the server has no clock to show: both faces read --:-- until the first client tick
-  const now = tick ? new Date() : null, stopped = now ? hm(arrived, copy.zone) : null;
+  const now = tick ? new Date() : null, kl = now ? hm(now, copy.zone) : null;
   return (
-    <div className="clock" aria-label={now ? `${copy.you} ${hm(now)}, ${copy.anas} ${stopped} ${copy.zoneLabel}` : undefined} role="img">
+    <div className="clock" aria-label={now ? `${copy.you} ${hm(now)}, ${copy.anas} ${kl} ${copy.zoneLabel}` : undefined} role="img">
       <div className="face on"><small>{copy.you}</small><b className="mono">{now ? hm(now) : "--:--"}</b>{!reduced ? <sup className="mono">{now ? String(now.getSeconds()).padStart(2, "0") : "--"}</sup> : null}<i className="flag" /></div>
-      <div className="face"><small>{copy.anas}, {copy.zoneLabel}</small><b className="mono">{stopped ?? "--:--"}</b></div>
+      <div className="face"><small>{copy.anas}, {copy.zoneLabel}</small><b className="mono">{kl ?? "--:--"}</b></div>
     </div>
   );
 }
@@ -46,6 +47,13 @@ function Clock({ copy }: { copy: ContactCopy }) {
  */
 export function Contact({ copy }: { copy: ContactCopy }) {
   const path = usePathname(), el = useRef<HTMLElement>(null);
+  // Copy email: "Copied" for two seconds; if the clipboard refuses, the reply line asks for the address to be selected
+  const [copyState, setCopy] = useState<"idle" | "done" | "failed">("idle"), reset = useRef(0);
+  const copyEmail = () => {
+    clearTimeout(reset.current);
+    navigator.clipboard.writeText(copy.email).then(() => setCopy("done"), () => setCopy("failed"))
+      .finally(() => { reset.current = window.setTimeout(() => setCopy("idle"), 2000); });
+  };
   useLayoutEffect(() => {
     const root = el.current!, a = arrival(path);
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || a?.reduced) { root.dataset.caret = "on"; return; }
@@ -74,8 +82,8 @@ export function Contact({ copy }: { copy: ContactCopy }) {
         : <h1 className="ct-mv display"><span className="ln" data-vt-line=""><span data-rise="">{copy.move}</span></span></h1>}
       <span className="caret" aria-hidden="true" />
       <p className="ct-line ct-yours display"><span className="ln" data-vt-line=""><span data-rise="">{copy.yourMove}</span></span></p>
-      <p className="ct-line ct-mail"><span className="ln" data-vt-line=""><span data-rise=""><a href={`mailto:${copy.email}`}>{copy.email}</a></span></span></p>
-      <p className="ct-line ct-reply"><span className="ln" data-vt-line=""><span data-rise="">{copy.reply}</span></span></p>
+      <p className="ct-line ct-mail"><span className="ln" data-vt-line=""><span data-rise=""><a href={`mailto:${copy.email}`}>{copy.email}</a><button type="button" className="ct-copy" onClick={copyEmail}>{copyState === "done" ? copy.copied : copy.copy}</button></span></span></p>
+      <p className="ct-line ct-reply"><span className="ln" data-vt-line=""><span data-rise="" aria-live={inv ? undefined : "polite"}>{copyState === "failed" ? copy.copyFailed : copy.reply}</span></span></p>
       <ul className="ct-links">
         {copy.links.map((l) => (
           <li key={l.label} className="ln" data-vt-line=""><span data-rise="">

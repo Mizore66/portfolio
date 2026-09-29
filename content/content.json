@@ -2630,7 +2630,8 @@
       "move": "11.",
       "yourMove": "Your move.",
       "resume": "Résumé",
-      "clockZoneLabel": "MYT"
+      "clockZoneLabel": "MYT",
+      "copied": "Copied"
     },
     "experience": {
       "earlierHeading": "Earlier experience"

@@ -4,7 +4,7 @@ import { Contact, type ContactCopy } from "@/components/contact/Contact";
 
 export const metadata: Metadata = { title: "Contact" };
 
-type Copy = { move: string; yourMove: string; resume: string; buttons: string[]; clockLabels: string[]; clockZone: string; clockZoneLabel: string };
+type Copy = { move: string; yourMove: string; resume: string; copied: string; copyFailed: string; buttons: string[]; clockLabels: string[]; clockZone: string; clockZoneLabel: string };
 const C = (content.pageCopy as unknown as { contact: Copy }).contact;
 const I = content.identity as unknown as { email: string; responseTime: string };
 const U = content.links as unknown as { linkedin: string; github: string };
@@ -20,6 +20,7 @@ export default function Page() {
       { label: C.resume, href: "/resume" },
     ],
     you: C.clockLabels[0], anas: C.clockLabels[1], zone: C.clockZone, zoneLabel: C.clockZoneLabel,
+    copy: C.buttons[1], copied: C.copied, copyFailed: C.copyFailed,
   };
   return <Contact copy={copy} />;
 }
