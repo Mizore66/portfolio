@@ -23,7 +23,7 @@ function Steps({ steps, arrow }: { steps: Step[]; arrow?: boolean }) {
 }
 
 /**
- * The case study: one column on the gallery black, beside the seam's hairline (design/motion.md §8).
+ * The case study: one column on the gallery black, with the seam gone to the edge (design/motion.md §8).
  * The featured three and the other seven each lead on to the next of their own group.
  */
 export function Study({ f }: { f: Entry }) {

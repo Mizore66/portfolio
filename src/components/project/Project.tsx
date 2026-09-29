@@ -12,7 +12,7 @@ import "./project.css";
 export interface ProjectHead { slug: string; name: string[]; /** word indices that start a new line on desktop */ breaks?: number[]; meta: string; subtitle: string; claim: string; qualifier: string; move: string }
 
 const TURN = (20 * Math.PI) / 180, SWING = (15 * Math.PI) / 180;
-/** how far down the page (in screens) the seam starts to narrow, and where it is a hairline */
+/** how far down the page (in screens) the seam starts to slide to the edge, and where it reaches it */
 const NARROW = [0.45, 1.0];
 
 function Letters({ word }: { word: string }) {
@@ -42,8 +42,8 @@ function Type({ head, inv }: { head: ProjectHead; inv?: boolean }) {
 
 /**
  * A project page (key frame proj-a; design/motion.md §8). The piece stands on the seam at its move's eval
- * and inverts like the name. Scrolling turns it 20°, then the seam narrows to a hairline at the left edge
- * and the case study rises on the gallery black. The pointer moves the key light (fine pointers only).
+ * and inverts like the name. Scrolling turns it 20°, then the seam slides to the left edge and the case study
+ * rises on the gallery black, all of it (the owner dropped proj-a's 3 px paper hairline, 2026-09-30). The pointer moves the key light (fine pointers only).
  */
 export function Project({ head, children }: { head: ProjectHead; children: React.ReactNode }) {
   const path = usePathname();
@@ -82,10 +82,9 @@ export function Project({ head, children }: { head: ProjectHead; children: React
       });
     }
 
-    // Scroll: the turn, then the seam narrows to a hairline. It never fights a sweep: while the seam is
+    // Scroll: the turn, then the seam goes to the edge. It never fights a sweep: while the seam is
     // travelling between pages it is the sweep's; the page takes it back once the sweep is over.
     let settle = 0, last = -1;
-    const hair = () => (phoneQ.matches ? 3 / innerHeight : 3 / innerWidth);
     const ease = gsap.parseEase("seam");
     const onScroll = () => {
       if (site.hasAttribute("data-seam-moving") || navigating()) return;
@@ -93,7 +92,7 @@ export function Project({ head, children }: { head: ProjectHead; children: React
       el.toggleAttribute("data-deep", p > 0.95);
       if (stage && !reduced) { stage.pose.turn = TURN * Math.min(1, Math.max(0, p)); draw(); }
       const q = Math.min(1, Math.max(0, (p - NARROW[0]) / (NARROW[1] - NARROW[0])));
-      const at = rest() + (hair() - rest()) * ease(q);
+      const at = rest() * (1 - ease(q));
       if (Math.abs(at - last) < 1e-4) return;
       last = at; setSeam(at);
       clearTimeout(settle); settle = window.setTimeout(() => restColours(true), 120);

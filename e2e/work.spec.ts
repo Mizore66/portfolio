@@ -134,9 +134,9 @@ test.describe("a project page", () => {
       for (const b of f.project.caseStudy?.built ?? []) await expect(main).toContainText(prose(b));
       if (f.project.repo) await expect(page.getByRole("link", { name: "Source on GitHub" })).toHaveAttribute("href", f.project.repo);
       await expect(page.getByRole("link", { name: "Back to all work" })).toHaveAttribute("href", "/#work");
-      // scrolled into the case study, the seam is a hairline at the edge
+      // scrolled into the case study, the seam has gone to the edge: all gallery, no paper line
       await page.evaluate(() => window.scrollTo(0, innerHeight * 1.6));
-      await expect.poll(() => seam(page)).toBeLessThan(0.5);
+      await expect.poll(() => seam(page)).toBe(0);
       await page.evaluate(() => window.scrollTo(0, 0));
       await expect.poll(() => seam(page)).toBeCloseTo(share(f.cp), 1);
       expect(errors).toEqual([]);
