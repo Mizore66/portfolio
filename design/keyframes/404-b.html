@@ -1,0 +1,38 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>404 B: out of book</title>
+<link rel="stylesheet" href="_shared/tokens.css"><style>
+  /* the Lab's seam and its search tree: the one line that was asked for stops short, on a square the engine never reached */
+  .ttl { position:absolute; left:3vw; top:14vh; font-size:11vw; }
+  .body { position:absolute; left:3.4vw; bottom:18vh; font-size:19px; line-height:1.35; max-width:14ch; }
+  .why { position:absolute; left:3.4vw; bottom:13vh; font-size:13px; color:var(--fg2); }
+  .back { position:absolute; left:3.4vw; bottom:7vh; font-size:18px; font-weight:600; padding-bottom:3px; border-bottom:2px solid currentColor; }
+  .tag { position:absolute; font-size:12px; color:var(--move) !important; transform:translate(14px,-50%); white-space:nowrap; }
+  svg.t { position:absolute; inset:0; z-index:1; }
+  @media (max-width:600px) {
+    .ttl { left:16px; top:84px; font-size:12.6vw; } .body { left:20px; top:calc(30.5% - 104px); bottom:auto; font-size:16px; max-width:none; }
+    .why { left:20px; top:calc(30.5% - 52px); bottom:auto; font-size:11px; } .back { left:20px; top:auto; bottom:62px; font-size:16px; }
+    .sound { bottom:24px; right:20px; font-size:12px; } .nav { top:24px; left:20px; gap:16px; font-size:13px; } .resume { top:24px; right:20px; font-size:13px; }
+  }
+</style></head><body><div class="frame">
+<svg class="t" id="t"></svg>
+<div id="ink"><nav class="nav"><span>Roles</span><span>Work</span><span>Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
+  <h1 class="ttl display">Out of book.</h1>
+  <p class="body">The engine has no line for this page.</p><p class="why mono">/notes/2019 · searched to depth 9 · not found</p>
+  <div class="back">Back to the start</div><div class="sound dim">Sound off</div></div>
+  <div class="tag mono" id="tag">404</div></div>
+<script type="module">
+import { seam } from "./_shared/seam.js"; import { tree } from "./_shared/tree.js";
+await document.fonts.ready; const ph = matchMedia("(max-width:600px)").matches;
+seam({ at: .305, dir: ph ? "h" : "v" }); document.querySelector(".seam-bg").style.background = "var(--search)";
+const W = innerWidth, H = innerHeight, svg = document.getElementById("t"); svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+const x0 = ph ? .72 * W : .305 * W, y0 = ph ? .305 * H + 40 : .66 * H;
+const { lines, pv } = ph ? tree({ root: [x0, y0], dir: Math.PI / 2 + .12, len: .085 * H, depth: 9, seed: 31, bounds: [60, y0, W - 40, H - 120] })
+  : tree({ root: [x0, y0], len: .1 * W, depth: 9, seed: 23, bounds: [x0, .34 * H, W - 30, H - 40] });
+// the asked-for line: amber for five moves, then dashed into nothing, ending on an empty ring
+const cut = Math.min(5, pv.length - 1), a = pv[cut - 1], b = pv[cut], end = [b[0] + (b[0] - a[0]) * .9, b[1] + (b[1] - a[1]) * .9];
+svg.innerHTML = lines.map(([p, q, r, s, k]) => `<line x1="${p}" y1="${q}" x2="${r}" y2="${s}" stroke="#e9ecf2" stroke-opacity="${Math.min(.1 + .075 * k, .8).toFixed(2)}" stroke-width="${(.35 + .11 * k).toFixed(2)}"/>`).join("")
+  + `<polyline points="${pv.slice(0, cut + 1).map((p) => p.join(",")).join(" ")}" fill="none" stroke="#e8a33d" stroke-width="2.4"/>`
+  + `<line x1="${b[0]}" y1="${b[1]}" x2="${end[0]}" y2="${end[1]}" stroke="#e8a33d" stroke-width="2" stroke-dasharray="4 6"/>`
+  + `<circle cx="${end[0]}" cy="${end[1]}" r="7" fill="none" stroke="#e8a33d" stroke-width="2"/><circle cx="${x0}" cy="${y0}" r="6" fill="#e9ecf2"/>`;
+const tag = document.getElementById("tag"); tag.style.left = end[0] + "px"; tag.style.top = end[1] + "px";
+window.__ready = true;
+</script></body></html>
