@@ -7,8 +7,8 @@ describe("resting seams", () => {
   it("come from the approved key frames", () => {
     expect(roomFor("/")!.at).toBeCloseTo(0.5586, 4); // share(+0.64)
     expect(roomFor("/work")).toMatchObject({ at: 0.015, atPhone: 0 });
-    expect(roomFor("/roles")).toMatchObject({ at: 0.985, atPhone: 1 }); // roles-b: a 22 px ink edge, as Work has a paper one
-    expect(roomFor("/roles/deriv")).toMatchObject({ at: 0.985, atPhone: 1 });
+    expect(roomFor("/roles")).toMatchObject({ at: 1, atPhone: 1 }); // the paper floods
+    expect(roomFor("/roles/deriv")).toMatchObject({ at: 1, atPhone: 1 });
     expect(roomFor("/lab")).toMatchObject({ at: 0.305, dark: "var(--search)" });
     expect(roomFor("/contact")!.at).toBeCloseTo(roomFor("/")!.at);
     expect(roomFor("/resume")).toBeNull();
@@ -44,11 +44,11 @@ describe("the sweep", () => {
     expect(plan("/", "/work", 0.559, 0.015, false).cut).toBe(false);
   });
   it("cuts into a role page from the hall, where sitting down has already framed it", () => {
-    const sit = plan("/roles", "/roles/deriv", 0.985, 0.985, false);
+    const sit = plan("/roles", "/roles/deriv", 1, 1, false);
     expect(sit.cut).toBe(true);
     expect(sit.rise).toBeLessThan(0.2); // the title arrives as the camera lands
-    expect(plan("/roles/deriv", "/roles", 0.985, 0.985, false).cut).toBe(false);
-    expect(plan("/roles/deriv", "/roles/education", 0.985, 0.985, false).cut).toBe(false);
+    expect(plan("/roles/deriv", "/roles", 1, 1, false).cut).toBe(false);
+    expect(plan("/roles/deriv", "/roles/education", 1, 1, false).cut).toBe(false);
   });
   it("uses 8 degrees on phones", () => {
     expect(plan("/", "/work", 0.559, 0, true).tilt).toBe(-8);

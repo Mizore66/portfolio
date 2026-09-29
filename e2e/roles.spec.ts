@@ -25,7 +25,7 @@ test.describe("the Roles hall", () => {
       await expect(names.nth(i)).toContainText(t.name);
     }
     await expect(names.last()).toContainText("now");
-    await expect.poll(() => seam(page), { timeout: 40_000 }).toBeCloseTo(98.5, 1);
+    await expect.poll(() => seam(page), { timeout: 40_000 }).toBeCloseTo(100, 1);
     expect(errors).toEqual([]);
   });
 
@@ -58,7 +58,7 @@ test.describe("a role page", () => {
       await expect(main).toContainText(t.sub);
       for (const f of t.facts) { await expect(main).toContainText(f.text); if (f.big) await expect(main).toContainText(f.big); }
       await expect(main).toContainText(t.game.title);
-      await expect.poll(() => seam(page)).toBeCloseTo(98.5, 1);
+      await expect.poll(() => seam(page)).toBeCloseTo(100, 1);
       await expect(page.getByRole("link", { name: "Back to all roles" })).toHaveAttribute("href", "/roles");
       expect(errors).toEqual([]);
     });

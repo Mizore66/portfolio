@@ -3,7 +3,7 @@ import AxeBuilder from "@axe-core/playwright";
 
 // design/motion.md, "Navigation": every page change is the seam sweeping from where it is to where the
 // next page rests. The URL changes at the start; Back and Forward play the same sweep.
-const REST: Record<string, string> = { "/": "55.9", "/work": "1.5", "/roles": "98.5", "/lab": "30.5", "/contact": "55.9" };
+const REST: Record<string, string> = { "/": "55.9", "/work": "1.5", "/roles": "100.0", "/lab": "30.5", "/contact": "55.9" };
 const seam = (page: Page) => page.locator(".site").evaluate((e) => parseFloat(getComputedStyle(e).getPropertyValue("--seam")).toFixed(1));
 const nav = (page: Page, name: string) => page.locator(".chrome [data-layer=ink] .nav").getByRole("link", { name, exact: true });
 
