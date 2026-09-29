@@ -41,6 +41,14 @@ test.describe("hero", () => {
     expect(await seam(page)).toBe(SEAM);
   });
 
+  test("after the opening, its résumé skip link leaves the tab order (the nav's Résumé stays)", async ({ page }) => {
+    await page.addInitScript(() => sessionStorage.setItem("hero-opening-seen", "1"));
+    await page.goto("/");
+    await expect(page.locator(".hero")).toHaveAttribute("data-intro", "done", { timeout: 15_000 });
+    await expect(page.getByRole("link", { name: "Skip to résumé" })).toBeHidden();
+    await expect(page.getByRole("navigation").getByRole("link", { name: "Résumé" }).or(page.locator(".chrome").getByRole("link", { name: "Résumé" })).first()).toBeVisible();
+  });
+
   test.describe("with reduced motion", () => {
     test.use({ contextOptions: { reducedMotion: "reduce" } });
     test("shows the end state at once, and is accessible", async ({ page }) => {

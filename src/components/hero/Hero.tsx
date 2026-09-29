@@ -98,7 +98,7 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
     const finish = () => {
       st.t = T.total; st.at = share(SETTLE_CP);
       gsap.set(q(".ch"), { yPercent: 0 }); gsap.set(q(".line i"), { yPercent: 0 });
-      gsap.set(q(".ev"), { opacity: 1 }); gsap.set(toggle, { clearProps: "opacity" }); gsap.set(nav, { clearProps: "opacity" }); gsap.set(q(".skip-resume"), { opacity: 0 });
+      gsap.set(q(".ev"), { opacity: 1 }); gsap.set(toggle, { clearProps: "opacity" }); gsap.set(nav, { clearProps: "opacity" }); gsap.set(q(".skip-resume"), { autoAlpha: 0 }); // gone, and out of the tab order: the nav's Résumé is there
       draw(); el.dataset.intro = "done"; startIdle();
       if (!arrive) restColours(true);
     };
@@ -140,7 +140,7 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
       tl.to(st, { t: T.total, duration: T.total, ease: "none", onUpdate: draw }, 0)
         .to(st, { at: share(SETTLE_CP), duration: 0.9, ease: "seam", onUpdate: draw }, T.paper)
         .to(q(".ch"), { yPercent: 0, duration: 0.7, ease: "arrive", stagger: perLayer(0.028) }, T.name)
-        .to(q(".skip-resume"), { opacity: 0, duration: 0.25 }, T.name)
+        .to(q(".skip-resume"), { autoAlpha: 0, duration: 0.25 }, T.name) // hidden once faded, so it leaves the tab order
         .to(q(".line i"), { yPercent: 0, duration: 0.6, ease: "arrive", stagger: perLayer(0.08) }, T.name + 0.45)
         .to(q(".ev"), { opacity: 1, duration: 0.4 }, T.name + 0.6)
         .to(nav, { opacity: 1, duration: 0.4, ease: "arrive", stagger: perLayer(0.05), clearProps: "opacity" }, T.name + 0.7).to(toggle, { opacity: 0.62, duration: 0.4, ease: "arrive", clearProps: "opacity" }, T.name + 0.75);
