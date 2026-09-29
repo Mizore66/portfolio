@@ -51,7 +51,7 @@ export const seamPct = (cp: number) => `${(share(cp) * 100).toFixed(1)}%`;
 /** Mount the game on the page (the ink copy of the controls calls this); returns the teardown. */
 export function mountPlay(pin: HTMLElement, reduced: boolean): { start(): void; setOpp(o: EvalMode): void; setWhite(w: boolean): void; again(): void; dispose(): void } {
   let pos: EnginePos = startPos(), plies: Ply[] = [], stage: PlayStage | null = null, worker: Worker | null = null;
-  let id = 0, game = 0, alive = true, from: string | null = null, dragging = false, down: { x: number; y: number } | null = null, busy = false;
+  let id = 0, game = 0, alive = true, from: string | null = null, dragging = false, down: { x: number; y: number } | null = null, busy = false, sliding = false;
   const replies = new Map<number, (m: PlayOut) => void>();
   const ms = (t: number) => (reduced ? 0 : t);
 
@@ -150,11 +150,11 @@ export function mountPlay(pin: HTMLElement, reduced: boolean): { start(): void; 
 
   // switching opponent or side slides the pieces home and starts over (600 ms, seam, 10 ms stagger)
   const reset = async () => {
-    const g = ++game; from = null; busy = true; stage?.lift(null, [], []); home();
+    const g = ++game; from = null; busy = sliding = true; stage?.lift(null, [], []); home();
     stage?.orient(state.white);
     await stage?.slide(rowsOf(pos), null, ms(RESET));
     if (g !== game) return;
-    busy = false;
+    busy = sliding = false;
     const k = known(state.opp);
     put({ sans: sansOf(), cp: k.cp, best: k.best, seamCp: START_CP, phase: state.started ? "you" : "idle" });
     stage?.eval(START_CP);
@@ -170,7 +170,7 @@ export function mountPlay(pin: HTMLElement, reduced: boolean): { start(): void; 
       void ask({ type: "load" }).then(() => {
         if (!alive) return;
         put({ started: true, phase: "you", sans: sansOf() });
-        if (!yourTurn()) void next();
+        if (!yourTurn() && !sliding) void next(); // a slide home still under way plays the first move when it lands
       });
     },
     setOpp(o) { if (o === state.opp) return; put({ opp: o }); void reset(); },

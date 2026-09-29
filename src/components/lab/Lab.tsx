@@ -11,7 +11,7 @@ import { firstView } from "@/lib/motion/firstView";
 import Link from "next/link";
 import type { TreeNode } from "@/content/lab-tree.gen";
 import { layout, type Line } from "./tree";
-import type { Chapter, ChapterFactory, Tag } from "./kit";
+import { warm, type Chapter, type ChapterFactory, type Tag } from "./kit";
 import { SPECS as specs, EXTRAS as extras } from "./chapters";
 import "./lab.css";
 
@@ -117,7 +117,10 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
     const top = (s: HTMLElement) => s.getBoundingClientRect().top + window.scrollY;
     const live3d = new Map<number, Chapter>();
     let raf = 0;
-    const drawAll = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; live3d.forEach((c) => c.render()); }); };
+    // only the chapters on screen are drawn; one coming on screen is drawn as it arrives
+    const onScreen = new Set<number>();
+    const drawAll = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; live3d.forEach((c, id) => { if (onScreen.has(id)) c.render(); }); }); };
+    const seen = new IntersectionObserver((es) => { for (const e of es) { const id = +(e.target as HTMLElement).dataset.ch!; if (e.isIntersecting) onScreen.add(id); else onScreen.delete(id); } drawAll(); });
 
     const progressOf = (s: HTMLElement) => { const run = s.offsetHeight - innerHeight, t = top(s); return run > 0 ? Math.min(1, Math.max(0, (window.scrollY - t) / run)) : window.scrollY >= t ? 1 : 0; };
     // the chapter in charge: the last one whose top has reached the middle of the screen
@@ -134,26 +137,43 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
       if (!spec?.make || live3d.has(id)) return;
       const s = sections.find((x) => +x.dataset.ch! === id)!;
       const day = s.querySelector<HTMLCanvasElement>("canvas.day")!, night = s.querySelector<HTMLCanvasElement>("canvas.night");
-      try { const c = spec.make(day, night, { phone, reduced }); live3d.set(id, c); c.progress(progressOf(s)); c.ready.then(() => { if (live3d.get(id) !== c) return; hud(s, c); place(); drawAll(); if (!blend) tick(); }); }
+      try { const c = spec.make(day, night, { phone, reduced }); live3d.set(id, c); c.progress(progressOf(s)); c.ready.then(() => {
+        // warm it: its end state, with everything in it, drawn through warm() (one instance each, one pixel), so shadow
+        // programs and buffers are ready before it is first seen (that first draw cost the scroll up to 270 ms)
+        if (live3d.get(id) === c && !onScreen.has(id)) { c.progress(1); warm(() => c.render()); c.progress(progressOf(s)); } if (live3d.get(id) !== c) return; hud(s, c); place(); drawAll(); if (!blend) tick(); }); }
       catch { s.dataset.gl = "off"; }
     };
     const near = new IntersectionObserver((es) => {
       for (const e of es) {
         const id = +(e.target as HTMLElement).dataset.ch!;
         if (e.isIntersecting) build(id);
-        else if (!section) { const c = live3d.get(id); if (c) { c.dispose(); live3d.delete(id); } }
+
       }
     }, { rootMargin: "150% 0px" });
-    // On the one page Play is built ahead, in idle time after the page has loaded (never during the hero's opening),
-    // and kept: building it as it comes near cost the scroll a 250 ms hitch. On /lab the chapters come and go.
-    let idle = 0;
-    const ahead = () => {
-      if (document.querySelector('.hero[data-intro="play"]')) { idle = window.setTimeout(ahead, 600); return; }
-      const run = () => sections.forEach((x) => build(+x.dataset.ch!));
-      idle = typeof requestIdleCallback === "function" ? requestIdleCallback(run, { timeout: 3000 }) : window.setTimeout(run, 200);
+    // Scenes are built ahead, one per idle slot (never during the hero's opening), nearest first: a chapter built as it
+    // came near cost the scroll up to 600 ms. On /lab desktop builds all seven while the opening is read, and keeps them;
+    // phones build two ahead and let go of one more than three away (their WebGL contexts are fewer). A build
+    // waits until the scroll has been still for 300 ms; the queue runs again as the
+    // chapter in charge changes. A chapter reached before its turn is built at once. On the one page, Play is kept.
+    const AHEAD = phone ? 2 : Infinity, KEEP = phone ? 3 : Infinity; // desktop builds all seven and keeps them
+    let idle = 0, queued = false;
+    const again = () => { if (queued) return; queued = true; idle = window.setTimeout(() => { queued = false; queue(); }, 120); };
+    const release = () => {
+      if (section) return;
+      const at = active();
+      for (const [id, c] of live3d) if (Math.abs(id - at) > KEEP) { c.dispose(); live3d.delete(id); }
     };
-    if (section) idle = window.setTimeout(ahead, 800);
-    else sections.forEach((s) => near.observe(s));
+    const queue = () => {
+      if (document.querySelector('.hero[data-intro="play"]')) { idle = window.setTimeout(queue, 600); return; }
+      const mid = window.scrollY + innerHeight / 2, at = active();
+      const next = sections.filter((x) => { const id = +x.dataset.ch!, sp = specs.find((q) => q.id === id); return sp?.make && !live3d.has(id) && x.dataset.gl !== "off" && Math.abs(id - at) <= AHEAD; })
+        .sort((a, b) => Math.abs(top(a) - mid) - Math.abs(top(b) - mid))[0];
+      if (!next) return;
+      const run = () => { if (performance.now() - scrolled < 300) { again(); return; } build(+next.dataset.ch!); again(); }; // only once the scroll is still
+      idle = typeof requestIdleCallback === "function" ? requestIdleCallback(run, { timeout: 1000 }) : window.setTimeout(run, 120);
+    };
+    idle = window.setTimeout(queue, section ? 800 : reduced ? 300 : 1500); // on /lab, once the tree has grown
+    sections.forEach((s) => { near.observe(s); seen.observe(s); });
 
     const place = () => setTags(Object.fromEntries([...live3d].map(([id, c]) => [id, c.tags()])));
 
@@ -177,7 +197,11 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
       if (x.counter) { const t = x.counter(); s.querySelectorAll(".ctr").forEach((e) => { if (e.textContent !== t) e.textContent = t; }); }
       if (x.phase) s.toggleAttribute("data-done", x.phase() > 0.05);
     };
+    let lastActive = -1, scrolled = 0;
     const onScroll = () => {
+      scrolled = performance.now();
+      const at = active();
+      if (at !== lastActive) { lastActive = at; release(); again(); }
       for (const s of sections) { const c = live3d.get(+s.dataset.ch!); if (c) { c.progress(progressOf(s)); hud(s, c); } }
       drawAll(); place();
       if (!blend) tick();
@@ -221,7 +245,7 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
     }
     if (!a) onScroll();
     return () => {
-      unblock.forEach((u) => u()); cancel(); tl?.kill(); near.disconnect(); clearTimeout(idle); if (typeof cancelIdleCallback === "function") cancelIdleCallback(idle); moving.disconnect(); cancelAnimationFrame(raf); cancelAnimationFrame(blend); clearTimeout(settle);
+      unblock.forEach((u) => u()); cancel(); tl?.kill(); near.disconnect(); seen.disconnect(); clearTimeout(idle); if (typeof cancelIdleCallback === "function") cancelIdleCallback(idle); moving.disconnect(); cancelAnimationFrame(raf); cancelAnimationFrame(blend); clearTimeout(settle);
       cancelAnimationFrame(wait); delete open.dataset.grow;
       const t = svgTree(); gsap.set([...rise, ...t.lines, ...t.pv], { clearProps: "all" });
       window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onResize); window.removeEventListener("lab:seam", onEval);

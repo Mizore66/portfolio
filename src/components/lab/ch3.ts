@@ -32,16 +32,21 @@ const smooth = (t: number) => t * t * (3 - 2 * t);
 // rough casts: displace every vertex along its normal by a position-seeded noise, so seams stay closed
 const DIRS = Array.from({ length: 7 }, (_, i) => { const a = i * 2.39996, b = Math.acos(1 - (2 * (i + 0.5)) / 7); return [Math.sin(b) * Math.cos(a), Math.cos(b), Math.sin(b) * Math.sin(a), 1 + i * 0.37]; });
 const noise = (x: number, y: number, z: number, f: number) => DIRS.reduce((s, [a, b, c, k], i) => s + Math.sin((x * a + y * b + z * c) * f * k + i * 1.7) / (1 + i * 0.35), 0) / 3;
+// the displaced copies are worked out once per visit (600 ms of tessellation), not each time the chapter is built;
+// disposing a scene frees their GPU buffers only, so a later build uploads them again
+const CAST = new Map<string, THREE.BufferGeometry>();
 function cast(mat: THREE.Material, amp: number, freq: number) {
   const g = piece("N", mat);
   if (amp) g.traverse((o) => {
     const m = o as THREE.Mesh; if (!m.isMesh) return;
+    const key = `${amp}|${freq}|${m.geometry.uuid}`, hit = CAST.get(key);
+    if (hit) { m.geometry = hit; return; }
     // the piece's geometries are cached and shared: work on a copy
     let geo = m.geometry.index ? m.geometry.toNonIndexed() : m.geometry.clone(); geo.deleteAttribute("uv"); geo.deleteAttribute("normal");
     geo = new TessellateModifier(0.02, 10).modify(geo); geo = mergeVertices(geo, 1e-4); geo.computeVertexNormals(); m.geometry = geo;
     const p = geo.attributes.position, n = geo.attributes.normal;
     for (let i = 0; i < p.count; i++) { const d = amp * noise(p.getX(i), p.getY(i), p.getZ(i), freq); p.setXYZ(i, p.getX(i) + n.getX(i) * d, p.getY(i) + n.getY(i) * d, p.getZ(i) + n.getZ(i) * d); }
-    p.needsUpdate = true; geo.computeVertexNormals();
+    p.needsUpdate = true; geo.computeVertexNormals(); CAST.set(key, geo);
   });
   return g;
 }
