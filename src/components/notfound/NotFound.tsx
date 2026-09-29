@@ -37,12 +37,12 @@ function pawn(canvas: HTMLCanvasElement) {
   return { ready, draw, dispose() { ready.then(() => { disposeScene(scene); env.dispose(); r.dispose(); }); } };
 }
 
-/** The 404 (key frame 404-c, "Taken"): the gallery, all black but Work's paper edge, and one captured pawn. */
+/** The 404 (key frame 404-c, "Taken"): the gallery, all black (no paper edge, as on Work), and one captured pawn. */
 export function NotFound({ copy }: { copy: NotFoundCopy }) {
   const path = usePathname(), el = useRef<HTMLElement>(null), canvas = useRef<HTMLCanvasElement>(null);
   useLayoutEffect(() => {
-    const root = el.current!, phone = window.matchMedia(PHONE).matches;
-    setSeam(phone ? 0 : 0.015); restColours(true);
+    const root = el.current!;
+    setSeam(0); restColours(true);
     let scene: ReturnType<typeof pawn> | null = null;
     try { scene = pawn(canvas.current!); } catch { root.dataset.gl = "off"; }
     const onResize = () => scene?.draw();
@@ -57,9 +57,9 @@ export function NotFound({ copy }: { copy: NotFoundCopy }) {
     return () => { tw?.kill(); window.removeEventListener("resize", onResize); scene?.dispose(); };
   }, [path]);
   return (
-    <main ref={el} id="main" tabIndex={-1} className="nf" data-seam-rest="0.015" data-seam-rest-phone="0">
-      {/* the first paint, before the seam is driven from script: Work's paper edge, none on phones */}
-      <style>{".site:not([data-seam-bound]){--seam:1.5%!important}@media (max-width:600px){.site:not([data-seam-bound]){--seam:0%!important}}"}</style>
+    <main ref={el} id="main" tabIndex={-1} className="nf" data-seam-rest="0" data-seam-rest-phone="0">
+      {/* the first paint, before the seam is driven from script: all gallery */}
+      <style>{".site:not([data-seam-bound]){--seam:0%!important}"}</style>
       <canvas ref={canvas} className="nf-canvas" aria-hidden="true" />
       <div className="nf-paper" />
       <div className="nf-type">
