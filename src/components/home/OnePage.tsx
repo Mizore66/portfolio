@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef } from "react";
 import { driveBlocks, registerBlock } from "@/lib/seam/blocks";
 import { section } from "@/lib/seam/section";
 import { glideTo } from "@/lib/motion/scroll";
+import "./home.css";
 
 /** The nav's four sections, and the parts of the page each one covers (Other Projects is Work's). */
 const OWNER: Record<string, string> = { top: "top", roles: "roles", work: "work", archive: "work", lab: "lab", contact: "contact" };

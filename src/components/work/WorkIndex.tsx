@@ -58,7 +58,8 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
       place(); gal.ready.then(draw);
       return gal;
     };
-    const frameId = requestAnimationFrame(build);
+    // on the one page the room is built when it comes within a screen, not at load (seven scenes would compile at once)
+    const near = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { near.disconnect(); build(); } }, { rootMargin: "100% 0px" }); near.observe(el);
 
     let cancel = () => {};
     if (arriving) {
@@ -86,7 +87,7 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
     const onResize = () => { if (!gal) return; gal.resize(); setView(gal, view()); place(); draw(); };
     window.addEventListener("resize", onResize);
     return () => {
-      dead = true; cancelAnimationFrame(frameId);
+      dead = true; near.disconnect();
       cancel(); tl?.kill(); gsap.set(rise, { clearProps: "transform" }); gsap.set(labels, { clearProps: "opacity,transform" });
       window.removeEventListener("resize", onResize); cancelAnimationFrame(frame.current); frame.current = 0;
       g.current = null; gal?.dispose();

@@ -165,7 +165,7 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
       <canvas ref={night} className="night" aria-hidden="true" key={`n${mobile}`} />
       <Type first={first} last={last} headline={headline} />
       <Type first={first} last={last} headline={headline} inverted />
-      <noscript><style>{"html .site:has(.hero[data-intro]){--seam:55.9%!important}.hero[data-intro] .hero-type{visibility:visible}html .site:has(.hero[data-intro]) .chrome .nav{visibility:visible}.hero .skip-resume{display:none}"}</style></noscript>
+      <noscript><style>{"html .site:has(.hero[data-intro]){--seam:55.9%!important}.hero[data-intro] .hero-type{visibility:visible!important}html .site:has(.hero[data-intro]) .chrome :is(.nav,.sound-toggle){visibility:visible!important}.hero .skip-resume{display:none}"}</style></noscript>
     </section>
   );
 }

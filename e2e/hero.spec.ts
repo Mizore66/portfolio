@@ -50,7 +50,7 @@ test.describe("hero", () => {
       // the paper copy of the type is decorative: one heading, one set of links
       await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(content.identity.displayName);
       await expect(page.getByRole("navigation", { name: "Primary" })).toHaveCount(1);
-      await expect(page.getByRole("link", { name: "Résumé", exact: true })).toHaveAttribute("href", "/resume");
+      await expect(page.getByRole("banner").getByRole("link", { name: "Résumé", exact: true })).toHaveAttribute("href", "/resume");
       const a11y = await new AxeBuilder({ page }).analyze();
       expect(a11y.violations.map((v) => v.id)).toEqual([]);
       expect(errors).toEqual([]);

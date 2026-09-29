@@ -1,12 +1,13 @@
 /* The hero (key frame hero-a, opening approved at Gate 3). The seam position is --seam. */
 .hero { position: relative; height: 100vh; height: 100dvh; min-height: 560px; overflow: hidden; background: linear-gradient(90deg, var(--paper) var(--seam), var(--gallery) var(--seam)); }
 /* the loader starts in the dark; script takes the seam from there (the site seam is on .site) */
-.site:has(.hero[data-intro="pending"]) { --seam: 0% !important; }
+/* the opening waits in the dark, except on a section's address (/#work), where it never plays */
+.site:has(.hero[data-intro="pending"]):not(:has(.home > :target)) { --seam: 0% !important; }
 .hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .hero .night { clip-path: polygon(calc(var(--seam) - var(--seam-o)) 0, calc(100% + 400px) 0, calc(100% + 400px) 100%, calc(var(--seam) + var(--seam-o)) 100%); }
 .hero-layer { position: absolute; inset: 0; z-index: 2; --fg: var(--ink); --fg2: var(--pencil); color: var(--fg); }
 .hero-layer[data-layer="inv"] { --fg: var(--paper); --fg2: #b9b5ad; pointer-events: none; clip-path: polygon(calc(var(--seam) - var(--seam-o)) 0, calc(100% + 400px) 0, calc(100% + 400px) 100%, calc(var(--seam) + var(--seam-o)) 100%); }
-.hero[data-intro="pending"] .hero-type { visibility: hidden; }
+.site:not(:has(.home > :target)) .hero[data-intro="pending"] .hero-type { visibility: hidden; }
 
 .hero .name { position: absolute; left: 4.2vw; top: 17vh; font-size: 21.5vw; }
 .hero .ln { display: block; overflow: hidden; padding-bottom: .16em; margin-bottom: -.16em; }

@@ -32,7 +32,7 @@
   .chrome .nav { top: 24px; left: 20px; gap: 16px; font-size: 13px; }
 }
 /* the hero's loader holds the nav back until the name has arrived */
-.site:has(.hero[data-intro="pending"]) .chrome :is(.nav, .sound-toggle) { visibility: hidden; }
+.site:has(.hero[data-intro="pending"]):not(:has(.home > :target)) .chrome :is(.nav, .sound-toggle) { visibility: hidden; }
 
 /* The cursor: the legal-move dot, then the capture ring. */
 html.has-cursor, html.has-cursor * { cursor: none; }

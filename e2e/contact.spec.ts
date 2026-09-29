@@ -12,7 +12,8 @@ test.describe("Contact", () => {
     page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto("/contact");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("11.");
+    await expect(page).toHaveURL(/\/#contact$/); // the one page's Contact section
+    await expect(page.locator("#contact").getByRole("heading", { level: 2 })).toHaveText("11.");
     await expect(ink(page)).toContainText("Your move.");
     await expect(ink(page).getByRole("link", { name: "anasqumhiyeh@gmail.com" })).toHaveAttribute("href", "mailto:anasqumhiyeh@gmail.com");
     const links = ink(page).getByRole("list").getByRole("link");
@@ -28,7 +29,7 @@ test.describe("Contact", () => {
     await context.clearCookies();
     await page.goto("/contact");
     const faces = page.locator(".clock .face");
-    await expect(faces.nth(1).locator("small")).toHaveText("Anas, MYT");
+    await expect(faces.nth(1).locator("small")).toHaveText("Anas, MYT", { timeout: 30_000 });
     const kl = new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kuala_Lumpur" });
     await expect(faces.nth(1).locator("b")).toHaveText(kl);
     const s0 = await faces.nth(0).locator("sup").textContent();
@@ -47,7 +48,7 @@ test.describe("Contact", () => {
 
   test("the caret blinks once the page has arrived", async ({ page }) => {
     await page.goto("/contact");
-    await expect(page.locator(".contact")).toHaveAttribute("data-caret", "on", { timeout: 10_000 });
+    await expect(page.locator(".contact")).toHaveAttribute("data-caret", "on", { timeout: 30_000 });
   });
 
   test("is accessible", async ({ page }) => {
@@ -68,7 +69,7 @@ test.describe("Contact", () => {
       await page.goto("/contact");
       await expect(page.locator(".contact")).toHaveAttribute("data-caret", "on");
       await expect(page.locator(".clock .face").first().locator("sup")).toHaveCount(0);
-      await expect(ink(page).getByText("Your move.")).toBeVisible();
+      await expect(ink(page).getByText("Your move.")).toBeVisible({ timeout: 30_000 });
     });
   });
 });

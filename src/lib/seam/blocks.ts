@@ -57,11 +57,11 @@ function apply() {
       const y = next.el.getBoundingClientRect().top;
       if (y > 0.2 * H && y < 0.8 * H) { at = blocks[i].rest() + (next.rest() - blocks[i].rest()) * ease((0.8 * H - y) / (0.6 * H)); break; }
     }
-    // what is on screen shares the one seam; what is off it keeps its own rest (audits and anchors see it as it will be)
+    // what is on screen shares the one seam; what is off it keeps its own rest (home.css gives it before the first
+    // frame, so audits and anchors see each section as it will be)
     for (const b of blocks) {
       const r = b.el.getBoundingClientRect();
-      if (r.bottom <= 0 || r.top >= H) b.el.style.setProperty("--seam", `${b.rest() * 100}%`);
-      else b.el.style.removeProperty("--seam");
+      b.el.style.setProperty("--seam", r.bottom <= 0 || r.top >= H ? `${b.rest() * 100}%` : "inherit");
     }
     if (at != null) setSeam(at);
   }

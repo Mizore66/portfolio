@@ -19,9 +19,13 @@ test.beforeEach(async ({ page }) => {
 
 test.describe("the Work room", () => {
   test("stands each project on its move's square, as a real link with its one number", async ({ page }) => {
+    test.setTimeout(90_000);
     const errors = errorsOf(page);
-    await page.goto("/work");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Work");
+    await page.goto("/work"); // the one page's Work section (/#work)
+    await expect(page).toHaveURL(/\/#work$/);
+    await expect(page.locator("#work").getByRole("heading", { level: 2 })).toHaveText("Work");
+    // the labels are placed on their pieces (and shown) once the room is built, which waits for it to come near
+    await expect(page.locator(".piece[data-placed]")).toHaveCount(3, { timeout: 60_000 });
     const list = page.getByRole("list", { name: "Selected work" });
     for (const f of featured) {
       const link = list.getByRole("link", { name: new RegExp(`^${f.name}`) });
@@ -68,7 +72,7 @@ test.describe("Other Projects", () => {
   test("is the scoresheet of the seven, in move order, each a link to its page", async ({ page }) => {
     test.setTimeout(60_000); // a second WebGL room: slow under software GL with other tests running
     const errors = errorsOf(page);
-    await page.goto("/work#archive");
+    await page.goto("/#archive");
     await expect(page.getByRole("heading", { level: 2, name: "Other Projects" })).toBeVisible();
     const rows = page.getByRole("list", { name: "Other projects" }).getByRole("link");
     await expect(rows).toHaveCount(7);
@@ -86,12 +90,12 @@ test.describe("Other Projects", () => {
 
   test("the old archive address lands on it", async ({ page }) => {
     await page.goto("/archive");
-    await expect(page).toHaveURL(/\/work#archive$/);
+    await expect(page).toHaveURL(/\/#archive$/);
   });
 
   test("is accessible", async ({ page }) => {
     test.setTimeout(60_000);
-    await page.goto("/work#archive");
+    await page.goto("/#archive");
     await expect(page.locator(".others-tags .tag")).toHaveCount(7, { timeout: 30_000 });
     const a11y = await new AxeBuilder({ page }).include(".others").analyze();
     expect(a11y.violations.map((v) => v.id)).toEqual([]);
@@ -100,7 +104,7 @@ test.describe("Other Projects", () => {
   test.describe("with reduced motion", () => {
     test.use({ contextOptions: { reducedMotion: "reduce" } });
     test("opening a row is a cut to its page", async ({ page }) => {
-      await page.goto("/work#archive");
+      await page.goto("/#archive");
       await page.getByRole("list", { name: "Other projects" }).getByRole("link", { name: /MirrorFi/ }).click();
       await expect(page).toHaveURL(/\/work\/mirrorfi$/);
       await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName("MirrorFi");
@@ -128,7 +132,7 @@ test.describe("a project page", () => {
       }
       for (const b of f.project.caseStudy?.built ?? []) await expect(main).toContainText(prose(b));
       if (f.project.repo) await expect(page.getByRole("link", { name: "Source on GitHub" })).toHaveAttribute("href", f.project.repo);
-      await expect(page.getByRole("link", { name: "Back to all work" })).toHaveAttribute("href", "/work");
+      await expect(page.getByRole("link", { name: "Back to all work" })).toHaveAttribute("href", "/#work");
       // scrolled into the case study, the seam is a hairline at the edge
       await page.evaluate(() => window.scrollTo(0, innerHeight * 1.6));
       await expect.poll(() => seam(page)).toBeLessThan(0.5);

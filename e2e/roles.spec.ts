@@ -16,8 +16,9 @@ test.describe("the Roles hall", () => {
   test("names the seven tables in career order, each a link to its page, with now on Deriv", async ({ page }) => {
     test.setTimeout(60_000); // the hall's seven sets are slow to draw under software GL
     const errors = errorsOf(page);
-    await page.goto("/roles");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Roles");
+    await page.goto("/roles"); // the one page's Roles section (/#roles)
+    await expect(page).toHaveURL(/\/#roles$/);
+    await expect(page.locator("#roles").getByRole("heading", { level: 2 })).toHaveText("Roles");
     const names = page.getByRole("list", { name: "Roles, in career order" }).getByRole("link");
     await expect(names).toHaveCount(7);
     for (const [i, t] of tables.entries()) {
@@ -59,7 +60,7 @@ test.describe("a role page", () => {
       for (const f of t.facts) { await expect(main).toContainText(f.text); if (f.big) await expect(main).toContainText(f.big); }
       await expect(main).toContainText(t.game.title);
       await expect.poll(() => seam(page)).toBeCloseTo(100, 1);
-      await expect(page.getByRole("link", { name: "Back to all roles" })).toHaveAttribute("href", "/roles");
+      await expect(page.getByRole("link", { name: "Back to all roles" })).toHaveAttribute("href", "/#roles");
       expect(errors).toEqual([]);
     });
   }

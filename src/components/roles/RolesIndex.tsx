@@ -43,7 +43,8 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
       hall.ready.then(draw);
       return hall;
     };
-    const id = requestAnimationFrame(build);
+    // on the one page the hall is built when it comes within a screen, not at load
+    const near = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { near.disconnect(); build(); } }, { rootMargin: "100% 0px" }); near.observe(el);
     let cancel = () => {};
     if (arriving) {
       gsap.set(rise, { yPercent: 135 }); gsap.set(names, { opacity: 0, y: 10 });
@@ -59,7 +60,7 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
     const onResize = () => { if (!hall) return; hall.resize(); setView(hall, phone() ? FRAME.phone : FRAME.desk); draw(); };
     window.addEventListener("resize", onResize);
     return () => {
-      dead = true; cancelAnimationFrame(id); cancel(); tl?.kill();
+      dead = true; near.disconnect(); cancel(); tl?.kill();
       gsap.set([...rise, ...names], { clearProps: "transform,opacity" });
       window.removeEventListener("resize", onResize); cancelAnimationFrame(frame.current); frame.current = 0;
       h.current = null; hall?.dispose();
