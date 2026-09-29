@@ -98,7 +98,7 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
     const finish = () => {
       st.t = T.total; st.at = share(SETTLE_CP);
       gsap.set(q(".ch"), { yPercent: 0 }); gsap.set(q(".line i"), { yPercent: 0 });
-      gsap.set(q(".ev"), { opacity: 1 }); gsap.set(toggle, { clearProps: "opacity" }); gsap.set(nav, { opacity: 1 }); gsap.set(q(".skip-resume"), { opacity: 0 });
+      gsap.set(q(".ev"), { opacity: 1 }); gsap.set(toggle, { clearProps: "opacity" }); gsap.set(nav, { clearProps: "opacity" }); gsap.set(q(".skip-resume"), { opacity: 0 });
       draw(); el.dataset.intro = "done"; startIdle();
       if (!arrive) restColours(true);
     };
@@ -143,7 +143,7 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
         .to(q(".skip-resume"), { opacity: 0, duration: 0.25 }, T.name)
         .to(q(".line i"), { yPercent: 0, duration: 0.6, ease: "arrive", stagger: perLayer(0.08) }, T.name + 0.45)
         .to(q(".ev"), { opacity: 1, duration: 0.4 }, T.name + 0.6)
-        .to(nav, { opacity: 1, duration: 0.4, ease: "arrive", stagger: perLayer(0.05) }, T.name + 0.7).to(toggle, { opacity: 0.62, duration: 0.4, ease: "arrive", clearProps: "opacity" }, T.name + 0.75);
+        .to(nav, { opacity: 1, duration: 0.4, ease: "arrive", stagger: perLayer(0.05), clearProps: "opacity" }, T.name + 0.7).to(toggle, { opacity: 0.62, duration: 0.4, ease: "arrive", clearProps: "opacity" }, T.name + 0.75);
       // The first 0.7 s is the loader: hold until the fonts are in (at most 2.5 s), then play.
       const fonts = Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 2500))]);
       if (process.env.NODE_ENV !== "production" && new URLSearchParams(location.search).has("capture")) {

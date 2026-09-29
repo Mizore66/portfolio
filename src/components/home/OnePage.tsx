@@ -35,7 +35,18 @@ export function OnePage() {
       const want = id === "top" ? "/" : `/#${id}`;
       if (location.pathname === "/" && location.pathname + location.hash !== want) history.replaceState(history.state, "", want);
     };
-    const onScroll = () => { if (!raf) raf = requestAnimationFrame(follow); };
+    // the nav steps away while the page scrolls down under it, and comes back on the way up, at the top, or when the
+    // page comes to rest on a section's top (a nav glide lands there). The résumé link never moves (motion.md).
+    let lastY = window.scrollY, still = 0;
+    const away = (on: boolean) => site.toggleAttribute("data-nav-away", on);
+    const onTop = () => tops().some((s) => Math.abs(s.getBoundingClientRect().top) < 40);
+    const steer = () => {
+      const y = window.scrollY, d = y - lastY;
+      if (y < 80) away(false); else if (d > 6) away(true); else if (d < -6) away(false);
+      if (Math.abs(d) > 6) lastY = y;
+      clearTimeout(still); still = window.setTimeout(() => { if (onTop()) away(false); }, 180);
+    };
+    const onScroll = () => { steer(); if (!raf) raf = requestAnimationFrame(follow); };
 
     // the nav's sections: a glide, not a jump, and no page change
     const onClick = (e: MouseEvent) => {
@@ -58,7 +69,7 @@ export function OnePage() {
     window.addEventListener("scroll", onScroll, { passive: true });
     document.addEventListener("click", onClick, true);
     return () => {
-      cancelAnimationFrame(raf); window.removeEventListener("scroll", onScroll); document.removeEventListener("click", onClick, true);
+      cancelAnimationFrame(raf); clearTimeout(still); away(false); window.removeEventListener("scroll", onScroll); document.removeEventListener("click", onClick, true);
       unblock.forEach((u) => u()); stop(); section.set("top");
     };
   }, []);
