@@ -40,12 +40,17 @@ export function roomFor(path: string): Room | null {
 
 export const PHONE = "(max-width: 600px)";
 export const isPhone = () => typeof window !== "undefined" && window.matchMedia(PHONE).matches;
-export const restFor = (path: string) => { const r = roomFor(path); return r ? (isPhone() ? r.atPhone : r.at) : null; };
+export const restFor = (path: string) => {
+  // a page the path cannot name (the 404) declares its own rest on its main
+  const own = typeof document !== "undefined" && path === location.pathname ? document.querySelector<HTMLElement>("main[data-seam-rest]") : null;
+  if (own) return Number(isPhone() ? own.dataset.seamRestPhone : own.dataset.seamRest);
+  const r = roomFor(path); return r ? (isPhone() ? r.atPhone : r.at) : null;
+};
 
 let el: HTMLElement | null = null;
 export const seam = { at: HERO, tilt: 0 };
 
-export function bindSeam(node: HTMLElement | null, at: number) { el = node; seam.at = at; seam.tilt = 0; }
+export function bindSeam(node: HTMLElement | null, at: number) { el = node; seam.at = at; seam.tilt = 0; node?.setAttribute("data-seam-bound", ""); }
 
 export function setSeam(at: number, tilt = 0) {
   seam.at = at; seam.tilt = tilt;

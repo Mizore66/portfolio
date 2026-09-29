@@ -2990,13 +2990,10 @@
       "tryItPosition": "Position after 5. d4"
     },
     "notFound": {
-      "headline": "The page you requested was a misprint.",
-      "subline": "The front page still holds the work.",
-      "actions": [
-        "Back to the front page",
-        "Résumé",
-        "Contact"
-      ]
+      "title": "Taken.",
+      "line": "There is nothing at {path} any more.",
+      "note": "404 · set beside the board",
+      "back": "Back to the start"
     },
     "colophon": {
       "purpose": "An analysis board: the career as facts, the commentary kept apart, and a chess engine you can actually play.",
