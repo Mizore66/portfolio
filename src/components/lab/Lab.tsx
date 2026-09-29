@@ -1,0 +1,229 @@
+"use client";
+
+import { useLayoutEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
+import { gsap } from "gsap";
+import { registerEases, perLayer } from "@/lib/motion/ease";
+import { PHONE, restColours, restFor, seam as live, setSeam } from "@/lib/seam/seam";
+import { arrival, navigating } from "@/lib/seam/sweep";
+import type { TreeNode } from "@/content/lab-tree.gen";
+import { layout, type Line } from "./tree";
+import { softGL, type Chapter, type ChapterFactory, type Tag } from "./kit";
+import { SPECS as specs, EXTRAS as extras } from "./chapters";
+import "./lab.css";
+
+export interface Note { head: string; text: string }
+export interface ChapterCopy { n: string; title?: string[]; big?: string; notes: Note[]; notesPhone?: Note[]; [k: string]: unknown }
+export interface LabCopy {
+  open: { num: string; pm: string; qualifier: string; qualifierPhone: string; lede: string; body: string; voice: string; share: string; record: string };
+  chapters: ChapterCopy[];
+}
+/** one chapter: its scene, its copy, and how many screens it is pinned for */
+export interface Spec { id: number; make: ChapterFactory | null; screens: number; night: boolean }
+
+const OPEN_AT = 0.305;
+
+/** The opening (lab-a): the match score, and the engine's search tree growing from its root on the seam. */
+function Open({ copy, tree }: { copy: LabCopy["open"]; tree: TreeNode }) {
+  const svg = useRef<SVGSVGElement>(null);
+  const [g, setG] = useState<{ W: number; H: number; lines: Line[]; pv: [number, number][] } | null>(null);
+  useLayoutEffect(() => {
+    const draw = () => {
+      const el = svg.current!, W = el.clientWidth, H = el.clientHeight, phone = window.matchMedia(PHONE).matches;
+      // on phones the seam is horizontal and the tree grows down from a root below it, at the right (lab-a-m)
+      const t = phone
+        ? layout(tree, { x: 0.72 * W, y: OPEN_AT * H + 92, dir: Math.PI / 2 + 0.12, len: 0.09 * H, bounds: [150, OPEN_AT * H + 92, W - 6, H - 160] })
+        : layout(tree, { x: OPEN_AT * W, y: 0.66 * H, len: 0.1 * W, bounds: [OPEN_AT * W, 0.34 * H, W - 30, H - 40] });
+      setG({ W, H, ...t });
+    };
+    const id = requestAnimationFrame(draw); // measured once laid out
+    addEventListener("resize", draw);
+    return () => { cancelAnimationFrame(id); removeEventListener("resize", draw); };
+  }, [tree]);
+  const type = (inv: boolean) => (
+    <div className={`lab-type${inv ? " seam-dark" : ""}`} data-layer={inv ? "inv" : "ink"} aria-hidden={inv || undefined} inert={inv || undefined}>
+      {inv ? <p className="op-num display"><span className="ln" data-vt-line=""><span data-rise="">{copy.num}</span></span></p>
+        : <h1 className="op-num display"><span className="ln" data-vt-line=""><span data-rise="">{copy.num}</span></span></h1>}
+      <div className="op-pm"><span className="ln" data-vt-line=""><span data-rise="">{copy.pm}</span></span><span className="ln q" data-vt-line=""><span data-rise=""><span className="wide">{copy.qualifier}</span><span className="narrow">{copy.qualifierPhone}</span></span></span></div>
+      <p className="op-lede"><span className="ln" data-vt-line=""><span data-rise="">{copy.lede}</span></span></p>
+      <p className="op-body"><span className="ln" data-vt-line=""><span data-rise="">{copy.body}</span></span></p>
+      <p className="op-voice"><span className="ln" data-vt-line=""><span data-rise="">{copy.voice}</span></span></p>
+      <p className="op-sc mono"><span className="ln" data-vt-line=""><span data-rise="">{copy.share}</span></span></p>
+      <p className="op-rec mono"><span className="ln" data-vt-line=""><span data-rise="">{copy.record}</span></span></p>
+    </div>
+  );
+  return (
+    <section className="lab-open" data-ch="0">
+      <div className="lab-dark seam-dark" />
+      <svg ref={svg} className="op-tree" aria-hidden="true" viewBox={g ? `0 0 ${g.W} ${g.H}` : undefined}>
+        {g ? (<>
+          {g.lines.map((l, i) => (
+            <line key={i} x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} data-d={l.depth} pathLength={1}
+              strokeOpacity={Math.min(0.1 + 0.075 * l.remaining, 0.8).toFixed(2)} strokeWidth={(0.35 + 0.11 * l.remaining).toFixed(2)} />
+          ))}
+          <polyline className="pv" points={g.pv.map((p) => p.join(",")).join(" ")} pathLength={1} />
+          <circle className="pv-end" cx={g.pv.at(-1)![0]} cy={g.pv.at(-1)![1]} r={5} />
+          <circle className="root" cx={g.pv[0][0]} cy={g.pv[0][1]} r={6} />
+        </>) : null}
+      </svg>
+      {type(false)}
+      {type(true)}
+    </section>
+  );
+}
+
+/** A chapter's type, in ink and again in paper on the dark side. `body` lays it out, per chapter (lab.css). */
+function Type({ copy, extra }: { copy: ChapterCopy; extra?: (inv: boolean) => React.ReactNode }) {
+  const layer = (inv: boolean) => {
+    const H = inv ? "p" : "h2";
+    return (
+      <div className={`lab-type${inv ? " seam-dark" : ""}`} data-layer={inv ? "inv" : "ink"} aria-hidden={inv || undefined} inert={inv || undefined}>
+        {copy.n ? <p className="chap mono">{copy.n}</p> : null}
+        {copy.title ? <H className="ttl display">{copy.title.map((t, i) => <span key={i} className="ln"><span>{t}</span></span>)}</H> : null}
+        {copy.big ? (copy.title ? <p className="big display">{copy.big}</p> : <H className="big display">{copy.big}</H>) : null}
+        {copy.notes.map((n, i) => <p key={i} className={`note dk n${i + 1}`}>{n.head ? <b>{n.head}</b> : null}{n.text}</p>)}
+        {(copy.notesPhone ?? []).map((n, i) => <p key={`p${i}`} className={`note ph p${i + 1}`}>{n.head ? <b>{n.head}</b> : null}{n.text}</p>)}
+        {extra?.(inv)}
+      </div>
+    );
+  };
+  return <>{layer(false)}{layer(true)}</>;
+}
+
+/**
+ * The Lab (Gate 2, "the engine from the inside"; motion.md §5 and §11): the match score and the search tree, then
+ * six pinned chapters and Play. Each chapter scrubs its object with its scroll, and the seam carries its meaning:
+ * the page owns the seam between sweeps, easing to each chapter's share as it takes over (1,100 ms, `seam`).
+ */
+export function Lab({ copy, tree }: { copy: LabCopy; tree: TreeNode }) {
+  const path = usePathname();
+  const root = useRef<HTMLElement>(null);
+  const [tags, setTags] = useState<Record<number, Tag[]>>({});
+
+  useLayoutEffect(() => {
+    const el = root.current!, site = el.closest<HTMLElement>(".site")!;
+    registerEases();
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const phone = window.matchMedia(PHONE).matches;
+    const sections = [...el.querySelectorAll<HTMLElement>("[data-ch]")];
+    const live3d = new Map<number, Chapter>();
+    let raf = 0;
+    const soft = softGL();
+    let idle = 0;
+    const drawAll = () => {
+      if (soft) { clearTimeout(idle); idle = window.setTimeout(() => live3d.forEach((c) => c.render()), 250); return; }
+      if (!raf) raf = requestAnimationFrame(() => { raf = 0; live3d.forEach((c) => c.render()); });
+    };
+
+    const progressOf = (s: HTMLElement) => { const run = s.offsetHeight - innerHeight; return run > 0 ? Math.min(1, Math.max(0, (window.scrollY - s.offsetTop) / run)) : window.scrollY >= s.offsetTop ? 1 : 0; };
+    // the chapter in charge: the last one whose top has reached the middle of the screen
+    const active = () => { let a = 0; for (const s of sections) if (s.offsetTop <= window.scrollY + innerHeight * 0.5) a = +s.dataset.ch!; return a; };
+    const want = (id: number) => {
+      if (id === 0) return OPEN_AT;
+      const c = live3d.get(id), s = sections.find((x) => +x.dataset.ch! === id)!;
+      return c ? c.seam(progressOf(s)) : 0.5;
+    };
+
+    // Build a chapter's scene when it is within a screen; let it go when it is two away (WebGL contexts are few).
+    const build = (id: number) => {
+      const spec = specs.find((x) => x.id === id);
+      if (!spec?.make || live3d.has(id)) return;
+      const s = sections.find((x) => +x.dataset.ch! === id)!;
+      const day = s.querySelector<HTMLCanvasElement>("canvas.day")!, night = s.querySelector<HTMLCanvasElement>("canvas.night");
+      try { const c = spec.make(day, night, { phone, reduced }); live3d.set(id, c); c.progress(progressOf(s)); c.ready.then(() => { if (live3d.get(id) !== c) return; hud(s, c); place(); drawAll(); if (!blend) tick(); }); }
+      catch { s.dataset.gl = "off"; }
+    };
+    const near = new IntersectionObserver((es) => {
+      for (const e of es) {
+        const id = +(e.target as HTMLElement).dataset.ch!;
+        if (e.isIntersecting) build(id);
+        else { const c = live3d.get(id); if (c) { c.dispose(); live3d.delete(id); } }
+      }
+    }, { rootMargin: "150% 0px" });
+    sections.forEach((s) => near.observe(s));
+
+    const place = () => setTags(Object.fromEntries([...live3d].map(([id, c]) => [id, c.tags()])));
+
+    // The seam: when the chapter in charge changes it eases from where it is to the new one's share; after that it
+    // follows the chapter directly (its stack falling, its checkpoints). It never fights a sweep.
+    let who = -1, from = restFor("/lab") ?? OPEN_AT, t0 = 0, blend = 0, settle = 0;
+    const ease = gsap.parseEase("seam");
+    const tick = () => {
+      if (site.hasAttribute("data-seam-moving") || navigating()) { blend = 0; return; }
+      const id = active();
+      if (id !== who) { from = live.at; who = id; t0 = performance.now(); }
+      const q = reduced ? 1 : Math.min(1, (performance.now() - t0) / 1100), target = want(id);
+      setSeam(from + (target - from) * ease(q));
+      clearTimeout(settle); settle = window.setTimeout(() => restColours(true), 150);
+      if (q < 1) blend = requestAnimationFrame(tick); else blend = 0;
+    };
+    // what a chapter reports beyond its scene: Gate C's running counter, and whether its last game has landed
+    const hud = (s: HTMLElement, c: Chapter) => {
+      const x = c as Chapter & { counter?: () => string; phase?: () => number };
+      if (x.counter) { const t = x.counter(); s.querySelectorAll(".ctr").forEach((e) => { if (e.textContent !== t) e.textContent = t; }); }
+      if (x.phase) s.toggleAttribute("data-done", x.phase() > 0.05);
+    };
+    const onScroll = () => {
+      for (const s of sections) { const c = live3d.get(+s.dataset.ch!); if (c) { c.progress(progressOf(s)); hud(s, c); } }
+      drawAll(); place();
+      if (!blend) tick();
+    };
+    const moving = new MutationObserver(() => { if (!site.hasAttribute("data-seam-moving")) { who = -1; onScroll(); } });
+    moving.observe(site, { attributes: true, attributeFilter: ["data-seam-moving"] });
+    window.addEventListener("scroll", onScroll, { passive: true });
+    // Play moves the seam with the eval between scrolls (ch7); follow it
+    const onEval = () => { if (!blend) tick(); };
+    window.addEventListener("lab:seam", onEval);
+    const onResize = () => { live3d.forEach((c) => c.resize()); place(); drawAll(); };
+    window.addEventListener("resize", onResize);
+
+    // Arriving: the tree grows from its root on the seam, one depth at a time (60 ms per depth), the principal
+    // variation lights amber last (300 ms), then −143.3 rises, then ±35.4 Elo, then the record.
+    const a = arrival(path), open = el.querySelector<HTMLElement>(".lab-open")!;
+    // the tree is measured a frame after mount, so its lines are found when the growth starts; until then CSS holds them
+    // undrawn (lab.css, [data-grow])
+    const rise = open.querySelectorAll("[data-rise]");
+    const svgTree = () => ({ lines: open.querySelectorAll<SVGLineElement>(".op-tree line"), pv: open.querySelectorAll(".op-tree .pv, .op-tree .pv-end") });
+    let tl: gsap.core.Timeline | undefined, cancel = () => {}, wait = 0;
+    const grow = (delay: number) => {
+      const { lines, pv } = svgTree();
+      if (!lines.length) { wait = requestAnimationFrame(() => grow(delay)); return; }
+      tl = gsap.timeline({ delay });
+      lines.forEach((l) => { const d = +(l.dataset.d ?? 0); tl!.fromTo(l, { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.06, ease: "none" }, d * 0.06); });
+      tl.fromTo(pv, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "arrive" }, 9 * 0.06)
+        .to(rise, { yPercent: 0, duration: 0.7, ease: "arrive", stagger: perLayer(0.1) }, 9 * 0.06 + 0.15);
+    };
+    if (!reduced) {
+      gsap.set(rise, { yPercent: 135 }); open.dataset.grow = "";
+      if (a && !a.reduced) cancel = a.rise((d) => grow(Math.max(0, d - 0.3)));
+      else requestAnimationFrame(() => grow(0.2));
+    }
+    if (!a) onScroll();
+    return () => {
+      cancel(); tl?.kill(); near.disconnect(); moving.disconnect(); cancelAnimationFrame(raf); cancelAnimationFrame(blend); clearTimeout(settle);
+      cancelAnimationFrame(wait); clearTimeout(idle); delete open.dataset.grow;
+      const t = svgTree(); gsap.set([...rise, ...t.lines, ...t.pv], { clearProps: "all" });
+      window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onResize); window.removeEventListener("lab:seam", onEval);
+      live3d.forEach((c) => c.dispose());
+    };
+  }, [path]);
+
+  return (
+    <main ref={root} id="main" tabIndex={-1} className="lab">
+      <Open copy={copy.open} tree={tree} />
+      {specs.map((s) => (
+        <section key={s.id} className="ch" data-ch={s.id} data-night={s.night || undefined} style={{ "--screens": s.screens } as React.CSSProperties}>
+          <div className="ch-pin">
+            <div className="lab-dark seam-dark" />
+            <canvas className="day" aria-hidden="true" />
+            {s.night ? <canvas className="night seam-dark" aria-hidden="true" /> : null}
+            <Type copy={copy.chapters[s.id - 1]} extra={(inv) => (<>
+              <div className="tags" aria-hidden="true">{(tags[s.id] ?? []).map((t) => <div key={t.key} className={`tag ${t.cls ?? ""}`} style={{ left: t.x, top: t.y }} dangerouslySetInnerHTML={{ __html: t.html }} />)}</div>
+              {extras[s.id]?.(inv, copy.chapters[s.id - 1])}
+            </>)} />
+          </div>
+        </section>
+      ))}
+    </main>
+  );
+}

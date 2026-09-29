@@ -17,12 +17,13 @@ test.describe("navigation", () => {
     const errors: string[] = [];
     page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
     await page.goto("/");
-    for (const [name, path] of [["Work", "/work"], ["Lab", "/lab"], ["Contact", "/contact"], ["Roles", "/roles"]]) {
+    // each page's h1: the Lab's is its match score (lab-a)
+    for (const [name, path, h1] of [["Work", "/work", "Work"], ["Lab", "/lab", "−143.3"], ["Contact", "/contact", "Contact"], ["Roles", "/roles", "Roles"]]) {
       await nav(page, name).click();
       await expect(page).toHaveURL(new RegExp(`${path}$`));
       await expect.poll(() => seam(page), { timeout: 40_000 }).toBe(REST[path]);
       await expect(nav(page, name)).toHaveAttribute("aria-current", "page");
-      await expect(page.getByRole("heading", { level: 1 })).toHaveText(name);
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText(h1);
     }
     expect(errors).toEqual([]);
   });

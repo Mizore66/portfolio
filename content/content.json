@@ -2666,6 +2666,293 @@
       "back": "Back to all roles",
       "start": "Start"
     },
+    "lab": {
+      "open": {
+        "body": "The learned evaluator lost to PeSTO.",
+        "voice": "I published the loss.",
+        "qualifier": "Controlled benchmark, 128 games at 50,000 nodes a move",
+        "qualifierPhone": "Controlled benchmark, 128 games",
+        "lede": "I trained a chess evaluator, then made it play the handcrafted one."
+      },
+      "chapters": [
+        {
+          "n": "01 / 06",
+          "title": [
+            "One search,",
+            "two evaluators."
+          ],
+          "notes": [
+            {
+              "head": "HANDCRAFTED",
+              "text": "PeSTO piece-square tables, by Ronald Friederich. Each column is what a knight is worth on that square."
+            },
+            {
+              "head": "LEARNED",
+              "text": "A small net I trained: 768 inputs, two 256-wide halves, 32, then one number."
+            },
+            {
+              "head": "",
+              "text": "The same alpha-beta search on both sides. Only the judgement at the end of each line changes."
+            }
+          ],
+          "notesPhone": [
+            {
+              "head": "HANDCRAFTED",
+              "text": "PeSTO piece-square tables, by Ronald Friederich: what a knight is worth on each square."
+            },
+            {
+              "head": "LEARNED",
+              "text": "A small net I trained: 768 inputs, two 256-wide halves, 32, then one number. The same search runs on both sides."
+            }
+          ]
+        },
+        {
+          "n": "02 / 06",
+          "big": "20,000,000",
+          "notes": [
+            {
+              "head": "THE DATA",
+              "text": "Positions labelled with public Stockfish evaluations, from the Lichess evaluation database (CC0). No Stockfish weights are copied."
+            },
+            {
+              "head": "WHAT FELL AWAY",
+              "text": "Anything a leaf evaluation should not be asked to judge: 15.4 million positions, 43%."
+            },
+            {
+              "head": "TO SCALE",
+              "text": "35,405,130 read. 20,040,000 kept. 40,000 of those held out for testing."
+            }
+          ],
+          "filters": [
+            "duplicates",
+            "before move 10",
+            "en passant possible",
+            "side in check",
+            "best move a capture",
+            "forced mates",
+            "beyond ±1500 cp",
+            "searched below depth 12"
+          ],
+          "heldOut": "held out",
+          "notesPhone": [
+            {
+              "head": "THE DATA",
+              "text": "Positions labelled with public Stockfish evaluations from the Lichess database (CC0). No Stockfish weights are copied. 15.4 million fell away through the eight filters below."
+            },
+            {
+              "head": "",
+              "text": "35,405,130 read · 20,040,000 kept · 40,000 held out"
+            }
+          ],
+          "filtersPhone": [
+            "duplicates",
+            "before move 10",
+            "en passant possible",
+            "side in check",
+            "best move a capture",
+            "forced mates",
+            "beyond ±1500 cp",
+            "below depth 12"
+          ]
+        },
+        {
+          "n": "03 / 06",
+          "title": [
+            "Trained",
+            "twice."
+          ],
+          "notes": [
+            {
+              "head": "THE SCORE UNDER EACH",
+              "text": "How closely the net's judgement matches Stockfish on 40,000 positions it never saw. 1.0 would be perfect."
+            },
+            {
+              "head": "HOW",
+              "text": "PyTorch. Quantisation-aware from the second epoch, exported to int8, run in WebAssembly inside a worker. 410 KB."
+            },
+            {
+              "head": "NOT A COPY",
+              "text": "A net that copies PeSTO can never beat it. This one agrees with PeSTO at 0.70, well short of 1.0."
+            }
+          ],
+          "casts": [
+            {
+              "score": "0.31",
+              "shape": "768 × 2 × 128",
+              "data": "3 million positions · depth 8",
+              "role": "first playing net"
+            },
+            {
+              "score": "0.50",
+              "shape": "768 × 2 × 256",
+              "data": "6 million positions · depth 8",
+              "role": "comparison, never played"
+            },
+            {
+              "score": "0.64",
+              "shape": "768 × 2 × 256",
+              "data": "20 million positions · depth 12",
+              "role": "the net you can play"
+            }
+          ],
+          "notesPhone": [
+            {
+              "head": "THE SCORE BESIDE EACH",
+              "text": "Agreement with Stockfish on 40,000 unseen positions; 1.0 is perfect. With PeSTO it is only 0.70: not a copy."
+            }
+          ],
+          "castsPhone": [
+            {
+              "data": "3M positions · depth 8",
+              "role": "first playing net"
+            },
+            {
+              "data": "6M positions · depth 8",
+              "role": "comparison"
+            },
+            {
+              "data": "20M positions · depth 12",
+              "role": "the net you can play"
+            }
+          ]
+        },
+        {
+          "n": "04 / 06",
+          "big": "0.0 Elo",
+          "share": "50.0%",
+          "notes": [
+            {
+              "head": "FIRST, CHECK THE REFEREE",
+              "text": "Handcrafted against itself: 100 games at 50,000 nodes a move. The same 50 openings, each played once from each side."
+            },
+            {
+              "head": "DEAD LEVEL",
+              "text": "17 wins · 66 draws · 17 losses. The harness is fair, so any later gap belongs to the evaluator."
+            }
+          ],
+          "notesPhone": [
+            {
+              "head": "FIRST, CHECK THE REFEREE",
+              "text": "Handcrafted against itself: 100 games, 50,000 nodes a move, the same 50 openings from each side."
+            },
+            {
+              "head": "DEAD LEVEL",
+              "text": "17 wins · 66 draws · 17 losses. The harness is fair, so any later gap belongs to the evaluator."
+            }
+          ]
+        },
+        {
+          "n": "05 / 06",
+          "title": [
+            "Then the",
+            "match."
+          ],
+          "result": "−143.3",
+          "pm": "±35.4 Elo",
+          "qualifier": "Controlled benchmark",
+          "notes": [
+            {
+              "head": "LEARNED AGAINST HANDCRAFTED",
+              "text": "Same search, 50,000 nodes a move, the same 50 openings from both sides. Set to stop the moment the evidence was decisive."
+            },
+            {
+              "head": "STOPPED AT GAME 128",
+              "text": "The evidence crossed the line: LLR −2.99, past the −2.94 bound. The learned net lost."
+            }
+          ],
+          "piles": {
+            "w": "wins",
+            "d": "draws",
+            "l": "losses"
+          },
+          "counter": [
+            "game",
+            "of",
+            "after"
+          ],
+          "notesPhone": [
+            {
+              "head": "LEARNED AGAINST HANDCRAFTED",
+              "text": "Same search, 50,000 nodes a move, the same 50 openings from both sides. Set to stop once the evidence was decisive."
+            },
+            {
+              "head": "STOPPED AT GAME 128",
+              "text": "LLR −2.99, past the −2.94 bound. The learned net lost."
+            }
+          ]
+        },
+        {
+          "n": "06 / 06",
+          "big": "±60",
+          "voice": "A loss at the spec cap is still a result.",
+          "scale": "plinths to scale, in centipawns",
+          "notes": [
+            {
+              "head": "WHAT FAILED",
+              "text": "“Learned” was the material count plus the net, and the net was clamped to ±60 centipawns. It could never move a position by more than 0.6 of a pawn."
+            },
+            {
+              "head": "TWO CAUSES, NEITHER ISOLATED",
+              "text": "The quality of the training data, or this integration. I cannot yet say which."
+            },
+            {
+              "head": "NEXT",
+              "text": "Do not rematch this net. A new one passes the data and progress gates first."
+            }
+          ],
+          "plinths": [
+            "queen",
+            "rook",
+            "bishop",
+            "knight",
+            "pawn",
+            "the net"
+          ],
+          "notesPhone": [
+            {
+              "head": "WHAT FAILED",
+              "text": "“Learned” was the material count plus the net, clamped to ±60 centipawns: never more than 0.6 of a pawn."
+            },
+            {
+              "head": "TWO CAUSES, NEITHER ISOLATED",
+              "text": "The training data, or this integration. Next: no rematch; a new net passes the data and progress gates first."
+            }
+          ],
+          "scalePhone": "plinths to scale"
+        },
+        {
+          "n": "",
+          "title": [
+            "Play",
+            "it."
+          ],
+          "notes": [
+            {
+              "head": "THE SEAM IS THE EVAL",
+              "text": "It sits where the learned net scores the position, and moves with every move."
+            }
+          ],
+          "opponent": "Opponent",
+          "learned": "Learned",
+          "handcrafted": "Handcrafted",
+          "youPlay": "You play",
+          "white": "White",
+          "black": "Black",
+          "start": "Start the engine",
+          "startNote": "Loads 410 KB only when you press Start. Runs in a worker and pauses when the tab is hidden.",
+          "status": "Your move. At 50,000 nodes the {net} net rates this {eval} for {side}, and would play {best}.",
+          "statusPhone": "Your move. The learned net rates this {eval} and would play {best}. The seam sits at its score.",
+          "statusWait": "The {net} net plays White, so it moves first. Press Start.",
+          "thinking": "The {net} net is thinking.",
+          "loading": "Loading the learned net.",
+          "won": "Checkmate. You win.",
+          "lost": "Checkmate. The {net} net wins.",
+          "drawn": "Stalemate. A draw.",
+          "again": "Play again",
+          "seamLabel": "seam"
+        }
+      ]
+    },
     "openingPreparation": {
       "title": "Opening Preparation",
       "intro": "A playable career timeline told through an Italian Game.",

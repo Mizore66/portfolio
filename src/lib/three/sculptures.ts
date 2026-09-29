@@ -1,7 +1,7 @@
 // The three featured project pieces, each in the material that argues for it (Phase 4, approved at Gate 4).
 // Ported from design/keyframes/_shared/sculptures.js.
 import * as THREE from "three";
-import { piece, profileRadius, MAT, type PieceType } from "./pieces";
+import { piece, profileRadius, knightHalfDepth, MAT, type PieceType } from "./pieces";
 
 function surfaceTube(type: PieceType, pts: [number, number][], radius: number, mat: THREE.Material, lift = 0.004) {
   const v = pts.map(([y, a]) => { const r = profileRadius(type, y) + lift; return new THREE.Vector3(Math.sin(a) * r, y, Math.cos(a) * r); });
@@ -35,6 +35,26 @@ export function circuitmind(): THREE.Group {
   const arc = (y: number, a0: number, a1: number) => { for (let i = 1; i <= 8; i++) P.push([y, a0 + ((a1 - a0) * i) / 8]); };
   seg(0.14, 0.42, -0.35); arc(0.42, -0.35, 0.3); seg(0.42, 0.66, 0.3); arc(0.66, 0.3, -0.2); seg(0.66, 0.9, -0.2); arc(0.9, -0.2, 0.25); seg(0.9, 1.12, 0.25);
   g.add(surfaceTube("B", P, 0.009, MAT.copper(), 0.006));
+  return g;
+}
+
+/**
+ * The learned evaluator (the Lab, Phase 2): a basalt knight with a copper circuit inlaid on both faces of the head.
+ * Ported from design/keyframes/_shared/sculptures.js. `circuit` holds the copper, so a chapter can light it.
+ */
+export function learnedKnight(): THREE.Group {
+  const g = piece("N", MAT.basalt()), cu = MAT.copper();
+  const paths: [number, number][][] = [[[-0.15, 0.28], [-0.15, 0.6], [0.1, 0.6], [0.1, 0.72], [0.3, 0.72]], [[-0.15, 0.6], [-0.15, 0.88], [0.05, 0.88], [0.05, 1.02]], [[0.1, 0.6], [0.1, 0.44], [-0.02, 0.44]]];
+  for (const side of [1, -1]) for (const p of paths) {
+    const pts: THREE.Vector3[] = [];
+    for (let i = 1; i < p.length; i++) for (let k = 0; k < 12; k++) { const t = k / 12, x = p[i - 1][0] + (p[i][0] - p[i - 1][0]) * t, y = p[i - 1][1] + (p[i][1] - p[i - 1][1]) * t; pts.push(new THREE.Vector3(x, y, side * (knightHalfDepth(x, y) + 0.004))); }
+    const [x1, y1] = p.at(-1)!; pts.push(new THREE.Vector3(x1, y1, side * (knightHalfDepth(x1, y1) + 0.004)));
+    g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, false, "catmullrom", 0.05), 160, 0.011, 8, false), cu));
+    for (const [x, y] of [p[0], p.at(-1)!]) { const n = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.014, 24), cu); n.rotation.x = Math.PI / 2; n.position.set(x, y, side * (knightHalfDepth(x, y) + 0.003)); g.add(n); }
+  }
+  const ring: [number, number][] = []; for (let i = 0; i <= 64; i++) ring.push([0.12, (i / 64) * Math.PI * 2]);
+  g.add(surfaceTube("N", ring, 0.009, cu, 0.006));
+  g.userData.circuit = cu;
   return g;
 }
 
