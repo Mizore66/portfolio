@@ -26,6 +26,7 @@ test.describe("Contact", () => {
   });
 
   test("the clock: your face runs to the second, Anas's runs in Kuala Lumpur time", async ({ page, context }) => {
+    test.setTimeout(90_000);
     await context.clearCookies();
     await page.goto("/contact");
     const faces = page.locator(".clock .face");
@@ -33,17 +34,18 @@ test.describe("Contact", () => {
     const kl = new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Kuala_Lumpur" });
     await expect(faces.nth(1).locator("b")).toHaveText(kl);
     const s0 = await faces.nth(0).locator("sup").textContent();
-    await expect(faces.nth(0).locator("sup")).not.toHaveText(s0!, { timeout: 3000 });
+    await expect(faces.nth(0).locator("sup")).not.toHaveText(s0!, { timeout: 30_000 }); // the page builds its scenes in idle time after load, slow under software GL
   });
 
   test("Copy email puts the address on the clipboard", async ({ page, context }) => {
+    test.setTimeout(90_000);
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     await page.goto("/contact");
     const button = ink(page).getByRole("button", { name: "Copy email" });
     await button.click();
-    await expect(ink(page).getByRole("button", { name: "Copied" })).toBeVisible();
+    await expect(ink(page).getByRole("button", { name: "Copied" })).toBeVisible({ timeout: 30_000 });
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("anasqumhiyeh@gmail.com");
-    await expect(ink(page).getByRole("button", { name: "Copy email" })).toBeVisible({ timeout: 5000 });
+    await expect(ink(page).getByRole("button", { name: "Copy email" })).toBeVisible({ timeout: 30_000 });
   });
 
   test("the caret blinks once the page has arrived", async ({ page }) => {

@@ -141,10 +141,19 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
       for (const e of es) {
         const id = +(e.target as HTMLElement).dataset.ch!;
         if (e.isIntersecting) build(id);
-        else { const c = live3d.get(id); if (c) { c.dispose(); live3d.delete(id); } }
+        else if (!section) { const c = live3d.get(id); if (c) { c.dispose(); live3d.delete(id); } }
       }
     }, { rootMargin: "150% 0px" });
-    sections.forEach((s) => near.observe(s));
+    // On the one page Play is built ahead, in idle time after the page has loaded (never during the hero's opening),
+    // and kept: building it as it comes near cost the scroll a 250 ms hitch. On /lab the chapters come and go.
+    let idle = 0;
+    const ahead = () => {
+      if (document.querySelector('.hero[data-intro="play"]')) { idle = window.setTimeout(ahead, 600); return; }
+      const run = () => sections.forEach((x) => build(+x.dataset.ch!));
+      idle = typeof requestIdleCallback === "function" ? requestIdleCallback(run, { timeout: 3000 }) : window.setTimeout(run, 200);
+    };
+    if (section) idle = window.setTimeout(ahead, 800);
+    else sections.forEach((s) => near.observe(s));
 
     const place = () => setTags(Object.fromEntries([...live3d].map(([id, c]) => [id, c.tags()])));
 
@@ -212,7 +221,7 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
     }
     if (!a) onScroll();
     return () => {
-      unblock.forEach((u) => u()); cancel(); tl?.kill(); near.disconnect(); moving.disconnect(); cancelAnimationFrame(raf); cancelAnimationFrame(blend); clearTimeout(settle);
+      unblock.forEach((u) => u()); cancel(); tl?.kill(); near.disconnect(); clearTimeout(idle); if (typeof cancelIdleCallback === "function") cancelIdleCallback(idle); moving.disconnect(); cancelAnimationFrame(raf); cancelAnimationFrame(blend); clearTimeout(settle);
       cancelAnimationFrame(wait); delete open.dataset.grow;
       const t = svgTree(); gsap.set([...rise, ...t.lines, ...t.pv], { clearProps: "all" });
       window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onResize); window.removeEventListener("lab:seam", onEval);

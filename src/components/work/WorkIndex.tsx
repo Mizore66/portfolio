@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
 import { registerEases, perLayer } from "@/lib/motion/ease";
 import { beginNav } from "@/lib/seam/sweep";
-import { firstView } from "@/lib/motion/firstView";
+import { buildAhead, firstView } from "@/lib/motion/firstView";
 import { PHONE, restFor } from "@/lib/seam/seam";
 import { after } from "@/lib/motion/slowmo";
 import { createGallery, VIEW, type Gallery, type View } from "./gallery";
@@ -59,7 +59,7 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
       return gal;
     };
     // on the one page the room is built when it comes within a screen, not at load (seven scenes would compile at once)
-    const near = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { near.disconnect(); build(); } }, { rootMargin: "100% 0px" }); near.observe(el);
+    const stopAhead = buildAhead(el, build, { order: 1 });
 
     let cancel = () => {};
     if (arriving) {
@@ -87,7 +87,7 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
     const onResize = () => { if (!gal) return; gal.resize(); setView(gal, view()); place(); draw(); };
     window.addEventListener("resize", onResize);
     return () => {
-      dead = true; near.disconnect();
+      dead = true; stopAhead();
       cancel(); tl?.kill(); gsap.set(rise, { clearProps: "transform" }); gsap.set(labels, { clearProps: "opacity,transform" });
       window.removeEventListener("resize", onResize); cancelAnimationFrame(frame.current); frame.current = 0;
       g.current = null; gal?.dispose();

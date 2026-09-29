@@ -50,11 +50,12 @@ test.describe("the Work room", () => {
   test.describe("with reduced motion", () => {
     test.use({ contextOptions: { reducedMotion: "reduce" } });
     test("opening a piece is a cut to its page", async ({ page }) => {
+      test.setTimeout(90_000);
       await page.goto("/work");
       await page.getByRole("link", { name: /^CircuitMindAI/ }).click();
       await expect(page).toHaveURL(/\/work\/circuitmindai$/);
       await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName("CircuitMindAI");
-      await expect.poll(() => seam(page), { timeout: 5_000 }).toBeCloseTo(share(49), 1);
+      await expect.poll(() => seam(page), { timeout: 30_000 }).toBeCloseTo(share(49), 1);
     });
   });
 

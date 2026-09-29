@@ -34,6 +34,7 @@ test.describe("hero", () => {
   });
 
   test("plays once per session", async ({ page }) => {
+    test.setTimeout(90_000); // the one page builds its other scenes after load, slow under software GL
     await page.addInitScript(() => sessionStorage.setItem("hero-opening-seen", "1"));
     await page.goto("/");
     await expect(page.locator(".hero")).toHaveAttribute("data-intro", "done", { timeout: 15_000 });

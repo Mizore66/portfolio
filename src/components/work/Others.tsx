@@ -8,6 +8,7 @@ import { registerEases, perLayer } from "@/lib/motion/ease";
 import { beginNav, navigating } from "@/lib/seam/sweep";
 import { PHONE, restFor } from "@/lib/seam/seam";
 import { after } from "@/lib/motion/slowmo";
+import { buildAhead } from "@/lib/motion/firstView";
 import { createSideboard, FRAME, type Frame, type Sideboard } from "./sideboard";
 
 export interface Other { slug: string; name: string; square: string | null; move: string | null; result: string; qualifier: string; aside: boolean }
@@ -66,15 +67,15 @@ export function Others({ list, copy }: { list: Other[]; copy: OthersCopy }) {
       tl.to(rise, { yPercent: 0, duration: 0.7, ease: "arrive", stagger: perLayer(0.08) }, 0.1)
         .to(rows, { opacity: 1, y: 0, duration: 0.6, ease: "arrive", stagger: 0.06 }, 0.3);
     };
-    // built a screen ahead, so the scroll never waits on it; arriving once it is well in view
-    const near = new IntersectionObserver((e) => { if (e.some((x) => x.isIntersecting)) requestAnimationFrame(build); }, { rootMargin: "100% 0px" });
+    // built ahead, in idle time or a screen before it is needed, so the scroll never waits on it; arriving once in view
+    const stopAhead = buildAhead(el, build, { order: 2 });
     const seen = new IntersectionObserver((e) => { if (e.some((x) => x.isIntersecting)) arrive(); }, { threshold: 0.3 });
-    near.observe(el); seen.observe(el);
+    seen.observe(el);
 
     const onResize = () => { if (!board) return; board.resize(); setView(board, phone() ? FRAME.phone : FRAME.desk); place(); draw(); };
     window.addEventListener("resize", onResize);
     return () => {
-      near.disconnect(); seen.disconnect(); tl?.kill();
+      stopAhead(); seen.disconnect(); tl?.kill();
       gsap.set([...rise, ...rows], { clearProps: "transform,opacity" });
       window.removeEventListener("resize", onResize); cancelAnimationFrame(frame.current); frame.current = 0;
       b.current = null; board?.dispose();

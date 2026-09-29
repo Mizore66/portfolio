@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
 import { registerEases, perLayer } from "@/lib/motion/ease";
 import { beginNav, navigating } from "@/lib/seam/sweep";
-import { firstView } from "@/lib/motion/firstView";
+import { buildAhead, firstView } from "@/lib/motion/firstView";
 import { PHONE } from "@/lib/seam/seam";
 import { after } from "@/lib/motion/slowmo";
 import { createHall, FRAME, type Frame, type Hall } from "./hall";
@@ -44,7 +44,7 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
       return hall;
     };
     // on the one page the hall is built when it comes within a screen, not at load
-    const near = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { near.disconnect(); build(); } }, { rootMargin: "100% 0px" }); near.observe(el);
+    const stopAhead = buildAhead(el, build, { order: 0 });
     let cancel = () => {};
     if (arriving) {
       gsap.set(rise, { yPercent: 135 }); gsap.set(names, { opacity: 0, y: 10 });
@@ -60,7 +60,7 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
     const onResize = () => { if (!hall) return; hall.resize(); setView(hall, phone() ? FRAME.phone : FRAME.desk); draw(); };
     window.addEventListener("resize", onResize);
     return () => {
-      dead = true; near.disconnect(); cancel(); tl?.kill();
+      dead = true; stopAhead(); cancel(); tl?.kill();
       gsap.set([...rise, ...names], { clearProps: "transform,opacity" });
       window.removeEventListener("resize", onResize); cancelAnimationFrame(frame.current); frame.current = 0;
       h.current = null; hall?.dispose();
