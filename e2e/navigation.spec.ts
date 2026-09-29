@@ -17,8 +17,8 @@ test.describe("navigation", () => {
     const errors: string[] = [];
     page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
     await page.goto("/");
-    // each page's h1: the Lab's is its match score (lab-a)
-    for (const [name, path, h1] of [["Work", "/work", "Work"], ["Lab", "/lab", "−143.3"], ["Contact", "/contact", "Contact"], ["Roles", "/roles", "Roles"]]) {
+    // each page's h1: the Lab's is its match score (lab-a), Contact's the next move (contact-a)
+    for (const [name, path, h1] of [["Work", "/work", "Work"], ["Lab", "/lab", "−143.3"], ["Contact", "/contact", "11."], ["Roles", "/roles", "Roles"]]) {
       await nav(page, name).click();
       await expect(page).toHaveURL(new RegExp(`${path}$`));
       await expect.poll(() => seam(page), { timeout: 40_000 }).toBe(REST[path]);

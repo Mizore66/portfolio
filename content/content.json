@@ -2626,7 +2626,11 @@
         "You",
         "Anas"
       ],
-      "clockZone": "Asia/Kuala_Lumpur"
+      "clockZone": "Asia/Kuala_Lumpur",
+      "move": "11.",
+      "yourMove": "Your move.",
+      "resume": "Résumé",
+      "clockZoneLabel": "MYT"
     },
     "experience": {
       "earlierHeading": "Earlier experience"
