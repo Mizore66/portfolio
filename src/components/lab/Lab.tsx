@@ -8,7 +8,7 @@ import { PHONE, restColours, restFor, seam as live, setSeam } from "@/lib/seam/s
 import { arrival, navigating } from "@/lib/seam/sweep";
 import type { TreeNode } from "@/content/lab-tree.gen";
 import { layout, type Line } from "./tree";
-import { softGL, type Chapter, type ChapterFactory, type Tag } from "./kit";
+import type { Chapter, ChapterFactory, Tag } from "./kit";
 import { SPECS as specs, EXTRAS as extras } from "./chapters";
 import "./lab.css";
 
@@ -108,12 +108,7 @@ export function Lab({ copy, tree }: { copy: LabCopy; tree: TreeNode }) {
     const sections = [...el.querySelectorAll<HTMLElement>("[data-ch]")];
     const live3d = new Map<number, Chapter>();
     let raf = 0;
-    const soft = softGL();
-    let idle = 0;
-    const drawAll = () => {
-      if (soft) { clearTimeout(idle); idle = window.setTimeout(() => live3d.forEach((c) => c.render()), 250); return; }
-      if (!raf) raf = requestAnimationFrame(() => { raf = 0; live3d.forEach((c) => c.render()); });
-    };
+    const drawAll = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; live3d.forEach((c) => c.render()); }); };
 
     const progressOf = (s: HTMLElement) => { const run = s.offsetHeight - innerHeight; return run > 0 ? Math.min(1, Math.max(0, (window.scrollY - s.offsetTop) / run)) : window.scrollY >= s.offsetTop ? 1 : 0; };
     // the chapter in charge: the last one whose top has reached the middle of the screen
@@ -201,7 +196,7 @@ export function Lab({ copy, tree }: { copy: LabCopy; tree: TreeNode }) {
     if (!a) onScroll();
     return () => {
       cancel(); tl?.kill(); near.disconnect(); moving.disconnect(); cancelAnimationFrame(raf); cancelAnimationFrame(blend); clearTimeout(settle);
-      cancelAnimationFrame(wait); clearTimeout(idle); delete open.dataset.grow;
+      cancelAnimationFrame(wait); delete open.dataset.grow;
       const t = svgTree(); gsap.set([...rise, ...t.lines, ...t.pv], { clearProps: "all" });
       window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onResize); window.removeEventListener("lab:seam", onEval);
       live3d.forEach((c) => c.dispose());

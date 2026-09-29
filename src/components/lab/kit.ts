@@ -54,25 +54,9 @@ export function toScreen(s: Stage, v: THREE.Vector3) {
 
 /** Compile both sides without holding the page (see work/gallery.ts); render() waits for it. */
 export function compile(stages: Stage[]) {
-  stages.forEach(soften);
   let done = false;
   const ready = Promise.all(stages.map((s) => s.r.compileAsync(s.scene, s.cam).catch(() => {}))).then(() => { done = true; });
   return { ready, done: () => done };
-}
-
-/** Without a GPU (SwiftShader, llvmpipe) one frame of a chapter of thousands of pieces takes seconds and holds the
- * page. There, and only there, render at 1x without shadows; the Lab also draws only once scrolling pauses (Lab.tsx). */
-let SOFT: boolean | undefined;
-export function softGL(): boolean {
-  if (SOFT !== undefined) return SOFT;
-  const gl = document.createElement("canvas").getContext("webgl2"), ext = gl?.getExtension("WEBGL_debug_renderer_info");
-  SOFT = /swiftshader|llvmpipe|softpipe|software/i.test(gl && ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : "");
-  gl?.getExtension("WEBGL_lose_context")?.loseContext();
-  return SOFT;
-}
-function soften(s: Stage) {
-  if (!softGL()) return;
-  s.r.setPixelRatio(1); s.r.shadowMap.enabled = false;
 }
 
 export function disposeStage(s: Stage) { disposeScene(s.scene); s.env.dispose(); s.r.dispose(); }
