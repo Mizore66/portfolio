@@ -39,6 +39,7 @@ export function plan(from: string, to: string, A: number, B: number, phone: bool
 interface Line { name: string; ink: boolean; x: number; y: number; order: number }
 interface Pending { plan: Plan; page: { x: number; y: number } | null; lines: Line[]; reduced: boolean; started: Promise<number>; start: (t0: number) => void }
 
+const pathOf = (to: string) => to.split("#")[0] || "/";
 let pending: Pending | null = null;
 let running: { plan: Plan; tl: gsap.core.Timeline } | null = null;
 let token = 0; // a sweep queued to start, cancelled when another navigation begins
@@ -53,8 +54,9 @@ let restoreTo: number | null = null;
  * the DOM. `restoreScroll`: Back or Forward, so the arriving page returns to where it was left.
  */
 export function beginNav(to: string, from: string, { restoreScroll = false } = {}) {
-  scrolls.set(from, window.scrollY);
-  restoreTo = restoreScroll ? scrolls.get(to) ?? 0 : null;
+  // scroll positions are kept per document path (the one page is "/", whichever section it is left on)
+  scrolls.set(location.pathname, window.scrollY);
+  restoreTo = restoreScroll ? scrolls.get(pathOf(to)) ?? null : null;
   const B = restFor(to);
   if (B == null || restFor(from) == null || to === from) { pending = current = null; return; }
   running?.tl.progress(1); token++;
@@ -95,7 +97,7 @@ export interface Arrival { reduced: boolean; /** runs `fn(delay)` when the seam 
  */
 export function arrival(path: string): Arrival | null {
   const job = current;
-  if (!job || job.plan.to !== path) return null;
+  if (!job || pathOf(job.plan.to) !== path) return null;
   return {
     reduced: job.reduced,
     rise: (fn) => {
@@ -113,7 +115,12 @@ let begun = 0;
 /** The arriving page has mounted: put the live seam where the old page left it. */
 export function arrived(path: string) {
   if (restoreTo != null) { window.scrollTo(0, restoreTo); restoreTo = null; }
-  if (current?.plan.to === path) {
+  else if (current && pathOf(current.plan.to) === path && current.plan.to.includes("#")) {
+    // a section of the one page: land on it (the page's own glide would be seen; this is under the snapshot)
+    const el = document.getElementById(current.plan.to.split("#")[1]);
+    if (el) window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY);
+  }
+  if (current && pathOf(current.plan.to) === path) {
     if (pending !== current) return; // already under way (an effect that runs twice)
     if (pending.reduced) { setSeam(pending.plan.B); pending = current = null; requestAnimationFrame(() => restColours(true)); return; }
     setSeam(pending.plan.A);
@@ -187,5 +194,5 @@ function run(job: Pending, oldGroup: string | null, hold: Animation | null) {
 
 /** Where the browser starts no view transition, begin the live sweep on the arriving page's first frame. */
 export function sweepWithoutSnapshot(path: string) {
-  if (pending && pending === current && pending.plan.to === path) startSweep(null);
+  if (pending && pending === current && pathOf(pending.plan.to) === path) startSweep(null);
 }

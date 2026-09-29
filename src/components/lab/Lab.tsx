@@ -6,6 +6,9 @@ import { gsap } from "gsap";
 import { registerEases, perLayer } from "@/lib/motion/ease";
 import { PHONE, restColours, restFor, seam as live, setSeam } from "@/lib/seam/seam";
 import { arrival, navigating } from "@/lib/seam/sweep";
+import { registerBlock, refresh } from "@/lib/seam/blocks";
+import { firstView } from "@/lib/motion/firstView";
+import Link from "next/link";
 import type { TreeNode } from "@/content/lab-tree.gen";
 import { layout, type Line } from "./tree";
 import type { Chapter, ChapterFactory, Tag } from "./kit";
@@ -17,6 +20,8 @@ export interface ChapterCopy { n: string; title?: string[]; big?: string; notes:
 export interface LabCopy {
   open: { num: string; pm: string; qualifier: string; qualifierPhone: string; lede: string; body: string; voice: string; share: string; record: string };
   chapters: ChapterCopy[];
+  /** the one page's Lab section: the way into the six chapters, on /lab */
+  toChapters?: string;
 }
 /** one chapter: its scene, its copy, and how many screens it is pinned for */
 export interface Spec { id: number; make: ChapterFactory | null; screens: number; night: boolean }
@@ -24,7 +29,7 @@ export interface Spec { id: number; make: ChapterFactory | null; screens: number
 const OPEN_AT = 0.305;
 
 /** The opening (lab-a): the match score, and the engine's search tree growing from its root on the seam. */
-function Open({ copy, tree }: { copy: LabCopy["open"]; tree: TreeNode }) {
+function Open({ copy, tree, more }: { copy: LabCopy["open"]; tree: TreeNode; more?: string }) {
   const svg = useRef<SVGSVGElement>(null);
   const [g, setG] = useState<{ W: number; H: number; lines: Line[]; pv: [number, number][] } | null>(null);
   useLayoutEffect(() => {
@@ -43,6 +48,7 @@ function Open({ copy, tree }: { copy: LabCopy["open"]; tree: TreeNode }) {
   const type = (inv: boolean) => (
     <div className={`lab-type${inv ? " seam-dark" : ""}`} data-layer={inv ? "inv" : "ink"} aria-hidden={inv || undefined} inert={inv || undefined}>
       {inv ? <p className="op-num display"><span className="ln" data-vt-line=""><span data-rise="">{copy.num}</span></span></p>
+        : more ? <h2 className="op-num display"><span className="ln" data-vt-line=""><span data-rise="">{copy.num}</span></span></h2>
         : <h1 className="op-num display"><span className="ln" data-vt-line=""><span data-rise="">{copy.num}</span></span></h1>}
       <div className="op-pm"><span className="ln" data-vt-line=""><span data-rise="">{copy.pm}</span></span><span className="ln q" data-vt-line=""><span data-rise=""><span className="wide">{copy.qualifier}</span><span className="narrow">{copy.qualifierPhone}</span></span></span></div>
       <p className="op-lede"><span className="ln" data-vt-line=""><span data-rise="">{copy.lede}</span></span></p>
@@ -50,6 +56,7 @@ function Open({ copy, tree }: { copy: LabCopy["open"]; tree: TreeNode }) {
       <p className="op-voice"><span className="ln" data-vt-line=""><span data-rise="">{copy.voice}</span></span></p>
       <p className="op-sc mono"><span className="ln" data-vt-line=""><span data-rise="">{copy.share}</span></span></p>
       <p className="op-rec mono"><span className="ln" data-vt-line=""><span data-rise="">{copy.record}</span></span></p>
+      {more ? <p className="op-more"><span className="ln" data-vt-line=""><span data-rise=""><Link href="/lab" tabIndex={inv ? -1 : undefined}>{more}</Link></span></span></p> : null}
     </div>
   );
   return (
@@ -95,7 +102,7 @@ function Type({ copy, extra }: { copy: ChapterCopy; extra?: (inv: boolean) => Re
  * six pinned chapters and Play. Each chapter scrubs its object with its scroll, and the seam carries its meaning:
  * the page owns the seam between sweeps, easing to each chapter's share as it takes over (1,100 ms, `seam`).
  */
-export function Lab({ copy, tree }: { copy: LabCopy; tree: TreeNode }) {
+export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: TreeNode; section?: boolean }) {
   const path = usePathname();
   const root = useRef<HTMLElement>(null);
   const [tags, setTags] = useState<Record<number, Tag[]>>({});
@@ -106,13 +113,15 @@ export function Lab({ copy, tree }: { copy: LabCopy; tree: TreeNode }) {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const phone = window.matchMedia(PHONE).matches;
     const sections = [...el.querySelectorAll<HTMLElement>("[data-ch]")];
+    // measured from the document: on the one page the Lab is not at its top
+    const top = (s: HTMLElement) => s.getBoundingClientRect().top + window.scrollY;
     const live3d = new Map<number, Chapter>();
     let raf = 0;
     const drawAll = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; live3d.forEach((c) => c.render()); }); };
 
-    const progressOf = (s: HTMLElement) => { const run = s.offsetHeight - innerHeight; return run > 0 ? Math.min(1, Math.max(0, (window.scrollY - s.offsetTop) / run)) : window.scrollY >= s.offsetTop ? 1 : 0; };
+    const progressOf = (s: HTMLElement) => { const run = s.offsetHeight - innerHeight, t = top(s); return run > 0 ? Math.min(1, Math.max(0, (window.scrollY - t) / run)) : window.scrollY >= t ? 1 : 0; };
     // the chapter in charge: the last one whose top has reached the middle of the screen
-    const active = () => { let a = 0; for (const s of sections) if (s.offsetTop <= window.scrollY + innerHeight * 0.5) a = +s.dataset.ch!; return a; };
+    const active = () => { let a = 0; for (const s of sections) if (top(s) <= window.scrollY + innerHeight * 0.5) a = +s.dataset.ch!; return a; };
     const want = (id: number) => {
       if (id === 0) return OPEN_AT;
       const c = live3d.get(id), s = sections.find((x) => +x.dataset.ch! === id)!;
@@ -144,6 +153,7 @@ export function Lab({ copy, tree }: { copy: LabCopy; tree: TreeNode }) {
     let who = -1, from = restFor("/lab") ?? OPEN_AT, t0 = 0, blend = 0, settle = 0;
     const ease = gsap.parseEase("seam");
     const tick = () => {
+      if (section) { blend = 0; refresh(); return; } // on the one page the seam belongs to the blocks (blocks.ts)
       if (site.hasAttribute("data-seam-moving") || navigating()) { blend = 0; return; }
       const id = active();
       if (id !== who) { from = live.at; who = id; t0 = performance.now(); }
@@ -172,6 +182,12 @@ export function Lab({ copy, tree }: { copy: LabCopy; tree: TreeNode }) {
     const onResize = () => { live3d.forEach((c) => c.resize()); place(); drawAll(); };
     window.addEventListener("resize", onResize);
 
+    // On the one page the opening and Play are blocks: the opening rests at the match score, Play at its eval.
+    const unblock = section ? [
+      registerBlock(el.querySelector<HTMLElement>(".lab-open")!, OPEN_AT),
+      ...sections.filter((s) => s.dataset.ch === "7").map((s) => registerBlock(s.querySelector<HTMLElement>(".ch-pin")!, () => want(7))),
+    ] : [];
+
     // Arriving: the tree grows from its root on the seam, one depth at a time (60 ms per depth), the principal
     // variation lights amber last (300 ms), then −143.3 rises, then ±35.4 Elo, then the record.
     const a = arrival(path), open = el.querySelector<HTMLElement>(".lab-open")!;
@@ -190,23 +206,25 @@ export function Lab({ copy, tree }: { copy: LabCopy; tree: TreeNode }) {
     };
     if (!reduced) {
       gsap.set(rise, { yPercent: 135 }); open.dataset.grow = "";
-      if (a && !a.reduced) cancel = a.rise((d) => grow(Math.max(0, d - 0.3)));
+      if (section) cancel = firstView(open, () => grow(0.15)); // on the one page, the first time it is seen
+      else if (a && !a.reduced) cancel = a.rise((d) => grow(Math.max(0, d - 0.3)));
       else requestAnimationFrame(() => grow(0.2));
     }
     if (!a) onScroll();
     return () => {
-      cancel(); tl?.kill(); near.disconnect(); moving.disconnect(); cancelAnimationFrame(raf); cancelAnimationFrame(blend); clearTimeout(settle);
+      unblock.forEach((u) => u()); cancel(); tl?.kill(); near.disconnect(); moving.disconnect(); cancelAnimationFrame(raf); cancelAnimationFrame(blend); clearTimeout(settle);
       cancelAnimationFrame(wait); delete open.dataset.grow;
       const t = svgTree(); gsap.set([...rise, ...t.lines, ...t.pv], { clearProps: "all" });
       window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onResize); window.removeEventListener("lab:seam", onEval);
       live3d.forEach((c) => c.dispose());
     };
-  }, [path]);
+  }, [path, section]);
 
+  const Root = section ? "section" : "main";
   return (
-    <main ref={root} id="main" tabIndex={-1} className="lab">
-      <Open copy={copy.open} tree={tree} />
-      {specs.map((s) => (
+    <Root ref={root} {...(section ? { id: "lab", "aria-label": "Lab" } : { id: "main", tabIndex: -1 })} className="lab">
+      <Open copy={copy.open} tree={tree} more={section ? copy.toChapters : undefined} />
+      {(section ? specs.filter((x) => x.id === 7) : specs).map((s) => (
         <section key={s.id} className="ch" data-ch={s.id} data-night={s.night || undefined} style={{ "--screens": s.screens } as React.CSSProperties}>
           <div className="ch-pin">
             <div className="lab-dark seam-dark" />
@@ -219,6 +237,6 @@ export function Lab({ copy, tree }: { copy: LabCopy; tree: TreeNode }) {
           </div>
         </section>
       ))}
-    </main>
+    </Root>
   );
 }

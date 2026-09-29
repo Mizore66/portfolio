@@ -1,23 +1,13 @@
 import type { Metadata } from "next";
 import { content } from "@/content/site";
-import { Lab, type LabCopy } from "@/components/lab/Lab";
-import tree from "@/content/lab-tree.json";
-import type { TreeNode } from "@/content/lab-tree.gen";
+import { labProps } from "@/content/pages";
+import { Lab } from "@/components/lab/Lab";
 
-const A = (content as unknown as { lab: { article: { title: string; description: string; gates: { elo: number; err: number; record: string }[] } } }).lab.article;
-const L = (content.pageCopy as unknown as { lab: { open: Record<string, string>; chapters: LabCopy["chapters"] } }).lab;
-
+const A = (content as unknown as { lab: { article: { description: string } } }).lab.article;
 export const metadata: Metadata = { title: "Lab", description: A.description };
 
+/** The full Lab: the opening, the six chapters and Play. The one page's Lab section leads here. */
 export default function Page() {
-  const c = A.gates[1];
-  const copy: LabCopy = {
-    open: {
-      num: `${c.elo < 0 ? "−" : "+"}${Math.abs(c.elo).toFixed(1)}`, pm: `±${c.err} Elo`,
-      qualifier: L.open.qualifier, qualifierPhone: L.open.qualifierPhone, lede: L.open.lede, body: L.open.body, voice: L.open.voice,
-      share: "30.5%", record: c.record.split("–").map((n, i) => `${n} ${["wins", "draws", "losses"][i]}`).join(" · "),
-    },
-    chapters: L.chapters,
-  };
-  return <Lab copy={copy} tree={tree as TreeNode} />;
+  const { copy, tree } = labProps();
+  return <Lab copy={copy} tree={tree} />;
 }

@@ -4,8 +4,9 @@ import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { sound as store } from "@/lib/sound/sound";
+import { section } from "@/lib/seam/section";
 
-export const NAV = [["Roles", "/roles"], ["Work", "/work"], ["Lab", "/lab"], ["Contact", "/contact"]] as const;
+export const NAV = [["Roles", "/#roles", "roles"], ["Work", "/#work", "work"], ["Lab", "/#lab", "lab"], ["Contact", "/#contact", "contact"]] as const;
 export interface SoundLabels { off: string; on: string }
 
 /** "Sound off" in the bottom-right corner, "Sound on" once turned on (motion.md, "Sound"). Off by default. */
@@ -25,8 +26,10 @@ function SoundToggle({ labels, inv }: { labels: SoundLabels; inv: boolean }) {
  */
 export function Chrome({ sound }: { sound: SoundLabels }) {
   const path = usePathname();
+  // on the one page, the section in view; on a page of its own, the section it belongs to (/work/…, /roles/…, /lab)
+  const inView = useSyncExternalStore(section.sub, section.get, section.server);
   if (path === "/resume") return null;
-  const cur = NAV.findIndex(([, h]) => path === h || path.startsWith(`${h}/`));
+  const cur = NAV.findIndex(([, , id]) => (path === "/" ? inView === id : path === `/${id}` || path.startsWith(`/${id}/`)));
   return (
     <div className="chrome">
       <a className="skip" href="#main">Skip to content</a>

@@ -121,7 +121,7 @@ export function Study({ f }: { f: Entry }) {
         <p className="st-tech mono">{p.tech.join(" · ")}</p>
         <ul className="st-links">
           {repo ? <li><a href={repo} rel="noopener">{S.sourceLink}</a></li> : <li>{S.privateRepo}</li>}
-          <li><Link href="/work">{S.back}</Link></li>
+          <li><Link href="/#work">{S.back}</Link></li>
         </ul>
         <Link className="st-next" href={`/work/${next.slug}`}>
           <span className="mono">Next, {next.move ?? W.noMove.toLowerCase()}</span>

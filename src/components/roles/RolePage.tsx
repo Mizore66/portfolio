@@ -180,7 +180,7 @@ export function RolePage({ v }: { v: RoleView }) {
           <span className="display">{v.next.title}</span>
           <span className="sub">{v.next.label}</span>
         </Link>
-        <Link className="role-back" href="/roles">{v.copy.back}</Link>
+        <Link className="role-back" href="/#roles">{v.copy.back}</Link>
       </section>
     </main>
   );

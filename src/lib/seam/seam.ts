@@ -29,6 +29,9 @@ export const PROJECT_CP: Record<string, number> = {
 /** Each route's resting seam, from its approved key frame. `null`: résumé mode, which has no seam. */
 export function roomFor(path: string): Room | null {
   if (path === "/resume") return null;
+  // the one page's sections (/#roles …) rest as their old pages did
+  const section = /^\/#([\w-]+)$/.exec(path)?.[1];
+  if (section) path = section === "top" ? "/" : `/${section}`;
   if (path === "/work") return { at: 0.015, atPhone: 0, dark: "var(--gallery)" }; // work-c: a 22 px paper edge
   // the paper floods: the day hall and its tables (the owner kept the full flood over the key frames' ink edge, step 4b)
   if (path === "/roles" || path.startsWith("/roles/")) return { at: 1, atPhone: 1, dark: "var(--gallery)" };
@@ -107,6 +110,10 @@ export const css = (poly: Pt[], dx = 0, dy = 0) =>
  * colour: what assistive tech and audits read is what is seen. Undone (`on` false) whenever the seam is
  * about to move over the type, and reapplied where it comes to rest.
  */
+let darkTest: ((line: HTMLElement, r: DOMRect) => boolean) | null = null;
+/** The one page, where each section carries its own split on phones, says which side a line rests on (blocks.ts). */
+export function setDarkTest(fn: typeof darkTest) { darkTest = fn; }
+
 export function restColours(on: boolean) {
   if (on && document.querySelector(".site[data-seam-moving]")) return;
   const phone = isPhone(), cut = seam.at * (phone ? innerHeight : innerWidth);
@@ -118,7 +125,7 @@ export function restColours(on: boolean) {
       e.style.color = "";
       if (!on || !b[i]) return;
       const r = e.getBoundingClientRect();
-      if (r.width && (phone ? r.top >= cut : r.left >= cut)) e.style.color = getComputedStyle(b[i]).color;
+      if (r.width && (darkTest ? darkTest(e, r) : phone ? r.top >= cut : r.left >= cut)) e.style.color = getComputedStyle(b[i]).color;
     });
   });
 }

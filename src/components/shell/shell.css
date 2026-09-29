@@ -26,6 +26,8 @@
 .chrome .sound-toggle:focus-visible { outline: 2px solid var(--move); outline-offset: 4px; opacity: 1; }
 @media (max-width: 600px) {
   .chrome .sound-toggle { right: 20px; bottom: 24px; font-size: 12px; }
+  /* the one page: each section carries its own split, so the paper copy is clipped to the dark bands on screen (blocks.ts) */
+  .site[data-blocks]:not([data-seam-moving]) .chrome-layer[data-layer="inv"] { clip-path: var(--chrome-dark); }
   .chrome-layer[data-layer="inv"] { clip-path: polygon(0 calc(var(--seam) - var(--seam-o)), 100% calc(var(--seam) + var(--seam-o)), 100% calc(100% + 400px), 0 calc(100% + 400px)); }
   .chrome .nav { top: 24px; left: 20px; gap: 16px; font-size: 13px; }
 }

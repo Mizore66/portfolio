@@ -14,31 +14,31 @@
 .work-title { position: absolute; left: 60px; bottom: 5vh; font-size: 12vw; color: var(--gallery-text); opacity: .96; }
 
 .work-pieces { list-style: none; }
-.piece { position: absolute; left: var(--x); top: calc(var(--y) + 14px); transform: translateX(-50%); text-align: center; white-space: nowrap; pointer-events: auto; }
+:is(.work, .others) .piece { position: absolute; left: var(--x); top: calc(var(--y) + 14px); transform: translateX(-50%); text-align: center; white-space: nowrap; pointer-events: auto; }
 /* before the room has measured where its pieces stand (or with no WebGL), the labels are a plain list */
-.piece:not([data-placed]) { position: relative; transform: none; text-align: left; }
+:is(.work, .others) .piece:not([data-placed]) { position: relative; transform: none; text-align: left; }
 .work:not([data-gl="off"]) .piece:not([data-placed]) { visibility: hidden; }
 .work[data-gl="off"] .work-pieces { position: absolute; left: 64px; top: 22vh; display: grid; gap: 28px; }
-.piece a { display: block; text-decoration: none; color: inherit; padding: 6px 10px; }
-.piece b { display: block; font-size: 16px; font-weight: 600; color: var(--gallery-dim); transition: color .4s cubic-bezier(.16, .84, .3, 1), font-size .4s cubic-bezier(.16, .84, .3, 1); }
-.piece[data-on] b { color: var(--gallery-text); font-size: 19px; }
-.piece .more { display: block; opacity: 0; transition: opacity .4s cubic-bezier(.16, .84, .3, 1); }
-.piece[data-on] .more { opacity: 1; }
-.piece .more > span { display: block; }
-.piece .n { margin-top: 8px; font-size: 14px; color: #c9c2b5; line-height: 1.35; white-space: normal; text-wrap: balance; max-width: 24ch; margin-inline: auto; }
-.piece .q { margin-top: 6px; font-size: 12px; color: var(--gallery-dim); }
-.piece .sq { margin-top: 6px; font-size: 12px; color: var(--gallery-dim); }
-.piece a:focus-visible { outline-offset: 0; }
+:is(.work, .others) .piece a { display: block; text-decoration: none; color: inherit; padding: 6px 10px; }
+:is(.work, .others) .piece b { display: block; font-size: 16px; font-weight: 600; color: var(--gallery-dim); transition: color .4s cubic-bezier(.16, .84, .3, 1), font-size .4s cubic-bezier(.16, .84, .3, 1); }
+:is(.work, .others) .piece[data-on] b { color: var(--gallery-text); font-size: 19px; }
+:is(.work, .others) .piece .more { display: block; opacity: 0; transition: opacity .4s cubic-bezier(.16, .84, .3, 1); }
+:is(.work, .others) .piece[data-on] .more { opacity: 1; }
+:is(.work, .others) .piece .more > span { display: block; }
+:is(.work, .others) .piece .n { margin-top: 8px; font-size: 14px; color: #c9c2b5; line-height: 1.35; white-space: normal; text-wrap: balance; max-width: 24ch; margin-inline: auto; }
+:is(.work, .others) .piece .q { margin-top: 6px; font-size: 12px; color: var(--gallery-dim); }
+:is(.work, .others) .piece .sq { margin-top: 6px; font-size: 12px; color: var(--gallery-dim); }
+:is(.work, .others) .piece a:focus-visible { outline-offset: 0; }
 
 @media (max-width: 600px) {
   .work-paper { inset: 0 0 auto 0; width: auto; height: var(--seam); }
   .site[data-seam-moving] .work-paper { inset: 0; height: auto; clip-path: polygon(0 -400px, 100% -400px, 100% calc(var(--seam) + var(--seam-o)), 0 calc(var(--seam) - var(--seam-o))); }
   .work-title { left: 18px; top: 64px; bottom: auto; font-size: 25vw; }
   /* a column beside the stacked pieces, each label level with its piece */
-  .piece { left: 55%; top: var(--y); transform: translateY(-30%); text-align: left; white-space: normal; max-width: calc(45% - 12px); }
-  .piece a { padding: 6px 0; }
-  .piece .n { margin-inline: 0; }
-  .piece b, .piece[data-on] b { font-size: 16px; }
+  :is(.work, .others) .piece { left: 55%; top: var(--y); transform: translateY(-30%); text-align: left; white-space: normal; max-width: calc(45% - 12px); }
+  :is(.work, .others) .piece a { padding: 6px 0; }
+  :is(.work, .others) .piece .n { margin-inline: 0; }
+  :is(.work, .others) .piece b, :is(.work, .others) .piece[data-on] b { font-size: 16px; }
   .work[data-gl="off"] .work-pieces { left: 20px; top: 180px; }
 }
 

@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { bindSeam, restColours, restFor, roomFor, setSeam } from "@/lib/seam/seam";
 import { beginNav } from "@/lib/seam/sweep";
 import Lenis from "lenis";
+import { bindLenis } from "@/lib/motion/scroll";
 import "lenis/dist/lenis.css";
 import { Chrome, type SoundLabels } from "./Chrome";
 import { Cursor } from "./Cursor";
@@ -29,7 +30,8 @@ export function Shell({ children, sound }: { children: React.ReactNode; sound: S
       // a link that plays its own exit first (a piece in the Work room) begins the page change itself
       if (!a || a.target || a.hasAttribute("download") || a.hasAttribute("data-nav-hold")) return;
       const u = new URL(a.href);
-      if (u.origin === location.origin && u.pathname !== current.current) beginNav(u.pathname, current.current);
+      // a section of the one page (/#work) sweeps to that section's seam; within the one page, OnePage glides instead
+      if (u.origin === location.origin && u.pathname !== current.current) beginNav(u.pathname + (u.pathname === "/" ? u.hash : ""), current.current);
     };
     // Back and Forward. The URL has already changed; the old page is still on screen. The router applies a
     // history restore at once, without a transition, so nothing would sweep. This listener (capture phase,
@@ -38,20 +40,22 @@ export function Shell({ children, sound }: { children: React.ReactNode; sound: S
     const onPop = (e: PopStateEvent) => {
       const to = location.pathname, from = current.current;
       if (to === from) return;
-      if (!("startViewTransition" in document) || restFor(to) == null || restFor(from) == null) { beginNav(to, from); return; }
+      const dest = to === "/" ? to + location.hash : to; // the one page, at the section it was left on
+      if (!("startViewTransition" in document) || restFor(dest) == null || restFor(from) == null) { beginNav(dest, from); return; }
       e.stopImmediatePropagation();
-      beginNav(to, from, { restoreScroll: true });
+      beginNav(dest, from, { restoreScroll: true });
       router.replace(location.pathname + location.search + location.hash, { scroll: false });
     };
     // Smooth wheel scrolling (design/motion.md: Lenis at lerp .1). Touch scroll stays native, and under
     // reduced motion the scroll is the browser's own. The scroll never stops answering the trackpad.
     const lenis = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? null : new Lenis({ autoRaf: true, lerp: 0.1, stopInertiaOnNavigate: true });
+    bindLenis(lenis);
     const onResize = () => { if (!site.current?.hasAttribute("data-seam-moving")) restColours(true); };
     document.fonts.ready.then(onResize);
     window.addEventListener("resize", onResize);
     document.addEventListener("click", onClick, true);
     window.addEventListener("popstate", onPop, true);
-    return () => { window.removeEventListener("resize", onResize); document.removeEventListener("click", onClick, true); window.removeEventListener("popstate", onPop, true); lenis?.destroy(); bindSeam(null, 0.5); };
+    return () => { window.removeEventListener("resize", onResize); document.removeEventListener("click", onClick, true); window.removeEventListener("popstate", onPop, true); lenis?.destroy(); bindLenis(null); bindSeam(null, 0.5); };
   }, [initial, router]);
 
   return (

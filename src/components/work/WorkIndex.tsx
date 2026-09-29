@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
 import { registerEases, perLayer } from "@/lib/motion/ease";
-import { arrival, beginNav } from "@/lib/seam/sweep";
+import { beginNav } from "@/lib/seam/sweep";
+import { firstView } from "@/lib/motion/firstView";
 import { PHONE, restFor } from "@/lib/seam/seam";
 import { after } from "@/lib/motion/slowmo";
 import { createGallery, VIEW, type Gallery, type View } from "./gallery";
@@ -42,7 +43,7 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
     const el = root.current!, c = canvas.current!;
     registerEases();
     const view = () => (window.matchMedia(PHONE).matches ? VIEW.phone : VIEW.desk);
-    const a = arrival("/work"), arriving = !!a && !a.reduced;
+    const arriving = !window.matchMedia("(prefers-reduced-motion: reduce)").matches; // its entrance, the first time it is seen
     const rise = el.querySelectorAll("[data-rise]"), labels = el.querySelectorAll(".piece");
     let gal: Gallery | null = null, failed = false, dead = false, tl: gsap.core.Timeline | undefined;
     const lit = (G: Gallery, k: number) => { for (const p of pieces) G.lights[p.slug] = (p.slug === FOCUS ? 1 : DIM) * k; };
@@ -63,7 +64,8 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
     if (arriving) {
       gsap.set(rise, { yPercent: 135 }); gsap.set(labels, { opacity: 0, y: 12 });
       // called as the seam starts to move; `delay` is when the type should rise, as it lands
-      cancel = a!.rise((delay) => {
+      cancel = firstView(el, () => {
+        const delay = 0.15;
         const G = build();
         tl = gsap.timeline({ onUpdate: draw });
         if (G) {
@@ -136,11 +138,11 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
   };
 
   return (
-    <section ref={root} className="work" aria-labelledby="work-title">
+    <section ref={root} id="work" className="work" data-rest="0.015" data-rest-phone="0" aria-labelledby="work-title">
       <canvas ref={canvas} className="work-canvas" aria-hidden="true" onPointerMove={onPointer} onClick={onCanvasClick} />
       <div className="work-paper" />
       <div className="work-layer" data-on="dark">
-        <h1 id="work-title" className="work-title display"><span className="ln" data-vt-line=""><span data-rise="">Work</span></span></h1>
+        <h2 id="work-title" className="work-title display"><span className="ln" data-vt-line=""><span data-rise="">Work</span></span></h2>
         <ul className="work-pieces" aria-label="Selected work">
           {pieces.map((p) => {
             const at = pos[p.slug];

@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { restColours, setSeam } from "@/lib/seam/seam";
 import { arrival } from "@/lib/seam/sweep";
+import { lockScroll } from "@/lib/motion/scroll";
 import { gsap } from "gsap";
 import { registerEases, share, perLayer } from "@/lib/motion/ease";
 import { createStage, T, type Stage } from "./stage";
@@ -72,7 +73,7 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
     const st = { t: 0, at: 0 };
     let heard = { t: -1, ply: "" }; // the cues play only while the game runs forward, not on a jump to its end
     const draw = () => {
-      if (!arrive) setSeam(st.at);
+      if (el.dataset.intro === "play") setSeam(st.at); // the opening owns the seam; after it, the scroll does (blocks.ts)
       stage.render(st.t);
       const ply = stage.ply(st.t), running = heard.t >= 0 && st.t > heard.t && st.t - heard.t < 0.5;
       if (running && ply && ply !== heard.ply) cue("place");
@@ -116,7 +117,7 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
     };
     const tl = gsap.timeline({
       paused: true,
-      onComplete: () => { gsap.ticker.remove(guard); sessionStorage.setItem(SEEN, "1"); el.dataset.intro = "done"; site?.removeAttribute("data-seam-moving"); restColours(true); startIdle(); },
+      onComplete: () => { gsap.ticker.remove(guard); sessionStorage.setItem(SEEN, "1"); el.dataset.intro = "done"; lockScroll(false); site?.removeAttribute("data-seam-moving"); restColours(true); startIdle(); },
     });
 
     let rise: gsap.core.Timeline | undefined, cancelRise = () => {};
@@ -132,10 +133,10 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
             .to(q(".ev"), { opacity: 1, duration: 0.4 }, d + 0.5).to(toggle, { opacity: 0.62, duration: 0.4, clearProps: "opacity" }, d + 0.5);
         });
       }
-    } else if (reduced || seen) finish();
+    } else if (reduced || seen || location.hash || window.scrollY > 8) finish(); // the opening plays only at the top of the page
     else {
       gsap.set(q(".ch"), { yPercent: 135 }); gsap.set(q(".line i"), { yPercent: 130 }); gsap.set([...q(".ev"), ...toggle], { opacity: 0 }); gsap.set(nav, { opacity: 0 });
-      draw(); el.dataset.intro = "play"; site?.setAttribute("data-seam-moving", ""); restColours(false);
+      el.dataset.intro = "play"; draw(); site?.setAttribute("data-seam-moving", ""); restColours(false); lockScroll(true); // the page waits for its opening
       tl.to(st, { t: T.total, duration: T.total, ease: "none", onUpdate: draw }, 0)
         .to(st, { at: share(SETTLE_CP), duration: 0.9, ease: "seam", onUpdate: draw }, T.paper)
         .to(q(".ch"), { yPercent: 0, duration: 0.7, ease: "arrive", stagger: perLayer(0.028) }, T.name)
@@ -155,11 +156,11 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
 
     const onResize = () => { stage.resize(); draw(); };
     window.addEventListener("resize", onResize);
-    return () => { tl.kill(); cancelRise(); rise?.kill(); gsap.set([...nav, ...toggle], { clearProps: "opacity" }); gsap.ticker.remove(guard); cancelAnimationFrame(raf); io.disconnect(); window.removeEventListener("resize", onResize); stage.dispose(); };
+    return () => { lockScroll(false); tl.kill(); cancelRise(); rise?.kill(); gsap.set([...nav, ...toggle], { clearProps: "opacity" }); gsap.ticker.remove(guard); cancelAnimationFrame(raf); io.disconnect(); window.removeEventListener("resize", onResize); stage.dispose(); };
   }, [mobile]);
 
   return (
-    <section ref={root} className="hero" data-intro={arriving ? "done" : "pending"} aria-label="Introduction">
+    <section ref={root} id="top" className="hero" data-rest="0.559" data-rest-phone="0.559" data-intro={arriving ? "done" : "pending"} aria-label="Introduction">
       <canvas ref={day} className="day" aria-hidden="true" key={`d${mobile}`} />
       <canvas ref={night} className="night" aria-hidden="true" key={`n${mobile}`} />
       <Type first={first} last={last} headline={headline} />

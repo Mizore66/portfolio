@@ -11,7 +11,11 @@ const nextConfig: NextConfig = {
   // Kept from v2 so old shared links still land. Revisit when the v3 routes exist.
   async redirects() {
     return [
-      { source: "/archive", destination: "/work#archive", permanent: true },
+      { source: "/archive", destination: "/#archive", permanent: true },
+      // the one page (2026-09-29): the old pages are its sections now; /lab stays the full Lab
+      { source: "/roles", destination: "/#roles", permanent: false },
+      { source: "/work", destination: "/#work", permanent: false },
+      { source: "/contact", destination: "/#contact", permanent: false },
       // v2 printed the résumé at /print-edition; résumé mode replaces it.
       { source: "/print-edition", destination: "/resume", permanent: true },
     ];

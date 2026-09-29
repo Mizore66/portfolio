@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
 import { registerEases, perLayer } from "@/lib/motion/ease";
-import { arrival, beginNav, navigating } from "@/lib/seam/sweep";
+import { beginNav, navigating } from "@/lib/seam/sweep";
+import { firstView } from "@/lib/motion/firstView";
 import { PHONE } from "@/lib/seam/seam";
 import { after } from "@/lib/motion/slowmo";
 import { createHall, FRAME, type Frame, type Hall } from "./hall";
@@ -31,7 +32,7 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
     registerEases();
     const phone = () => window.matchMedia(PHONE).matches;
     const setView = (s: Hall, f: Frame) => { home.current = f; Object.assign(s.cam, { ...f, pos: [...f.pos], look: [...f.look] }); };
-    const a = arrival("/roles"), arriving = !!a && !a.reduced;
+    const arriving = !window.matchMedia("(prefers-reduced-motion: reduce)").matches; // its entrance, the first time it is seen
     const rise = el.querySelectorAll("[data-rise]"), names = el.querySelectorAll(".names li");
     let hall: Hall | null = null, failed = false, dead = false, tl: gsap.core.Timeline | undefined;
     const build = () => {
@@ -46,7 +47,8 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
     let cancel = () => {};
     if (arriving) {
       gsap.set(rise, { yPercent: 135 }); gsap.set(names, { opacity: 0, y: 10 });
-      cancel = a!.rise((delay) => {
+      cancel = firstView(el, () => {
+        const delay = 0.15;
         const s = build();
         tl = gsap.timeline({ onUpdate: draw });
         if (s) { const f = home.current; tl.to(s.cam.pos, { 1: f.pos[1], duration: 1.8, ease: "arrive" }, 0); }
@@ -123,11 +125,11 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
   const read = (slug: string | null) => () => { if (!leaving.current) setFocus(slug); };
 
   return (
-    <main ref={root} id="main" tabIndex={-1} className="roles">
+    <section ref={root} id="roles" className="roles" data-rest="1" data-rest-phone="1" aria-labelledby="roles-title">
       <canvas ref={canvas} className="roles-canvas" aria-hidden="true" onPointerMove={onPointer} onPointerLeave={read(null)} onClick={onCanvasClick} />
       <div className="roles-dark" />
       <div className="roles-layer">
-        <h1 className="roles-title display"><span className="ln" data-vt-line=""><span data-rise="">{copy.title}</span></span></h1>
+        <h2 id="roles-title" className="roles-title display"><span className="ln" data-vt-line=""><span data-rise="">{copy.title}</span></span></h2>
         <p className="roles-sub"><span className="ln" data-vt-line=""><span data-rise="">{copy.sub}</span></span></p>
         <ol className="names" aria-label={copy.label} onMouseLeave={read(null)}>
           {list.map((t) => (
@@ -141,6 +143,6 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
           ))}
         </ol>
       </div>
-    </main>
+    </section>
   );
 }

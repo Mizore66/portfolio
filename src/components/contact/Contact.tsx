@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { gsap } from "gsap";
 import { registerEases, perLayer } from "@/lib/motion/ease";
 import { roomFor } from "@/lib/seam/seam";
-import { arrival } from "@/lib/seam/sweep";
+import { firstView } from "@/lib/motion/firstView";
 import "./contact.css";
 
 export interface ContactCopy {
@@ -57,8 +57,8 @@ export function Contact({ copy }: { copy: ContactCopy }) {
       .finally(() => { reset.current = window.setTimeout(() => setCopy("idle"), 2000); });
   };
   useLayoutEffect(() => {
-    const root = el.current!, a = arrival(path);
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || a?.reduced) { root.dataset.caret = "on"; return; }
+    const root = el.current!;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { root.dataset.caret = "on"; return; }
     registerEases();
     const q = (s: string) => root.querySelectorAll(s);
     const mv = q(".ct-mv [data-rise]"), lines = q(".ct-line [data-rise]"), links = q(".ct-links [data-rise]"), clock = root.querySelector(".clock");
@@ -74,14 +74,14 @@ export function Contact({ copy }: { copy: ContactCopy }) {
         .to(clock, { y: 0, rotation: 0, opacity: 1, duration: 0.8, ease: "arrive" }, 0.55)
         .call(() => { root.dataset.caret = "on"; }, undefined, 0.75);
     };
-    const cancel = a ? a.rise((d) => play(Math.max(0, d - 0.1))) : (play(0.2), () => {});
+    const cancel = firstView(root, () => play(0.1)); // on the one page, the first time it is seen
     return () => { cancel(); tl?.kill(); delete root.dataset.caret; gsap.set([...mv, ...lines, ...links, clock], { clearProps: "transform,opacity" }); };
   }, [path]);
 
   const layer = (inv: boolean) => (
     <div className={`ct-layer${inv ? " seam-dark" : ""}`} data-layer={inv ? "inv" : "ink"} aria-hidden={inv || undefined} inert={inv || undefined}>
       {inv ? <p className="ct-mv display"><span className="ln" data-vt-line=""><span data-rise="">{copy.move}</span></span></p>
-        : <h1 className="ct-mv display"><span className="ln" data-vt-line=""><span data-rise="">{copy.move}</span></span></h1>}
+        : <h2 className="ct-mv display"><span className="ln" data-vt-line=""><span data-rise="">{copy.move}</span></span></h2>}
       <span className="caret" aria-hidden="true" />
       <p className="ct-line ct-yours display"><span className="ln" data-vt-line=""><span data-rise="">{copy.yourMove}</span></span></p>
       <p className="ct-line ct-mail"><span className="ln" data-vt-line=""><span data-rise=""><a href={`mailto:${copy.email}`}>{copy.email}</a><button type="button" className="ct-copy" onClick={copyEmail}>{copyState === "done" ? copy.copied : copy.copy}</button></span></span></p>
@@ -97,11 +97,11 @@ export function Contact({ copy }: { copy: ContactCopy }) {
     </div>
   );
   return (
-    <main ref={el} id="main" tabIndex={-1} className="contact" style={{ "--dark": roomFor(path)?.dark } as React.CSSProperties}>
+    <section ref={el} id="contact" className="contact" data-rest="0.559" data-rest-phone="0.559" aria-label="Contact" style={{ "--dark": roomFor("/contact")?.dark } as React.CSSProperties}>
       <div className="ct-dark seam-dark" />
       {layer(false)}
       {layer(true)}
       <Clock copy={copy} />
-    </main>
+    </section>
   );
 }

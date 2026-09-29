@@ -2957,7 +2957,8 @@
           "seamLabel": "seam",
           "yourMove": "Your move."
         }
-      ]
+      ],
+      "toChapters": "Six chapters: how it was built, trained and tested"
     },
     "openingPreparation": {
       "title": "Opening Preparation",
