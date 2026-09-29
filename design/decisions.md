@@ -174,6 +174,7 @@ Review page: `design/assets/index.html`. Everything is procedural and made for t
 **Owner direction: one scrolling page (2026-09-29, in chat).** "Every section is its own page. I'd rather the parts be navigable through the navbar as well as by scrolling into each section; it gives a better UX, especially as a portfolio." This replaces step 3's model of a page per nav item. Chosen:
 1. **One page:** Hero, the Roles hall, Work (the featured three and Other Projects), the Lab's opening and Play, then Contact. The Lab's six chapters stay on /lab, reached from the Lab section.
 2. **Detail pages stay separate:** the seven project pages and seven role pages open with a sweep as now, and Back returns to the same scroll position.
-3. **The seam follows the scroll:** it slides between the sections' resting places (55.9%, 100%, 1.5%, 30.5%, 55.9%). Nav items scroll smoothly to their section; the URL follows the section in view, and /roles, /work, /lab and /contact still open on their section.
+3. **The seam follows the scroll:** it slides between the sections' resting places (55.9%, 100%, 1.5%, 30.5%, 55.9%). Nav items scroll smoothly to their section, and the URL follows the section in view.
+4. **Addresses (the designer's call, since /lab keeps the six chapters):** the sections are `/#roles`, `/#work`, `/#lab` and `/#contact`. The old /roles, /work and /contact redirect to them. /lab stays the full Lab page, and the detail pages keep their addresses (`/roles/<id>`, `/work/<id>`).
 
 Also reported: after the engine moved in Play, the board ignored clicks for 2 to 3 s. Fixed (`6e720fa`): the board is the visitor's the moment the engine's move lands.
