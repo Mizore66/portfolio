@@ -104,6 +104,20 @@ test.describe("a role page", () => {
     expect((await page.goto("/roles/not-a-role"))!.status()).toBe(404);
   });
 
+  test("the scrubber is one tab stop, stepped with the arrow keys", async ({ page }) => {
+    await page.goto("/roles/deriv");
+    const ticks = page.locator(".scrub .ticks button");
+    await expect(ticks.first()).toHaveAttribute("tabindex", "0");
+    expect(await page.locator('.scrub .ticks button[tabindex="0"]').count()).toBe(1);
+    await ticks.first().focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(ticks.nth(1)).toBeFocused();
+    await expect(page.locator(".scrub .mv")).toHaveText("2…Nc6", { timeout: 30_000 });
+    await expect(ticks.nth(1)).toHaveAttribute("tabindex", "0");
+    await page.keyboard.press("Home");
+    await expect(ticks.first()).toBeFocused();
+  });
+
   test("no sideways scrolling at 320 px", async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 640 });
     for (const u of ["/roles", ...tables.map((t) => `/roles/${t.slug}`)]) {

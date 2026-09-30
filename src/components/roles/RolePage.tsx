@@ -30,14 +30,28 @@ const onReduced = (fn: () => void) => { const q = window.matchMedia(REDUCED); q.
 /** reduced motion: the famous position still, every fact listed (motion.md §10); false while rendering on the server */
 const useStill = () => useSyncExternalStore(onReduced, () => window.matchMedia(REDUCED).matches, () => false);
 
+/**
+ * The scrubber: one tab stop, on the move the board is at (or the first), and the arrow keys, Home and End step through
+ * the game from there, as a slider would; a click jumps to any move.
+ */
 function Scrub({ plies, labels, count, onJump, title, start }: { plies: GamePly[]; labels: string[]; count: number; onJump: (m: number) => void; title: string; start: string }) {
-  const moves = Math.ceil(plies.length / 2), cur = Math.ceil(count / 2);
+  const moves = Math.ceil(plies.length / 2), cur = Math.ceil(count / 2), stop = Math.max(1, cur);
+  const ol = useRef<HTMLOListElement>(null);
+  const onKey = (e: React.KeyboardEvent<HTMLButtonElement>, m: number) => {
+    const to = { ArrowRight: m + 1, ArrowDown: m + 1, ArrowLeft: m - 1, ArrowUp: m - 1, Home: 1, End: moves }[e.key];
+    if (to == null) return;
+    e.preventDefault();
+    const t = Math.min(moves, Math.max(1, to));
+    onJump(t); ol.current?.querySelectorAll("button")[t - 1]?.focus();
+  };
   return (
     <div className="scrub">
       <p className="mv mono" aria-live="polite">{count ? labels[count - 1] : start}</p>
-      <ol className="ticks" aria-label={title}>
+      <ol ref={ol} className="ticks" aria-label={title}>
         {Array.from({ length: moves }, (_, i) => (
-          <li key={i}><button type="button" className={i + 1 < cur ? "p" : i + 1 === cur && count ? "c" : ""} aria-label={labels[Math.min(plies.length, (i + 1) * 2) - 1]} onClick={() => onJump(i + 1)} /></li>
+          <li key={i}><button type="button" className={i + 1 < cur ? "p" : i + 1 === cur && count ? "c" : ""} aria-label={labels[Math.min(plies.length, (i + 1) * 2) - 1]}
+            aria-current={i + 1 === cur && count ? "step" : undefined} tabIndex={i + 1 === stop ? 0 : -1}
+            onClick={() => onJump(i + 1)} onKeyDown={(e) => onKey(e, i + 1)} /></li>
         ))}
       </ol>
       <p className="g mono">{title}</p>
