@@ -53,14 +53,14 @@ The owner turned down A, B and C for the favicon ("I don't like your designs") a
 
 ## Round 3: the favicon
 
-The owner turned down round 2 too: it "looks more just a regular chess themed icon rather than an icon one would use for their portfolio", and round 1 because of the seam. So round 3 starts from him: his initials, in the site's own faces, with chess at most a detail.
+The owner turned down round 2 too: it "looks more just a regular chess themed icon rather than an icon one would use for their portfolio", and round 1 because of the seam. So round 3 starts from the owner: the initials, in the site's own faces, with chess at most a detail.
 
 ![Round 3](marks/marks-3.webp)
 
-- **H. AQ:** his initials set tight in the display face, as the hero sets his name.
-- **I. A.:** his initial and a full stop, in the voice of Contact's "11.", the stop in the move's amber.
-- **J. aq, and the caret:** his initials in the mono face with Contact's caret in amber: an engineer's prompt.
-- **K. Q:** his surname's initial, the most legible at 16 px, which a chess player also reads as the queen.
+- **H. AQ:** the initials set tight in the display face, as the hero sets his name.
+- **I. A.:** the initial and a full stop, in the voice of Contact's "11.", the stop in the move's amber.
+- **J. aq, and the caret:** the initials in the mono face with Contact's caret in amber: an engineer's prompt.
+- **K. Q:** the surname's initial, the most legible at 16 px, which a chess player also reads as the queen.
 
 ## Round 4: J, tied to the theme
 
@@ -72,3 +72,33 @@ The owner likes J: "I like J but it's not relating to the theme of the site, it'
 - **J1, the eval bar:** the caret is the evaluation bar, drawn as a gauge, White's 55.9% filled from the bottom.
 - **J2, the bar and the move:** J1 with the move's amber mark where the bar splits.
 - **J3, on the board:** J's amber caret on a dark square of the gallery's walnut board.
+
+## Built: the favicon (J1) and the share cards
+
+The owner picked J1. The favicon is built from it, and each page now has its own card.
+
+### The favicon
+
+![The favicon as built](marks/built-icons.webp)
+
+- Left to right: the SVG at 240 px; the 32 px and 16 px images enlarged; 16, 32 and 48 px at true size; the 180 px home-screen icon.
+- The browser gets `icon.svg`, with `favicon.ico` (16 and 32 px) for browsers that do not take SVG. Phones get `apple-icon.png`.
+- The letters are outlines of JetBrains Mono 700, so the icon looks the same without the font.
+- The home-screen icon is square and full bleed, because the phone rounds its own corners.
+
+### The share cards
+
+Each is the page at rest, captured from the site, with "anasqumhiyeh.dev" top right. The résumé uses the home card.
+
+![Home and the Lab](cards/home-lab.webp)
+
+![The ten projects](cards/work.webp)
+
+![The seven roles](cards/roles.webp)
+
+As a link preview:
+
+<img src="cards/small-home.webp" width="360" alt="Home card, small"> <img src="cards/small-lab.webp" width="360" alt="Lab card, small"> <img src="cards/small-work-rexcheck.webp" width="360" alt="RexCheck card, small"> <img src="cards/small-roles-deriv.webp" width="360" alt="Deriv card, small">
+
+- Project pages are laid out for taller screens. Captured at the card's shape, their piece ran into the name, so on the card the piece stands lower, at the foot, and is shrunk only as far as it takes to clear the name (86 to 98% on six of the ten).
+- The cards are remade with `node scripts/cards.mjs` against a running site, after any change to a page's first screen.

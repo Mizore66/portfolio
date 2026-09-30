@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import { Analytics } from "@vercel/analytics/next";
 import { content } from "@/content/site";
 import { SITE_URL } from "@/lib/site";
+import { card } from "@/lib/cards";
 import { Shell } from "@/components/shell/Shell";
 import "./globals.css";
 
@@ -19,10 +20,13 @@ const archivo = localFont({
 });
 const jetbrains = localFont({ src: "./fonts/JetBrainsMono.woff2", weight: "100 800", variable: "--font-jetbrains", display: "swap" });
 
+const SITE_TITLE = content.metadata.siteTitle.replace(" — ", ", ");
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: content.metadata.siteTitle.replace(" — ", ", "), template: "%s · Anas Qumhiyeh" },
+  title: { default: SITE_TITLE, template: "%s · Anas Qumhiyeh" },
   description: content.metadata.siteDescription,
+  // the home page's card; the Lab, the project and the role pages set their own, and the résumé and 404 use this one
+  ...card("home", { title: SITE_TITLE, description: content.metadata.siteDescription, alt: `${content.identity.displayName}. ${content.identity.heroHeadline}`, path: "/" }),
 };
 
 export const viewport: Viewport = { themeColor: "#f3f3f1" };

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { content } from "@/content/site";
 import { moveLabel, tableBy, tables } from "@/content/roles";
 import { RolePage } from "@/components/roles/RolePage";
+import { card } from "@/lib/cards";
 
 // Seven tables: the six roles and the Monash degree (decisions.md, Tables).
 export const dynamicParams = false;
@@ -12,7 +13,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps<"/roles/[slug]">): Promise<Metadata> {
   const t = tableBy((await params).slug);
-  return t ? { title: t.name, description: t.sub } : {};
+  return t ? { title: t.name, description: t.sub, ...card(`roles/${t.slug}`, { title: `${t.name} · Anas Qumhiyeh`, description: t.sub, alt: `${t.name}, ${t.sub}`, path: `/roles/${t.slug}` }) } : {};
 }
 
 export default async function Page({ params }: PageProps<"/roles/[slug]">) {

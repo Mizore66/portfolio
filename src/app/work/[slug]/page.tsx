@@ -5,6 +5,7 @@ import { content } from "@/content/site";
 import { entries, entryBy, evalLabel } from "@/content/work";
 import { Project } from "@/components/project/Project";
 import { Study } from "@/components/project/Study";
+import { card } from "@/lib/cards";
 
 // Every project has a page: the featured three and the other seven (step 4a).
 export const dynamicParams = false;
@@ -16,7 +17,8 @@ export async function generateMetadata({ params }: PageProps<"/work/[slug]">): P
   const f = entryBy((await params).slug);
   if (!f) return {};
   const seo = (f.project as { seo?: { title: string; description: string } }).seo;
-  return { title: f.name, description: seo ? prose(seo.description) : f.project.purpose };
+  const description = seo ? prose(seo.description) : f.project.purpose;
+  return { title: f.name, description, ...card(`work/${f.slug}`, { title: `${f.name} · Anas Qumhiyeh`, description, alt: `${f.name}. ${prose(f.claim.display)}`, path: `/work/${f.slug}` }) };
 }
 
 /** Long names take two lines on desktop, the second short enough to end before the piece (proj-a). */

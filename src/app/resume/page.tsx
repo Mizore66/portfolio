@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { content, claim, prose, span, month, type Claim } from "@/content/site";
 import { PrintButton } from "./print-button";
+import { card } from "@/lib/cards";
 import "./resume.css";
 
+const description = `${content.resume.name}: ${content.resume.summary}`;
 export const metadata: Metadata = {
   title: "Résumé",
-  description: `${content.resume.name}: ${content.resume.summary}`,
+  description,
+  ...card("home", { title: "Résumé · Anas Qumhiyeh", description, alt: `${content.identity.displayName}. ${content.identity.heroHeadline}`, path: "/resume" }),
 };
 
 const { resume, identity, education, roles, projects, roleNotes, skills, links } = content;
