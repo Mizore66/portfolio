@@ -36,7 +36,7 @@ export function plan(from: string, to: string, A: number, B: number, phone: bool
   return { from, to, A, B, phone, dur, tilt, typeAt, liftAt, liftDur, rise, total, cut };
 }
 
-interface Line { name: string; ink: boolean; x: number; y: number; order: number }
+interface Line { name: string; ink: boolean; x: number; y: number; order: number; /** an object drawn once above both layers (Contact's clock): not clipped to a side */ whole: boolean }
 interface Pending { plan: Plan; page: { x: number; y: number } | null; lines: Line[]; reduced: boolean; started: Promise<number>; start: (t0: number) => void }
 
 const pathOf = (to: string) => to.split("#")[0] || "/";
@@ -75,7 +75,7 @@ export function beginNav(to: string, from: string, { restoreScroll = false } = {
       // paper type on the dark side: the inverted copy, or a page's only copy where it never meets the seam
       const ink = !e.closest("[data-layer=inv], [data-on=dark]"), name = `vl-${i}`;
       e.style.viewTransitionName = name; (e.style as CSSStyleDeclaration & { viewTransitionClass: string }).viewTransitionClass = "vt-line";
-      lines.push({ name, ink, x: r.left, y: r.top, order: ink ? count.ink++ : count.inv++ });
+      lines.push({ name, ink, x: r.left, y: r.top, order: ink ? count.ink++ : count.inv++, whole: e.hasAttribute("data-vt-whole") });
     });
   }
   restColours(false); // the leaving copy is captured as it looks while the seam crosses it
@@ -141,11 +141,18 @@ export function startSweep(oldGroup: string | null) {
   // Wait until the arriving page has painted twice: a page that builds a 3D scene can hold the main thread
   // for a moment, and the snapshot (frozen, whole) is a better thing to see meanwhile than a half-drawn
   // sweep. The hold keeps the view transition, which ends once its animations do, open until then.
-  const hold = oldGroup ? document.documentElement.animate([{ opacity: 1 }, { opacity: 1 }], { duration: 10_000, pseudoElement: `::view-transition-group(${oldGroup})` }) : null;
-  requestAnimationFrame(() => requestAnimationFrame(() => { if (mine === token) run(job, oldGroup, hold); else hold?.cancel(); }));
+  const root = document.documentElement;
+  const hold = oldGroup ? root.animate([{ opacity: 1 }, { opacity: 1 }], { duration: 10_000, pseudoElement: `::view-transition-group(${oldGroup})` }) : null;
+  // Each line was captured on its own, without the clip its layer had, so the paper copy of a line would cover its ink
+  // copy until the sweep starts. Hold every line to its own side of the seam as it stands, from the first frame.
+  const W = innerWidth, H = innerHeight, sd = sides(job.plan.A, 0, W, H, job.plan.phone);
+  const holds = oldGroup ? job.lines.filter((l) => !l.whole).map((l) => { const c = css(l.ink ? sd.light : sd.dark, l.x, l.y);
+    return root.animate([{ clipPath: c }, { clipPath: c }], { duration: 10_000, pseudoElement: `::view-transition-group(${l.name})` }); }) : [];
+  const release = () => { hold?.cancel(); holds.forEach((h) => h.cancel()); };
+  requestAnimationFrame(() => requestAnimationFrame(() => { if (mine === token) run(job, oldGroup, release); else release(); }));
 }
 
-function run(job: Pending, oldGroup: string | null, hold: Animation | null) {
+function run(job: Pending, oldGroup: string | null, release: () => void) {
   const { plan: p, page, lines } = job;
   registerEases();
   job.start(now());
@@ -160,7 +167,7 @@ function run(job: Pending, oldGroup: string | null, hold: Animation | null) {
   const tl = gsap.timeline({ onComplete: () => { setSeam(p.B); running = null; if (current === job) current = null; site?.removeAttribute("data-seam-moving"); restColours(true); } });
   tl.to(st, { t: p.total, duration: p.total, ease: "none", onUpdate: () => { const s = at(st.t); setSeam(s.at, s.tilt); } });
   running = { plan: p, tl };
-  if (!oldGroup) return;
+  if (!oldGroup) { release(); return; }
 
   // Sample the seam at 30 fps into keyframes for the snapshot's pseudo-elements.
   const n = Math.max(2, Math.ceil(p.total * 30)), ms = p.total * 1000, root = document.documentElement;
@@ -182,14 +189,14 @@ function run(job: Pending, oldGroup: string | null, hold: Animation | null) {
   } else root.animate([{ transform: "translateY(0)" }, { transform: `translateY(${-H}px)` }], {
     duration: p.liftDur * 1000, delay: p.liftAt * 1000, fill: "both", easing: "cubic-bezier(.7,0,.13,1)", pseudoElement: `::view-transition-image-pair(${oldGroup})`,
   });
-  hold?.cancel();
   for (const l of lines) {
-    root.animate(frames((t) => { const s = at(t), sd = sides(s.at, s.tilt, W, H, p.phone); return css(l.ink ? sd.light : sd.dark, l.x, l.y); }),
+    if (!l.whole) root.animate(frames((t) => { const s = at(t), sd = sides(s.at, s.tilt, W, H, p.phone); return css(l.ink ? sd.light : sd.dark, l.x, l.y); }),
       { duration: ms, fill: "both", pseudoElement: `::view-transition-group(${l.name})` });
     root.animate([{ transform: "translateY(0)" }, { transform: "translateY(-135%)" }], {
-      duration: 500, delay: (p.typeAt + l.order * 0.05) * 1000, fill: "both", easing: "cubic-bezier(.7,0,.13,1)", pseudoElement: `::view-transition-image-pair(${l.name})`,
+      duration: 500, delay: (p.typeAt + (l.whole ? 0.05 : l.order * 0.05)) * 1000, fill: "both", easing: "cubic-bezier(.7,0,.13,1)", pseudoElement: `::view-transition-image-pair(${l.name})`,
     });
   }
+  release();
 }
 
 /** Where the browser starts no view transition, begin the live sweep on the arriving page's first frame. */

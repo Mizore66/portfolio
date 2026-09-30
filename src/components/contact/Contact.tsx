@@ -35,7 +35,7 @@ function Clock({ copy }: { copy: ContactCopy }) {
   // the server has no clock to show: both faces read --:-- until the first client tick
   const now = tick ? new Date() : null, kl = now ? hm(now, copy.zone) : null;
   return (
-    <div className="clock" aria-label={now ? `${copy.you} ${hm(now)}, ${copy.anas} ${kl} ${copy.zoneLabel}` : `${copy.you}, ${copy.anas} ${copy.zoneLabel}`} role="img">
+    <div className="clock" data-vt-line="" data-vt-whole="" aria-label={now ? `${copy.you} ${hm(now)}, ${copy.anas} ${kl} ${copy.zoneLabel}` : `${copy.you}, ${copy.anas} ${copy.zoneLabel}`} role="img">
       <div className="face on"><small>{copy.you}</small><b className="mono">{now ? hm(now) : "--:--"}</b>{!reduced ? <sup className="mono">{now ? String(now.getSeconds()).padStart(2, "0") : "--"}</sup> : null}<i className="flag" /></div>
       <div className="face"><small>{copy.anas}, {copy.zoneLabel}</small><b className="mono">{kl ?? "--:--"}</b></div>
     </div>
