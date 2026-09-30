@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 // The favicon and the share cards (phase 6, step 3): every page links the mark, and names its own card, which exists.
 const PAGES: [string, string][] = [
-  ["/", "/og/home.jpg"], ["/lab", "/og/lab.jpg"], ["/resume", "/og/home.jpg"],
+  ["/", "/og/home.jpg"], ["/lab", "/og/lab.jpg"], ["/resume", "/og/home.jpg"], ["/colophon", "/og/colophon.jpg"],
   ["/work/faultline", "/og/work/faultline.jpg"], ["/work/rexcheck", "/og/work/rexcheck.jpg"],
   ["/roles/deriv", "/og/roles/deriv.jpg"], ["/roles/education", "/og/roles/education.jpg"],
 ];

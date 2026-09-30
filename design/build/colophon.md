@@ -68,3 +68,21 @@ The Lab's dark search palette floods. The site is read out like an engine's cons
 - Each comp is the first screen of a page that scrolls; the rest of the notes continue below.
 - On phones the page's text scrolls under the sound toggle, as on every long page.
 - Comps: design/keyframes/colophon-{a,b,c}.html; the copy: design/keyframes/_shared/colophon.js.
+
+## Built: the colophon (A)
+
+The owner picked A, approved the copy, kept "Designed and built by Anas Qumhiyeh." and put the link in Contact's list after Résumé. It is live at /colophon.
+
+![The colophon on desktop](colophon/built-d.webp)
+
+<img src="colophon/built-m.webp" width="260" alt="The colophon on a phone">
+
+Arriving from Contact's new link: the seam floods to paper, Contact lifts away, the lines rise, the specimen and the notes come in and the perft numbers count up.
+
+![Arriving from Contact](colophon/built-sweep.webp)
+
+- The left column (title, lede, specimen) stays put while the notes scroll.
+- The specimen's A arrives from Archivo's thinnest and narrowest, and settles at 900 and width 112. With a mouse it answers the pointer: across is width, down is weight.
+- Scrolling down, the nav steps away as on the one page, and a paper veil fades in under the Résumé link, so the notes never run under it.
+- Reduced motion: the page is shown still.
+- Checks: axe finds nothing; no sideways scroll at 320 px; the notes end clear of the sound toggle; the new tests pass in Chromium, Firefox and WebKit; 77 end-to-end tests pass (three passed on a rerun after load timeouts); 70 unit tests pass; the production build passes.

@@ -1,5 +1,6 @@
 // What each part of the site is given, built on the server from content.json: the one page's sections, and the
 // full Lab page. (These were the page files of /roles, /work, /lab and /contact before the one page.)
+import type { ColophonCopy } from "@/components/colophon/Colophon";
 import { content, span, month } from "@/content/site";
 import { tables } from "@/content/roles";
 import { aside, featured, others } from "@/content/work";
@@ -59,20 +60,25 @@ export function labProps(): { copy: LabCopy; tree: TreeNode } {
 }
 
 export function contactProps(): ContactCopy {
-  type Copy = { move: string; yourMove: string; resume: string; copied: string; copyFailed: string; buttons: string[]; clockLabels: string[]; clockZone: string; clockZoneLabel: string };
+  type Copy = { move: string; yourMove: string; resume: string; colophon: string; copied: string; copyFailed: string; buttons: string[]; clockLabels: string[]; clockZone: string; clockZoneLabel: string };
   const C = (content.pageCopy as unknown as { contact: Copy }).contact;
   const I = content.identity as unknown as { email: string; responseTime: string };
   const U = content.links as unknown as { linkedin: string; github: string };
   return {
     move: C.move, yourMove: C.yourMove, email: I.email, reply: I.responseTime,
-    // contact-a's four: Email, LinkedIn, GitHub, Résumé
+    // contact-a's four: Email, LinkedIn, GitHub, Résumé; and the colophon (phase 6, step 4)
     links: [
       { label: C.buttons[0], href: `mailto:${I.email}` },
       { label: C.buttons[2], href: U.linkedin, external: true },
       { label: C.buttons[3], href: U.github, external: true },
       { label: C.resume, href: "/resume" },
+      { label: C.colophon, href: "/colophon" },
     ],
     you: C.clockLabels[0], anas: C.clockLabels[1], zone: C.clockZone, zoneLabel: C.clockZoneLabel,
     copy: C.buttons[1], copied: C.copied, copyFailed: C.copyFailed,
   };
+}
+
+export function colophonProps(): ColophonCopy {
+  return (content.pageCopy as unknown as { colophon: ColophonCopy }).colophon;
 }

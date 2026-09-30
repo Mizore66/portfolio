@@ -23,7 +23,7 @@ if (!paths.length) {
   const page = await open(1);
   await page.goto(`${origin}/`, { waitUntil: "load" });
   const links = await page.$$eval("a[href^='/work/'], a[href^='/roles/']", (as) => as.map((a) => new URL(a.href).pathname));
-  paths = ["/", "/lab", ...new Set(links)];
+  paths = ["/", "/lab", "/colophon", ...new Set(links)];
   await page.context().close();
 }
 

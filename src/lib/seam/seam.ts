@@ -35,6 +35,7 @@ export function roomFor(path: string): Room | null {
   if (path === "/work") return { at: 0, atPhone: 0, dark: "var(--gallery)" }; // all gallery (the owner dropped work-c's 22 px paper edge, 2026-09-29)
   // the paper floods: the day hall and its tables (the owner kept the full flood over the key frames' ink edge, step 4b)
   if (path === "/roles" || path.startsWith("/roles/")) return { at: 1, atPhone: 1, dark: "var(--gallery)" };
+  if (path === "/colophon") return { at: 1, atPhone: 1, dark: "var(--gallery)" }; // colophon-a: the last page, all paper
   if (path === "/lab") return { at: 0.305, atPhone: 0.305, dark: "var(--search)" }; // lab-a: the match score
   const project = /^\/work\/([^/]+)$/.exec(path)?.[1];
   if (project && project in PROJECT_CP) { const at = share(PROJECT_CP[project]); return { at, atPhone: at, dark: "var(--gallery)" }; }

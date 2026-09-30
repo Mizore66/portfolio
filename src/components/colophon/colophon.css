@@ -1,0 +1,50 @@
+/* The colophon (key frame colophon-a, "the last page"). Paper floods; the left column (title, lede, specimen) stays
+   put while the notes on the right scroll. The paper-on-dark copy covers the first screen only, which is all a sweep
+   ever shows. */
+.colophon { position: relative; min-height: 100vh; min-height: 100dvh; background: var(--paper); }
+.co-dark { position: absolute; inset: 0 0 auto var(--seam); height: 100vh; height: 100dvh; background: var(--dark); }
+.site[data-seam-moving] .co-dark { inset: 0 0 auto 0; }
+.site:not([data-seam-moving]) .co-dark { clip-path: none; }
+.co-veil { position: fixed; top: 0; left: 48vw; right: 0; height: 104px; z-index: 30; pointer-events: none; background: linear-gradient(var(--paper) 62%, rgb(243 243 241 / 0)); opacity: 0; transition: opacity .25s; }
+.colophon[data-deep] .co-veil { opacity: 1; }
+
+.co-layer { --fg: var(--ink); --fg2: var(--pencil); color: var(--fg); display: grid; grid-template-columns: 48vw 1fr; }
+.co-layer[data-layer="inv"] { --fg: var(--paper); --fg2: #b9b5ad; position: absolute; inset: 0 0 auto 0; height: 100vh; height: 100dvh; overflow: hidden; pointer-events: none; }
+.colophon .ln { display: block; overflow: hidden; padding-bottom: .16em; margin-bottom: -.16em; }
+.colophon .ln > span { display: block; }
+
+.co-left { position: sticky; top: 0; height: 100vh; height: 100dvh; min-height: 600px; padding: 15vh 0 12vh 4vw; display: flex; flex-direction: column; }
+.co-title { margin: 0; font-size: 5.5vw; white-space: nowrap; }
+.co-lede { margin: 3.4vh 0 0 .2vw; max-width: 30vw; font-size: 19px; line-height: 1.42; color: var(--fg2); }
+.co-spec { margin-top: auto; display: flex; align-items: flex-end; gap: 36px; }
+.co-aa { margin: 0; font-size: 15vw; line-height: .74; user-select: none; }
+.co-aa b { font-weight: 900; font-variation-settings: "wght" 900, "wdth" 112; }
+.co-aa i { font-style: italic; font-weight: 300; font-variation-settings: "wght" 300, "wdth" 80; }
+.co-spec dl { margin: 0; padding-bottom: 4px; font-size: 12px; line-height: 1.6; color: var(--fg2); }
+.co-spec dl > div + div { margin-top: 8px; }
+.co-spec dt { color: var(--fg); font-weight: 600; } .co-spec dt.mono { font-weight: 500; }
+.co-spec dd { margin: 0; } .co-sample { color: var(--fg); margin-top: 4px !important; }
+
+.co-col { padding: 15vh 4vw 14vh 4vw; }
+.co-notes { columns: 2; column-gap: 36px; font-size: 13.5px; line-height: 1.5; }
+.co-notes section { break-inside: avoid; margin-bottom: 22px; }
+.co-notes h2 { margin: 0 0 6px; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.co-notes p { margin: 0; }
+.co-perft { margin-top: 6px !important; font-size: 12px; display: grid; }
+.co-perft > span[aria-hidden] { display: flex; gap: 20px; }
+.co-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; } .co-perft b { font-weight: 400; }
+.co-imprint { margin-top: 10px; border-top: 1px solid var(--fg); padding-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 36px; font-size: 12px; line-height: 1.45; }
+.co-imprint p { margin: 0; } .co-imprint b { font-weight: 600; }
+.co-by { margin: 18px 0 0; font-size: 12px; color: var(--fg2); }
+
+@media (max-width: 600px) {
+  .co-layer { display: block; }
+  .co-veil { left: 0; height: 76px; }
+  .co-left { position: static; height: auto; min-height: 0; padding: 92px 20px 0; }
+  .co-title { font-size: 14.4vw; white-space: normal; }
+  .co-lede { max-width: none; margin-top: 18px; font-size: 16px; }
+  .co-spec { margin-top: 44px; gap: 18px; } .co-aa { font-size: 34vw; }
+  .co-col { padding: 48px 20px 96px; } /* the foot clears the sound toggle */
+  .co-notes { columns: 1; }
+  .co-imprint { grid-template-columns: 1fr; }
+}

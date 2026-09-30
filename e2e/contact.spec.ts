@@ -17,7 +17,8 @@ test.describe("Contact", () => {
     await expect(ink(page)).toContainText("Your move.");
     await expect(ink(page).getByRole("link", { name: "anasqumhiyeh@gmail.com" })).toHaveAttribute("href", "mailto:anasqumhiyeh@gmail.com");
     const links = ink(page).getByRole("list").getByRole("link");
-    await expect(links).toHaveText(["Email", "LinkedIn", "GitHub", "Résumé"]);
+    await expect(links).toHaveText(["Email", "LinkedIn", "GitHub", "Résumé", "Colophon"]);
+    await expect(links.nth(4)).toHaveAttribute("href", "/colophon");
     await expect(links.nth(1)).toHaveAttribute("href", "https://linkedin.com/in/anasqumhiyeh/");
     await expect(links.nth(2)).toHaveAttribute("href", "https://github.com/Mizore66");
     await expect(links.nth(3)).toHaveAttribute("href", "/resume");

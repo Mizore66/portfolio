@@ -2536,13 +2536,13 @@
     "siteDescription": "Anas Qumhiyeh, AI Engineer at Deriv. Production services in Go, TypeScript and Python: AI support systems, payments, and graph retrieval.",
     "ogAlt": "Anas Qumhiyeh, AI Engineer at Deriv: I like systems that have to survive measurement.",
     "pageTitles": {
+      "404": "Correction · Anas Qumhiyeh",
       "/about": "About · Anas Qumhiyeh",
       "/work": "Selected work · Anas Qumhiyeh",
       "/lab": "Lab · Anas Qumhiyeh",
       "/lab/learned-evaluator": "The learned evaluator lost to PeSTO by 143 Elo · Anas Qumhiyeh",
       "/colophon": "How this site was made · Anas Qumhiyeh",
-      "/opening-preparation": "Opening Preparation · Anas Qumhiyeh",
-      "404": "Correction · Anas Qumhiyeh"
+      "/opening-preparation": "Opening Preparation · Anas Qumhiyeh"
     },
     "structuredData": {
       "person": {
@@ -2631,7 +2631,8 @@
       "yourMove": "Your move.",
       "resume": "Résumé",
       "clockZoneLabel": "MYT",
-      "copied": "Copied"
+      "copied": "Copied",
+      "colophon": "Colophon"
     },
     "experience": {
       "earlierHeading": "Earlier experience"
@@ -2997,26 +2998,94 @@
       "back": "Back to the start"
     },
     "colophon": {
-      "purpose": "An analysis board: the career as facts, the commentary kept apart, and a chess engine you can actually play.",
-      "publishing": "All content lives in typed files in the repository. The same files feed every page, the résumé PDF, the structured data, the sitemap and the preview images. A change goes live with a git push; every pull request gets its own preview deployment for review first. There is no content management system.",
+      "title": "How this site was made.",
+      "lede": "An analysis board: the career as facts, the commentary kept apart, and a chess engine you can actually play.",
+      "specimen": [
+        {
+          "name": "Archivo",
+          "note": "900, width 112: the words"
+        },
+        {
+          "name": "JetBrains Mono",
+          "note": "500: moves and numbers"
+        }
+      ],
+      "sample": "10…Bg4 +0.64",
+      "sections": [
+        {
+          "heading": "The seam",
+          "body": "The line down every page is an engine's evaluation bar. The paper side is White's share of the position on screen: 55.9% on the home page, after 10…Bg4."
+        },
+        {
+          "heading": "Type",
+          "body": "Archivo for the words, JetBrains Mono for moves and numbers. Roman is fact; italic is voice. Both are self-hosted subsets under the SIL Open Font License 1.1."
+        },
+        {
+          "heading": "The engine",
+          "body": "Move generation, alpha-beta search, the handcrafted evaluation and a learned NNUE evaluation are written from scratch. The net was trained on CC0 Lichess evaluations with quantisation-aware training and runs through a small WebAssembly module. It starts only when you ask, runs in a Web Worker and pauses when the tab is hidden."
+        },
+        {
+          "heading": "Made for this site",
+          "body": "Every piece, board, grain and light is made in code for this site: no third-party models, scans or environment maps. The four sound cues are synthesized, with no samples. The screenshots are the projects' own."
+        },
+        {
+          "heading": "Publishing",
+          "body": "Every word and number lives in one content file in the repository. The pages, the résumé and the share cards are built from it. There is no content management system."
+        }
+      ],
+      "perft": {
+        "lead": "The move generator's receipt, from the start position:",
+        "depth": "depth",
+        "rows": [
+          {
+            "depth": 1,
+            "nodes": "20"
+          },
+          {
+            "depth": 2,
+            "nodes": "400"
+          },
+          {
+            "depth": 3,
+            "nodes": "8,902"
+          }
+        ]
+      },
+      "testsHeading": "Tested",
       "tests": [
         "Every number on the site is registered in one claims ledger, with an evidence type, an owner and a date.",
-        "The hero carries no metric, +45% and +35% are never merged, and −50% appears only under Monash.",
-        "Every chess move is legal under the engine's own move generator, the mainline equals the canonical line, and every old ?move= link still resolves.",
-        "The résumé PDF fits one page in both paper sizes, is tagged, and renders −, →, ± and é as text.",
-        "No engine file or worker loads until the engine is started; a keyboard move gets an engine reply.",
-        "With WebGL off every board stays a printed diagram and no 3D code loads; with reduced motion nothing animates.",
-        "Every public page has zero automated accessibility violations and no sideways scrolling at 320 px."
+        "Every move shown is legal under the engine's own move generator, and the home page plays the recorded career line.",
+        "Every page has no automated accessibility violations at desktop and phone widths, with and without reduced motion, and no sideways scrolling at 320 px.",
+        "The end-to-end suite runs in Chromium, Firefox and WebKit.",
+        "The learned net was measured against the handcrafted one before it could play: it lost by −143.3 ±35.4 Elo over 128 games, and the Lab publishes the loss."
       ],
-      "engine": "Move generation, alpha-beta search, the handcrafted PeSTO evaluation and a learned NNUE evaluation are written from scratch in TypeScript. The net was trained on CC0 Lichess evaluations, exported with quantisation-aware training and runs through a small WebAssembly module. It starts only when you ask, runs in a Web Worker and pauses when the tab is hidden.",
       "credits": [
-        "Handcrafted evaluation: the PeSTO piece-square tables by Ronald Friederich.",
-        "Lichess eval database, CC0-1.0. No Stockfish network weights are copied.",
-        "Chess pieces are glyphs from Noto Sans Symbols 2 (SIL Open Font License).",
-        "The 3D pieces are turned from profiles written in code and the mat is drawn in code: no third-party models, scans or textures.",
-        "The 3D board uses three.js, React Three Fiber and drei; motion uses GSAP and Lenis; the board state is kept in Zustand.",
-        "Built with Next.js, React and Tailwind CSS; hosted on Vercel with cookieless Vercel Web Analytics."
-      ]
+        {
+          "label": "Handcrafted evaluation",
+          "text": "The PeSTO piece-square tables by Ronald Friederich."
+        },
+        {
+          "label": "Training data",
+          "text": "The Lichess evaluation database, CC0 1.0. No Stockfish network weights are used."
+        },
+        {
+          "label": "The seven master games",
+          "text": "Historical game scores in the public domain, chosen from TheChessWorld's 15 best games of all time."
+        },
+        {
+          "label": "Type",
+          "text": "Archivo by Omnibus-Type and JetBrains Mono by JetBrains, SIL Open Font License 1.1."
+        },
+        {
+          "label": "Code",
+          "text": "three.js (MIT), GSAP (Standard License, no charge), Lenis (MIT), Next.js and React (MIT)."
+        },
+        {
+          "label": "Hosting",
+          "text": "Vercel, with cookieless Vercel Web Analytics."
+        }
+      ],
+      "by": "Designed and built by Anas Qumhiyeh."
     },
     "sound": {
       "off": "Sound off",
