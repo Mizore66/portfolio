@@ -8,6 +8,8 @@ import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 
 const origin = process.argv[2] ?? "http://localhost:3000";
+// CARD_OUT writes elsewhere and CARD_FIT=0 leaves the piece where the page puts it (for comparisons)
+const OUT = process.env.CARD_OUT ?? "public/og", FIT = process.env.CARD_FIT !== "0";
 const W = 1200, H = 630, URL_LABEL = "anasqumhiyeh.dev";
 // Project pages are laid out for screens taller than a card, so they are captured on a 1440 × 756 screen (the card's
 // shape, where their type sets as on a laptop) and their piece is then set lower, below the name (fitPiece).
@@ -53,7 +55,7 @@ for (const path of paths) {
   // the entrance: the hero's opening, the page's sweep and the Lab's tree all settle within about six seconds
   await page.waitForTimeout(path === "/lab" ? 9000 : 6500);
   await page.addStyleTag({ content: ".chrome, .cursor, .skip-resume, nextjs-portal { visibility: hidden !important; }" });
-  const fit = path.startsWith("/work/") ? await fitPiece(page, 36 * s, 34 * s) : 1;
+  const fit = FIT && path.startsWith("/work/") ? await fitPiece(page, 36 * s, 34 * s) : 1;
   await page.evaluate(({ label, s }) => {
     // the address is set in paper on the dark side of the seam and in graphite on the paper side
     const seam = parseFloat(getComputedStyle(document.querySelector(".site")).getPropertyValue("--seam")) / 100 * innerWidth;
@@ -65,7 +67,7 @@ for (const path of paths) {
   }, { label: URL_LABEL, s });
   await page.waitForTimeout(300);
   const shot = await page.screenshot({ type: "png" });
-  const file = `public/og${path === "/" ? "/home" : path}.jpg`;
+  const file = `${OUT}${path === "/" ? "/home" : path}.jpg`;
   mkdirSync(dirname(file), { recursive: true });
   await sharp(shot).resize(W, H, { kernel: "lanczos3" }).jpeg({ quality: 88, mozjpeg: true }).toFile(file);
   console.log(file, fit < 1 ? `piece at ${fit.toFixed(2)}` : "");

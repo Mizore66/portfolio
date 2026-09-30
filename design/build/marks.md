@@ -102,3 +102,13 @@ As a link preview:
 
 - Project pages are laid out for taller screens. Captured at the card's shape, their piece ran into the name, so on the card the piece stands lower, at the foot, and is shrunk only as far as it takes to clear the name (86 to 98% on six of the ten).
 - The cards are remade with `node scripts/cards.mjs` against a running site, after any change to a page's first screen.
+
+### Project cards: a comparison
+
+The owner asked to see the choice behind question 3. Each row is one project page. Column 1 is the page on a laptop, column 2 a straight capture at the card's shape, column 3 the card as built.
+
+![Project cards compared](cards/compare.webp)
+
+- On the laptop the piece already rises into the name: the king's cross in "RexCheck", the bishop's tip in "FaultLine" and "CircuitMindAI". That is the page's own composition.
+- The straight capture (2) keeps it, as the page does.
+- The built card (3) lowers the piece and shrinks it a little, so it stands clear of the name. The card then looks different from the page.
