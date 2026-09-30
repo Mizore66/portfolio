@@ -1,0 +1,48 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><title>Share card C: the position</title>
+<link rel="stylesheet" href="_shared/tokens.css"><style>
+  html, body { width: 1200px; height: 630px; } .frame { width: 1200px; height: 630px; }
+  #ink, #ink-inv { position: absolute; inset: 0; z-index: 2; color: var(--fg, var(--ink)); }
+  .name { position: absolute; left: 52px; top: 64px; font-size: 68px; line-height: .9; letter-spacing: -.05em; font-weight: 900; }
+  .line { position: absolute; left: 56px; bottom: 58px; font-size: 20px; line-height: 1.3; max-width: 20ch; }
+  .ev { position: absolute; right: 52px; bottom: 62px; font-size: 16px; }
+  .url { position: absolute; right: 52px; top: 44px; font-size: 15px; color: var(--fg2, var(--pencil)); }
+  .board { position: absolute; left: calc(55.9% - 200px); top: 112px; width: 400px; height: 400px; }
+  .board svg { width: 100%; height: 100%; overflow: visible; }
+  .pc { font-family: "Apple Symbols", "Segoe UI Symbol", "DejaVu Sans", serif; font-size: 44px; paint-order: stroke; stroke-width: 1.4px; stroke-linejoin: round; }
+  /* a piece keeps its colour on both sides of the seam: White is light, Black is dark, each outlined in the other */
+  .pc.w { fill: var(--paper); stroke: var(--ink); } .pc.b { fill: var(--ink); stroke: var(--paper); stroke-width: .7px; }
+  /* each piece is masked from the hatching by a halo, and White's outline is filled, as a printed diagram does */
+  .halo { fill: var(--bgsq, var(--paper)); stroke: var(--bgsq, var(--paper)); stroke-width: 5px; stroke-linejoin: round; }
+  .coord { font-family: var(--font-mono); font-size: 11px; fill: currentColor; opacity: .6; }
+</style></head><body><div class="frame"><div id="ink">
+  <h1 class="name display">Anas<br>Qumhiyeh</h1>
+  <p class="line">I like systems that have to survive measurement.</p>
+  <div class="board" id="board"></div>
+  <p class="ev mono">10…Bg4 +0.64</p><p class="url mono">anasqumhiyeh.dev</p>
+</div></div>
+<script type="module">
+  import { seam } from "./_shared/seam.js";
+  // the career game after 10…Bg4 (src/content/positions.json "career"), printed as a book diagram: hatched dark squares,
+  // each piece in its own colour on both sides of the seam, the last move in amber
+  const fen = "r..qk..r/ppp..ppp/..n...../.B.pP.../...Pn.b./.....N../PP.N.PPP/R..QK..R", last = ["c8", "g4"];
+  const G = { K: "♔", Q: "♕", R: "♖", B: "♗", N: "♘", P: "♙", k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟" }, S = 400 / 8;
+  const at = (sq) => [("abcdefgh".indexOf(sq[0]) + .5) * S, (8 - +sq[1] + .5) * S];
+  let s = `<svg viewBox="0 0 400 400"><defs><pattern id="h" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="5" stroke="currentColor" stroke-width="1.3"/></pattern></defs>`;
+  s += `<rect width="400" height="400" fill="none" stroke="currentColor" stroke-width="2"/>`;
+  for (let r = 0; r < 8; r++) for (let f = 0; f < 8; f++) if ((r + f) % 2) s += `<rect x="${f * S}" y="${r * S}" width="${S}" height="${S}" fill="url(#h)"/>`;
+  fen.split("/").forEach((row, r) => [...row].forEach((ch, f) => { if (ch === ".") return;
+    const x = (f + .5) * S, y = (r + .5) * S + 15, solid = G[ch.toLowerCase()], side = ch === ch.toUpperCase() ? "w" : "b";
+    s += `<text class="pc halo" x="${x}" y="${y}" text-anchor="middle">${solid}</text><text class="pc ${side}" x="${x}" y="${y}" text-anchor="middle">${solid}</text>`; }));
+  const [x1, y1] = at(last[0]), [x2, y2] = at(last[1]);
+  s += `<line x1="${x1}" y1="${y1}" x2="${x2 - 14}" y2="${y2 - 14}" stroke="var(--move)" stroke-width="5" stroke-linecap="round"/><circle cx="${x2}" cy="${y2}" r="6" fill="var(--move)"/>`;
+  "abcdefgh".split("").forEach((c, i) => { s += `<text class="coord" x="${(i + .5) * S}" y="416" text-anchor="middle">${c}</text>`; });
+  for (let i = 0; i < 8; i++) s += `<text class="coord" x="-14" y="${(i + .5) * S + 4}" text-anchor="middle">${8 - i}</text>`;
+  document.getElementById("board").innerHTML = s + "</svg>";
+  await document.fonts.ready; seam({ at: .559 });
+  // the inverted copy needs its own hatching: the first pattern is drawn in ink, which vanishes on the dark side
+  const inv = document.getElementById("ink-inv"); inv.style.setProperty("--bgsq", "var(--ink)");
+  inv.querySelector("pattern").id = "h-inv"; inv.querySelectorAll('[fill="url(#h)"]').forEach((e) => e.setAttribute("fill", "url(#h-inv)"));
+  inv.querySelector("pattern line").setAttribute("stroke", "var(--paper)");
+
+  window.__ready = true;
+</script></body></html>
