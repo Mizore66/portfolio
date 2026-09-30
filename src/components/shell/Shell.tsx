@@ -9,6 +9,7 @@ import { bindLenis } from "@/lib/motion/scroll";
 import "lenis/dist/lenis.css";
 import { Chrome, type SoundLabels } from "./Chrome";
 import { Cursor } from "./Cursor";
+import { FrameMeter } from "./FrameMeter";
 import "./shell.css";
 
 /** The site frame: the live seam, the chrome, the cursor, and the hooks that start a page change. */
@@ -64,6 +65,7 @@ export function Shell({ children, sound }: { children: React.ReactNode; sound: S
       <Chrome sound={sound} />
       {children}
       <Cursor />
+      <FrameMeter />
     </div>
   );
 }
