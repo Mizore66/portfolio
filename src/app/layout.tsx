@@ -10,12 +10,18 @@ import "./globals.css";
 
 // Self-hosted subsets of the official variable fonts (SIL OFL 1.1, see /licenses).
 const archivo = localFont({
-  src: [
-    { path: "./fonts/Archivo.woff2", weight: "100 900", style: "normal" },
-    { path: "./fonts/Archivo-Italic.woff2", weight: "100 900", style: "italic" },
-  ],
+  src: "./fonts/Archivo.woff2", weight: "100 900", style: "normal",
   variable: "--font-archivo",
   display: "swap",
+  declarations: [{ prop: "font-stretch", value: "62% 125%" }],
+});
+// The italic is its own family, not preloaded: only two Lab lines and the colophon's specimen use it, and on the
+// first load its 132 KB came down alongside the hero's scripts (phase 6: the 2.5 s load budget on fast 4G).
+const archivoItalic = localFont({
+  src: "./fonts/Archivo-Italic.woff2", weight: "100 900", style: "italic",
+  variable: "--font-archivo-italic",
+  display: "swap",
+  preload: false,
   declarations: [{ prop: "font-stretch", value: "62% 125%" }],
 });
 const jetbrains = localFont({ src: "./fonts/JetBrainsMono.woff2", weight: "100 800", variable: "--font-jetbrains", display: "swap" });
@@ -37,7 +43,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // Every page carries a per-request CSP nonce (src/proxy.ts), which only dynamic rendering can apply.
   await connection();
   return (
-    <html lang="en-GB" className={`${archivo.variable} ${jetbrains.variable}`}>
+    <html lang="en-GB" className={`${archivo.variable} ${archivoItalic.variable} ${jetbrains.variable}`}>
       <body>
         <Shell sound={(content.pageCopy as unknown as { sound: { off: string; on: string } }).sound}>{children}</Shell>
         {process.env.VERCEL ? <Analytics /> : null}

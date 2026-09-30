@@ -12,6 +12,7 @@
   --search: #0b0e14;
   --move: #e8a33d;
   --font-display: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
+  --font-italic: var(--font-archivo-italic), var(--font-display); /* its own family, loaded when used (layout.tsx) */
   --font-mono: var(--font-jetbrains), ui-monospace, Menlo, monospace;
 }
 

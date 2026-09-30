@@ -70,9 +70,13 @@ function knightHead(lod = false) {
   // conforming mesh: the silhouette is star-shaped about a point in the neck, so build it as concentric rings
   const contour = (lod ? KPOLY.filter((_, i) => i % 4 === 0) : KPOLY).slice(0, -1), C = new THREE.Vector2(.0, .66), K = lod ? 10 : 28, n = contour.length;
   const ring = (k: number, i: number): Pt => { const q = contour[i % n], t = k / K; return [C.x + (q.x - C.x) * t, C.y + (q.y - C.y) * t]; };
-  const pos: number[] = [], push = (side: number, pts: Pt[]) => { for (const [x, y] of side > 0 ? pts : [pts[0], pts[2], pts[1]]) pos.push(x, y, side * knightHalfDepth(x, y)); };
+  // each point's depth once: every vertex is shared by some six triangles, and the depth measures the distance to all
+  // 420 points of the outline (the head was 195 ms of the hero's first build; now the same numbers, a tenth the work)
+  const at: [number, number, number][] = [];
+  const pt = (k: number, i: number) => { const j = k * n + (i % n); if (!at[j]) { const [x, y] = ring(k, i); at[j] = [x, y, knightHalfDepth(x, y)]; } return at[j]; };
+  const pos: number[] = [], push = (side: number, pts: [number, number, number][]) => { for (const [x, y, z] of side > 0 ? pts : [pts[0], pts[2], pts[1]]) pos.push(x, y, side * z); };
   for (const side of [1, -1]) for (let k = 0; k < K; k++) for (let i = 0; i < n; i++) {
-    const a = ring(k, i), b = ring(k + 1, i), c = ring(k + 1, i + 1), d = ring(k, i + 1);
+    const a = pt(k, i), b = pt(k + 1, i), c = pt(k + 1, i + 1), d = pt(k, i + 1);
     push(side, [a, b, c]); if (k > 0) push(side, [a, c, d]);
   }
   const both = new THREE.BufferGeometry(); both.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));

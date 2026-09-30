@@ -13,13 +13,17 @@ export function firstView(el: Element, fn: () => void, { threshold = 0.3 } = {})
  * thread), or when the element comes within `margin` of the screen, whichever is first. A scene built as it scrolls
  * in costs the scroll a hitch. `order` staggers several scenes so each has an idle slot of its own. Returns the cancel.
  */
+const opening = () => document.querySelector('.hero[data-intro="play"]') != null;
+
 export function buildAhead(el: Element, build: () => void, { order = 0, margin = "100% 0px" } = {}): () => void {
   let done = false, t = 0, idle = 0;
   const go = () => { if (done) return; done = true; stop(); build(); };
-  const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) go(); }, { rootMargin: margin });
+  // near the screen during the hero's opening it waits too: the page cannot scroll then, and Roles and Work, a screen
+  // below the hero, were built in the opening's first second (a 400 ms freeze while it drew its first moves)
+  const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting) && !opening()) go(); }, { rootMargin: margin });
   io.observe(el);
   const wait = () => {
-    if (document.querySelector('.hero[data-intro="play"]')) { t = window.setTimeout(wait, 600); return; }
+    if (opening()) { t = window.setTimeout(wait, 600); return; }
     idle = typeof requestIdleCallback === "function" ? requestIdleCallback(go, { timeout: 4000 }) : window.setTimeout(go, 200);
   };
   t = window.setTimeout(wait, 800 + order * 450);

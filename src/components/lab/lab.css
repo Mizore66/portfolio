@@ -24,7 +24,8 @@
 .lab .op-pm .q { margin-top: 6px; font-size: 13px; font-weight: 400; color: var(--fg2); }
 .lab .op-lede { display: none; }
 .lab .op-body { position: absolute; left: 3.4vw; bottom: 14vh; font-size: 19px; line-height: 1.35; max-width: 13ch; }
-.lab .op-voice { position: absolute; left: 3.4vw; bottom: 8vh; font-size: 16px; font-style: italic; color: var(--fg2); }
+.lab .op-voice { position: absolute; left: 3.4vw; bottom: 8vh; font-size: 16px; font-family: var(--font-italic); font-style: italic; color: var(--fg2); }
+.lab .tag i { font-family: var(--font-italic); } /* the labels' second lines (ch3, ch6): the italic is its own family (layout.tsx) */
 .lab .op-sc { position: absolute; left: calc(30.5% + 14px); bottom: 8vh; font-size: 13px; color: var(--fg2); }
 .lab .op-rec { position: absolute; right: 48px; bottom: 8vh; font-size: 14px; }
 .lab-type .op-rec { color: var(--move); }
@@ -118,7 +119,7 @@
 .lab .ch[data-ch="6"] .n1 { right: 48px; top: 300px; max-width: 34ch; text-align: right; }
 .lab .ch[data-ch="6"] .n2 { left: 48px; top: 160px; max-width: 30ch; }
 .lab .ch[data-ch="6"] .n3 { left: 48px; top: 266px; max-width: 30ch; }
-.lab .ch[data-ch="6"] .voice { position: absolute; right: 48px; top: 448px; text-align: right; font-size: 22px; font-style: italic; }
+.lab .ch[data-ch="6"] .voice { position: absolute; right: 48px; top: 448px; text-align: right; font-size: 22px; font-family: var(--font-italic); font-style: italic; }
 .lab .ch[data-ch="6"] .scale { left: 48px; bottom: 48px; }
 
 /* 07 (lab2-7): the board, the controls at the right, and the eval riding the seam */

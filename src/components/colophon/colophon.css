@@ -19,7 +19,7 @@
 .co-spec { margin-top: auto; display: flex; align-items: flex-end; gap: 36px; }
 .co-aa { margin: 0; font-size: 15vw; line-height: .74; user-select: none; }
 .co-aa b { font-weight: 900; font-variation-settings: "wght" 900, "wdth" 112; }
-.co-aa i { font-style: italic; font-weight: 300; font-variation-settings: "wght" 300, "wdth" 80; }
+.co-aa i { font-family: var(--font-italic); font-style: italic; font-weight: 300; font-variation-settings: "wght" 300, "wdth" 80; }
 .co-spec dl { margin: 0; padding-bottom: 4px; font-size: 12px; line-height: 1.6; color: var(--fg2); }
 .co-spec dl > div + div { margin-top: 8px; }
 .co-spec dt { color: var(--fg); font-weight: 600; } .co-spec dt.mono { font-weight: 500; }
