@@ -39,3 +39,14 @@ This is roughly the size a card appears at in a chat app.
 - The favicon ships as an SVG, with PNG fallbacks at 32 px and 180 px (the home screen). Mark B's letters would be converted to outlines, so the icon does not depend on the web font.
 - The card's copy is the hero's own: the name, "I like systems that have to survive measurement." and "10…Bg4 +0.64". "anasqumhiyeh.dev" is new on the card.
 - Card C's pieces are the system's chess symbols. For the real card I would draw them from the site's piece shapes instead, so they look the same on any machine.
+
+## Round 2: the favicon
+
+The owner turned down A, B and C for the favicon ("I don't like your designs") and picked card B, the hero, with one card per page. All three were the same idea, a square split by the seam, so round 2 leaves the seam out and tries four different things.
+
+![Round 2](marks/marks-2.webp)
+
+- **D. Slight edge:** ⩲, the annotation for "White is slightly better", which is exactly what the hero's +0.64 says.
+- **E. The knight:** the site's own knight, its profile traced flat and facing left, paper on ink.
+- **F. The move:** a corner of the board, with the square the move landed on lit in the site's amber.
+- **G. Brilliant:** !!, the annotation for a brilliant move, in the display face on the amber.
