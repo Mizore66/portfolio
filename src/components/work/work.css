@@ -78,6 +78,8 @@
   .others-layer { position: relative; inset: auto; }
   .others-title { left: 18px; top: 72px; font-size: 14vw; }
   .others .sheet { position: relative; left: auto; top: auto; width: auto; padding: 66svh 20px 0; background: linear-gradient(to bottom, transparent calc(66svh - 40px), var(--gallery) 66svh); }
-  .others .sheet a { grid-template-columns: 62px 1fr; }
+  /* the text stops short of the sound toggle's column, so a row at the foot of the screen never runs under it (owner,
+     2026-09-30); long lines wrap */
+  .others .sheet a { grid-template-columns: 62px 1fr; padding-right: 72px; }
   .others-tags { position: absolute; inset: 0; }
 }
