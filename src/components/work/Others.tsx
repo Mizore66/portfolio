@@ -11,6 +11,7 @@ import { after } from "@/lib/motion/slowmo";
 import { buildAhead, nearScreen } from "@/lib/motion/firstView";
 import { createSideboard, FRAME, type Frame, type Sideboard } from "./sideboard";
 import { claim, keep, sleeper } from "@/lib/three/keep";
+import { timed, trace } from "@/lib/perf/trace";
 
 export interface Other { slug: string; name: string; square: string | null; move: string | null; result: string; qualifier: string; aside: boolean }
 export interface OthersCopy { title: string; label: string; noMove: string; aside: string }
@@ -49,7 +50,7 @@ export function Others({ list, copy }: { list: Other[]; copy: OthersCopy }) {
     const build = () => {
       if (board || failed) return board;
       // back from a project, the board built last time, set back as it was before a piece was opened
-      try { board = got.stage ?? createSideboard(c, list, aside); } catch { failed = true; el.dataset.gl = "off"; return null; }
+      try { board = got.stage ?? timed("other projects: built", () => createSideboard(c, list, aside)); } catch { failed = true; el.dataset.gl = "off"; return null; }
       if (got.stage) {
         Object.assign(board.room, { k: 1, lamp: 1, rest: 1 }); board.keep = null; board.spin.k = 0;
         for (const k in board.lights) board.lights[k] = 0;
@@ -57,8 +58,8 @@ export function Others({ list, copy }: { list: Other[]; copy: OthersCopy }) {
       }
       b.current = board; setView(board, phone() ? FRAME.phone : FRAME.desk);
       if (!shown && !reduced) board.room.k = 0;
-      place(); board.ready.then(() => { if (!got.stage) b.current?.warm(); b.current?.render(); }); // its first frame, drawn ahead wherever the page is
-      zz.sync(); // a kept one gets its buffers back now if it is near; one built far off gives them up
+      place(); board.ready.then(() => { trace("other projects: compiled"); if (!got.stage) timed("other projects: warmed", () => b.current?.warm()); timed("other projects: first draw", () => b.current?.render()); }); // its first frame, drawn ahead wherever the page is
+      zz.built(); // one built far off gives its buffers up; a kept one wakes once the page has its scroll (keep.ts)
       return board;
     };
 

@@ -12,6 +12,7 @@ import { after } from "@/lib/motion/slowmo";
 import { createHall, FRAME, type Frame, type Hall } from "./hall";
 import { claim, keep, sleeper } from "@/lib/three/keep";
 import "./roles.css";
+import { timed, trace } from "@/lib/perf/trace";
 
 export interface HallTable { slug: string; name: string; when: string; current: boolean; fen: string; last: string[] }
 
@@ -45,12 +46,12 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
     const build = () => {
       if (hall || failed || dead) return hall;
       // back from a detail page, the hall built last time: only its view and its lamps are set again
-      try { hall = got.stage ?? createHall(c, list); } catch { failed = true; el.dataset.gl = "off"; return null; }
+      try { hall = got.stage ?? timed("roles: built", () => createHall(c, list)); } catch { failed = true; el.dataset.gl = "off"; return null; }
       if (got.stage) for (const k in hall.lamps) hall.lamps[k] = 0;
       h.current = hall; setView(hall, phone() ? FRAME.phone : FRAME.desk);
       if (arriving) { const f = home.current; hall.cam.pos = [f.pos[0], f.pos[1] + 3, f.pos[2]]; } // from 3 units higher (motion.md §4)
-      hall.ready.then(() => { if (!got.stage) h.current?.warm(); h.current?.render(); }); // its first frame, drawn ahead wherever the page is
-      zz.sync(); // a kept one gets its buffers back now if it is near; one built far off gives them up
+      hall.ready.then(() => { trace("roles: compiled"); if (!got.stage) timed("roles: warmed", () => h.current?.warm()); timed("roles: first draw", () => h.current?.render()); }); // its first frame, drawn ahead wherever the page is
+      zz.built(); // one built far off gives its buffers up; a kept one wakes once the page has its scroll (keep.ts)
       return hall;
     };
     // on the one page the hall is built when it comes within a screen, not at load

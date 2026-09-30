@@ -12,6 +12,7 @@ import { after } from "@/lib/motion/slowmo";
 import { createGallery, VIEW, type Gallery, type View } from "./gallery";
 import { claim, keep, sleeper } from "@/lib/three/keep";
 import "./work.css";
+import { timed, trace } from "@/lib/perf/trace";
 
 export interface Piece { slug: string; name: string; square: string; move: string; result: string; qualifier: string }
 
@@ -57,13 +58,13 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
     const build = () => {
       if (gal || failed || dead) return gal;
       // back from a project, the gallery built last time: its view, lights and room are set again below
-      try { gal = got.stage ?? createGallery(c, pieces); } catch { failed = true; el.dataset.gl = "off"; return null; } // no WebGL: the labels stand alone
+      try { gal = got.stage ?? timed("work: built", () => createGallery(c, pieces)); } catch { failed = true; el.dataset.gl = "off"; return null; } // no WebGL: the labels stand alone
       if (got.stage) { gal.room.fill = 1; gal.cam.phone = false; } // opening one frames it for phones (open, below)
       g.current = gal; setView(gal, view());
       if (arriving) { gal.room.k = 0; lit(gal, 0); const v = view(); gal.cam.pos.set(v.pos[0], v.pos[1] + 4.8, v.pos[2] + 3.2); } // lights off, camera high
       else { gal.room.k = 1; lit(gal, 1); }
-      place(); gal.ready.then(() => { if (!got.stage) g.current?.warm(); g.current?.render(); }); // its first frame, drawn ahead wherever the page is
-      zz.sync(); // a kept one gets its buffers back now if it is near; one built far off gives them up
+      place(); gal.ready.then(() => { trace("work: compiled"); if (!got.stage) timed("work: warmed", () => g.current?.warm()); timed("work: first draw", () => g.current?.render()); }); // its first frame, drawn ahead wherever the page is
+      zz.built(); // one built far off gives its buffers up; a kept one wakes once the page has its scroll (keep.ts)
       return gal;
     };
     // on the one page the room is built when it comes within a screen, not at load (seven scenes would compile at once)

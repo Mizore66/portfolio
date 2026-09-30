@@ -11,6 +11,7 @@ import { now } from "@/lib/motion/slowmo";
 import { seam, setSeam, sides, css, intersect, isPhone, restFor, restColours } from "./seam";
 import { cue } from "@/lib/sound/sound";
 import { wakeNear } from "@/lib/three/keep";
+import { trace } from "@/lib/perf/trace";
 
 export interface Plan {
   from: string; to: string; A: number; B: number; phone: boolean;
@@ -55,6 +56,7 @@ let restoreTo: number | null = null;
  * the DOM. `restoreScroll`: Back or Forward, so the arriving page returns to where it was left.
  */
 export function beginNav(to: string, from: string, { restoreScroll = false } = {}) {
+  trace(`page change to ${to}: clicked`);
   // scroll positions are kept per document path (the one page is "/", whichever section it is left on)
   scrolls.set(location.pathname, window.scrollY);
   restoreTo = restoreScroll ? scrolls.get(pathOf(to)) ?? null : null;
@@ -115,6 +117,7 @@ let begun = 0;
 
 /** The arriving page has mounted: put the live seam where the old page left it. */
 export function arrived(path: string) {
+  trace(`page change to ${path}: new page mounted`);
   if (restoreTo != null) { window.scrollTo(0, restoreTo); restoreTo = null; }
   else if (current && pathOf(current.plan.to) === path && current.plan.to.includes("#")) {
     // a section of the one page: land on it (the page's own glide would be seen; this is under the snapshot)
@@ -139,6 +142,7 @@ export function arrived(path: string) {
  */
 export function startSweep(oldGroup: string | null) {
   if (!pending) return;
+  trace("page change: snapshot taken");
   const job = pending, mine = token; pending = null;
   // Wait until the arriving page has painted twice: a page that builds a 3D scene can hold the main thread
   // for a moment, and the snapshot (frozen, whole) is a better thing to see meanwhile than a half-drawn

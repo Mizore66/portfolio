@@ -15,6 +15,7 @@ import { layout, type Line } from "./tree";
 import { warm, type Chapter, type ChapterFactory, type Tag } from "./kit";
 import { SPECS as specs, EXTRAS as extras } from "./chapters";
 import "./lab.css";
+import { timed } from "@/lib/perf/trace";
 
 export interface Note { head: string; text: string }
 export interface ChapterCopy { n: string; title?: string[]; big?: string; notes: Note[]; notesPhone?: Note[]; [k: string]: unknown }
@@ -157,13 +158,13 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
       if (!spec?.make || live3d.has(id)) return;
       const s = sections.find((x) => +x.dataset.ch! === id)!;
       const day = s.querySelector<HTMLCanvasElement>("canvas.day")!, night = s.querySelector<HTMLCanvasElement>("canvas.night");
-      try { const c = spec.make(day, night, { phone, reduced }); live3d.set(id, c); c.progress(progressOf(s));
+      try { const make = spec.make, c = timed(`lab chapter ${id}: built`, () => make(day, night, { phone, reduced })); live3d.set(id, c); c.progress(progressOf(s));
         const zz = sleeper(s, [...s.querySelectorAll("canvas")], () => { if (live3d.get(id) === c) { c.resize(); drawAll(true); } });
         sleepers.get(id)?.stop(); sleepers.set(id, zz); zz.sync();
         c.ready.then(() => {
         // warm it: its end state, with everything in it, drawn through warm() (one instance each, one pixel), so shadow
         // programs and buffers are ready before it is first seen (that first draw cost the scroll up to 270 ms)
-        if (live3d.get(id) === c && !onScreen.has(id)) { c.progress(1); warm(() => c.render()); c.progress(progressOf(s)); } if (live3d.get(id) !== c) return; zz.sync(); hud(s, c); place(); drawAll(true); if (!blend) tick(); }); }
+        if (live3d.get(id) === c && !onScreen.has(id)) { c.progress(1); timed(`lab chapter ${id}: warmed`, () => warm(() => c.render())); c.progress(progressOf(s)); } if (live3d.get(id) !== c) return; zz.sync(); hud(s, c); place(); drawAll(true); if (!blend) tick(); }); }
       catch { s.dataset.gl = "off"; }
     };
     const near = new IntersectionObserver((es) => {
@@ -187,7 +188,8 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
       for (const [id, c] of live3d) if (Math.abs(id - at) > KEEP) { c.dispose(); live3d.delete(id); sleepers.get(id)?.stop(); sleepers.delete(id); }
     };
     const queue = () => {
-      if (document.querySelector('.hero[data-intro="play"]')) { idle = window.setTimeout(queue, 600); return; }
+      // not during the hero's opening, nor a page change (a chapter's build is a long task; it held a sweep 130-520 ms)
+      if (document.querySelector('.hero[data-intro="play"]') || navigating()) { idle = window.setTimeout(queue, 600); return; }
       const mid = window.scrollY + innerHeight / 2, at = active();
       const next = sections.filter((x) => { const id = +x.dataset.ch!, sp = specs.find((q) => q.id === id); return sp?.make && !live3d.has(id) && x.dataset.gl !== "off" && Math.abs(id - at) <= AHEAD; })
         .sort((a, b) => Math.abs(top(a) - mid) - Math.abs(top(b) - mid))[0];

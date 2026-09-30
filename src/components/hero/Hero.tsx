@@ -11,6 +11,7 @@ import { createStage, T, type Stage } from "./stage";
 import { claim, keep, sleeper } from "@/lib/three/keep";
 import { cue } from "@/lib/sound/sound";
 import "./hero.css";
+import { timed } from "@/lib/perf/trace";
 
 /** The eval after 10…Bg4, where the hero settles (content.json chess.careerEvals.faultline). */
 const SETTLE_CP = 64;
@@ -68,7 +69,7 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
     // back from a detail page, the stage built last time (keep.ts): nothing to build, no shader to compile
     const key = `hero-${mobile}`, got = claim<Stage>(key, [day.current!, night.current!]);
     let stage: Stage;
-    try { stage = got.stage ?? createStage(got.canvases[0], got.canvases[1], mobile); }
+    try { stage = got.stage ?? timed("hero: built", () => createStage(got.canvases[0], got.canvases[1], mobile)); }
     catch { el.dataset.intro = "done"; return; } // no WebGL: the CSS end state stands in
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const seen = sessionStorage.getItem(SEEN) === "1";
@@ -159,7 +160,7 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
 
     // its canvases hold their buffers only within a screen of view (keep.ts); a kept stage wakes, and resizes, here
     const zz = sleeper(el, got.canvases, () => { stage.resize(); draw(); });
-    zz.sync(); // a kept stage gets its buffers back now if it is on screen; a new one built off screen gives them up
+    zz.built(); // a new stage built off screen gives its buffers up; a kept one wakes once the page has its scroll
     const onResize = () => { if (!zz.asleep) stage.resize(); draw(); };
     window.addEventListener("resize", onResize);
     return () => { lockScroll(false); tl.kill(); cancelRise(); rise?.kill(); gsap.set([...nav, ...toggle], { clearProps: "opacity" }); gsap.ticker.remove(guard); cancelAnimationFrame(raf); io.disconnect(); zz.stop(); window.removeEventListener("resize", onResize); keep(key, got.canvases, stage, () => stage.dispose()); };
