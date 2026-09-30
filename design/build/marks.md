@@ -61,3 +61,14 @@ The owner turned down round 2 too: it "looks more just a regular chess themed ic
 - **I. A.:** his initial and a full stop, in the voice of Contact's "11.", the stop in the move's amber.
 - **J. aq, and the caret:** his initials in the mono face with Contact's caret in amber: an engineer's prompt.
 - **K. Q:** his surname's initial, the most legible at 16 px, which a chess player also reads as the queen.
+
+## Round 4: J, tied to the theme
+
+The owner likes J: "I like J but it's not relating to the theme of the site, it's just a regular sleek favicon for my name". So J stays, with one tie to the theme. The site's seam is an engine's evaluation bar (White's share rising from the bottom), so the prompt's caret becomes that bar, split at the hero's 55.9%.
+
+![Round 4](marks/marks-4.webp)
+
+- **J, as it was:** the initials in the mono face with Contact's amber caret.
+- **J1, the eval bar:** the caret is the evaluation bar, drawn as a gauge, White's 55.9% filled from the bottom.
+- **J2, the bar and the move:** J1 with the move's amber mark where the bar splits.
+- **J3, on the board:** J's amber caret on a dark square of the gallery's walnut board.
