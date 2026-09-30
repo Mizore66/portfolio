@@ -47,7 +47,7 @@
 :is(.roles, .role) .scrub { position: absolute; left: 52px; bottom: 6vh; pointer-events: auto; }
 :is(.roles, .role) .scrub .mv { font-size: 14px; }
 :is(.roles, .role) .ticks { display: flex; gap: 5px; margin: 10px 0 8px; align-items: flex-end; list-style: none; }
-:is(.roles, .role) .ticks button { display: block; width: 1px; height: 9px; padding: 0; border: 0; background: #aaa59c; cursor: pointer; position: relative; }
+:is(.roles, .role) .ticks button { display: block; width: 1px; height: 9px; padding: 0; border: 0; color: var(--ink); background: #aaa59c; cursor: pointer; position: relative; }
 :is(.roles, .role) .ticks button::after { content: ""; position: absolute; inset: -8px -2px; } /* a finger's width to click */
 :is(.roles, .role) .ticks button.p { background: var(--ink); }
 :is(.roles, .role) .ticks button.c { width: 2px; height: 16px; background: var(--ink); }
