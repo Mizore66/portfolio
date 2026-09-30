@@ -108,6 +108,9 @@ test.describe("the one page", () => {
     test.setTimeout(180_000);
     for (const path of ["/", "/lab", "/work/faultline", "/roles/deriv"]) {
       await page.goto(path);
+      // each section makes its entrance the first time it is seen, and axe skips what has not come in yet: bring them all in
+      if (path === "/") for (const id of ["roles", "work", "archive", "lab", "contact"]) { await page.evaluate((i) => document.getElementById(i)!.scrollIntoView(), id); await page.waitForTimeout(1800); }
+      else await page.waitForTimeout(2500);
       const a11y = await new AxeBuilder({ page }).analyze();
       expect(a11y.violations.map((v) => `${path}: ${v.id}`)).toEqual([]);
     }

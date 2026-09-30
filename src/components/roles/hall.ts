@@ -49,7 +49,8 @@ export interface Hall {
    * (.9, .2, -.8), fov 38, the board a quarter screen right), as it stands at this table: where "sitting down" ends.
    */
   seat(slug: string, phone: boolean): Frame;
-  pick(x: number, y: number): string | null;
+  /** the table under a point, as seen from `from` (default: the camera as it stands) */
+  pick(x: number, y: number, from?: Frame): string | null;
   ready: Promise<void>;
   render(): void; resize(): void; dispose(): void;
   /** one draw of everything in it, into a pixel, so its first real frame is like any other (warmScenes) */
@@ -128,11 +129,13 @@ export function createHall(canvas: HTMLCanvasElement, list: { slug: string; fen:
   const W = () => canvas.clientWidth, H = () => canvas.clientHeight;
   const cam = new THREE.PerspectiveCamera(30, 1, 0.1, 200);
   const view: Frame = { ...FRAME.desk, pos: [...FRAME.desk.pos], look: [...FRAME.desk.look] };
-  const place = () => {
-    cam.position.set(...view.pos); cam.fov = view.fov; cam.aspect = W() / H();
-    cam.setViewOffset(W(), H(), (0.5 - view.sx) * W(), (0.5 - view.sy) * H(), W(), H());
-    cam.updateProjectionMatrix(); cam.lookAt(...view.look); cam.updateMatrixWorld();
+  const aim = (c: THREE.PerspectiveCamera, v: Frame) => {
+    c.position.set(...v.pos); c.fov = v.fov; c.aspect = W() / H();
+    c.setViewOffset(W(), H(), (0.5 - v.sx) * W(), (0.5 - v.sy) * H(), W(), H());
+    c.updateProjectionMatrix(); c.lookAt(...v.look); c.updateMatrixWorld();
   };
+  const place = () => aim(cam, view);
+  const pickCam = new THREE.PerspectiveCamera(30, 1, 0.1, 200);
   const lamps: Record<string, number> = Object.fromEntries(list.map((t) => [t.slug, 0]));
   const room = { k: 1 };
   const ray = new THREE.Raycaster();
@@ -153,9 +156,10 @@ export function createHall(canvas: HTMLCanvasElement, list: { slug: string; fen:
       const [px, py, pz] = seatPos(0, phone), p = o(px, py, pz), l = o(...LOOK);
       return { pos: [p.x, p.y, p.z], look: [l.x, l.y, l.z], fov: phone ? 40 : 38, sx: phone ? 0.51 : 0.75, sy: phone ? 0.66 : 0.5 };
     },
-    pick(x, y) {
-      place();
-      ray.setFromCamera(new THREE.Vector2((x / W()) * 2 - 1, 1 - (y / H()) * 2), cam);
+    pick(x, y, from) {
+      // judged in `from` when given (the resting view), so the camera easing toward a table cannot change what is under a still pointer
+      if (from) aim(pickCam, from); else place();
+      ray.setFromCamera(new THREE.Vector2((x / W()) * 2 - 1, 1 - (y / H()) * 2), from ? pickCam : cam);
       return (ray.intersectObjects(hit, true)[0]?.object.userData.slug as string) ?? null;
     },
     warm() { if (compiled && !gone) warmScenes([{ r, scene }], () => this.render()); },

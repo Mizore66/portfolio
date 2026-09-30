@@ -263,7 +263,10 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
     return () => {
       unblock.forEach((u) => u()); cancel(); tl?.kill(); near.disconnect(); seen.disconnect(); clearTimeout(idle); if (typeof cancelIdleCallback === "function") cancelIdleCallback(idle); moving.disconnect(); cancelAnimationFrame(raf); cancelAnimationFrame(blend); clearTimeout(settle);
       cancelAnimationFrame(wait); delete open.dataset.grow;
-      const t = svgTree(); gsap.set([...rise, ...t.lines, ...t.pv], { clearProps: "all" });
+      // what the growth and the rise set, taken off directly: gsap's clearProps reads each element's computed style,
+      // and the tree has some 2,000 lines, which made leaving the one page a long frame (phase 6, step 5)
+      const t = svgTree();
+      for (const e of [...rise, ...t.lines, ...t.pv]) { e.removeAttribute("style"); Reflect.deleteProperty(e, "_gsap"); }
       window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onResize); window.removeEventListener("lab:seam", onEval);
       live3d.forEach((c) => c.dispose());
     };

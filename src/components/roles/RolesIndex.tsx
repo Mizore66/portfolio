@@ -122,21 +122,31 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
       .to(el.querySelectorAll(".names li"), { opacity: 0, y: -10, duration: 0.3, ease: "seam", stagger: 0.03 }, 0);
   };
 
+  // A table is read from where the camera rests, and becomes the one read once the pointer has stayed on it (or off every
+  // table) for a moment: at a table's edge a hand's tremor, and the camera easing toward the table, would otherwise flip
+  // the focus back and forth, the camera with it.
+  const hover = useRef({ to: null as string | null, t: 0 }), now = useRef<string | null>(null);
+  useEffect(() => { now.current = focus; }, [focus]);
+  useEffect(() => () => clearTimeout(hover.current.t), []);
   const onPointer = (e: React.PointerEvent) => {
     if (e.pointerType === "touch" || leaving.current || !h.current) return;
-    const r = canvas.current!.getBoundingClientRect(), s = h.current.pick(e.clientX - r.left, e.clientY - r.top);
+    const r = canvas.current!.getBoundingClientRect(), s = h.current.pick(e.clientX - r.left, e.clientY - r.top, home.current);
     canvas.current!.toggleAttribute("data-hot", !!s);
-    setFocus(s);
+    const v = hover.current;
+    if (s === now.current) { clearTimeout(v.t); v.to = s; return; } // back on the one being read
+    if (s === v.to) return; // already waiting to read it
+    v.to = s; clearTimeout(v.t);
+    v.t = window.setTimeout(() => { if (!leaving.current) setFocus(s); }, 120);
   };
   const onCanvasClick = (e: React.MouseEvent) => {
-    const r = canvas.current!.getBoundingClientRect(), s = h.current?.pick(e.clientX - r.left, e.clientY - r.top);
+    const r = canvas.current!.getBoundingClientRect(), s = h.current?.pick(e.clientX - r.left, e.clientY - r.top, home.current);
     if (s) open(s);
   };
   const read = (slug: string | null) => () => { if (!leaving.current) setFocus(slug); };
 
   return (
     <section ref={root} id="roles" className="roles" data-rest="1" data-rest-phone="1" aria-labelledby="roles-title">
-      <div ref={canvas} className="roles-canvas keep-slot" aria-hidden="true" onPointerMove={onPointer} onPointerLeave={read(null)} onClick={onCanvasClick} />
+      <div ref={canvas} className="roles-canvas keep-slot" aria-hidden="true" onPointerMove={onPointer} onPointerLeave={() => { clearTimeout(hover.current.t); hover.current.to = null; read(null)(); }} onClick={onCanvasClick} />
       <div className="roles-dark" />
       <div className="roles-layer">
         <h2 id="roles-title" className="roles-title display"><span className="ln" data-vt-line=""><span data-rise="">{copy.title}</span></span></h2>

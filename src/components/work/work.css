@@ -59,7 +59,7 @@
 .others .sheet .mv { font-size: 13px; color: var(--gallery-dim); padding-top: 2px; transition: color .4s cubic-bezier(.16, .84, .3, 1); }
 .others .sheet b { font-size: 16px; font-weight: 600; color: var(--gallery-text); transition: color .4s cubic-bezier(.16, .84, .3, 1); }
 .others .sheet .r { grid-column: 2; margin-top: 3px; font-size: 14px; color: #c9c2b5; }
-.others .sheet .q { grid-column: 2; margin-top: 2px; font-size: 12px; color: #77726a; }
+.others .sheet .q { grid-column: 2; margin-top: 2px; font-size: 12px; color: var(--gallery-dim); } /* #77726a was 4.2:1 on the gallery */
 .others .sheet li[data-on] b { color: #fff; }
 .others .sheet li[data-on] .mv { color: var(--move); }
 .others .sheet a:focus-visible { outline-offset: 2px; }

@@ -7,7 +7,7 @@
 .nf .ln > span { display: block; }
 .nf-ttl { position: absolute; left: 60px; bottom: 24vh; margin: 0; font-size: 12vw; color: #ece6da; }
 .nf-line { position: absolute; left: 64px; bottom: 17vh; margin: 0; font-size: 16px; color: #c9c2b5; }
-.nf-note { position: absolute; left: 64px; bottom: 13.5vh; margin: 0; font-size: 12px; color: #77726a; }
+.nf-note { position: absolute; left: 64px; bottom: 13.5vh; margin: 0; font-size: 12px; color: var(--gallery-dim); } /* #77726a was 4.2:1 on the gallery */
 .nf-back { position: absolute; left: 64px; bottom: 7vh; margin: 0; font-size: 18px; font-weight: 600; }
 .nf-back .ln { padding-bottom: 8px; margin-bottom: -8px; } /* room for the underline inside the rise mask */
 .nf-back a { display: inline-block; color: #ece6da; text-decoration: none; padding-bottom: 3px; border-bottom: 2px solid currentColor; pointer-events: auto; }

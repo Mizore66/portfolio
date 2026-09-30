@@ -20,6 +20,7 @@ export interface ColophonCopy {
 // The specimen's A at rest (colophon-a): Archivo's heaviest and widest the site uses. It arrives from the thin, narrow
 // end of both axes, so the page's one moving thing is the typeface itself.
 const REST = { w: 900, s: 112 }, FROM = { w: 100, s: 62 };
+const fmt = new Intl.NumberFormat("en-GB"); // one formatter: toLocaleString makes a new one on every call, every frame
 const axes = (w: number, s: number) => `"wght" ${w.toFixed(0)}, "wdth" ${s.toFixed(1)}`;
 
 /**
@@ -55,7 +56,7 @@ export function Colophon({ copy }: { copy: ColophonCopy }) {
     const axis = { w: FROM.w, s: FROM.s }, paint = () => aa.forEach((a) => (a.style.fontVariationSettings = axes(axis.w, axis.s)));
     paint();
     const n = { v: 0 }, target = counts.map((c) => Number(c.dataset.count));
-    const count = () => counts.forEach((c, i) => (c.textContent = Math.round(n.v * target[i]).toLocaleString("en-GB")));
+    const count = () => counts.forEach((c, i) => (c.textContent = fmt.format(Math.round(n.v * target[i]))));
     count();
     let tl: gsap.core.Timeline | undefined;
     const play = (delay: number) => {
@@ -79,7 +80,7 @@ export function Colophon({ copy }: { copy: ColophonCopy }) {
     return () => {
       cancel(); tl?.kill(); gsap.killTweensOf(axis);
       spec?.removeEventListener("pointermove", move); spec?.removeEventListener("pointerleave", leave);
-      gsap.set([...rise, ...notes], { clearProps: "transform,opacity" }); aa.forEach((b) => (b.style.fontVariationSettings = "")); target.forEach((t, i) => (counts[i].textContent = t.toLocaleString("en-GB")));
+      gsap.set([...rise, ...notes], { clearProps: "transform,opacity" }); aa.forEach((b) => (b.style.fontVariationSettings = "")); target.forEach((t, i) => (counts[i].textContent = fmt.format(t)));
     };
   }, [path]);
 
