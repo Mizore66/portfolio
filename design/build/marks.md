@@ -50,3 +50,14 @@ The owner turned down A, B and C for the favicon ("I don't like your designs") a
 - **E. The knight:** the site's own knight, its profile traced flat and facing left, paper on ink.
 - **F. The move:** a corner of the board, with the square the move landed on lit in the site's amber.
 - **G. Brilliant:** !!, the annotation for a brilliant move, in the display face on the amber.
+
+## Round 3: the favicon
+
+The owner turned down round 2 too: it "looks more just a regular chess themed icon rather than an icon one would use for their portfolio", and round 1 because of the seam. So round 3 starts from him: his initials, in the site's own faces, with chess at most a detail.
+
+![Round 3](marks/marks-3.webp)
+
+- **H. AQ:** his initials set tight in the display face, as the hero sets his name.
+- **I. A.:** his initial and a full stop, in the voice of Contact's "11.", the stop in the move's amber.
+- **J. aq, and the caret:** his initials in the mono face with Contact's caret in amber: an engineer's prompt.
+- **K. Q:** his surname's initial, the most legible at 16 px, which a chess player also reads as the queen.
