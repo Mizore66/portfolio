@@ -8,11 +8,12 @@ import { PHONE, restColours, restFor, seam as live, setSeam } from "@/lib/seam/s
 import { arrival, navigating } from "@/lib/seam/sweep";
 import { registerBlock, refresh } from "@/lib/seam/blocks";
 import { firstView } from "@/lib/motion/firstView";
-import { sleeper, type Sleeper } from "@/lib/three/keep";
+import { claim, keep, sleeper, type Sleeper } from "@/lib/three/keep";
 import Link from "next/link";
 import type { TreeNode } from "@/content/lab-tree.gen";
 import { layout, type Line } from "./tree";
 import { warm, type Chapter, type ChapterFactory, type Tag } from "./kit";
+import type { PlayStage } from "./ch7";
 import { SPECS as specs, EXTRAS as extras } from "./chapters";
 import "./lab.css";
 import { timed } from "@/lib/perf/trace";
@@ -121,6 +122,11 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
     // a built chapter's canvases hold their buffers only within a screen of view (keep.ts): all seven held them at
     // once, 2.8 GB at 2×. A chapter's render sets its size, so one drawn while far off (warm, below) sleeps again after.
     const sleepers = new Map<number, Sleeper>();
+    // On the one page, Play's scene is kept while a detail page is visited, like the page's other scenes (keep.ts):
+    // building it again on every return cost the owner's Mac an 800 ms frame each time (the frame report).
+    const pin7 = section ? el.querySelector<HTMLElement>('[data-ch="7"] .ch-pin') : null;
+    const play = pin7 ? claim<Chapter>("lab-play", [...pin7.querySelectorAll<HTMLElement>(".keep-slot")]) : null;
+    play?.canvases.forEach((c, i) => { c.className = i ? "night seam-dark" : "day"; c.setAttribute("aria-hidden", "true"); });
     let raf = 0;
     // only the chapters on screen are drawn; one coming on screen is drawn as it arrives
     const onScreen = new Set<number>();
@@ -158,13 +164,15 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
       if (!spec?.make || live3d.has(id)) return;
       const s = sections.find((x) => +x.dataset.ch! === id)!;
       const day = s.querySelector<HTMLCanvasElement>("canvas.day")!, night = s.querySelector<HTMLCanvasElement>("canvas.night");
-      try { const make = spec.make, c = timed(`lab chapter ${id}: built`, () => make(day, night, { phone, reduced })); live3d.set(id, c); c.progress(progressOf(s));
+      try { const make = spec.make, kept = id === 7 ? play?.stage : null;
+        const c = kept ?? timed(`lab chapter ${id}: built`, () => make(day, night, { phone, reduced }));
+        (kept as PlayStage | null | undefined)?.restore(); live3d.set(id, c); c.progress(progressOf(s));
         const zz = sleeper(s, [...s.querySelectorAll("canvas")], () => { if (live3d.get(id) === c) { c.resize(); drawAll(true); } });
-        sleepers.get(id)?.stop(); sleepers.set(id, zz); zz.sync();
+        sleepers.get(id)?.stop(); sleepers.set(id, zz); zz.built();
         c.ready.then(() => {
         // warm it: its end state, with everything in it, drawn through warm() (one instance each, one pixel), so shadow
         // programs and buffers are ready before it is first seen (that first draw cost the scroll up to 270 ms)
-        if (live3d.get(id) === c && !onScreen.has(id)) { c.progress(1); timed(`lab chapter ${id}: warmed`, () => warm(() => c.render())); c.progress(progressOf(s)); } if (live3d.get(id) !== c) return; zz.sync(); hud(s, c); place(); drawAll(true); if (!blend) tick(); }); }
+        if (live3d.get(id) === c && !onScreen.has(id) && !kept) { c.progress(1); timed(`lab chapter ${id}: warmed`, () => warm(() => c.render())); c.progress(progressOf(s)); } if (live3d.get(id) !== c) return; zz.built(); hud(s, c); place(); drawAll(true); if (!blend) tick(); }); }
       catch { s.dataset.gl = "off"; }
     };
     const near = new IntersectionObserver((es) => {
@@ -199,6 +207,7 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
     };
     idle = window.setTimeout(queue, section ? 800 : reduced ? 300 : 1500); // on /lab, once the tree has grown
     sections.forEach((s) => { near.observe(s); seen.observe(s); });
+    if (play?.stage) build(7); // handed back: nothing to build, so it is there at once
 
     const place = () => setTags(Object.fromEntries([...live3d].map(([id, c]) => [id, c.tags()])));
 
@@ -277,7 +286,8 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
       const t = svgTree();
       for (const e of [...rise, ...t.lines, ...t.pv]) { e.removeAttribute("style"); Reflect.deleteProperty(e, "_gsap"); }
       window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onResize); window.removeEventListener("lab:seam", onEval);
-      live3d.forEach((c) => c.dispose()); sleepers.forEach((z) => z.stop());
+      sleepers.forEach((z) => z.stop());
+      live3d.forEach((c, id) => { if (id === 7 && play) keep("lab-play", play.canvases, c, () => c.dispose()); else c.dispose(); });
     };
   }, [path, section]);
 
@@ -289,8 +299,10 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
         <section key={s.id} className="ch" data-ch={s.id} data-night={s.night || undefined} style={{ "--screens": s.screens } as React.CSSProperties}>
           <div className="ch-pin">
             <div className="lab-dark seam-dark" />
-            <canvas className="day" aria-hidden="true" />
-            {s.night ? <canvas className="night seam-dark" aria-hidden="true" /> : null}
+            {section ? <><div className="keep-slot" />{s.night ? <div className="keep-slot" /> : null}</> : <>
+              <canvas className="day" aria-hidden="true" />
+              {s.night ? <canvas className="night seam-dark" aria-hidden="true" /> : null}
+            </>}
             <Type copy={copy.chapters[s.id - 1]} extra={(inv) => (<>
               <div className="tags" aria-hidden="true">{(tags[s.id] ?? []).map((t) => <div key={t.key} className={`tag ${t.cls ?? ""}`} style={{ left: t.x, top: t.y }} dangerouslySetInnerHTML={{ __html: t.html }} />)}</div>
               {extras[s.id]?.(inv, copy.chapters[s.id - 1])}

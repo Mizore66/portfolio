@@ -32,6 +32,8 @@ export interface PlayStage extends Chapter {
   eval(cp: number): void;
   /** White at the bottom, or Black */
   orient(white: boolean): void;
+  /** handed back to the one page (keep.ts): set back as it was built, and announced again for the game to take */
+  restore(): void;
 }
 
 type Side = { s: Stage; pieces: Map<string, THREE.Group>; b: ReturnType<typeof makeBoard>; dots: THREE.Group };
@@ -173,6 +175,12 @@ export const chapter7: ChapterFactory = (dayCanvas, nightCanvas, o) => {
       gsap.to(st, { t: 1, duration: 0.34, ease: "none", onUpdate: () => { shown = from + (to - from) * evalStep(st.t); window.dispatchEvent(new Event("lab:seam")); } });
     },
     orient(w) { white = w; place(); draw(); },
+    restore() {
+      for (const x of sides) { for (const g of x.pieces.values()) gsap.killTweensOf([g.position, g.scale]); x.dots.clear(); }
+      white = true; lifted = null; shown = share(DATA.start.learned.evalCp);
+      place(); set(START, null);
+      current = api; listeners.forEach((fn) => fn(api));
+    },
     render() { if (!c.done()) return; place(); sides.forEach((x) => x.s.r.render(x.s.scene, x.s.cam)); },
     resize() { place(); draw(); },
     dispose() {
