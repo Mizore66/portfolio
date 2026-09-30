@@ -33,3 +33,6 @@ a { color: inherit; }
 .skip:focus { left: 16px; top: 16px; z-index: 100; background: var(--ink); color: var(--paper); padding: 8px 12px; }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+/* a scene's canvas in its slot (src/lib/three/keep.ts): the slot is placed, the canvas fills it */
+.keep-slot > canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }

@@ -149,7 +149,7 @@ export function createSideboard(canvas: HTMLCanvasElement, list: { slug: string;
 
   return {
     lights, lift, room, cam: view, ready, spin,
-    get keep() { return keep; }, set keep(v) { keep = v; faded = -1; },
+    get keep() { return keep; }, set keep(v) { if (keep && v !== keep) figure[keep].rotation.y = turn0[keep]; keep = v; faded = -1; }, // let go, a piece turns back to where it stands
     anchors() {
       place();
       return Object.fromEntries(Object.entries(tag).map(([k, v]) => { const p = v.clone().project(cam); return [k, { x: ((p.x + 1) / 2) * W(), y: ((1 - p.y) / 2) * H() }]; }));

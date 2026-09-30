@@ -10,6 +10,7 @@ import { buildAhead, firstView, nearScreen } from "@/lib/motion/firstView";
 import { PHONE } from "@/lib/seam/seam";
 import { after } from "@/lib/motion/slowmo";
 import { createHall, FRAME, type Frame, type Hall } from "./hall";
+import { claim, keep } from "@/lib/three/keep";
 import "./roles.css";
 
 export interface HallTable { slug: string; name: string; when: string; current: boolean; fen: string; last: string[] }
@@ -21,7 +22,7 @@ export interface HallTable { slug: string; name: string; when: string; current: 
  */
 export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: string; sub: string; now: string; label: string } }) {
   const router = useRouter();
-  const root = useRef<HTMLElement>(null), canvas = useRef<HTMLCanvasElement>(null);
+  const root = useRef<HTMLElement>(null), canvas = useRef<HTMLDivElement>(null); // the canvas's slot (keep.ts)
   const h = useRef<Hall | null>(null), frame = useRef(0), leaving = useRef(false), home = useRef<Frame>(FRAME.desk);
   const [focus, setFocus] = useState<string | null>(null);
 
@@ -32,7 +33,7 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
   };
 
   useLayoutEffect(() => {
-    const el = root.current!, c = canvas.current!;
+    const el = root.current!, got = claim<Hall>("roles", [canvas.current!]), c = got.canvases[0];
     registerEases();
     const phone = () => window.matchMedia(PHONE).matches;
     const setView = (s: Hall, f: Frame) => { home.current = f; Object.assign(s.cam, { ...f, pos: [...f.pos], look: [...f.look] }); };
@@ -41,13 +42,16 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
     let hall: Hall | null = null, failed = false, dead = false, tl: gsap.core.Timeline | undefined;
     const build = () => {
       if (hall || failed || dead) return hall;
-      try { hall = createHall(c, list); } catch { failed = true; el.dataset.gl = "off"; return null; }
+      // back from a detail page, the hall built last time: only its view and its lamps are set again
+      try { hall = got.stage ?? createHall(c, list); } catch { failed = true; el.dataset.gl = "off"; return null; }
+      if (got.stage) { hall.resize(); for (const k in hall.lamps) hall.lamps[k] = 0; }
       h.current = hall; setView(hall, phone() ? FRAME.phone : FRAME.desk);
       if (arriving) { const f = home.current; hall.cam.pos = [f.pos[0], f.pos[1] + 3, f.pos[2]]; } // from 3 units higher (motion.md §4)
-      hall.ready.then(() => { h.current?.warm(); h.current?.render(); }); // its first frame, drawn ahead wherever the page is
+      hall.ready.then(() => { if (!got.stage) h.current?.warm(); h.current?.render(); }); // its first frame, drawn ahead wherever the page is
       return hall;
     };
     // on the one page the hall is built when it comes within a screen, not at load
+    if (got.stage) build();
     const stopAhead = buildAhead(el, build, { order: 0 }), stopNear = nearScreen(el, away.current, draw);
     let cancel = () => {};
     if (arriving) {
@@ -67,7 +71,8 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
       dead = true; stopAhead(); stopNear(); cancel(); tl?.kill();
       gsap.set([...rise, ...names], { clearProps: "transform,opacity" });
       window.removeEventListener("resize", onResize); cancelAnimationFrame(frame.current); frame.current = 0;
-      h.current = null; hall?.dispose();
+      h.current = null;
+      const kept = hall; if (kept) keep("roles", [c], kept, () => kept.dispose());
     };
   }, [list]);
 
@@ -131,7 +136,7 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
 
   return (
     <section ref={root} id="roles" className="roles" data-rest="1" data-rest-phone="1" aria-labelledby="roles-title">
-      <canvas ref={canvas} className="roles-canvas" aria-hidden="true" onPointerMove={onPointer} onPointerLeave={read(null)} onClick={onCanvasClick} />
+      <div ref={canvas} className="roles-canvas keep-slot" aria-hidden="true" onPointerMove={onPointer} onPointerLeave={read(null)} onClick={onCanvasClick} />
       <div className="roles-dark" />
       <div className="roles-layer">
         <h2 id="roles-title" className="roles-title display"><span className="ln" data-vt-line=""><span data-rise="">{copy.title}</span></span></h2>

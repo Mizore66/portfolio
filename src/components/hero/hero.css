@@ -3,7 +3,7 @@
 /* the loader starts in the dark; script takes the seam from there (the site seam is on .site) */
 /* the opening waits in the dark, except on a section's address (/#work), where it never plays */
 .site:has(.hero[data-intro="pending"]):not(:has(.home > :target)) { --seam: 0% !important; }
-.hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hero :is(.day, .night) { position: absolute; inset: 0; } /* the canvases' slots; each canvas fills its own (globals.css) */
 .hero .night { clip-path: polygon(calc(var(--seam) - var(--seam-o)) 0, calc(100% + 400px) 0, calc(100% + 400px) 100%, calc(var(--seam) + var(--seam-o)) 100%); }
 .hero-layer { position: absolute; inset: 0; z-index: 2; --fg: var(--ink); --fg2: var(--pencil); color: var(--fg); }
 .hero-layer[data-layer="inv"] { --fg: var(--paper); --fg2: #b9b5ad; pointer-events: none; clip-path: polygon(calc(var(--seam) - var(--seam-o)) 0, calc(100% + 400px) 0, calc(100% + 400px) 100%, calc(var(--seam) + var(--seam-o)) 100%); }

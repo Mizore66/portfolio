@@ -8,6 +8,7 @@ import { lockScroll } from "@/lib/motion/scroll";
 import { gsap } from "gsap";
 import { registerEases, share, perLayer } from "@/lib/motion/ease";
 import { createStage, T, type Stage } from "./stage";
+import { claim, keep } from "@/lib/three/keep";
 import { cue } from "@/lib/sound/sound";
 import "./hero.css";
 
@@ -42,7 +43,7 @@ function Type({ first, last, headline, inverted }: { first: string; last: string
 
 export function Hero({ first, last, headline }: { first: string; last: string; headline: string[] }) {
   const root = useRef<HTMLElement>(null);
-  const day = useRef<HTMLCanvasElement>(null), night = useRef<HTMLCanvasElement>(null);
+  const day = useRef<HTMLDivElement>(null), night = useRef<HTMLDivElement>(null); // the canvases' slots (keep.ts)
   // Known at once on the client, so an arriving hero builds its stage at commit (null only on the server).
   const [mobile, setMobile] = useState<boolean | null>(() => (typeof window === "undefined" ? null : window.matchMedia("(max-width: 600px)").matches));
   // Arriving from another page, there is no opening: the seam is already on its way here.
@@ -64,8 +65,10 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
     const toggle = [...document.querySelectorAll<HTMLElement>(".chrome .sound-toggle")]; // and so does the sound toggle
     const site = el.closest<HTMLElement>(".site");
     registerEases();
+    // back from a detail page, the stage built last time (keep.ts): nothing to build, no shader to compile
+    const key = `hero-${mobile}`, got = claim<Stage>(key, [day.current!, night.current!]);
     let stage: Stage;
-    try { stage = createStage(day.current!, night.current!, mobile); }
+    try { stage = got.stage ?? createStage(got.canvases[0], got.canvases[1], mobile); if (got.stage) stage.resize(); }
     catch { el.dataset.intro = "done"; return; } // no WebGL: the CSS end state stands in
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const seen = sessionStorage.getItem(SEEN) === "1";
@@ -156,13 +159,13 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
 
     const onResize = () => { stage.resize(); draw(); };
     window.addEventListener("resize", onResize);
-    return () => { lockScroll(false); tl.kill(); cancelRise(); rise?.kill(); gsap.set([...nav, ...toggle], { clearProps: "opacity" }); gsap.ticker.remove(guard); cancelAnimationFrame(raf); io.disconnect(); window.removeEventListener("resize", onResize); stage.dispose(); };
+    return () => { lockScroll(false); tl.kill(); cancelRise(); rise?.kill(); gsap.set([...nav, ...toggle], { clearProps: "opacity" }); gsap.ticker.remove(guard); cancelAnimationFrame(raf); io.disconnect(); window.removeEventListener("resize", onResize); keep(key, got.canvases, stage, () => stage.dispose()); };
   }, [mobile]);
 
   return (
     <section ref={root} id="top" className="hero" data-rest="0.559" data-rest-phone="0.559" data-intro={arriving ? "done" : "pending"} aria-label="Introduction">
-      <canvas ref={day} className="day" aria-hidden="true" key={`d${mobile}`} />
-      <canvas ref={night} className="night" aria-hidden="true" key={`n${mobile}`} />
+      <div ref={day} className="day keep-slot" aria-hidden="true" key={`d${mobile}`} />
+      <div ref={night} className="night keep-slot" aria-hidden="true" key={`n${mobile}`} />
       <Type first={first} last={last} headline={headline} />
       <Type first={first} last={last} headline={headline} inverted />
       <noscript><style>{"html .site:has(.hero[data-intro]){--seam:55.9%!important}.hero[data-intro] .hero-type{visibility:visible!important}html .site:has(.hero[data-intro]) .chrome :is(.nav,.sound-toggle){visibility:visible!important}.hero .skip-resume{display:none}"}</style></noscript>

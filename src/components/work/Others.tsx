@@ -10,6 +10,7 @@ import { PHONE, restFor } from "@/lib/seam/seam";
 import { after } from "@/lib/motion/slowmo";
 import { buildAhead, nearScreen } from "@/lib/motion/firstView";
 import { createSideboard, FRAME, type Frame, type Sideboard } from "./sideboard";
+import { claim, keep } from "@/lib/three/keep";
 
 export interface Other { slug: string; name: string; square: string | null; move: string | null; result: string; qualifier: string; aside: boolean }
 export interface OthersCopy { title: string; label: string; noMove: string; aside: string }
@@ -21,7 +22,7 @@ export interface OthersCopy { title: string; label: string; noMove: string; asid
  */
 export function Others({ list, copy }: { list: Other[]; copy: OthersCopy }) {
   const router = useRouter();
-  const root = useRef<HTMLElement>(null), canvas = useRef<HTMLCanvasElement>(null);
+  const root = useRef<HTMLElement>(null), canvas = useRef<HTMLDivElement>(null); // the canvas's slot (keep.ts)
   const b = useRef<Sideboard | null>(null), frame = useRef(0), leaving = useRef(false), arriving = useRef<gsap.core.Timeline | null>(null);
   const [focus, setFocus] = useState<string | null>(null);
   const [pos, setPos] = useState<Record<string, { x: number; y: number }>>({});
@@ -34,7 +35,7 @@ export function Others({ list, copy }: { list: Other[]; copy: OthersCopy }) {
   };
 
   useLayoutEffect(() => {
-    const el = root.current!, c = canvas.current!;
+    const el = root.current!, got = claim<Sideboard>("others", [canvas.current!]), c = got.canvases[0];
     registerEases();
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const phone = () => window.matchMedia(PHONE).matches;
@@ -45,10 +46,16 @@ export function Others({ list, copy }: { list: Other[]; copy: OthersCopy }) {
     const place = () => board && setPos(board.anchors());
     const build = () => {
       if (board || failed) return board;
-      try { board = createSideboard(c, list, aside); } catch { failed = true; el.dataset.gl = "off"; return null; }
+      // back from a project, the board built last time, set back as it was before a piece was opened
+      try { board = got.stage ?? createSideboard(c, list, aside); } catch { failed = true; el.dataset.gl = "off"; return null; }
+      if (got.stage) {
+        board.resize(); Object.assign(board.room, { k: 1, lamp: 1, rest: 1 }); board.keep = null; board.spin.k = 0;
+        for (const k in board.lights) board.lights[k] = 0;
+        for (const k in board.lift) board.lift[k] = 0;
+      }
       b.current = board; setView(board, phone() ? FRAME.phone : FRAME.desk);
       if (!shown && !reduced) board.room.k = 0;
-      place(); board.ready.then(() => { b.current?.warm(); b.current?.render(); }); // its first frame, drawn ahead wherever the page is
+      place(); board.ready.then(() => { if (!got.stage) b.current?.warm(); b.current?.render(); }); // its first frame, drawn ahead wherever the page is
       return board;
     };
 
@@ -70,6 +77,7 @@ export function Others({ list, copy }: { list: Other[]; copy: OthersCopy }) {
         .to(rows, { opacity: 1, y: 0, duration: 0.6, ease: "arrive", stagger: 0.06 }, 0.3);
     };
     // built ahead, in idle time or a screen before it is needed, so the scroll never waits on it; arriving once in view
+    if (got.stage) build();
     const stopAhead = buildAhead(el, build, { order: 2 }), stopNear = nearScreen(el, away.current, draw);
     const seen = new IntersectionObserver((e) => { if (e.some((x) => x.isIntersecting)) arrive(); }, { threshold: 0.3 });
     seen.observe(el);
@@ -80,7 +88,8 @@ export function Others({ list, copy }: { list: Other[]; copy: OthersCopy }) {
       stopAhead(); stopNear(); seen.disconnect(); tl?.kill();
       gsap.set([...rise, ...rows], { clearProps: "transform,opacity" });
       window.removeEventListener("resize", onResize); cancelAnimationFrame(frame.current); frame.current = 0;
-      b.current = null; board?.dispose();
+      b.current = null;
+      const kept = board; if (kept) keep("others", [c], kept, () => kept.dispose());
     };
   }, [list]);
 
@@ -136,7 +145,7 @@ export function Others({ list, copy }: { list: Other[]; copy: OthersCopy }) {
 
   return (
     <section ref={root} id="archive" className="others" data-rest="0" data-rest-phone="0" aria-labelledby="others-title">
-      <canvas ref={canvas} className="others-canvas" aria-hidden="true" onPointerMove={onPointer} onPointerLeave={read(null)} onClick={onCanvasClick} />
+      <div ref={canvas} className="others-canvas keep-slot" aria-hidden="true" onPointerMove={onPointer} onPointerLeave={read(null)} onClick={onCanvasClick} />
       <div className="others-paper" />
       <div className="others-layer" data-on="dark">
         <h2 id="others-title" className="others-title display"><span className="ln" data-vt-line=""><span data-rise="">{copy.title}</span></span></h2>

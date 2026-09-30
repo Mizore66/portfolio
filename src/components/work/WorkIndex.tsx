@@ -10,6 +10,7 @@ import { buildAhead, firstView, nearScreen } from "@/lib/motion/firstView";
 import { PHONE, restFor } from "@/lib/seam/seam";
 import { after } from "@/lib/motion/slowmo";
 import { createGallery, VIEW, type Gallery, type View } from "./gallery";
+import { claim, keep } from "@/lib/three/keep";
 import "./work.css";
 
 export interface Piece { slug: string; name: string; square: string; move: string; result: string; qualifier: string }
@@ -24,7 +25,7 @@ const DIM = 0.42;
  */
 export function WorkIndex({ pieces }: { pieces: Piece[] }) {
   const router = useRouter();
-  const root = useRef<HTMLElement>(null), canvas = useRef<HTMLCanvasElement>(null);
+  const root = useRef<HTMLElement>(null), canvas = useRef<HTMLDivElement>(null); // the canvas's slot (keep.ts)
   const g = useRef<Gallery | null>(null), frame = useRef(0);
   const [focus, setFocus] = useState(FOCUS);
   const [pos, setPos] = useState<Record<string, { x: number; y: number }>>({});
@@ -42,7 +43,7 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
   // frame, outside the commit: on a slow device building it inside would outlast the browser's view-transition
   // timeout. The sweep waits two frames before it starts, and the leaving page's snapshot covers the wait.
   useLayoutEffect(() => {
-    const el = root.current!, c = canvas.current!;
+    const el = root.current!, got = claim<Gallery>("work", [canvas.current!]), c = got.canvases[0];
     registerEases();
     const view = () => (window.matchMedia(PHONE).matches ? VIEW.phone : VIEW.desk);
     const arriving = !window.matchMedia("(prefers-reduced-motion: reduce)").matches; // its entrance, the first time it is seen
@@ -53,14 +54,17 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
     const place = () => gal && setPos(gal.anchors(window.matchMedia(PHONE).matches));
     const build = () => {
       if (gal || failed || dead) return gal;
-      try { gal = createGallery(c, pieces); } catch { failed = true; el.dataset.gl = "off"; return null; } // no WebGL: the labels stand alone
+      // back from a project, the gallery built last time: its view, lights and room are set again below
+      try { gal = got.stage ?? createGallery(c, pieces); } catch { failed = true; el.dataset.gl = "off"; return null; } // no WebGL: the labels stand alone
+      if (got.stage) { gal.resize(); gal.room.fill = 1; gal.cam.phone = false; } // opening one frames it for phones (open, below)
       g.current = gal; setView(gal, view());
       if (arriving) { gal.room.k = 0; lit(gal, 0); const v = view(); gal.cam.pos.set(v.pos[0], v.pos[1] + 4.8, v.pos[2] + 3.2); } // lights off, camera high
       else { gal.room.k = 1; lit(gal, 1); }
-      place(); gal.ready.then(() => { g.current?.warm(); g.current?.render(); }); // its first frame, drawn ahead wherever the page is
+      place(); gal.ready.then(() => { if (!got.stage) g.current?.warm(); g.current?.render(); }); // its first frame, drawn ahead wherever the page is
       return gal;
     };
     // on the one page the room is built when it comes within a screen, not at load (seven scenes would compile at once)
+    if (got.stage) build();
     const stopAhead = buildAhead(el, build, { order: 1 }), stopNear = nearScreen(el, away.current, draw);
 
     let cancel = () => {};
@@ -92,7 +96,8 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
       dead = true; stopAhead(); stopNear();
       cancel(); tl?.kill(); gsap.set(rise, { clearProps: "transform" }); gsap.set(labels, { clearProps: "opacity,transform" });
       window.removeEventListener("resize", onResize); cancelAnimationFrame(frame.current); frame.current = 0;
-      g.current = null; gal?.dispose();
+      g.current = null;
+      const kept = gal; if (kept) keep("work", [c], kept, () => kept.dispose());
     };
   }, [pieces, draw]);
 
@@ -142,7 +147,7 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
 
   return (
     <section ref={root} id="work" className="work" data-rest="0" data-rest-phone="0" aria-labelledby="work-title">
-      <canvas ref={canvas} className="work-canvas" aria-hidden="true" onPointerMove={onPointer} onClick={onCanvasClick} />
+      <div ref={canvas} className="work-canvas keep-slot" aria-hidden="true" onPointerMove={onPointer} onClick={onCanvasClick} />
       <div className="work-paper" />
       <div className="work-layer" data-on="dark">
         <h2 id="work-title" className="work-title display"><span className="ln" data-vt-line=""><span data-rise="">Work</span></span></h2>
