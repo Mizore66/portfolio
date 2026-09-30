@@ -1,0 +1,36 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Colophon C: the engine's receipt</title>
+<link rel="stylesheet" href="_shared/tokens.css"><style>
+  /* C: the engine's receipt. The Lab's dark search palette floods; the title on the left, and on the right the site read
+     out like an engine's console: the perft receipt as the engine prints it, each note under its command, the tests
+     as "ok" lines and the credits as the engine's id lines. The last move's amber marks the prompts. */
+  .seam-bg { background:var(--search) !important; }
+  #ink-inv { --fg2:#8e96a6 !important; }
+  .t { position:absolute; left:4vw; top:15vh; font-size:5.2vw; white-space:nowrap; }
+  .lede { position:absolute; left:4.2vw; top:calc(15vh + 9.8vw); width:30vw; font-size:17px; line-height:1.45; color:var(--fg2); }
+  .rule { position:absolute; left:4.2vw; bottom:12vh; } .rule .cmd { font-size:13px; color:var(--fg2); margin-bottom:10px; } .rule .cmd::before { content:"> "; color:var(--move); }
+  .rule .out { font-size:2.3vw; line-height:1.3; } .rule .out span { color:var(--fg2); font-size:.5em; padding:0 .4em; vertical-align:.3em; }
+  .log { position:absolute; left:48vw; right:4vw; top:15vh; font-size:13px; line-height:1.55; }
+  .log .cmd { font-family:var(--font-mono); color:var(--fg2); margin:22px 0 6px; } .log .cmd:first-child { margin-top:0; }
+  .log .cmd::before { content:"> "; color:var(--move); }
+  .log .out { font-family:var(--font-mono); font-size:12.5px; } .log .out span { color:var(--fg2); }
+  .log p.b { max-width:62ch; font-size:14px; }
+  .log .ok { font-size:13.5px; display:grid; grid-template-columns:34px 1fr; margin-bottom:3px; max-width:66ch; }
+  .log .ok i { font-style:normal; font-family:var(--font-mono); color:var(--move); font-size:12px; padding-top:2px; }
+  .log .id { font-size:13px; display:grid; grid-template-columns:170px 1fr; margin-bottom:3px; max-width:70ch; } .log .id i { font-style:normal; font-family:var(--font-mono); font-size:12px; color:var(--fg2); padding-top:1px; }
+  @media (max-width:600px) {
+    .t { left:20px; top:88px; font-size:12vw; } .lede { left:20px; right:20px; width:auto; top:calc(88px + 26vw); font-size:15px; }
+    .rule { left:20px; bottom:auto; top:calc(88px + 26vw + 108px); } .rule .out { font-size:20px; } .log { left:20px; right:20px; top:calc(88px + 26vw + 108px + 150px); } .log .id { grid-template-columns:1fr; }
+  }
+</style></head><body><div class="frame"><div id="ink"><nav class="nav"><span>Roles</span><span>Work</span><span>Lab</span><span>Contact</span></nav><div class="resume">Résumé</div><div class="sound dim">Sound off</div>
+<h1 class="t display"></h1><p class="lede"></p><div class="rule"><p class="cmd mono">go perft 3</p><p class="out mono"></p></div>
+<div class="log"></div></div></div>
+<script type="module">
+import { COPY } from "./_shared/colophon.js"; import { seam } from "./_shared/seam.js";
+const $ = (s) => document.querySelector(s), slug = (k) => k.toLowerCase().replace(/ /g, "-");
+$(".t").innerHTML = COPY.title.replace("site ", "site <br>"); $(".lede").textContent = COPY.lede;
+$(".rule .out").innerHTML = COPY.perft.rows.map(([d, n]) => `info depth ${d}<span>nodes</span>${n.replace(",", "")}`).join("<br>");
+$(".log").innerHTML = COPY.sections.map((s) => `<p class="cmd">help ${slug(s.k)}</p><p class="b">${s.body}</p>`).join("")
+  + `<p class="cmd">test</p>${COPY.tests.map((t) => `<p class="ok"><i>ok</i><span>${t}</span></p>`).join("")}`
+  + `<p class="cmd">credits</p>${COPY.credits.map(([k, v]) => `<p class="id"><i>${k.toLowerCase()}</i><span>${v}</span></p>`).join("")}<p class="id"><i>author</i><span>${COPY.by}</span></p>`;
+await document.fonts.ready; seam({ at: 0 });
+</script></body></html>
