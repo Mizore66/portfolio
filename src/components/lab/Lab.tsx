@@ -8,6 +8,7 @@ import { PHONE, restColours, restFor, seam as live, setSeam } from "@/lib/seam/s
 import { arrival, navigating } from "@/lib/seam/sweep";
 import { registerBlock, refresh } from "@/lib/seam/blocks";
 import { firstView } from "@/lib/motion/firstView";
+import { sleeper, type Sleeper } from "@/lib/three/keep";
 import Link from "next/link";
 import type { TreeNode } from "@/content/lab-tree.gen";
 import { layout, type Line } from "./tree";
@@ -116,6 +117,9 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
     // measured from the document: on the one page the Lab is not at its top
     const top = (s: HTMLElement) => s.getBoundingClientRect().top + window.scrollY;
     const live3d = new Map<number, Chapter>();
+    // a built chapter's canvases hold their buffers only within a screen of view (keep.ts): all seven held them at
+    // once, 2.8 GB at 2×. A chapter's render sets its size, so one drawn while far off (warm, below) sleeps again after.
+    const sleepers = new Map<number, Sleeper>();
     let raf = 0;
     // only the chapters on screen are drawn; one coming on screen is drawn as it arrives
     const onScreen = new Set<number>();
@@ -153,10 +157,13 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
       if (!spec?.make || live3d.has(id)) return;
       const s = sections.find((x) => +x.dataset.ch! === id)!;
       const day = s.querySelector<HTMLCanvasElement>("canvas.day")!, night = s.querySelector<HTMLCanvasElement>("canvas.night");
-      try { const c = spec.make(day, night, { phone, reduced }); live3d.set(id, c); c.progress(progressOf(s)); c.ready.then(() => {
+      try { const c = spec.make(day, night, { phone, reduced }); live3d.set(id, c); c.progress(progressOf(s));
+        const zz = sleeper(s, [...s.querySelectorAll("canvas")], () => { if (live3d.get(id) === c) { c.resize(); drawAll(true); } });
+        sleepers.get(id)?.stop(); sleepers.set(id, zz); zz.sync();
+        c.ready.then(() => {
         // warm it: its end state, with everything in it, drawn through warm() (one instance each, one pixel), so shadow
         // programs and buffers are ready before it is first seen (that first draw cost the scroll up to 270 ms)
-        if (live3d.get(id) === c && !onScreen.has(id)) { c.progress(1); warm(() => c.render()); c.progress(progressOf(s)); } if (live3d.get(id) !== c) return; hud(s, c); place(); drawAll(true); if (!blend) tick(); }); }
+        if (live3d.get(id) === c && !onScreen.has(id)) { c.progress(1); warm(() => c.render()); c.progress(progressOf(s)); } if (live3d.get(id) !== c) return; zz.sync(); hud(s, c); place(); drawAll(true); if (!blend) tick(); }); }
       catch { s.dataset.gl = "off"; }
     };
     const near = new IntersectionObserver((es) => {
@@ -177,7 +184,7 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
     const release = () => {
       if (section) return;
       const at = active();
-      for (const [id, c] of live3d) if (Math.abs(id - at) > KEEP) { c.dispose(); live3d.delete(id); }
+      for (const [id, c] of live3d) if (Math.abs(id - at) > KEEP) { c.dispose(); live3d.delete(id); sleepers.get(id)?.stop(); sleepers.delete(id); }
     };
     const queue = () => {
       if (document.querySelector('.hero[data-intro="play"]')) { idle = window.setTimeout(queue, 600); return; }
@@ -228,7 +235,7 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
     // Play moves the seam with the eval between scrolls (ch7); follow it
     const onEval = () => { if (!blend) tick(); };
     window.addEventListener("lab:seam", onEval);
-    const onResize = () => { live3d.forEach((c) => c.resize()); place(); drawAll(true); };
+    const onResize = () => { live3d.forEach((c, id) => { if (!sleepers.get(id)?.asleep) c.resize(); }); place(); drawAll(true); };
     window.addEventListener("resize", onResize);
 
     // On the one page the opening and Play are blocks: the opening rests at the match score, Play at its eval.
@@ -268,7 +275,7 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
       const t = svgTree();
       for (const e of [...rise, ...t.lines, ...t.pv]) { e.removeAttribute("style"); Reflect.deleteProperty(e, "_gsap"); }
       window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onResize); window.removeEventListener("lab:seam", onEval);
-      live3d.forEach((c) => c.dispose());
+      live3d.forEach((c) => c.dispose()); sleepers.forEach((z) => z.stop());
     };
   }, [path, section]);
 

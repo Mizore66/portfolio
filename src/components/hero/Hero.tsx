@@ -8,7 +8,7 @@ import { lockScroll } from "@/lib/motion/scroll";
 import { gsap } from "gsap";
 import { registerEases, share, perLayer } from "@/lib/motion/ease";
 import { createStage, T, type Stage } from "./stage";
-import { claim, keep } from "@/lib/three/keep";
+import { claim, keep, sleeper } from "@/lib/three/keep";
 import { cue } from "@/lib/sound/sound";
 import "./hero.css";
 
@@ -68,7 +68,7 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
     // back from a detail page, the stage built last time (keep.ts): nothing to build, no shader to compile
     const key = `hero-${mobile}`, got = claim<Stage>(key, [day.current!, night.current!]);
     let stage: Stage;
-    try { stage = got.stage ?? createStage(got.canvases[0], got.canvases[1], mobile); if (got.stage) stage.resize(); }
+    try { stage = got.stage ?? createStage(got.canvases[0], got.canvases[1], mobile); }
     catch { el.dataset.intro = "done"; return; } // no WebGL: the CSS end state stands in
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const seen = sessionStorage.getItem(SEEN) === "1";
@@ -157,9 +157,12 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
       } else fonts.then(() => { gsap.ticker.add(guard); tl.play(0); });
     }
 
-    const onResize = () => { stage.resize(); draw(); };
+    // its canvases hold their buffers only within a screen of view (keep.ts); a kept stage wakes, and resizes, here
+    const zz = sleeper(el, got.canvases, () => { stage.resize(); draw(); });
+    zz.sync(); // a kept stage gets its buffers back now if it is on screen; a new one built off screen gives them up
+    const onResize = () => { if (!zz.asleep) stage.resize(); draw(); };
     window.addEventListener("resize", onResize);
-    return () => { lockScroll(false); tl.kill(); cancelRise(); rise?.kill(); gsap.set([...nav, ...toggle], { clearProps: "opacity" }); gsap.ticker.remove(guard); cancelAnimationFrame(raf); io.disconnect(); window.removeEventListener("resize", onResize); keep(key, got.canvases, stage, () => stage.dispose()); };
+    return () => { lockScroll(false); tl.kill(); cancelRise(); rise?.kill(); gsap.set([...nav, ...toggle], { clearProps: "opacity" }); gsap.ticker.remove(guard); cancelAnimationFrame(raf); io.disconnect(); zz.stop(); window.removeEventListener("resize", onResize); keep(key, got.canvases, stage, () => stage.dispose()); };
   }, [mobile]);
 
   return (

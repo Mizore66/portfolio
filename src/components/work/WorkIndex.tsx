@@ -10,7 +10,7 @@ import { buildAhead, firstView, nearScreen } from "@/lib/motion/firstView";
 import { PHONE, restFor } from "@/lib/seam/seam";
 import { after } from "@/lib/motion/slowmo";
 import { createGallery, VIEW, type Gallery, type View } from "./gallery";
-import { claim, keep } from "@/lib/three/keep";
+import { claim, keep, sleeper } from "@/lib/three/keep";
 import "./work.css";
 
 export interface Piece { slug: string; name: string; square: string; move: string; result: string; qualifier: string }
@@ -52,15 +52,18 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
     const lit = (G: Gallery, k: number) => { for (const p of pieces) G.lights[p.slug] = (p.slug === FOCUS ? 1 : DIM) * k; };
     const setView = (G: Gallery, v: View) => { G.cam.pos.set(...v.pos); G.cam.look.set(...v.look); G.cam.fov = v.fov; G.cam.shift = 0.5; };
     const place = () => gal && setPos(gal.anchors(window.matchMedia(PHONE).matches));
+    // its canvas holds its buffers only within a screen of view (keep.ts); a kept gallery wakes, and resizes, as it comes near
+    const zz = sleeper(el, [c], () => { if (!gal) return; gal.resize(); draw(); }); // the labels stay where they were
     const build = () => {
       if (gal || failed || dead) return gal;
       // back from a project, the gallery built last time: its view, lights and room are set again below
       try { gal = got.stage ?? createGallery(c, pieces); } catch { failed = true; el.dataset.gl = "off"; return null; } // no WebGL: the labels stand alone
-      if (got.stage) { gal.resize(); gal.room.fill = 1; gal.cam.phone = false; } // opening one frames it for phones (open, below)
+      if (got.stage) { gal.room.fill = 1; gal.cam.phone = false; } // opening one frames it for phones (open, below)
       g.current = gal; setView(gal, view());
       if (arriving) { gal.room.k = 0; lit(gal, 0); const v = view(); gal.cam.pos.set(v.pos[0], v.pos[1] + 4.8, v.pos[2] + 3.2); } // lights off, camera high
       else { gal.room.k = 1; lit(gal, 1); }
       place(); gal.ready.then(() => { if (!got.stage) g.current?.warm(); g.current?.render(); }); // its first frame, drawn ahead wherever the page is
+      zz.sync(); // a kept one gets its buffers back now if it is near; one built far off gives them up
       return gal;
     };
     // on the one page the room is built when it comes within a screen, not at load (seven scenes would compile at once)
@@ -90,10 +93,10 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
       });
     }
 
-    const onResize = () => { if (!gal) return; gal.resize(); setView(gal, view()); place(); draw(); };
+    const onResize = () => { if (!gal) return; if (!zz.asleep) gal.resize(); setView(gal, view()); place(); draw(); };
     window.addEventListener("resize", onResize);
     return () => {
-      dead = true; stopAhead(); stopNear();
+      dead = true; stopAhead(); stopNear(); zz.stop();
       cancel(); tl?.kill(); gsap.set(rise, { clearProps: "transform" }); gsap.set(labels, { clearProps: "opacity,transform" });
       window.removeEventListener("resize", onResize); cancelAnimationFrame(frame.current); frame.current = 0;
       g.current = null;

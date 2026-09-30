@@ -25,5 +25,45 @@ export function keep(key: string, canvases: HTMLCanvasElement[], stage: unknown,
   const old = kept.get(key);
   if (old && old.stage !== stage) { clearTimeout(old.timer); old.dispose(); }
   const timer = window.setTimeout(() => { if (kept.get(key)?.stage === stage) { kept.delete(key); dispose(); } }, LIFE);
+  shrink(canvases); // held while away, but without its buffers: they come back when the section is near again (sleeper)
   kept.set(key, { canvases, stage, dispose, timer });
 }
+
+/** Gives up a canvas's drawing buffer: at 2× with antialiasing a full-screen one holds about 230 MB. */
+export const shrink = (canvases: HTMLCanvasElement[]) => canvases.forEach((c) => { c.width = 1; c.height = 1; });
+
+export interface Sleeper { near: boolean; readonly asleep: boolean; sleep(): void; wake(): void; sync(): void; stop(): void }
+
+/**
+ * A scene's canvases hold their drawing buffers only while their section is within `screens` of the screen (on the
+ * one page every section's canvas held a full screen of buffers at all times: 1.6 GB at 2×, and the Lab 2.8 GB, which
+ * pushed a Mac that was already swapping into black frames during page changes). Further away they are shrunk to a
+ * pixel; coming near, `wake` gives them back (the stage's resize, then a draw) a screen before they are seen.
+ * Nothing drawn changes. After building (which sizes the canvases), a
+ * section calls `sync()`. Asleep is read from the canvas itself, so a build or a resize never leaves it stale.
+ */
+export function sleeper(el: Element, canvases: HTMLCanvasElement[], wake: () => void, screens = 1): Sleeper {
+  const measure = () => { const r = el.getBoundingClientRect(), h = innerHeight * screens; return r.bottom > -h && r.top < innerHeight + h; };
+  const s: Sleeper = {
+    near: measure(),
+    get asleep() { return canvases.length > 0 && canvases[0].width <= 1; },
+    sleep() { if (!s.asleep) shrink(canvases); },
+    wake() { if (s.asleep) wake(); },
+    sync() { if (s.near) s.wake(); else s.sleep(); },
+    stop() { io.disconnect(); awake.delete(check); if (!awake.size) removeEventListener("scroll", wakeNear); },
+  };
+  const io = new IntersectionObserver((es) => { s.near = es.some((e) => e.isIntersecting); s.sync(); }, { rootMargin: `${screens * 100}% 0px` });
+  io.observe(el);
+  const check = () => { if (s.asleep && measure()) { s.near = true; s.wake(); } };
+  if (!awake.size) addEventListener("scroll", wakeNear, { passive: true });
+  awake.add(check);
+  return s;
+}
+
+/**
+ * Wakes, at once, any sleeping scene a jump has brought near: the observer reports after the frame is painted, and a
+ * jump (Back to where the one page was left, a link to one of its sections) would paint that frame from a one-pixel
+ * canvas. Runs on scroll, before the frame, and from the code that jumps.
+ */
+const awake = new Set<() => void>();
+export function wakeNear() { awake.forEach((f) => f()); }

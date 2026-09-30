@@ -10,7 +10,7 @@ import { buildAhead, firstView, nearScreen } from "@/lib/motion/firstView";
 import { PHONE } from "@/lib/seam/seam";
 import { after } from "@/lib/motion/slowmo";
 import { createHall, FRAME, type Frame, type Hall } from "./hall";
-import { claim, keep } from "@/lib/three/keep";
+import { claim, keep, sleeper } from "@/lib/three/keep";
 import "./roles.css";
 
 export interface HallTable { slug: string; name: string; when: string; current: boolean; fen: string; last: string[] }
@@ -40,14 +40,17 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
     const arriving = !window.matchMedia("(prefers-reduced-motion: reduce)").matches; // its entrance, the first time it is seen
     const rise = el.querySelectorAll("[data-rise]"), names = el.querySelectorAll(".names li");
     let hall: Hall | null = null, failed = false, dead = false, tl: gsap.core.Timeline | undefined;
+    // its canvas holds its buffers only within a screen of view (keep.ts); a kept hall wakes, and resizes, as it comes near
+    const zz = sleeper(el, [c], () => { if (!hall) return; hall.resize(); draw(); });
     const build = () => {
       if (hall || failed || dead) return hall;
       // back from a detail page, the hall built last time: only its view and its lamps are set again
       try { hall = got.stage ?? createHall(c, list); } catch { failed = true; el.dataset.gl = "off"; return null; }
-      if (got.stage) { hall.resize(); for (const k in hall.lamps) hall.lamps[k] = 0; }
+      if (got.stage) for (const k in hall.lamps) hall.lamps[k] = 0;
       h.current = hall; setView(hall, phone() ? FRAME.phone : FRAME.desk);
       if (arriving) { const f = home.current; hall.cam.pos = [f.pos[0], f.pos[1] + 3, f.pos[2]]; } // from 3 units higher (motion.md §4)
       hall.ready.then(() => { if (!got.stage) h.current?.warm(); h.current?.render(); }); // its first frame, drawn ahead wherever the page is
+      zz.sync(); // a kept one gets its buffers back now if it is near; one built far off gives them up
       return hall;
     };
     // on the one page the hall is built when it comes within a screen, not at load
@@ -65,10 +68,10 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
           .to(names, { opacity: 1, y: 0, duration: 0.5, ease: "arrive", stagger: 0.05 }, delay + 0.25);
       });
     }
-    const onResize = () => { if (!hall) return; hall.resize(); setView(hall, phone() ? FRAME.phone : FRAME.desk); draw(); };
+    const onResize = () => { if (!hall) return; if (!zz.asleep) hall.resize(); setView(hall, phone() ? FRAME.phone : FRAME.desk); draw(); };
     window.addEventListener("resize", onResize);
     return () => {
-      dead = true; stopAhead(); stopNear(); cancel(); tl?.kill();
+      dead = true; stopAhead(); stopNear(); zz.stop(); cancel(); tl?.kill();
       gsap.set([...rise, ...names], { clearProps: "transform,opacity" });
       window.removeEventListener("resize", onResize); cancelAnimationFrame(frame.current); frame.current = 0;
       h.current = null;

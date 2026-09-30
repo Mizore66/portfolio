@@ -10,6 +10,7 @@ import { registerEases } from "@/lib/motion/ease";
 import { now } from "@/lib/motion/slowmo";
 import { seam, setSeam, sides, css, intersect, isPhone, restFor, restColours } from "./seam";
 import { cue } from "@/lib/sound/sound";
+import { wakeNear } from "@/lib/three/keep";
 
 export interface Plan {
   from: string; to: string; A: number; B: number; phone: boolean;
@@ -120,6 +121,7 @@ export function arrived(path: string) {
     const el = document.getElementById(current.plan.to.split("#")[1]);
     if (el) window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY);
   }
+  wakeNear(); // a scene the jump brought near gets its buffers before this frame (keep.ts)
   if (current && pathOf(current.plan.to) === path) {
     if (pending !== current) return; // already under way (an effect that runs twice)
     if (pending.reduced) { setSeam(pending.plan.B); pending = current = null; requestAnimationFrame(() => restColours(true)); return; }

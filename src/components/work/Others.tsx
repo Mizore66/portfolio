@@ -10,7 +10,7 @@ import { PHONE, restFor } from "@/lib/seam/seam";
 import { after } from "@/lib/motion/slowmo";
 import { buildAhead, nearScreen } from "@/lib/motion/firstView";
 import { createSideboard, FRAME, type Frame, type Sideboard } from "./sideboard";
-import { claim, keep } from "@/lib/three/keep";
+import { claim, keep, sleeper } from "@/lib/three/keep";
 
 export interface Other { slug: string; name: string; square: string | null; move: string | null; result: string; qualifier: string; aside: boolean }
 export interface OthersCopy { title: string; label: string; noMove: string; aside: string }
@@ -44,18 +44,21 @@ export function Others({ list, copy }: { list: Other[]; copy: OthersCopy }) {
     let board: Sideboard | null = null, failed = false, shown = false, tl: gsap.core.Timeline | undefined;
     const aside = new Set(list.filter((o) => o.aside).map((o) => o.slug));
     const place = () => board && setPos(board.anchors());
+    // its canvas holds its buffers only within a screen of view (keep.ts); a kept board wakes, and resizes, as it comes near
+    const zz = sleeper(el, [c], () => { if (!board) return; board.resize(); draw(); }); // the labels stay where they were
     const build = () => {
       if (board || failed) return board;
       // back from a project, the board built last time, set back as it was before a piece was opened
       try { board = got.stage ?? createSideboard(c, list, aside); } catch { failed = true; el.dataset.gl = "off"; return null; }
       if (got.stage) {
-        board.resize(); Object.assign(board.room, { k: 1, lamp: 1, rest: 1 }); board.keep = null; board.spin.k = 0;
+        Object.assign(board.room, { k: 1, lamp: 1, rest: 1 }); board.keep = null; board.spin.k = 0;
         for (const k in board.lights) board.lights[k] = 0;
         for (const k in board.lift) board.lift[k] = 0;
       }
       b.current = board; setView(board, phone() ? FRAME.phone : FRAME.desk);
       if (!shown && !reduced) board.room.k = 0;
       place(); board.ready.then(() => { if (!got.stage) b.current?.warm(); b.current?.render(); }); // its first frame, drawn ahead wherever the page is
+      zz.sync(); // a kept one gets its buffers back now if it is near; one built far off gives them up
       return board;
     };
 
@@ -82,10 +85,10 @@ export function Others({ list, copy }: { list: Other[]; copy: OthersCopy }) {
     const seen = new IntersectionObserver((e) => { if (e.some((x) => x.isIntersecting)) arrive(); }, { threshold: 0.3 });
     seen.observe(el);
 
-    const onResize = () => { if (!board) return; board.resize(); setView(board, phone() ? FRAME.phone : FRAME.desk); place(); draw(); };
+    const onResize = () => { if (!board) return; if (!zz.asleep) board.resize(); setView(board, phone() ? FRAME.phone : FRAME.desk); place(); draw(); };
     window.addEventListener("resize", onResize);
     return () => {
-      stopAhead(); stopNear(); seen.disconnect(); tl?.kill();
+      stopAhead(); stopNear(); zz.stop(); seen.disconnect(); tl?.kill();
       gsap.set([...rise, ...rows], { clearProps: "transform,opacity" });
       window.removeEventListener("resize", onResize); cancelAnimationFrame(frame.current); frame.current = 0;
       b.current = null;
