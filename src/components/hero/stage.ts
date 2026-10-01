@@ -11,6 +11,7 @@ import { gsap } from "gsap";
 import { piece, piecesReady, MAT, sq, type PieceType } from "@/lib/three/pieces";
 import { type Steps } from "@/lib/three/steps";
 import { rng } from "@/lib/three/rng";
+import { renderer } from "@/lib/three/env";
 import line from "@/content/opening-line.json";
 
 export const PLIES = line.plies;
@@ -31,13 +32,6 @@ const T_END = T_AT[T_AT.length - 1] + D[D.length - 1];
 export const T = { play: T_PLAY, blast: T_END + 0.28, paper: T_END + 1.13, name: T_END + 1.53, total: T_END + 4.73 };
 const CHECKS = [15, 17].map((i) => T_AT[i] + D[i]); // 8…Bb4+ and 9…Bxd2+
 
-function renderer(canvas: HTMLCanvasElement, exposure: number) {
-  const r = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
-  r.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = exposure;
-  r.outputColorSpace = THREE.SRGBColorSpace; r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
-  return r;
-}
 
 function grain(base: string, dark: string, seed: number) {
   const c = document.createElement("canvas"); c.width = c.height = 256;

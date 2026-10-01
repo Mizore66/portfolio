@@ -33,7 +33,17 @@ export function keep(key: string, canvases: HTMLCanvasElement[], stage: unknown,
   // with the GPU busy drawing the page change. Seen as the sleeper last saw it: by now the page may have scrolled.
   // The others give theirs up once the page change is over: shrinking a canvas during it cost a frame of 92 ms.
   if (!onScreen.get(canvases[0])?.()) { later.add(canvases); settle(); }
-  kept.set(key, { canvases, stage, dispose, timer });
+  kept.delete(key); kept.set(key, { canvases, stage, dispose, timer }); // last in, last let go (evictKept)
+}
+
+/** Lets the oldest kept scene go, for room for a new WebGL context (env.ts): how many contexts it held, 0 when none is
+ * kept. Its renderers are freed once it has finished compiling (a microtask for a scene that has drawn). */
+export function evictKept(): number {
+  const [key, k] = kept.entries().next().value ?? [];
+  if (!key || !k) return 0;
+  kept.delete(key); clearTimeout(k.timer); later.delete(k.canvases);
+  timed(`${key}: let go, for room`, k.dispose);
+  return k.canvases.length;
 }
 
 /** Gives up a canvas's drawing buffer: at 2× with antialiasing a full-screen one holds about 230 MB. */
