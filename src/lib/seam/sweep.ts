@@ -38,8 +38,22 @@ export function plan(from: string, to: string, A: number, B: number, phone: bool
   return { from, to, A, B, phone, dur, tilt, typeAt, liftAt, liftDur, rise, total, cut };
 }
 
-interface Line { name: string; ink: boolean; x: number; y: number; order: number; /** an object drawn once above both layers (Contact's clock): not clipped to a side */ whole: boolean }
+interface Line { name: string; ink: boolean; x: number; y: number; w: number; h: number; order: number; /** an object drawn once above both layers (Contact's clock): not clipped to a side */ whole: boolean }
 interface Pending { plan: Plan; page: { x: number; y: number } | null; lines: Line[]; reduced: boolean; started: Promise<number>; start: (t0: number) => void }
+
+/**
+ * A line's clip: its side of the seam, cut to the line's own box. Chrome paints a clip's mask as large as the
+ * clip's polygon, so the side itself (a half screen) gave each of Contact's 43 lines a mask a screen in size, over
+ * 500 MB of tiles at 2x, past Chrome's tile budget: frames drawn between the painted ones showed the snapshot's
+ * lines missing, or the page black (the owner's Mac, Contact to the colophon). Always 8 points, so that one keyframe
+ * eases into the next whatever the cut leaves.
+ */
+export function lineClip(side: [number, number][], l: Pick<Line, "x" | "y" | "w" | "h">) {
+  const m = 2, box: [number, number][] = [[l.x - m, l.y - m], [l.x + l.w + m, l.y - m], [l.x + l.w + m, l.y + l.h + m], [l.x - m, l.y + l.h + m]];
+  const cut = intersect(side, box), pts = cut.length ? cut : [[l.x, l.y], [l.x, l.y], [l.x, l.y]] as [number, number][];
+  while (pts.length < 8) pts.push(pts[pts.length - 1]);
+  return css(pts.slice(0, 8), l.x, l.y);
+}
 
 const pathOf = (to: string) => to.split("#")[0] || "/";
 let pending: Pending | null = null;
@@ -78,7 +92,7 @@ export function beginNav(to: string, from: string, { restoreScroll = false } = {
       // paper type on the dark side: the inverted copy, or a page's only copy where it never meets the seam
       const ink = !e.closest("[data-layer=inv], [data-on=dark]"), name = `vl-${i}`;
       e.style.viewTransitionName = name; (e.style as CSSStyleDeclaration & { viewTransitionClass: string }).viewTransitionClass = "vt-line";
-      lines.push({ name, ink, x: r.left, y: r.top, order: ink ? count.ink++ : count.inv++, whole: e.hasAttribute("data-vt-whole") });
+      lines.push({ name, ink, x: r.left, y: r.top, w: r.width, h: r.height, order: ink ? count.ink++ : count.inv++, whole: e.hasAttribute("data-vt-whole") });
     });
   }
   restColours(false); // the leaving copy is captured as it looks while the seam crosses it
@@ -152,7 +166,7 @@ export function startSweep(oldGroup: string | null) {
   // Each line was captured on its own, without the clip its layer had, so the paper copy of a line would cover its ink
   // copy until the sweep starts. Hold every line to its own side of the seam as it stands, from the first frame.
   const W = innerWidth, H = innerHeight, sd = sides(job.plan.A, 0, W, H, job.plan.phone);
-  const holds = oldGroup ? job.lines.filter((l) => !l.whole).map((l) => { const c = css(l.ink ? sd.light : sd.dark, l.x, l.y);
+  const holds = oldGroup ? job.lines.filter((l) => !l.whole).map((l) => { const c = lineClip(l.ink ? sd.light : sd.dark, l);
     return root.animate([{ clipPath: c }, { clipPath: c }], { duration: 10_000, pseudoElement: `::view-transition-group(${l.name})` }); }) : [];
   const release = () => { hold?.cancel(); holds.forEach((h) => h.cancel()); };
   requestAnimationFrame(() => requestAnimationFrame(() => { if (mine === token) run(job, oldGroup, release); else release(); }));
@@ -196,7 +210,7 @@ function run(job: Pending, oldGroup: string | null, release: () => void) {
     duration: p.liftDur * 1000, delay: p.liftAt * 1000, fill: "both", easing: "cubic-bezier(.7,0,.13,1)", pseudoElement: `::view-transition-image-pair(${oldGroup})`,
   });
   for (const l of lines) {
-    if (!l.whole) root.animate(frames((t) => { const s = at(t), sd = sides(s.at, s.tilt, W, H, p.phone); return css(l.ink ? sd.light : sd.dark, l.x, l.y); }),
+    if (!l.whole) root.animate(frames((t) => { const s = at(t), sd = sides(s.at, s.tilt, W, H, p.phone); return lineClip(l.ink ? sd.light : sd.dark, l); }),
       { duration: ms, fill: "both", pseudoElement: `::view-transition-group(${l.name})` });
     root.animate([{ transform: "translateY(0)" }, { transform: "translateY(-135%)" }], {
       duration: 500, delay: (p.typeAt + (l.whole ? 0.05 : l.order * 0.05)) * 1000, fill: "both", easing: "cubic-bezier(.7,0,.13,1)", pseudoElement: `::view-transition-image-pair(${l.name})`,
