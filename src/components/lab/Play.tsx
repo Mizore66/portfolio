@@ -26,7 +26,8 @@ function status(c: ChapterCopy, s: PlayState, phone: boolean) {
   switch (s.phase) {
     case "loading": return t("loading");
     case "thinking": return t("thinking");
-    case "won": case "lost": case "drawn": return t(s.phase);
+    case "won": case "lost": return t(s.phase);
+    case "drawn": return t(s.why === "repetition" ? "drawnRepetition" : s.why === "fifty" ? "drawnFifty" : "drawn");
     case "idle": if (!s.white) return t("statusWait");
   }
   if (s.phase === "you" && !s.best) return t("yourMove"); // its line was too short to name your reply yet

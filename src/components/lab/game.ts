@@ -6,6 +6,7 @@
  */
 import { legalPlies, playPly, sanOf, startPos, rowsOf, gameOutcome, type EnginePos, type EvalMode } from "@/lib/chess/engine";
 import type { Ply } from "@/lib/opening/types";
+import { drawBy, type DrawBy } from "@/lib/chess/draws";
 import DATA from "@/content/lab-data.json";
 import { playStage, type PlayStage } from "./ch7";
 import { share } from "./kit";
@@ -20,6 +21,8 @@ export interface PlayState {
   cp: number; best: string;
   /** the learned net's score, which the seam follows (White's view) */
   seamCp: number;
+  /** how a drawn game was drawn */
+  why: "stalemate" | DrawBy | null;
 }
 
 const HOME: Ply[] = [];
@@ -28,7 +31,7 @@ export const START_CP = DATA.start.learned.evalCp;
 const HAND = 280, DROP = 200, BACK = 250, RESET = 600;
 
 const HOME_SANS = (() => { const q = startPos(); return HOME.map((p) => { const t = sanOf(q, p); playPly(q, p); return t; }); })();
-let state: PlayState = { opp: "learned", white: true, started: false, phase: "idle", sans: HOME_SANS, cp: known("learned").cp, best: known("learned").best, seamCp: START_CP };
+let state: PlayState = { opp: "learned", white: true, started: false, phase: "idle", sans: HOME_SANS, cp: known("learned").cp, best: known("learned").best, seamCp: START_CP, why: null };
 const subs = new Set<() => void>();
 const put = (s: Partial<PlayState>) => { state = { ...state, ...s }; subs.forEach((f) => f()); };
 export const store = {
@@ -73,10 +76,13 @@ export function mountPlay(pin: HTMLElement, reduced: boolean): { start(): void; 
     const go = () => { if (document.hidden) { document.addEventListener("visibilitychange", go, { once: true }); return; } worker?.postMessage({ ...m, id: n } as PlayIn); };
     go();
   });
-  const over = (): Phase | null => {
-    const o = gameOutcome(pos); if (!o) return null;
-    if (o === "1/2-1/2") return "drawn";
-    return (o === "1-0") === state.white ? "won" : "lost";
+  // mate and stalemate first: a mate on the move that would also draw still wins
+  const over = (): { phase: Phase; why: PlayState["why"] } | null => {
+    const o = gameOutcome(pos);
+    if (o === "1/2-1/2") return { phase: "drawn", why: "stalemate" };
+    if (o) return { phase: (o === "1-0") === state.white ? "won" : "lost", why: null };
+    const d = drawBy(plies);
+    return d ? { phase: "drawn", why: d } : null;
   };
 
   // after your move: the engine thinks and plays, and the board is yours again as soon as its move lands. Its own
@@ -84,7 +90,7 @@ export function mountPlay(pin: HTMLElement, reduced: boolean): { start(): void; 
   // on a second search; one runs behind only where the seam needs the learned net's view or the line was too short.
   const next = async () => {
     const end = over();
-    if (end) { put({ phase: end, sans: sansOf() }); return; }
+    if (end) { put({ ...end, sans: sansOf() }); return; }
     if (yourTurn()) { put({ phase: "you", sans: sansOf() }); return; }
     const mode = state.opp, g = game, live = () => alive && g === game; // a reset makes whatever comes back stale
     put({ phase: "thinking", sans: sansOf() });
@@ -95,7 +101,7 @@ export function mountPlay(pin: HTMLElement, reduced: boolean): { start(): void; 
     if (!live()) return;
     playPly(pos, r.best); plies.push(r.best); draw();
     const done = over();
-    if (done) { put({ phase: done, sans: sansOf() }); return; }
+    if (done) { put({ ...done, sans: sansOf() }); return; }
     const reply = r.pv[1] ?? "";
     put({ phase: "you", sans: sansOf(), cp: r.cp, best: reply });
     if (mode !== "learned") void behind("learned", (x) => { put({ seamCp: x.cp }); stage?.eval(x.cp); });
@@ -156,7 +162,7 @@ export function mountPlay(pin: HTMLElement, reduced: boolean): { start(): void; 
     if (g !== game) return;
     busy = sliding = false;
     const k = known(state.opp);
-    put({ sans: sansOf(), cp: k.cp, best: k.best, seamCp: START_CP, phase: state.started ? "you" : "idle" });
+    put({ sans: sansOf(), cp: k.cp, best: k.best, seamCp: START_CP, phase: state.started ? "you" : "idle", why: null });
     stage?.eval(START_CP);
     if (state.started && !yourTurn()) void next();
   };
