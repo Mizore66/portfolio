@@ -8,7 +8,8 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { gsap } from "gsap";
-import { piece, MAT, sq, type PieceType } from "@/lib/three/pieces";
+import { piece, piecesReady, MAT, sq, type PieceType } from "@/lib/three/pieces";
+import { type Steps } from "@/lib/three/steps";
 import { rng } from "@/lib/three/rng";
 import line from "@/content/opening-line.json";
 
@@ -56,10 +57,12 @@ export interface Stage {
   lower(): boolean;
 }
 
-export function createStage(dayCanvas: HTMLCanvasElement, nightCanvas: HTMLCanvasElement, mobile: boolean): Stage {
+/** The stage in steps (steps.ts): the renderers, the environment, the board, the pieces a few at a time. */
+export function* stageSteps(dayCanvas: HTMLCanvasElement, nightCanvas: HTMLCanvasElement, mobile: boolean): Steps<Stage> {
   const R = rng(11), scene = new THREE.Scene();
-  const rDay = renderer(dayCanvas, 1), rNight = renderer(nightCanvas, 1.1);
-  const pm = new THREE.PMREMGenerator(rDay), env = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose();
+  const rDay = renderer(dayCanvas, 1); yield;
+  const rNight = renderer(nightCanvas, 1.1); yield;
+  const pm = new THREE.PMREMGenerator(rDay), env = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose(); yield;
   scene.environment = env; scene.environmentIntensity = 0.3;
 
   // lights: day under the paper, night under the black
@@ -79,6 +82,7 @@ export function createStage(dayCanvas: HTMLCanvasElement, nightCanvas: HTMLCanva
   const walnut = new THREE.MeshPhysicalMaterial({ map: grain("#5f3f2a", "#2e1c12", 5), roughness: 0.4, clearcoat: 0.6, clearcoatRoughness: 0.25 });
   const frameM = new THREE.MeshPhysicalMaterial({ map: grain("#4a3223", "#23160e", 9), roughness: 0.45, clearcoat: 0.7, clearcoatRoughness: 0.2 });
   const hlLight = maple.clone(), hlDark = walnut.clone(); hlLight.color = new THREE.Color(0xf3c77f); hlDark.color = new THREE.Color(0xd9923a);
+  yield;
   const objs: Obj[] = [];
   const add = (mesh: THREE.Object3D, kind: Obj["kind"], size: number): Obj => {
     mesh.traverse((o) => { if ((o as THREE.Mesh).isMesh) { o.castShadow = true; o.receiveShadow = true; } });
@@ -95,15 +99,19 @@ export function createStage(dayCanvas: HTMLCanvasElement, nightCanvas: HTMLCanva
   });
   [[4.25, 4.25], [4.25, -4.25], [-4.25, 4.25], [-4.25, -4.25]].forEach(([x, z]) => { const o = add(new THREE.Mesh(cap, frameM), "frame", 0.6); o.mesh.position.set(x, -0.11, z); });
   for (const o of objs) { o.p0.copy(o.mesh.position); o.q0.copy(o.mesh.quaternion); o.rest = true; }
+  yield; yield* piecesReady();
 
   // the pieces, and where each stands after every ply ("x…" = taken, set beside the board)
   const pieces: Obj[] = [];
-  "rnbqkbnr/pppppppp/......../......../......../......../PPPPPPPP/RNBQKBNR".split("/").forEach((row, i) => [...row].forEach((ch, f) => {
-    if (ch === ".") return;
-    const w = ch === ch.toUpperCase(), t = ch.toUpperCase() as PieceType, m = piece(t, w ? MAT.ivory() : MAT.ebony());
-    const o = add(m, "piece", t === "P" ? 0.6 : 1.4); o.type = t; o.white = w; pieces.push(o);
-    (o as Obj & { sq: string }).sq = "abcdefgh"[f] + (8 - i);
-  }));
+  for (const [i, row] of "rnbqkbnr/pppppppp/......../......../......../......../PPPPPPPP/RNBQKBNR".split("/").entries()) {
+    [...row].forEach((ch, f) => {
+      if (ch === ".") return;
+      const w = ch === ch.toUpperCase(), t = ch.toUpperCase() as PieceType, m = piece(t, w ? MAT.ivory() : MAT.ebony());
+      const o = add(m, "piece", t === "P" ? 0.6 : 1.4); o.type = t; o.white = w; pieces.push(o);
+      (o as Obj & { sq: string }).sq = "abcdefgh"[f] + (8 - i);
+    });
+    if (row !== "........") yield;
+  }
   const state: string[][] = [pieces.map((o) => (o as Obj & { sq: string }).sq)];
   { const where = new Map(pieces.map((o) => [(o as Obj & { sq: string }).sq, o])), taken = { w: 0, b: 0 };
     for (const pl of PLIES) {
@@ -139,6 +147,7 @@ export function createStage(dayCanvas: HTMLCanvasElement, nightCanvas: HTMLCanva
     : [["K", true, 0.43, 0.95, 6.4], ["Q", false, 0.92, 0.3, 7.4], ["N", true, 0.79, 0.93, 7.4], ["R", false, 0.46, 0.02, 10.5], ["B", false, 0.7, 0.05, 10]];
   const used = new Set<Obj>();
   for (const [t, w, u, v, d] of named) { const o = pieces.find((x) => x.type === t && x.white === w && !used.has(x))!; used.add(o); o.pf = placeAt(u, v, d); }
+  yield;
   for (const o of objs) {
     if (o.pf) continue;
     let u = 0, v = 0, d = 0, tries = 0;
@@ -204,6 +213,16 @@ export function createStage(dayCanvas: HTMLCanvasElement, nightCanvas: HTMLCanva
     cam.aspect = W / H; cam.updateProjectionMatrix();
   }
   resize();
+  // Its programs, compiled in the background (where the browser can) before the opening draws its first frame, as
+  // each side draws them (render, below): the day with its lights and fog, the night with its own, before and after
+  // the blast turns its fog on. Compiled with both sides' lights at once, every program was compiled again on the
+  // spot: 127 ms on the first frame, and 87 ms at the blast. Built straight through, this does not wait.
+  const as = (d: boolean, fog: THREE.Fog | null) => { day.visible = d; night.visible = !d; scene.background = d ? paper : black; scene.fog = fog; };
+  as(true, fogDay); const a = rDay.compileAsync(scene, cam);
+  as(false, null); const b = rNight.compileAsync(scene, cam);
+  as(false, fogNight); const c = rNight.compileAsync(scene, cam);
+  day.visible = night.visible = true; scene.background = null; scene.fog = null;
+  yield Promise.all([a, b, c]).catch(() => {});
 
   return {
     render, resize,

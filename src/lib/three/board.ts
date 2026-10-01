@@ -2,6 +2,7 @@
 // Ported from design/keyframes/_shared/chess3d.js (board, position). One square = 1 unit, as in pieces.ts.
 import * as THREE from "three";
 import { piece, sq, MAT, type PieceType } from "./pieces";
+import { run, type Steps } from "./steps";
 
 export interface BoardColours { light: number; dark: number; frame: number; move: number }
 /** the hall's maple and walnut, paler than the gallery's (hall.js) */
@@ -49,8 +50,13 @@ export function squares(rows: string): Record<string, string> {
 
 /** A position as a group of pieces, each knowing its square (userData.square). Materials are shared across the set. */
 export function position(rows: string, mats = { white: MAT.ivory(), black: MAT.ebony() }, { lod = false } = {}): THREE.Group {
+  return run(positionSteps(rows, mats, { lod }));
+}
+/** The same, in steps (steps.ts): eight pieces at a time. */
+export function* positionSteps(rows: string, mats = { white: MAT.ivory(), black: MAT.ebony() }, { lod = false } = {}): Steps<THREE.Group> {
   const g = new THREE.Group();
-  for (const [name, ch] of Object.entries(squares(rows))) {
+  for (const [i, [name, ch]] of Object.entries(squares(rows)).entries()) {
+    if (i && i % 8 === 0) yield;
     const w = ch === ch.toUpperCase(), t = ch.toUpperCase() as PieceType, p = piece(t, w ? mats.white : mats.black, { lod });
     const s = sq(name); p.position.set(s.x, 0, s.z);
     if (t === "N") p.rotation.y = w ? Math.PI / 2 : -Math.PI / 2;

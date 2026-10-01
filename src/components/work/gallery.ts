@@ -10,6 +10,8 @@ import { SCULPTURE, disposeScene } from "@/lib/three/sculptures";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { renderer } from "@/lib/three/env";
 import { warmScenes } from "@/lib/three/warm";
+import { piecesReady } from "@/lib/three/pieces";
+import { type Steps } from "@/lib/three/steps";
 
 const TILE = 2.2, PLINTH = 0.7, SCALE = 1.9, SPOT = 150;
 type V3 = [number, number, number];
@@ -38,15 +40,17 @@ export interface Gallery {
   ready: Promise<void>;
   render(): void; resize(): void; dispose(): void;
   /** one draw of everything in it, into a pixel, so its first real frame is like any other (warmScenes) */
-  warm(): void;
+  /** draws everything once into a pixel, a few things a frame (warm.ts) */
+  warm(): Promise<void>;
 }
 
-export function createGallery(canvas: HTMLCanvasElement, slugs: { slug: string; square: string }[]): Gallery {
-  const r = renderer(canvas, 1.05);
+/** The gallery in steps (steps.ts): the renderer, the environment, the floor, then a piece at a time. */
+export function* gallerySteps(canvas: HTMLCanvasElement, slugs: { slug: string; square: string }[]): Steps<Gallery> {
+  const r = renderer(canvas, 1.05); yield;
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x09090a);
   // work-c's own environment (a neutral room at .22), which keeps the floor's squares and the aluminium readable
   const pm = new THREE.PMREMGenerator(r), env = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose();
-  scene.environment = env;
+  scene.environment = env; yield;
   const hemi = new THREE.HemisphereLight(0x2a2a30, 0x050505, 0.35), amb = new THREE.AmbientLight(0x3a3a44, 0.6);
   scene.add(hemi, amb);
 
@@ -63,7 +67,9 @@ export function createGallery(canvas: HTMLCanvasElement, slugs: { slug: string; 
   const spots: Record<string, THREE.SpotLight> = {}, hit: THREE.Object3D[] = [], at: Record<string, THREE.Vector3> = {};
   const anchor: Record<string, THREE.Vector3> = {}, side: Record<string, THREE.Vector3> = {};
   const deskCam = VIEW.desk.pos;
+  yield* piecesReady();
   for (const { slug, square } of slugs) {
+    yield;
     const p = sq(square), x = p.x * TILE, z = p.z * TILE;
     const pl = new THREE.Mesh(plinthGeo, plinthMat); pl.position.set(x, PLINTH / 2, z); pl.castShadow = pl.receiveShadow = true; scene.add(pl);
     const s = SCULPTURE[slug](); s.scale.setScalar(SCALE); s.position.set(x, PLINTH, z);
@@ -125,7 +131,7 @@ export function createGallery(canvas: HTMLCanvasElement, slugs: { slug: string; 
       const p = at[slug];
       return { pos: [p.x, p.y + 1.25, p.z + 11.5], look: [p.x, p.y + 1.3, p.z], fov: phone ? 30 : 22, shift: share };
     },
-    warm() { if (compiled && !gone) warmScenes([{ r, scene }], () => this.render()); },
+    warm() { return compiled && !gone ? warmScenes([{ r, scene }], () => this.render(), { name: "work: warm" }) : Promise.resolve(); },
     render() {
       if (!compiled || gone) return;
       place();

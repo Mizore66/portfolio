@@ -6,11 +6,13 @@ const sizes = (page: import("@playwright/test").Page) => page.evaluate(() =>
   Object.fromEntries([...document.querySelectorAll("canvas")].map((c) => [c.closest("section")?.id || c.closest("section")?.className.split(" ")[0], c.width])));
 
 test("far scenes sleep, and wake before they are seen", async ({ page }) => {
+  test.setTimeout(180_000);
   await page.addInitScript(() => sessionStorage.setItem("hero-opening-seen", "1"));
   await page.goto("/");
   await expect.poll(async () => (await sizes(page)).roles, { timeout: 60_000 }).toBeGreaterThan(1);
   await page.evaluate(() => document.getElementById("contact")!.scrollIntoView());
-  await expect.poll(async () => { const s = await sizes(page); return [s.top, s.roles, s.work, s.archive]; }).toEqual([1, 1, 1, 1]);
+  // they sleep once the scroll is still, one at a time (keep.ts): slow in a test browser drawing in software
+  await expect.poll(async () => { const s = await sizes(page); return [s.top, s.roles, s.work, s.archive]; }, { timeout: 60_000 }).toEqual([1, 1, 1, 1]);
   await page.evaluate(() => document.getElementById("work")!.scrollIntoView());
   await expect.poll(async () => (await sizes(page)).work).toBeGreaterThan(1);
   // no frame shows a sleeping canvas on screen, even straight after a jump

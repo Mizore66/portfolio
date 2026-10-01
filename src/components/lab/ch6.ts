@@ -9,6 +9,7 @@ import { piece, MAT } from "@/lib/three/pieces";
 import { learnedKnight } from "@/lib/three/sculptures";
 import { content } from "@/content/site";
 import { stage, frame, size, toScreen, compile, disposeStage, span, arrive, type ChapterFactory, type Frame, type Tag } from "./kit";
+import { piecesReady } from "@/lib/three/pieces";
 
 const COPY = (content.pageCopy as unknown as { lab: { chapters: { plinths: string[] }[] } }).lab.chapters[5];
 const K = 0.0052; // scene units per centipawn
@@ -19,9 +20,9 @@ const CAM: Record<string, Frame> = {
 };
 const LAY = { desk: { x0: -4.9, dx: 1.95, w: 1.5, far: 200, fog: [30, 60], dy: 16 }, phone: { x0: -4.3, dx: 1.72, w: 1.3, far: 400, fog: [170, 260], dy: 10 } };
 
-export const chapter6: ChapterFactory = (dayCanvas, _night, o) => {
+export const chapter6: ChapterFactory = function* (dayCanvas, _night, o) {
   const k = o.phone ? "phone" : "desk", L = LAY[k];
-  const d = stage(dayCanvas, { exposure: 1.08, env: 0.07, bg: 0x09090a, fov: 26 });
+  const d = yield* stage(dayCanvas, { exposure: 1.08, env: 0.07, bg: 0x09090a, fov: 26 }); yield* piecesReady();
   d.cam.far = L.far; d.scene.fog = new THREE.Fog(0x09090a, L.fog[0], L.fog[1]);
   d.scene.add(new THREE.HemisphereLight(0x2a2a30, 0x050505, 0.45));
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0x0e0e0f, roughness: 0.9 }));

@@ -16,7 +16,8 @@ import { warm, type Chapter, type ChapterFactory, type Tag } from "./kit";
 import type { PlayStage } from "./ch7";
 import { SPECS as specs, EXTRAS as extras } from "./chapters";
 import "./lab.css";
-import { timed } from "@/lib/perf/trace";
+import { trace } from "@/lib/perf/trace";
+import { sliced, type Building } from "@/lib/three/steps";
 
 export interface Note { head: string; text: string }
 export interface ChapterCopy { n: string; title?: string[]; big?: string; notes: Note[]; notesPhone?: Note[]; [k: string]: unknown }
@@ -119,6 +120,7 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
     // measured from the document: on the one page the Lab is not at its top
     const top = (s: HTMLElement) => s.getBoundingClientRect().top + window.scrollY;
     const live3d = new Map<number, Chapter>();
+    let dead = false;
     // a built chapter's canvases hold their buffers only within a screen of view (keep.ts): all seven held them at
     // once, 2.8 GB at 2×. A chapter's render sets its size, so one drawn while far off (warm, below) sleeps again after.
     const sleepers = new Map<number, Sleeper>();
@@ -147,7 +149,10 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
         });
       });
     };
-    const seen = new IntersectionObserver((es) => { for (const e of es) { const id = +(e.target as HTMLElement).dataset.ch!; if (e.isIntersecting) onScreen.add(id); else onScreen.delete(id); } drawAll(true); });
+    const seen = new IntersectionObserver((es) => {
+      for (const e of es) { const id = +(e.target as HTMLElement).dataset.ch!; if (e.isIntersecting) { onScreen.add(id); if (pending.has(id)) build(id, true); } else onScreen.delete(id); }
+      drawAll(true);
+    });
 
     const progressOf = (s: HTMLElement) => { const run = s.offsetHeight - innerHeight, t = top(s); return run > 0 ? Math.min(1, Math.max(0, (window.scrollY - t) / run)) : window.scrollY >= t ? 1 : 0; };
     // the chapter in charge: the last one whose top has reached the middle of the screen
@@ -158,22 +163,39 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
       return c ? c.seam(progressOf(s)) : 0.5;
     };
 
-    // Build a chapter's scene when it is within a screen; let it go when it is two away (WebGL contexts are few).
-    const build = (id: number) => {
-      const spec = specs.find((x) => x.id === id);
-      if (!spec?.make || live3d.has(id)) return;
-      const s = sections.find((x) => +x.dataset.ch! === id)!;
-      const day = s.querySelector<HTMLCanvasElement>("canvas.day")!, night = s.querySelector<HTMLCanvasElement>("canvas.night");
-      try { const make = spec.make, kept = id === 7 ? play?.stage : null;
-        const c = kept ?? timed(`lab chapter ${id}: built`, () => make(day, night, { phone, reduced }));
-        (kept as PlayStage | null | undefined)?.restore(); live3d.set(id, c); c.progress(progressOf(s));
-        const zz = sleeper(s, [...s.querySelectorAll("canvas")], () => { if (live3d.get(id) === c) { c.resize(); drawAll(true); } });
-        sleepers.get(id)?.stop(); sleepers.set(id, zz); zz.built();
-        c.ready.then(() => {
+    // Build a chapter's scene when it is within a screen; let it go when it is two away (WebGL contexts are few). It is
+    // built in slices (steps.ts), so no frame waits on it for long; one on screen before it is in is finished at once.
+    const pending = new Map<number, Building<Chapter>>();
+    const adopt = (id: number, s: HTMLElement, c: Chapter, kept: boolean) => {
+      if (kept) (c as PlayStage).restore();
+      live3d.set(id, c); c.progress(progressOf(s));
+      const zz = sleeper(s, [...s.querySelectorAll("canvas")], () => { if (live3d.get(id) === c) { c.resize(); drawAll(true); } });
+      sleepers.get(id)?.stop(); sleepers.set(id, zz); zz.built();
+      c.ready.then(() => {
         // warm it: its end state, with everything in it, drawn through warm() (one instance each, one pixel), so shadow
         // programs and buffers are ready before it is first seen (that first draw cost the scroll up to 270 ms)
-        if (live3d.get(id) === c && !onScreen.has(id) && !kept) { c.progress(1); timed(`lab chapter ${id}: warmed`, () => warm(() => c.render())); c.progress(progressOf(s)); } if (live3d.get(id) !== c) return; zz.built(); hud(s, c); place(); drawAll(true); if (!blend) tick(); }); }
-      catch { s.dataset.gl = "off"; }
+        if (live3d.get(id) !== c || onScreen.has(id) || kept) return;
+        return warm([...s.querySelectorAll("canvas")], () => c.render(), { before: () => c.progress(1), after: () => c.progress(progressOf(s)), name: `lab chapter ${id}: warm` }).then(() => trace(`lab chapter ${id}: warmed`));
+      }).then(() => { if (live3d.get(id) !== c) return; zz.built(); hud(s, c); place(); drawAll(true); if (!blend) tick(); });
+    };
+    const build = (id: number, now = false) => {
+      const spec = specs.find((x) => x.id === id);
+      if (!spec?.make || live3d.has(id) || dead) return;
+      const s = sections.find((x) => +x.dataset.ch! === id)!;
+      if (id === 7 && play?.stage) { adopt(id, s, play.stage, true); return; }
+      let b = pending.get(id);
+      if (!b) {
+        const day = s.querySelector<HTMLCanvasElement>("canvas.day")!, night = s.querySelector<HTMLCanvasElement>("canvas.night"), t0 = performance.now();
+        const mine = b = sliced(spec.make(day, night, { phone, reduced }), 8, `lab chapter ${id}`); pending.set(id, b);
+        b.done.then((c) => {
+          if (pending.get(id) !== mine) { if (!live3d.has(id) || live3d.get(id) !== c) c.dispose(); return; } // let go before it was in
+          pending.delete(id); trace(`lab chapter ${id}: built in slices, ${Math.round(performance.now() - t0)} ms`); adopt(id, s, c, false); again();
+        }, () => { pending.delete(id); s.dataset.gl = "off"; });
+      }
+      if (now) {
+        try { const c = b.finish(); if (!live3d.has(id)) { pending.delete(id); trace(`lab chapter ${id}: finished at once`); adopt(id, s, c, false); } }
+        catch { pending.delete(id); s.dataset.gl = "off"; }
+      }
     };
     const near = new IntersectionObserver((es) => {
       for (const e of es) {
@@ -197,12 +219,13 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
     };
     const queue = () => {
       // not during the hero's opening, nor a page change (a chapter's build is a long task; it held a sweep 130-520 ms)
-      if (document.querySelector('.hero[data-intro="play"]') || navigating()) { idle = window.setTimeout(queue, 600); return; }
+      if (document.querySelector('.hero:is([data-intro="play"], [data-intro="pending"])') || navigating()) { idle = window.setTimeout(queue, 600); return; }
       const mid = window.scrollY + innerHeight / 2, at = active();
+      if (pending.size) return; // one at a time: the one in slices queues the next when it is in
       const next = sections.filter((x) => { const id = +x.dataset.ch!, sp = specs.find((q) => q.id === id); return sp?.make && !live3d.has(id) && x.dataset.gl !== "off" && Math.abs(id - at) <= AHEAD; })
         .sort((a, b) => Math.abs(top(a) - mid) - Math.abs(top(b) - mid))[0];
       if (!next) return;
-      const run = () => { if (performance.now() - scrolled < 300) { again(); return; } build(+next.dataset.ch!); again(); }; // only once the scroll is still
+      const run = () => { if (performance.now() - scrolled < 300) { again(); return; } build(+next.dataset.ch!); if (!pending.size) again(); }; // only once the scroll is still
       idle = typeof requestIdleCallback === "function" ? requestIdleCallback(run, { timeout: 1000 }) : window.setTimeout(run, 120);
     };
     idle = window.setTimeout(queue, section ? 800 : reduced ? 300 : 1500); // on /lab, once the tree has grown
@@ -286,6 +309,7 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
       const t = svgTree();
       for (const e of [...rise, ...t.lines, ...t.pv]) { e.removeAttribute("style"); Reflect.deleteProperty(e, "_gsap"); }
       window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onResize); window.removeEventListener("lab:seam", onEval);
+      dead = true; pending.clear(); // a chapter still in slices is let go as it comes in
       sleepers.forEach((z) => z.stop());
       live3d.forEach((c, id) => { if (id === 7 && play) keep("lab-play", play.canvases, c, () => c.dispose()); else c.dispose(); });
     };

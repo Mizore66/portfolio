@@ -8,6 +8,7 @@ import * as THREE from "three";
 import { content } from "@/content/site";
 import { rng } from "@/lib/three/rng";
 import { stage, frame, size, toScreen, compile, disposeStage, span, arrive, type ChapterFactory, type Frame, type Stage, type Tag } from "./kit";
+import { type Steps } from "@/lib/three/steps";
 
 const COPY = (content.pageCopy as unknown as { lab: { chapters: { filters: string[]; filtersPhone: string[]; heldOut: string }[] } }).lab.chapters[1];
 const FILTERS = COPY.filters;
@@ -24,7 +25,7 @@ const planeY = (i: number) => KEPT + ((FULL - KEPT) * (i + 0.5)) / FILTERS.lengt
 const HOLD = 0.06, STEP = 0.085, SLIDE = 0.035, FALL = 0.035, SETTLE = HOLD + 8 * STEP, OUT: [number, number] = [0.84, 0.95];
 const stepAt = (s: number) => HOLD + s * STEP; // step s brings in plane 7 - s; step 8 is the settle
 
-export const chapter2: ChapterFactory = (dayCanvas, nightCanvas, o) => {
+export const chapter2: ChapterFactory = function* (dayCanvas, nightCanvas, o) {
   const k = o.phone ? "phone" : "desk", ph = o.phone, X = ph ? 1.9 : 3.3;
 
   // the sheets, placed once (rng(7) in the key frame's order: the kept stack, then the heaps)
@@ -55,8 +56,8 @@ export const chapter2: ChapterFactory = (dayCanvas, nightCanvas, o) => {
   const HO0 = new THREE.Vector3(X, T * 0.4, 0), HO1 = ph ? new THREE.Vector3(X - 3.6, T * 0.4, 1.4) : new THREE.Vector3(X + 3.4, T * 0.4, 1.2), HOR = ph ? 0.5 : 0.18;
 
   interface Side { s: Stage; fell: THREE.InstancedMesh; planes: THREE.Object3D[][]; ho: THREE.Mesh }
-  const build = (canvas: HTMLCanvasElement, day: boolean): Side => {
-    const s = stage(canvas, { exposure: day ? 1 : 1.05, env: day ? 0.5 : 0.05, bg: day ? 0xf3f3f1 : 0x0b0e14 }), sc = s.scene;
+  const build = function* (canvas: HTMLCanvasElement, day: boolean): Steps<Side> {
+    const s = yield* stage(canvas, { exposure: day ? 1 : 1.05, env: day ? 0.5 : 0.05, bg: day ? 0xf3f3f1 : 0x0b0e14 }), sc = s.scene;
     sc.add(new THREE.HemisphereLight(day ? 0xffffff : 0x1c2433, day ? 0xd8d5ce : 0x05070a, day ? (ph ? 0.55 : 0.45) : 0.4));
     const key = day ? new THREE.DirectionalLight(0xfff8ee, ph ? 3.2 : 3.6) : new THREE.SpotLight(0xfff0dc, 420, 0, 0.5, 0.75, 1.3);
     if (ph) { key.position.set(day ? -12 : 7, day ? 9 : 13, day ? 10 : 7); key.target.position.set(X, 2.5, 0); }
@@ -88,7 +89,9 @@ export const chapter2: ChapterFactory = (dayCanvas, nightCanvas, o) => {
     });
     return { s, fell, planes, ho };
   };
-  const sides = [build(dayCanvas, true), ...(nightCanvas ? [build(nightCanvas, false)] : [])], d = sides[0].s;
+  yield;
+  const sides = [yield* build(dayCanvas, true)]; if (nightCanvas) sides.push(yield* build(nightCanvas, false));
+  const d = sides[0].s;
   const stages = sides.map((x) => x.s), c = compile(stages);
   let p = 1;
   const place = () => stages.forEach((s) => { size(s); frame(s, CAM[k]); });

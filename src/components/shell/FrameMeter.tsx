@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { traced } from "@/lib/perf/trace";
+import { traced, traceLog } from "@/lib/perf/trace";
 
 /**
  * The frame-rate readout for testing on real devices (phase 6, step 5). Off unless the address carries `?fps`
@@ -61,9 +61,9 @@ function thread(from: number, to: number) {
 }
 
 function slowest() {
-  const worst = [...slow].sort((a, b) => b.d - a.d).slice(0, 5);
+  const worst = [...slow].sort((a, b) => b.d - a.d).slice(0, 10);
   if (!worst.length) return [];
-  return ["", "Slowest frames: when (seconds after load), where, then what ran in it.", ...worst.flatMap((f) => [
+  return ["", "Slowest frames (up to ten): when (seconds after load), where, then what ran in it.", ...worst.flatMap((f) => [
     `${Math.round(f.d)} ms at ${(f.at / 1000).toFixed(1)} s, ${f.where}`,
     `  logged: ${f.ran.length ? f.ran.join("; ") : "nothing"}`,
     `  main thread: ${thread(f.at - f.d, f.at)}`,
@@ -97,6 +97,7 @@ export function FrameMeter() {
 
   useEffect(() => {
     if (!on) return;
+    (window as unknown as { __trace?: ReturnType<typeof traceLog> }).__trace = traceLog(); // for scripts/walk.mjs
     let raf = 0, last = 0, window1: number[] = [], shown = 0;
     const tick = (t: number) => {
       raf = requestAnimationFrame(tick);

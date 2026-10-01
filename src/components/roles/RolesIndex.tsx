@@ -9,7 +9,8 @@ import { beginNav, navigating } from "@/lib/seam/sweep";
 import { buildAhead, firstView, nearScreen } from "@/lib/motion/firstView";
 import { PHONE } from "@/lib/seam/seam";
 import { after } from "@/lib/motion/slowmo";
-import { createHall, FRAME, type Frame, type Hall } from "./hall";
+import { hallSteps, FRAME, type Frame, type Hall } from "./hall";
+import { staged } from "@/lib/three/steps";
 import { claim, keep, sleeper } from "@/lib/three/keep";
 import "./roles.css";
 import { timed, trace } from "@/lib/perf/trace";
@@ -43,20 +44,23 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
     let hall: Hall | null = null, failed = false, dead = false, tl: gsap.core.Timeline | undefined;
     // its canvas holds its buffers only within a screen of view (keep.ts); a kept hall wakes, and resizes, as it comes near
     const zz = sleeper(el, [c], () => { if (!hall) return; hall.resize(); draw(); });
-    const build = () => {
-      if (hall || failed || dead) return hall;
+    const adopt = (made: Hall) => {
+      if (dead) { made.dispose(); return; }
+      hall = made; trace("roles: built");
       // back from a detail page, the hall built last time: only its view and its lamps are set again
-      try { hall = got.stage ?? timed("roles: built", () => createHall(c, list)); } catch { failed = true; el.dataset.gl = "off"; return null; }
       if (got.stage) for (const k in hall.lamps) hall.lamps[k] = 0;
       h.current = hall; setView(hall, phone() ? FRAME.phone : FRAME.desk);
       if (arriving) { const f = home.current; hall.cam.pos = [f.pos[0], f.pos[1] + 3, f.pos[2]]; } // from 3 units higher (motion.md §4)
-      hall.ready.then(() => { trace("roles: compiled"); if (!got.stage) timed("roles: warmed", () => h.current?.warm()); timed("roles: first draw", () => h.current?.render()); }); // its first frame, drawn ahead wherever the page is
+      hall.ready.then(() => { trace("roles: compiled"); return got.stage ? undefined : h.current?.warm(); }).then(() => { trace("roles: warmed"); timed("roles: first draw", () => h.current?.render()); }); // its first frame, drawn ahead wherever the page is
       zz.built(); // one built far off gives its buffers up; a kept one wakes once the page has its scroll (keep.ts)
-      return hall;
     };
+    // built ahead in slices (steps.ts); reached before it is in, the rest of it at once
+    const scene = staged(() => hallSteps(c, list), adopt, () => { failed = true; el.dataset.gl = "off"; }, "roles");
+    const build = () => { if (!hall && !failed && !dead) { if (got.stage) adopt(got.stage); else scene.now(); } return hall; };
+    const start = () => { if (got.stage) build(); else if (!dead) scene.start(); };
     // on the one page the hall is built when it comes within a screen, not at load
     if (got.stage) build();
-    const stopAhead = buildAhead(el, build, { order: 0 }), stopNear = nearScreen(el, away.current, draw);
+    const stopAhead = buildAhead(el, start, { order: 0 }), stopNear = nearScreen(el, away.current, draw);
     let cancel = () => {};
     if (arriving) {
       gsap.set(rise, { yPercent: 135 }); gsap.set(names, { opacity: 0, y: 10 });

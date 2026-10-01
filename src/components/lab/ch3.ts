@@ -4,11 +4,11 @@
  * moves along them from clay to glaze, and each score counts up as its cast is reached. All white: no night side.
  */
 import * as THREE from "three";
-import { TessellateModifier } from "three/examples/jsm/modifiers/TessellateModifier.js";
-import { mergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
-import { piece, MAT } from "@/lib/three/pieces";
+import { piece, piecesReady, MAT } from "@/lib/three/pieces";
+import { castOf, geometryOf, source, type Cast as CastData } from "./cast";
 import { content } from "@/content/site";
 import { stage, frame, size, toScreen, compile, disposeStage, span, arrive, type ChapterFactory, type Frame, type Tag } from "./kit";
+import { type Steps } from "@/lib/three/steps";
 
 interface Cast { score: string; shape: string; data: string; role: string }
 const CASTS = (content.pageCopy as unknown as { lab: { chapters: { casts: Cast[]; castsPhone: Pick<Cast, "data" | "role">[] }[] } }).lab.chapters[2].casts;
@@ -29,31 +29,47 @@ const MOVE: [number, number] = [0.02, 0.92], TURN = Math.PI;
 const RISE: [number, number][] = [[0.04, 0.16], [0.4, 0.52], [0.8, 0.92]]; // each score, as its cast is reached
 const smooth = (t: number) => t * t * (3 - 2 * t);
 
-// rough casts: displace every vertex along its normal by a position-seeded noise, so seams stay closed
-const DIRS = Array.from({ length: 7 }, (_, i) => { const a = i * 2.39996, b = Math.acos(1 - (2 * (i + 0.5)) / 7); return [Math.sin(b) * Math.cos(a), Math.cos(b), Math.sin(b) * Math.sin(a), 1 + i * 0.37]; });
-const noise = (x: number, y: number, z: number, f: number) => DIRS.reduce((s, [a, b, c, k], i) => s + Math.sin((x * a + y * b + z * c) * f * k + i * 1.7) / (1 + i * 0.35), 0) / 3;
-// the displaced copies are worked out once per visit (600 ms of tessellation), not each time the chapter is built;
-// disposing a scene frees their GPU buffers only, so a later build uploads them again
+// rough casts (cast.ts), worked out once per visit (600 ms of tessellation), not each time the chapter is built, and
+// in a worker while it is built in slices; disposing a scene frees their GPU buffers only, so a later build uploads them again
 const CAST = new Map<string, THREE.BufferGeometry>();
-function cast(mat: THREE.Material, amp: number, freq: number) {
-  const g = piece("N", mat);
-  if (amp) g.traverse((o) => {
-    const m = o as THREE.Mesh; if (!m.isMesh) return;
-    const key = `${amp}|${freq}|${m.geometry.uuid}`, hit = CAST.get(key);
-    if (hit) { m.geometry = hit; return; }
-    // the piece's geometries are cached and shared: work on a copy
-    let geo = m.geometry.index ? m.geometry.toNonIndexed() : m.geometry.clone(); geo.deleteAttribute("uv"); geo.deleteAttribute("normal");
-    geo = new TessellateModifier(0.02, 10).modify(geo); geo = mergeVertices(geo, 1e-4); geo.computeVertexNormals(); m.geometry = geo;
-    const p = geo.attributes.position, n = geo.attributes.normal;
-    for (let i = 0; i < p.count; i++) { const d = amp * noise(p.getX(i), p.getY(i), p.getZ(i), freq); p.setXYZ(i, p.getX(i) + n.getX(i) * d, p.getY(i) + n.getY(i) * d, p.getZ(i) + n.getZ(i) * d); }
-    p.needsUpdate = true; geo.computeVertexNormals(); CAST.set(key, geo);
+let worker: Worker | null | undefined, ids = 0;
+const replies = new Map<number, (c: CastData) => void>();
+function work(position: Float32Array, amp: number, freq: number): Promise<CastData> | null {
+  if (worker === undefined) {
+    try { worker = new Worker(new URL("./cast.worker.ts", import.meta.url), { type: "module" }); worker.onmessage = (e: MessageEvent<{ id: number; cast: CastData }>) => { replies.get(e.data.id)?.(e.data.cast); replies.delete(e.data.id); }; }
+    catch { worker = null; }
+  }
+  if (!worker) return null;
+  const id = ++ids; worker.postMessage({ id, position, amp, freq }, [position.buffer]);
+  return new Promise((r) => replies.set(id, r));
+}
+/** One knight cast in `mat`, roughened by amp and freq: each of its meshes from the worker as it comes, or worked out
+ * here if the build is needed at once. */
+function* cast(mat: THREE.Material, amp: number, freq: number): Steps<THREE.Group> {
+  const g = piece("N", mat), meshes: THREE.Mesh[] = [];
+  if (!amp) return g;
+  g.traverse((o) => { if ((o as THREE.Mesh).isMesh) meshes.push(o as THREE.Mesh); });
+  // the piece's geometries are cached and shared: each cast is worked on a copy
+  const jobs = meshes.map((m) => {
+    const key = `${amp}|${freq}|${m.geometry.uuid}`;
+    if (CAST.has(key)) return { key, wait: null as Promise<CastData> | null, got: null as CastData | null };
+    const job = { key, wait: work(source(m.geometry), amp, freq), got: null as CastData | null };
+    job.wait?.then((c) => { job.got = c; });
+    return job;
   });
+  for (const [i, m] of meshes.entries()) {
+    const job = jobs[i];
+    if (job.wait && !job.got) yield job.wait;
+    let geo = CAST.get(job.key);
+    if (!geo) { geo = geometryOf(job.got ?? castOf(source(m.geometry), amp, freq)); CAST.set(job.key, geo); }
+    m.geometry = geo; yield;
+  }
   return g;
 }
 
-export const chapter3: ChapterFactory = (dayCanvas, _night, o) => {
+export const chapter3: ChapterFactory = function* (dayCanvas, _night, o) {
   const k = o.phone ? "phone" : "desk", ph = o.phone;
-  const d = stage(dayCanvas, { exposure: 1, env: 0.45, bg: 0xf3f3f1 }), sc = d.scene;
+  const d = yield* stage(dayCanvas, { exposure: 1, env: 0.45, bg: 0xf3f3f1 }), sc = d.scene;
   sc.fog = ph ? new THREE.Fog(0xf3f3f1, 30, 60) : new THREE.Fog(0xf3f3f1, 26, 48);
   sc.add(new THREE.HemisphereLight(0xffffff, 0xd9d6cf, 0.55));
   const key = new THREE.DirectionalLight(0xfff6ea, 3.2); key.position.set(-8, 9, 7); key.castShadow = true;
@@ -69,12 +85,14 @@ export const chapter3: ChapterFactory = (dayCanvas, _night, o) => {
     { mat: MAT.porcelain(), amp: 0, freq: 0 },
   ];
   const pl = new THREE.MeshStandardMaterial({ color: 0xf1efea, roughness: 0.9 }), plinth = new THREE.CylinderGeometry(1.05, 1.05, 0.5, 96);
-  const knights = NETS.map((n, i) => {
+  yield* piecesReady();
+  const knights: THREE.Group[] = [];
+  for (const [i, n] of NETS.entries()) {
     const [x, z] = PLACE[k][i];
     const base = new THREE.Mesh(plinth, pl); base.position.set(x, 0.25, z); base.castShadow = base.receiveShadow = true; sc.add(base);
-    const kn = cast(n.mat, n.amp, n.freq); kn.scale.setScalar(1.8); kn.position.set(x, 0.5, z); kn.rotation.y = -0.22; sc.add(kn);
-    return kn;
-  });
+    const kn = yield* cast(n.mat, n.amp, n.freq); kn.scale.setScalar(1.8); kn.position.set(x, 0.5, z); kn.rotation.y = -0.22; sc.add(kn);
+    knights.push(kn);
+  }
 
   const c = compile([d]);
   const cam: Frame = { ...KEY[k], pos: [...KEY[k].pos], look: [...KEY[k].look] };

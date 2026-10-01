@@ -9,6 +9,8 @@ import { board as makeBoard, squares, ROLE } from "@/lib/three/board";
 import { evalStep } from "@/lib/motion/ease";
 import DATA from "@/content/lab-data.json";
 import { stage, frame, size, compile, disposeStage, share, type Chapter, type ChapterFactory, type Frame, type Stage } from "./kit";
+import { run, type Steps } from "@/lib/three/steps";
+import { piecesReady } from "@/lib/three/pieces";
 
 export const START = "rnbqkbnr/pppppppp/......../......../......../......../PPPPPPPP/RNBQKBNR";
 const LIFT = 0.35;
@@ -46,11 +48,11 @@ export const playStage = {
   on(fn: (p: PlayStage | null) => void) { listeners.add(fn); fn(current); return () => { listeners.delete(fn); }; },
 };
 
-export const chapter7: ChapterFactory = (dayCanvas, nightCanvas, o) => {
+export const chapter7: ChapterFactory = function* (dayCanvas, nightCanvas, o) {
   const phone = o.phone, at0 = share(43); // the key frames' seam: the learned net's +0.43 after 3…Bc5
   const F: Frame = phone ? { pos: [0, 36, 7], look: [0, 0, 0.2], fov: 30, off: [0, 0.5 - at0 + 0.045] } : { pos: [0, 24, 6.4], look: [0, 0, 0.3], fov: 28, off: [0.056, 0.01] };
-  const side = (canvas: HTMLCanvasElement, day: boolean): Side => {
-    const s = stage(canvas, { exposure: day ? 1 : 1.08, env: day ? 0.45 : 0.1, bg: day ? 0xf3f3f1 : 0x0b0e14 });
+  const side = function* (canvas: HTMLCanvasElement, day: boolean): Steps<Side> {
+    const s = yield* stage(canvas, { exposure: day ? 1 : 1.08, env: day ? 0.45 : 0.1, bg: day ? 0xf3f3f1 : 0x0b0e14 });
     s.scene.add(new THREE.HemisphereLight(day ? 0xffffff : 0x9aa4b8, day ? 0xd8d5ce : 0x0b0e14, day ? 0.8 : 0.25));
     const key = day ? new THREE.DirectionalLight(0xfff8ee, 2.4) : new THREE.SpotLight(0xfff1dc, 150, 0, 0.5, 0.7, 1.5);
     key.position.set(-3, 14, 5); key.target.position.set(0, 0, 0); s.scene.add(key.target);
@@ -62,7 +64,8 @@ export const chapter7: ChapterFactory = (dayCanvas, nightCanvas, o) => {
     const dots = new THREE.Group(); s.scene.add(dots);
     return { s, pieces: new Map(), b, dots };
   };
-  const sides = [side(dayCanvas, true), ...(nightCanvas ? [side(nightCanvas, false)] : [])];
+  const sides = [yield* side(dayCanvas, true)]; if (nightCanvas) sides.push(yield* side(nightCanvas, false));
+  yield* piecesReady();
   const mats = { w: MAT.ivory(), b: MAT.ebony() };
   const c = compile(sides.map((x) => x.s));
   let white = true, lifted: string | null = null, shown = share(DATA.start.learned.evalCp); // the start position, as game.ts begins
@@ -71,7 +74,11 @@ export const chapter7: ChapterFactory = (dayCanvas, nightCanvas, o) => {
 
   const place = () => sides.forEach((x) => { size(x.s); frame(x.s, white ? F : { ...F, pos: [-F.pos[0], F.pos[1], -F.pos[2]], look: [-F.look[0], F.look[1], -F.look[2]] }); });
   let raf = 0;
-  const draw = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; api.render(); }); };
+  // It draws itself as the game moves, while it is on screen: off it, the Lab draws it as it comes on (its warm and
+  // its first frame), and a sleeping one is drawn as it is woken (keep.ts). Drawn off screen as it was built, it
+  // took its first shadow pass, and its programs, on the spot (109-196 ms), or gave a sleeping canvas its buffers back.
+  const seen = () => { const r = dayCanvas.getBoundingClientRect(); return dayCanvas.width > 1 && r.bottom > 0 && r.top < innerHeight; };
+  const draw = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; if (seen()) api.render(); }); };
 
   const make = (ch: string) => {
     const w = ch === ch.toUpperCase(), t = ch.toUpperCase() as PieceType, p = piece(t, w ? mats.w : mats.b);
@@ -82,16 +89,27 @@ export const chapter7: ChapterFactory = (dayCanvas, nightCanvas, o) => {
     if (!ms) { Object.assign(o, to); draw(); return res(); }
     gsap.to(o, { ...to, duration: ms / 1000, delay: delay / 1000, ease: "seam", onUpdate: draw, onComplete: () => res() });
   });
-  const set = (rows: string, last: [string, string] | null) => {
+  // The position, set in steps (eight new pieces at a time) for the build, or at once as the game plays. A piece of
+  // the same kind already on its square stays, set back to rest there: putting the board back after a page visit,
+  // or after a move, made all 64 pieces again (about 100 ms).
+  function* setSteps(rows: string, last: [string, string] | null): Steps<void> {
     const at = squares(rows);
     for (const x of sides) {
-      for (const g of x.pieces.values()) x.s.scene.remove(g);
-      x.pieces.clear();
-      for (const [name, ch] of Object.entries(at)) { const p = make(ch), q = sq(name); p.position.set(q.x, 0, q.z); x.s.scene.add(p); x.pieces.set(name, p); }
-      x.b.light(last ?? []);
+      const old = x.pieces, next = new Map<string, THREE.Group>();
+      let made = 0;
+      for (const [name, ch] of Object.entries(at)) {
+        const q = sq(name);
+        let p = old.get(name);
+        if (p && p.userData.kind === ch) { old.delete(name); gsap.killTweensOf([p.position, p.scale]); p.scale.setScalar(1); }
+        else { p = make(ch); x.s.scene.add(p); if (++made % 8 === 0) yield; }
+        p.position.set(q.x, 0, q.z); next.set(name, p);
+      }
+      for (const g of old.values()) { gsap.killTweensOf([g.position, g.scale]); x.s.scene.remove(g); }
+      x.pieces = next; x.b.light(last ?? []);
     }
     draw();
-  };
+  }
+  const set = (rows: string, last: [string, string] | null) => run(setSteps(rows, last));
 
   const api: PlayStage = {
     ready: c.ready,
@@ -178,7 +196,7 @@ export const chapter7: ChapterFactory = (dayCanvas, nightCanvas, o) => {
     restore() {
       for (const x of sides) { for (const g of x.pieces.values()) gsap.killTweensOf([g.position, g.scale]); x.dots.clear(); }
       white = true; lifted = null; shown = share(DATA.start.learned.evalCp);
-      place(); set(START, null);
+      place(); if (!listeners.size) set(START, null); // the game sets its own position as it takes the board
       current = api; listeners.forEach((fn) => fn(api));
     },
     render() { if (!c.done()) return; place(); sides.forEach((x) => x.s.r.render(x.s.scene, x.s.cam)); },
@@ -188,7 +206,7 @@ export const chapter7: ChapterFactory = (dayCanvas, nightCanvas, o) => {
       cancelAnimationFrame(raf); c.ready.then(() => sides.forEach((x) => disposeStage(x.s)));
     },
   };
-  place(); set(START, null);
+  place(); yield* setSteps(START, null);
   current = api; listeners.forEach((fn) => fn(api));
   return api;
 };

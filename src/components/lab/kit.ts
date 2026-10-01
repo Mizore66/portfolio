@@ -6,6 +6,7 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { renderer } from "@/lib/three/env";
+import { type Steps } from "@/lib/three/steps";
 import { warmScenes } from "@/lib/three/warm";
 import { disposeScene } from "@/lib/three/sculptures";
 
@@ -25,20 +26,22 @@ export interface Chapter {
   /** its scene does not follow the scroll (Play): it draws itself when it changes */
   still?: boolean;
 }
-export type ChapterFactory = (day: HTMLCanvasElement, night: HTMLCanvasElement | null, o: Opts) => Chapter;
+/** A chapter is built in steps (steps.ts), so it can be built a slice at a time between frames. */
+export type ChapterFactory = (day: HTMLCanvasElement, night: HTMLCanvasElement | null, o: Opts) => Steps<Chapter>;
 
 export interface Stage { r: THREE.WebGLRenderer; scene: THREE.Scene; cam: THREE.PerspectiveCamera; env: THREE.Texture; canvas: HTMLCanvasElement }
 
 const stages = new Set<Stage>();
 
-/** Warm every stage, while `draw` renders a chapter (warmScenes). */
-export function warm(draw: () => void) { warmScenes([...stages], draw); }
+/** Warm a chapter: its own stages (those drawing into `canvases`), while `draw` renders it (warmScenes). */
+export function warm(canvases: Element[], draw: () => void, o: Parameters<typeof warmScenes>[2] = {}) { return warmScenes([...stages].filter((s) => canvases.includes(s.canvas)), draw, o); }
 
-/** A renderer and scene for one side, with the key frames' RoomEnvironment at `env`. */
-export function stage(canvas: HTMLCanvasElement, { exposure = 1, env = 0.5, bg = 0xf3f3f1, fov = 30 } = {}): Stage {
-  const r = renderer(canvas, exposure);
+/** A renderer and scene for one side, with the key frames' RoomEnvironment at `env`: in steps (the renderer, then the
+ * environment), for `yield*` in a chapter's build. */
+export function* stage(canvas: HTMLCanvasElement, { exposure = 1, env = 0.5, bg = 0xf3f3f1, fov = 30 } = {}): Steps<Stage> {
+  const r = renderer(canvas, exposure); yield;
   const scene = new THREE.Scene(); scene.background = new THREE.Color(bg);
-  const pm = new THREE.PMREMGenerator(r), e = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose();
+  const pm = new THREE.PMREMGenerator(r), e = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose(); yield;
   scene.environment = e; scene.environmentIntensity = env;
   const cam = new THREE.PerspectiveCamera(fov, 1, 0.1, 400);
   const st = { r, scene, cam, env: e, canvas }; stages.add(st); return st;

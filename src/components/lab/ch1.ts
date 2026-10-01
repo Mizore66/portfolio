@@ -8,6 +8,7 @@ import { piece, MAT } from "@/lib/three/pieces";
 import { learnedKnight } from "@/lib/three/sculptures";
 import DATA from "@/content/lab-data.json";
 import { stage, frame, size, toScreen, compile, disposeStage, span, arrive, type ChapterFactory, type Frame, type Tag } from "./kit";
+import { piecesReady } from "@/lib/three/pieces";
 
 const V = DATA.pestoKnightMg as number[], LO = Math.min(...V), HI = Math.max(...V);
 const hgt = (x: number) => 0.14 + ((x - LO) / (HI - LO)) * 2.4;
@@ -20,10 +21,10 @@ const NIGHT: Record<string, Frame> = {
   phone: { pos: [1.2, 3, 25], look: [0, 1.7, 0], fov: 26, off: [0, -0.19] },
 };
 
-export const chapter1: ChapterFactory = (dayCanvas, nightCanvas, o) => {
+export const chapter1: ChapterFactory = function* (dayCanvas, nightCanvas, o) {
   const k = o.phone ? "phone" : "desk";
   // day: the terrain
-  const d = stage(dayCanvas, { exposure: 1, env: 0.5, bg: 0xf3f3f1 });
+  const d = yield* stage(dayCanvas, { exposure: 1, env: 0.5, bg: 0xf3f3f1 });
   d.scene.add(new THREE.HemisphereLight(0xffffff, 0xd8d5ce, 0.9));
   const sun = new THREE.DirectionalLight(0xfff8ee, 2.6); sun.position.set(-12, 9, 3); sun.castShadow = true;
   sun.shadow.mapSize.set(4096, 4096); sun.shadow.radius = 5; sun.shadow.bias = -0.0004;
@@ -38,14 +39,14 @@ export const chapter1: ChapterFactory = (dayCanvas, nightCanvas, o) => {
     m.position.set(f - 3.5, 0, 4.5 - (rk + 1)); m.castShadow = m.receiveShadow = true; d.scene.add(m);
     cols.push({ m, h, at: (rk * 8 + f) / 64 }); // a1 first, rank by rank
   }
-  const knight = piece("N", MAT.ivory()); knight.rotation.y = 0.5; d.scene.add(knight);
+  yield* piecesReady(); const knight = piece("N", MAT.ivory()); knight.rotation.y = 0.5; d.scene.add(knight); yield;
   const F6 = new THREE.Vector3(1.5, hgt(129), -1.5);
 
   // night: the learned knight
-  const n = nightCanvas ? stage(nightCanvas, { exposure: 1.1, env: 0.06, bg: 0x0b0e14 }) : null;
+  const n = nightCanvas ? yield* stage(nightCanvas, { exposure: 1.1, env: 0.06, bg: 0x0b0e14 }) : null;
   const glow: THREE.MeshStandardMaterial[] = [];
   if (n) {
-    const kn = learnedKnight(); kn.scale.setScalar(2.6); kn.rotation.y = -0.28; n.scene.add(kn);
+    const kn = learnedKnight(); kn.scale.setScalar(2.6); kn.rotation.y = -0.28; n.scene.add(kn); yield;
     // each copper run gets its own material, ordered from the base up, so the circuit can light in that order
     const runs: { m: THREE.Mesh; y: number }[] = [];
     kn.traverse((x) => { const m = x as THREE.Mesh; if (m.isMesh && m.material === kn.userData.circuit) { m.geometry.computeBoundingBox(); runs.push({ m, y: m.geometry.boundingBox!.min.y }); } });

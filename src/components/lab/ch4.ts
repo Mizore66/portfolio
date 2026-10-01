@@ -10,6 +10,7 @@ import { piece, MAT, type PieceType } from "@/lib/three/pieces";
 import { patchSpots, spotChunk } from "@/lib/three/lights";
 import OPENINGS from "@/content/openings.json";
 import { stage, frame, size, compile, disposeStage, span, arrive, clamp, type ChapterFactory, type Frame, type Stage } from "./kit";
+import { type Steps } from "@/lib/three/steps";
 
 const OP = OPENINGS as { fen: string }[];
 const CAM: Record<string, Frame> = {
@@ -59,7 +60,7 @@ function lit(s: Stage, pools: { from: THREE.Vector3; to: THREE.Vector3 }[]) {
 
 const SET_END = 0.6, PLAY = [0.62, 0.96] as const, HOPS = 5, PER = 3;
 
-export const chapter4: ChapterFactory = (dayCanvas, nightCanvas, o) => {
+export const chapter4: ChapterFactory = function* (dayCanvas, nightCanvas, o) {
   const k = o.phone ? "phone" : "desk", at = layout(o.phone);
   const up = new THREE.Vector3(0, 1, 0), Q = new THREE.Quaternion(), HIDE = new THREE.Matrix4().makeScale(1e-4, 1e-4, 1e-4);
   // per board: its tiles (light and dark index ranges), its frame, and its pieces, each with its resting matrix
@@ -80,8 +81,8 @@ export const chapter4: ChapterFactory = (dayCanvas, nightCanvas, o) => {
 
   const TILE = new THREE.BoxGeometry(1, 0.08, 1), FRAME = new THREE.BoxGeometry(8.9, 0.14, 8.9);
   type Side = { s: Stage; tl: THREE.InstancedMesh; td: THREE.InstancedMesh; fr: THREE.InstancedMesh; pc: THREE.InstancedMesh[] };
-  const build = (canvas: HTMLCanvasElement, day: boolean): Side => {
-    const bg = day ? 0xf3f3f1 : 0x0b0e14, s = stage(canvas, { exposure: day ? 1 : 1.1, env: day ? 0.5 : 0.08, bg, fov: CAM[k].fov });
+  const build = function* (canvas: HTMLCanvasElement, day: boolean): Steps<Side> {
+    const bg = day ? 0xf3f3f1 : 0x0b0e14, s = yield* stage(canvas, { exposure: day ? 1 : 1.1, env: day ? 0.5 : 0.08, bg, fov: CAM[k].fov });
     s.cam.far = o.phone ? 600 : 400;
     s.scene.fog = o.phone ? new THREE.Fog(bg, 220, 330) : new THREE.Fog(bg, 110, 190);
     s.scene.add(new THREE.HemisphereLight(day ? 0xffffff : 0x223048, day ? 0xd8d5ce : 0x05070a, day ? 0.8 : 0.35));
@@ -114,7 +115,7 @@ export const chapter4: ChapterFactory = (dayCanvas, nightCanvas, o) => {
     if (!day) lit(s, pools);
     return side;
   };
-  const d = build(dayCanvas, true), n = nightCanvas ? build(nightCanvas, false) : null;
+  yield; const d = yield* build(dayCanvas, true), n = nightCanvas ? yield* build(nightCanvas, false) : null;
   const sides = n ? [d, n] : [d], stages = sides.map((x) => x.s), c = compile(stages);
   // the key light never moves, so the two 8192² shadow maps are drawn again only when a board or a piece has
   let shade = true;

@@ -19,3 +19,6 @@ export function timed<T>(what: string, fn: () => T): T {
 
 /** The events logged between two times (performance.now()). */
 export const traced = (from: number, to: number) => log.filter((e) => e.t >= from && e.t <= to).map((e) => e.what);
+
+/** The whole log, for the frame readout's tooling (scripts/walk.mjs reads it as window.__trace while ?fps is on). */
+export const traceLog = () => log;

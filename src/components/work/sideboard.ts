@@ -14,6 +14,8 @@ import { SCULPTURE, disposeScene } from "@/lib/three/sculptures";
 import { renderer } from "@/lib/three/env";
 import { warmScenes } from "@/lib/three/warm";
 import { stageScale, stageTurn } from "@/components/project/stage";
+import { piecesReady } from "@/lib/three/pieces";
+import { type Steps } from "@/lib/three/steps";
 
 type V3 = [number, number, number];
 /** A framing: `sx`, `sy` place the look point on screen (0..1 across and down; .5 is the centre). */
@@ -49,7 +51,8 @@ export interface Sideboard {
   ready: Promise<void>;
   render(): void; resize(): void; dispose(): void;
   /** one draw of everything in it, into a pixel, so its first real frame is like any other (warmScenes) */
-  warm(): void;
+  /** draws everything once into a pixel, a few things a frame (warm.ts) */
+  warm(): Promise<void>;
 }
 
 function board(highlight: string[]) {
@@ -69,11 +72,12 @@ function board(highlight: string[]) {
   return g;
 }
 
-export function createSideboard(canvas: HTMLCanvasElement, list: { slug: string; square: string | null }[], aside: Set<string>): Sideboard {
-  const r = renderer(canvas, 1.02);
+/** The sideboard in steps (steps.ts): the renderer, the environment, the table and board, then a piece at a time. */
+export function* sideboardSteps(canvas: HTMLCanvasElement, list: { slug: string; square: string | null }[], aside: Set<string>): Steps<Sideboard> {
+  const r = renderer(canvas, 1.02); yield;
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x09090a);
   const pm = new THREE.PMREMGenerator(r), env = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose();
-  scene.environment = env;
+  scene.environment = env; yield;
   const hemi = new THREE.HemisphereLight(0x2a2a30, 0x050505, 0.35); scene.add(hemi);
 
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), new THREE.MeshStandardMaterial({ color: 0x0e0e0f, roughness: 0.9 }));
@@ -84,7 +88,9 @@ export function createSideboard(canvas: HTMLCanvasElement, list: { slug: string;
 
   const hit: THREE.Object3D[] = [], figure: Record<string, THREE.Group> = {}, at: Record<string, THREE.Vector3> = {}, tag: Record<string, THREE.Vector3> = {};
   const spots: Record<string, THREE.SpotLight> = {}, mats: Record<string, THREE.Material[]> = {}, felts: Record<string, THREE.Object3D[]> = {}, meshes: Record<string, THREE.Mesh[]> = {}, turn0: Record<string, number> = {};
+  yield* piecesReady();
   for (const e of list) {
+    yield;
     const p = SCULPTURE[e.slug]();
     p.rotation.y += TURN[e.slug] ?? 0; turn0[e.slug] = p.rotation.y;
     const q = aside.has(e.slug) || !e.square ? ASIDE[e.slug] ?? { x: -5.2, z: -5.2 } : sq(e.square);
@@ -165,7 +171,7 @@ export function createSideboard(canvas: HTMLCanvasElement, list: { slug: string;
       const p = at[slug], k = 1 / stageScale(slug);
       return { pos: [p.x, p.y + 1.25 * k, p.z + 11.5 * k], look: [p.x, p.y + 1.3 * k, p.z], fov: phone ? 30 : 22, sx: phone ? 0.5 : share, sy: phone ? share : 0.5 };
     },
-    warm() { if (compiled && !gone) warmScenes([{ r, scene }], () => this.render()); },
+    warm() { return compiled && !gone ? warmScenes([{ r, scene }], () => this.render(), { name: "other projects: warm" }) : Promise.resolve(); },
     render() {
       if (!compiled || gone) return;
       place();

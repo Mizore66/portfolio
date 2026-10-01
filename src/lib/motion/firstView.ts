@@ -13,7 +13,8 @@ export function firstView(el: Element, fn: () => void, { threshold = 0.3 } = {})
  * thread), or when the element comes within `margin` of the screen, whichever is first. A scene built as it scrolls
  * in costs the scroll a hitch. `order` staggers several scenes so each has an idle slot of its own. Returns the cancel.
  */
-const opening = () => document.querySelector('.hero[data-intro="play"]') != null;
+// the hero's opening, or the one about to play while its stage is built (the page is held still for both)
+const opening = () => document.querySelector('.hero:is([data-intro="play"], [data-intro="pending"])') != null;
 
 export function buildAhead(el: Element, build: () => void, { order = 0, margin = "100% 0px" } = {}): () => void {
   let done = false, t = 0, idle = 0;

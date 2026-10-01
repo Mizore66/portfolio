@@ -9,7 +9,8 @@ import { beginNav, navigating } from "@/lib/seam/sweep";
 import { PHONE, restFor } from "@/lib/seam/seam";
 import { after } from "@/lib/motion/slowmo";
 import { buildAhead, nearScreen } from "@/lib/motion/firstView";
-import { createSideboard, FRAME, type Frame, type Sideboard } from "./sideboard";
+import { sideboardSteps, FRAME, type Frame, type Sideboard } from "./sideboard";
+import { staged } from "@/lib/three/steps";
 import { claim, keep, sleeper } from "@/lib/three/keep";
 import { timed, trace } from "@/lib/perf/trace";
 
@@ -42,15 +43,15 @@ export function Others({ list, copy }: { list: Other[]; copy: OthersCopy }) {
     const phone = () => window.matchMedia(PHONE).matches;
     const rise = el.querySelectorAll("[data-rise]"), rows = el.querySelectorAll(".sheet li");
     const setView = (s: Sideboard, f: Frame) => Object.assign(s.cam, { ...f, pos: [...f.pos], look: [...f.look] });
-    let board: Sideboard | null = null, failed = false, shown = false, tl: gsap.core.Timeline | undefined;
+    let board: Sideboard | null = null, failed = false, dead = false, shown = false, tl: gsap.core.Timeline | undefined;
     const aside = new Set(list.filter((o) => o.aside).map((o) => o.slug));
     const place = () => board && setPos(board.anchors());
     // its canvas holds its buffers only within a screen of view (keep.ts); a kept board wakes, and resizes, as it comes near
     const zz = sleeper(el, [c], () => { if (!board) return; board.resize(); draw(); }); // the labels stay where they were
-    const build = () => {
-      if (board || failed) return board;
+    const adopt = (made: Sideboard) => {
+      if (dead) { made.dispose(); return; }
+      board = made; trace("other projects: built");
       // back from a project, the board built last time, set back as it was before a piece was opened
-      try { board = got.stage ?? timed("other projects: built", () => createSideboard(c, list, aside)); } catch { failed = true; el.dataset.gl = "off"; return null; }
       if (got.stage) {
         Object.assign(board.room, { k: 1, lamp: 1, rest: 1 }); board.keep = null; board.spin.k = 0;
         for (const k in board.lights) board.lights[k] = 0;
@@ -58,10 +59,13 @@ export function Others({ list, copy }: { list: Other[]; copy: OthersCopy }) {
       }
       b.current = board; setView(board, phone() ? FRAME.phone : FRAME.desk);
       if (!shown && !reduced) board.room.k = 0;
-      place(); board.ready.then(() => { trace("other projects: compiled"); if (!got.stage) timed("other projects: warmed", () => b.current?.warm()); timed("other projects: first draw", () => b.current?.render()); }); // its first frame, drawn ahead wherever the page is
+      place(); board.ready.then(() => { trace("other projects: compiled"); return got.stage ? undefined : b.current?.warm(); }).then(() => { trace("other projects: warmed"); timed("other projects: first draw", () => b.current?.render()); }); // its first frame, drawn ahead wherever the page is
       zz.built(); // one built far off gives its buffers up; a kept one wakes once the page has its scroll (keep.ts)
-      return board;
     };
+    // built ahead in slices (steps.ts); reached before it is in, the rest of it at once
+    const scene = staged(() => sideboardSteps(c, list, aside), adopt, () => { failed = true; el.dataset.gl = "off"; }, "other projects");
+    const build = () => { if (!board && !failed && !dead) { if (got.stage) adopt(got.stage); else scene.now(); } return board; };
+    const start = () => { if (got.stage) build(); else if (!dead) scene.start(); };
 
     // The type waits below its masks until the board comes into view; then the lamp comes up as the camera
     // settles from higher up, and the lines rise (design/motion.md §3, as the Work room arrives).
@@ -82,14 +86,14 @@ export function Others({ list, copy }: { list: Other[]; copy: OthersCopy }) {
     };
     // built ahead, in idle time or a screen before it is needed, so the scroll never waits on it; arriving once in view
     if (got.stage) build();
-    const stopAhead = buildAhead(el, build, { order: 2 }), stopNear = nearScreen(el, away.current, draw);
+    const stopAhead = buildAhead(el, start, { order: 2 }), stopNear = nearScreen(el, away.current, draw);
     const seen = new IntersectionObserver((e) => { if (e.some((x) => x.isIntersecting)) arrive(); }, { threshold: 0.3 });
     seen.observe(el);
 
     const onResize = () => { if (!board) return; if (!zz.asleep) board.resize(); setView(board, phone() ? FRAME.phone : FRAME.desk); place(); draw(); };
     window.addEventListener("resize", onResize);
     return () => {
-      stopAhead(); stopNear(); zz.stop(); seen.disconnect(); tl?.kill();
+      dead = true; stopAhead(); stopNear(); zz.stop(); seen.disconnect(); tl?.kill();
       gsap.set([...rise, ...rows], { clearProps: "transform,opacity" });
       window.removeEventListener("resize", onResize); cancelAnimationFrame(frame.current); frame.current = 0;
       b.current = null;

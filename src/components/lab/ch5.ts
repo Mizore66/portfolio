@@ -11,6 +11,7 @@ import { MAT } from "@/lib/three/pieces";
 import { content } from "@/content/site";
 import DATA from "@/content/lab-data.json";
 import { stage, frame, size, toScreen, compile, disposeStage, span, type ChapterFactory, type Frame, type Stage, type Tag } from "./kit";
+import { type Steps } from "@/lib/three/steps";
 
 type K = "w" | "d" | "l";
 const R = DATA.gateC.games as number[], WDL = DATA.gateC.wdl as Record<K, number>;
@@ -50,7 +51,7 @@ for (let n = EVERY; n <= R.length; n += EVERY) CP.push({ t: land[n - 1], v: R.sl
 /** the prototype's clock at progress p: the first stone starts falling at p = 0, the last lands at p = DROP_END */
 const clock = (p: number) => (p >= DROP_END ? T1 + 0.3 : T0 - FALL + (T1 - (T0 - FALL)) * span(p, 0, DROP_END));
 
-export const chapter5: ChapterFactory = (dayCanvas, nightCanvas, o) => {
+export const chapter5: ChapterFactory = function* (dayCanvas, nightCanvas, o) {
   registerEases();
   const seamEase = gsap.parseEase("seam");
   const seamAt = (t: number) => { // glide from checkpoint to checkpoint, each glide spanning the games between them
@@ -65,8 +66,8 @@ export const chapter5: ChapterFactory = (dayCanvas, nightCanvas, o) => {
   const rests = Object.fromEntries(piles.map((pl) => [pl.key, heap(WDL[pl.key], pl.seed)])) as Record<K, Rest[]>;
 
   type Side = { s: Stage; heaps: Record<K, THREE.InstancedMesh> };
-  const build = (canvas: HTMLCanvasElement, day: boolean): Side => {
-    const bg = day ? 0xf3f3f1 : 0x0b0e14, s = stage(canvas, { exposure: day ? 1 : 1.12, env: day ? 0.45 : 0.12, bg, fov: CAM[k].fov });
+  const build = function* (canvas: HTMLCanvasElement, day: boolean): Steps<Side> {
+    const bg = day ? 0xf3f3f1 : 0x0b0e14, s = yield* stage(canvas, { exposure: day ? 1 : 1.12, env: day ? 0.45 : 0.12, bg, fov: CAM[k].fov });
     s.cam.far = 200; s.scene.fog = new THREE.Fog(bg, 40, 90);
     s.scene.add(new THREE.HemisphereLight(day ? 0xffffff : 0x26324a, day ? 0xd8d5ce : 0x05070a, day ? 0.7 : 0.5));
     const lt = day ? new THREE.DirectionalLight(0xfffaf2, 2.8) : new THREE.SpotLight(0xfff0dc, 430, 0, 0.5, 0.8, 1.3); lt.position.set(-3, 17, 9);
@@ -91,7 +92,7 @@ export const chapter5: ChapterFactory = (dayCanvas, nightCanvas, o) => {
     }
     return { s, heaps };
   };
-  const d = build(dayCanvas, true), n = nightCanvas ? build(nightCanvas, false) : null;
+  yield; const d = yield* build(dayCanvas, true), n = nightCanvas ? yield* build(nightCanvas, false) : null;
   const sides = n ? [d, n] : [d], stages = sides.map((x) => x.s), c = compile(stages);
 
   const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), E = new THREE.Euler(), V = new THREE.Vector3(), ONE = new THREE.Vector3(1, 1, 1);

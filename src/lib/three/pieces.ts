@@ -1,6 +1,7 @@
 // The chess set (Phase 4 assets, approved at Gate 4). Ported from design/keyframes/_shared/chess3d.js.
 // Board: one square = 1 unit, centred on the origin. Files a..h run -x to +x; White sits at +z.
 import * as THREE from "three";
+import { run, type Steps } from "./steps";
 export type { PieceType };
 import { mergeGeometries, mergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
@@ -65,7 +66,9 @@ export function knightHalfDepth(x: number, y: number): number {
   return T * Math.sqrt(1 - (1 - k) ** 2);
 }
 let KNIGHT_GEO: THREE.BufferGeometry | null = null, KNIGHT_LOD: THREE.BufferGeometry | null = null;
-function knightHead(lod = false) {
+function knightHead(lod = false) { return run(knightHeadSteps(lod)); }
+/** The knight's head, in steps (steps.ts): its 28 rings, a few at a time. Built once a visit, then shared. */
+function* knightHeadSteps(lod = false): Steps<THREE.BufferGeometry> {
   if (lod ? KNIGHT_LOD : KNIGHT_GEO) return (lod ? KNIGHT_LOD : KNIGHT_GEO)!;
   // conforming mesh: the silhouette is star-shaped about a point in the neck, so build it as concentric rings
   const contour = (lod ? KPOLY.filter((_, i) => i % 4 === 0) : KPOLY).slice(0, -1), C = new THREE.Vector2(.0, .66), K = lod ? 10 : 28, n = contour.length;
@@ -78,11 +81,14 @@ function knightHead(lod = false) {
   for (const side of [1, -1]) for (let k = 0; k < K; k++) for (let i = 0; i < n; i++) {
     const a = pt(k, i), b = pt(k + 1, i), c = pt(k + 1, i + 1), d = pt(k, i + 1);
     push(side, [a, b, c]); if (k > 0) push(side, [a, c, d]);
+    if (i === n - 1 && k % 4 === 3) yield;
   }
   const both = new THREE.BufferGeometry(); both.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
-  const m = mergeVertices(both, 1e-5); m.computeVertexNormals();
+  yield; const m = mergeVertices(both, 1e-5); yield; m.computeVertexNormals();
   return lod ? (KNIGHT_LOD = m) : (KNIGHT_GEO = m);
 }
+/** Everything a set of pieces shares, built ahead in steps: so the first piece() call costs no more than any other. */
+export function* piecesReady(lod = false): Steps<void> { yield* knightHeadSteps(lod); }
 type Add = (geo: THREE.BufferGeometry, m?: THREE.Material) => THREE.Mesh;
 function knightDetails(add: Add, mat: THREE.Material) {
   // the mane: a braid of flattened beads along the back of the neck
