@@ -116,9 +116,10 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
         if (heavy >= 3) return;
         raf = requestAnimationFrame(idle);
         if (!visible || document.hidden || now - last < 33) return;
+        if (!idleFrom) idleFrom = now; // the frame's own clock: under a recording it ran 24 s behind performance.now()
         last = now; st.t = T.total + (now - idleFrom) / 1000; draw(); drew = true;
       };
-      const startIdle = () => { if (reduced) return; idleFrom = performance.now(); raf = requestAnimationFrame(idle); };
+      const startIdle = () => { if (reduced) return; idleFrom = 0; raf = requestAnimationFrame(idle); };
       const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; }); io.observe(el);
 
       const finish = () => {
