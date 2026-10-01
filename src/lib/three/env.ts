@@ -21,10 +21,36 @@ export function renderer(canvas: HTMLCanvasElement, exposure: number) {
   canvas.addEventListener("webglcontextlost", () => { if (live.delete(r)) trace("webgl: a context was lost"); });
   const dispose = r.dispose.bind(r);
   r.dispose = () => { if (!live.delete(r)) return dispose(); dispose(); r.forceContextLoss(); };
+  r.compileAsync = compileAsync(r);
   r.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = exposure;
   r.outputColorSpace = THREE.SRGBColorSpace; r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
   return r;
+}
+
+/**
+ * three's compileAsync, except that a material disposed of while it compiles, or a context lost meanwhile, counts as
+ * done. A scene built straight through (reached before it was ready) is handed over with its programs still
+ * compiling, and can be let go before they finish (a page left at once, a kept scene let go for room): three's own
+ * check then read the freed material's program and threw ("reading 'isReady'", the owner, colophon to Contact), or,
+ * on a lost context, polled forever. Same order and timing as three's (r180) otherwise.
+ */
+export function compileAsync(r: THREE.WebGLRenderer): THREE.WebGLRenderer["compileAsync"] {
+  return (scene, camera, target = null) => {
+    const materials = r.compile(scene, camera, target);
+    return new Promise((resolve) => {
+      const check = () => {
+        const lost = r.getContext().isContextLost();
+        materials.forEach((m) => {
+          const program = (r.properties.get(m) as { currentProgram?: { isReady(): boolean } }).currentProgram;
+          if (lost || !program || program.isReady()) materials.delete(m);
+        });
+        if (materials.size === 0) { resolve(scene); return; }
+        setTimeout(check, 10);
+      };
+      if (r.extensions.get("KHR_parallel_shader_compile") !== null) check(); else setTimeout(check, 10);
+    });
+  };
 }
 
 /** for the tests: how many contexts are live */
