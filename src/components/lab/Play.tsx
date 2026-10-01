@@ -1,14 +1,15 @@
 "use client";
 
 // Play's controls (lab2-7, lab2-7-m): opponent, side, the moves, the status and Start. Drawn in both layers like all
-// the Lab's type; the ink copy mounts the game, and both read the same state.
+// the Lab's type; the ink copy mounts the game and holds it, and both read the same state. Only the ink copy is
+// clicked (the paper copy is inert, and lets the pointer through to it).
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { EvalMode } from "@/lib/chess/engine";
 import type { ChapterCopy } from "./Lab";
 import { share } from "./kit";
 import { lastMove, mountPlay, movesText, pawns, picker, seamPct, store, type Opening, type PlayState } from "./game";
 
-let game: ReturnType<typeof mountPlay> | null = null;
+type Game = ReturnType<typeof mountPlay>;
 
 /** a copy template with its scores and moves set in mono, as the key frames set them */
 function fill(t: string, v: Record<string, string>, mono: string[]) {
@@ -41,14 +42,14 @@ function status(c: ChapterCopy, s: PlayState, phone: boolean) {
  * a search over Lichess's list with the six best matches, and the start position when nothing is typed. The ink copy
  * holds the real field; the paper copy, which is what shows on the dark side, draws what is typed and the caret.
  */
-function OpeningPick({ inv, c, s }: { inv: boolean; c: ChapterCopy; s: PlayState }) {
+function OpeningPick({ inv, c, s, game }: { inv: boolean; c: ChapterCopy; s: PlayState; game: React.RefObject<Game | null> }) {
   const input = useRef<HTMLInputElement>(null), [caret, setCaret] = useState(0);
   useEffect(() => { if (!inv && s.picking) input.current?.focus(); }, [inv, s.picking]);
   const home = c.startPosition as string, name = s.opening?.name ?? home;
   const rows: (Opening | null)[] = s.query ? s.hits : [null, ...s.hits.slice(0, 5)]; // null: the start position
   // lines filed under one name (the Najdorf has five) are told apart by their last move
   const twin = (o: Opening) => s.hits.filter((h) => h.name === o.name).length > 1;
-  const pick = (o: Opening | null) => { game?.setOpening(o); if (!game) picker.close(); };
+  const pick = (o: Opening | null) => { const g = game.current; if (g) g.setOpening(o); else picker.close(); };
   if (!s.picking) {
     return (
       <div className="opt opening">{c.opening as string}
@@ -92,18 +93,22 @@ function OpeningPick({ inv, c, s }: { inv: boolean; c: ChapterCopy; s: PlayState
 
 export function Play({ inv, copy: c }: { inv: boolean; copy: ChapterCopy }) {
   const s = useSyncExternalStore(store.sub, store.get, store.server);
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement>(null), game = useRef<Game | null>(null);
   useEffect(() => {
     if (inv) return;
     const pin = ref.current!.closest<HTMLElement>(".ch-pin")!;
-    game = mountPlay(pin, window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-    return () => { game?.dispose(); game = null; };
-  }, [inv]);
+    // held by this copy, not the module: a Play leaving (the page it was on) cannot take the arriving one's game
+    // with it, and a module reloaded in development cannot leave the controls without one
+    const g = mountPlay(pin, window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    game.current = g;
+    return () => { g.dispose(); if (game.current === g) game.current = null; };
+    // `store` too: in development a reload of game.ts gives it a new store, and the game must be mounted on that one
+  }, [inv, store]);
 
   const opt = (label: string, items: [string, boolean, () => void][]) => (
     <div className="opt">{label}<div>{items.map(([t, on, go]) => <button key={t} type="button" className={on ? "on" : ""} aria-pressed={on} onClick={go}>{t}</button>)}</div></div>
   );
-  const setOpp = (o: EvalMode) => () => game?.setOpp(o), setWhite = (w: boolean) => () => game?.setWhite(w);
+  const setOpp = (o: EvalMode) => () => game.current?.setOpp(o), setWhite = (w: boolean) => () => game.current?.setWhite(w);
   const over = s.phase === "won" || s.phase === "lost" || s.phase === "drawn";
   const ev = `${pawns(s.seamCp, true)} · ${seamPct(s.seamCp)}`;
   return (
@@ -114,12 +119,12 @@ export function Play({ inv, copy: c }: { inv: boolean; copy: ChapterCopy }) {
           {opt(c.youPlay as string, [[c.white as string, s.white, setWhite(true)], [c.black as string, !s.white, setWhite(false)]])}
         </div>
         <div className="bot">
-          <OpeningPick inv={inv} c={c} s={s} />
+          <OpeningPick inv={inv} c={c} s={s} game={game} />
           <div className="moves ev-ph">{c.seamLabel as string} · {ev}</div>
           <div className="moves">{movesText(s.sans)}</div>
           <p className="status" aria-live={inv ? undefined : "polite"}><span className="wide">{status(c, s, false)}</span><span className="narrow">{status(c, s, true)}</span></p>
           {!s.started || over ? (
-            <button type="button" className="start" disabled={s.phase === "loading"} onClick={() => (over ? game?.again() : game?.start())}>{(over ? c.again : c.start) as string}</button>
+            <button type="button" className="start" disabled={s.phase === "loading"} onClick={() => (over ? game.current?.again() : game.current?.start())}>{(over ? c.again : c.start) as string}</button>
           ) : null}
           {!s.started ? <p className="note start-note">{c.startNote as string}</p> : null}
         </div>
