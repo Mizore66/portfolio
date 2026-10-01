@@ -48,7 +48,7 @@ export function compileAsync(r: THREE.WebGLRenderer): THREE.WebGLRenderer["compi
         if (materials.size === 0) { resolve(scene); return; }
         setTimeout(check, 10);
       };
-      if (r.extensions.get("KHR_parallel_shader_compile") !== null) check(); else setTimeout(check, 10);
+      if (r.extensions.has("KHR_parallel_shader_compile")) check(); else setTimeout(check, 10); // has(): get() warns where it is missing
     });
   };
 }

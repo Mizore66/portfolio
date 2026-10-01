@@ -11,7 +11,7 @@ function fake(lost = false) {
     compile: () => new Set([a, b]),
     properties: { get: (m: object) => props.get(m) ?? {} },
     getContext: () => ({ isContextLost: () => lost }),
-    extensions: { get: () => ({}) },
+    extensions: { has: () => true },
   } as unknown as THREE.WebGLRenderer;
   return { r, a, props, finish: () => { ready = true; } };
 }
