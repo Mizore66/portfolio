@@ -2957,6 +2957,12 @@
           "drawnRepetition": "The same position three times. A draw.",
           "drawnFifty": "Fifty moves without a capture or a pawn move. A draw.",
           "drawnMaterial": "Neither side can mate. A draw.",
+          "opening": "Opening",
+          "startPosition": "Start position",
+          "openingSearch": "Search openings",
+          "openingNone": "No opening by that name.",
+          "openingIdle": "Press Start to play on from here.",
+          "openingWait": "The {net} net moves next. Press Start.",
           "again": "Play again",
           "seamLabel": "seam",
           "yourMove": "Your move."

@@ -87,7 +87,9 @@ export const chapter7: ChapterFactory = function* (dayCanvas, nightCanvas, o) {
   };
   const tween = (o: object, to: object, ms: number, delay: number) => new Promise<void>((res) => {
     if (!ms) { Object.assign(o, to); draw(); return res(); }
-    gsap.to(o, { ...to, duration: ms / 1000, delay: delay / 1000, ease: "seam", onUpdate: draw, onComplete: () => res() });
+    // a tween cut short (the pieces set at once, which puts them where it was taking them) settles too: one left
+    // waiting held the game busy, with the board answering nothing
+    gsap.to(o, { ...to, duration: ms / 1000, delay: delay / 1000, ease: "seam", onUpdate: draw, onComplete: () => res(), onInterrupt: () => res() });
   });
   // The position, set in steps (eight new pieces at a time) for the build, or at once as the game plays. A piece of
   // the same kind already on its square stays, set back to rest there: putting the board back after a page visit,

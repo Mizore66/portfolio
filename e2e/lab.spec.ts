@@ -67,6 +67,26 @@ test.describe("the Lab", () => {
   });
   });
 
+  // the owner, 2026-10-01: start from any named opening. The search finds it by name, the keys pick it, and the board
+  // and the moves start from its position.
+  test("Play starts from an opening found by name", async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto("/#lab"); // the one page's Play: /lab draws all seven chapters, slowly in a test browser
+    await to(page, 7);
+    const play = ink(page, 7);
+    await play.locator(".opening button").click({ force: true });
+    const field = play.getByRole("combobox", { name: "Opening" });
+    await expect(field).toBeFocused();
+    await field.fill("najdorf");
+    await expect(play.getByRole("option")).toHaveText([/B90\s*Sicilian Defense: Najdorf Variation/]);
+    const a11y = await new AxeBuilder({ page }).include('[data-ch="7"]').analyze();
+    expect(a11y.violations.map((v) => v.id)).toEqual([]);
+    await field.press("Enter");
+    await expect(play.locator(".opening button")).toHaveText("Sicilian Defense: Najdorf Variation");
+    await expect(play.locator(".moves:not(.ev-ph)")).toHaveText("1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6");
+    await expect(play.locator(".status .wide")).toHaveText("Press Start to play on from here.");
+  });
+
   test("is accessible", async ({ page }) => {
     await page.goto("/lab");
     const a11y = await new AxeBuilder({ page }).analyze();
