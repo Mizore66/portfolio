@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { drawBy } from "./draws";
+import { deadMaterial, drawBy } from "./draws";
+import { fromPieces } from "./engine";
+import type { Piece } from "./replay";
 import { legalPlies, playPly, rowsOf, startPos } from "./engine";
 import type { Ply } from "@/lib/opening/types";
 
@@ -49,5 +51,19 @@ describe("the fifty-move rule", () => {
     expect(drawBy(w.slice(0, base + 100))).toBeNull();
     expect(drawBy(w.slice(0, base + 150))).toBeNull();
     expect(drawBy(w)).toBe("fifty");
+  });
+});
+
+describe("insufficient material", () => {
+  // pieces as "Ke1 kh8 Bc1", white in capitals
+  const pos = (s: string) => fromPieces(s.split(" ").map((t) => ({ type: t[0].toUpperCase(), color: t[0] === t[0].toUpperCase() ? "w" : "b", square: t.slice(1), captured: false })) as unknown as Piece[], "w", null);
+  it("is dead with kings alone, or a lone bishop or knight", () => {
+    for (const s of ["Ke1 kh8", "Ke1 kh8 Bc1", "Ke1 kh8 nb8", "Ke1 kh8 Bc1 bf8"]) expect(deadMaterial(pos(s)), s).toBe(true); // c1 and f8 both dark
+  });
+  it("is alive with a pawn, a rook, two knights, or bishops on both colours", () => {
+    for (const s of ["Ke1 kh8 Pa2", "Ke1 kh8 Ra1", "Ke1 kh8 Nb1 Ng1", "Ke1 kh8 Bc1 bc8", "Ke1 kh8 Bc1 nb8"]) expect(deadMaterial(pos(s)), s).toBe(false);
+  });
+  it("is not reached in a game with material on the board", () => {
+    expect(drawBy(line("e2e4 e7e5"))).toBeNull();
   });
 });

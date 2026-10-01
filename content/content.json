@@ -2956,6 +2956,7 @@
           "drawn": "Stalemate. A draw.",
           "drawnRepetition": "The same position three times. A draw.",
           "drawnFifty": "Fifty moves without a capture or a pawn move. A draw.",
+          "drawnMaterial": "Neither side can mate. A draw.",
           "again": "Play again",
           "seamLabel": "seam",
           "yourMove": "Your move."

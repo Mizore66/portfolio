@@ -1,6 +1,6 @@
 /**
- * The draws a game reaches by its history, which a position alone cannot show (the owner, 2026-10-01): the same
- * position a third time, and fifty moves by each side with no pawn moved and nothing taken. Both end the game at
+ * The draws Play ends a game on besides stalemate (the owner, 2026-10-01): the same position a third time, fifty moves
+ * by each side with no pawn moved and nothing taken, and material neither side can mate with. All end the game at
  * once, as on Lichess and Chess.com, rather than waiting for a claim. A mate on the move that would draw still wins
  * (FIDE 9.3), so callers check `gameOutcome` first.
  *
@@ -9,7 +9,7 @@
 import { legalPlies, playPly, rowsOf, startPos, type EnginePos } from "./engine";
 import type { Ply } from "@/lib/opening/types";
 
-export type DrawBy = "repetition" | "fifty";
+export type DrawBy = "repetition" | "fifty" | "material";
 
 const at = (rows: string[], sq: string) => rows[8 - +sq[1]]["abcdefgh".indexOf(sq[0])];
 const alg = (i: number) => "abcdefgh"[i % 8] + (Math.floor(i / 8) + 1);
@@ -28,7 +28,24 @@ function key(pos: EnginePos): string {
   return `${rows} ${pos.side} ${pos.castle} ${ep}`;
 }
 
-/** The game from the start position: drawn by repetition or the fifty-move rule after its last ply, or null. */
+/**
+ * Neither side can mate by any series of legal moves (FIDE 5.2.2), the cases Lichess ends a game on: king against
+ * king, a lone bishop or knight against a king, and bishops only, every one on squares of one colour. Two knights
+ * against a king can still mate if the defender helps, so play goes on.
+ */
+export function deadMaterial(pos: EnginePos): boolean {
+  const rows = rowsOf(pos).split("/"), minors: { piece: string; dark: boolean }[] = [];
+  for (let r = 0; r < 8; r++) for (let f = 0; f < 8; f++) {
+    const c = rows[r][f], t = c.toUpperCase();
+    if (c === "." || t === "K") continue;
+    if (t !== "B" && t !== "N") return false; // a pawn, rook or queen can mate
+    minors.push({ piece: t, dark: (f + (7 - r)) % 2 === 0 });
+  }
+  if (minors.length <= 1) return true;
+  return minors.every((m) => m.piece === "B" && m.dark === minors[0].dark);
+}
+
+/** The game from the start position: drawn by repetition, the fifty-move rule or dead material after its last ply, or null. */
 export function drawBy(plies: readonly Ply[]): DrawBy | null {
   const pos = startPos(), seen = new Map<string, number>();
   let quiet = 0, k = key(pos);
@@ -42,5 +59,6 @@ export function drawBy(plies: readonly Ply[]): DrawBy | null {
   }
   if ((seen.get(k) ?? 0) >= 3) return "repetition";
   if (quiet >= 100) return "fifty";
+  if (deadMaterial(pos)) return "material";
   return null;
 }
