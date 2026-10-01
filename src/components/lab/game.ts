@@ -23,16 +23,15 @@ export interface PlayState {
   seamCp: number;
   /** how a drawn game was drawn */
   why: "stalemate" | DrawBy | null;
-  /** whether `seamCp` is the learned net's score of this position (an opening's is found once the engine runs) */
-  scored: boolean;
   /** the opening the game starts from, null for the start position */
   opening: Opening | null;
   /** the opening search: open, what has been typed, what it finds, the one the arrow keys are on */
   picking: boolean; query: string; hits: Opening[]; active: number;
 }
 
-/** A named opening (Lichess's list, CC0): its ECO code, its name, its moves. */
-export interface Opening { eco: string; name: string; plies: Ply[] }
+/** A named opening (Lichess's list, CC0): its ECO code, its name, its moves, and each evaluator's score of where it
+ * ends (50,000 nodes, White's view) with the move it would play there (scripts/openings.ts). */
+export interface Opening { eco: string; name: string; plies: Ply[]; scores: Record<EvalMode, { cp: number; best: string }> }
 
 const HOME: Ply[] = [];
 const known = (opp: EvalMode) => { const d = DATA.start[opp]; return { cp: d.evalCp, best: d.best }; };
@@ -40,7 +39,7 @@ export const START_CP = DATA.start.learned.evalCp;
 const HAND = 280, DROP = 200, BACK = 250, RESET = 600;
 
 const HOME_SANS = (() => { const q = startPos(); return HOME.map((p) => { const t = sanOf(q, p); playPly(q, p); return t; }); })();
-let state: PlayState = { opp: "learned", white: true, started: false, phase: "idle", sans: HOME_SANS, cp: known("learned").cp, best: known("learned").best, seamCp: START_CP, scored: true, why: null, opening: null, picking: false, query: "", hits: [], active: 0 };
+let state: PlayState = { opp: "learned", white: true, started: false, phase: "idle", sans: HOME_SANS, cp: known("learned").cp, best: known("learned").best, seamCp: START_CP, why: null, opening: null, picking: false, query: "", hits: [], active: 0 };
 const subs = new Set<() => void>();
 const put = (s: Partial<PlayState>) => { state = { ...state, ...s }; subs.forEach((f) => f()); };
 export const store = {
@@ -105,7 +104,7 @@ export function mountPlay(pin: HTMLElement, reduced: boolean): { start(): void; 
     put({ phase: "thinking", sans: sansOf() });
     const r = await ask({ type: "think", plies, mode });
     if (!live() || r.type !== "thought" || !r.best) return;
-    if (mode === "learned") { put({ seamCp: r.cp, scored: true }); stage?.eval(r.cp); }
+    if (mode === "learned") { put({ seamCp: r.cp }); stage?.eval(r.cp); }
     busy = true; await hand(r.best, HAND); busy = false;
     if (!live()) return;
     playPly(pos, r.best); plies.push(r.best); draw();
@@ -113,7 +112,7 @@ export function mountPlay(pin: HTMLElement, reduced: boolean): { start(): void; 
     if (done) { put({ ...done, sans: sansOf() }); return; }
     const reply = r.pv[1] ?? "";
     put({ phase: "you", sans: sansOf(), cp: r.cp, best: reply });
-    if (mode !== "learned") void behind("learned", (x) => { put({ seamCp: x.cp, scored: true }); stage?.eval(x.cp); });
+    if (mode !== "learned") void behind("learned", (x) => { put({ seamCp: x.cp }); stage?.eval(x.cp); });
     if (!reply) void behind(mode, (x) => put({ cp: x.cp, best: x.san ?? "" }));
   };
   // a search for the position on the board that the visitor need not wait for; dropped if a move or a reset beats it
@@ -122,13 +121,8 @@ export function mountPlay(pin: HTMLElement, reduced: boolean): { start(): void; 
     if (alive && g === game && plies.length === n && state.phase === "you" && r.type === "thought") apply(r);
   };
 
-  // the game as it stands once the engine runs: its move if it is to play, else the scores of an opening's position
-  const scoreOrPlay = () => {
-    if (!yourTurn()) { void next(); return; }
-    if (!state.opening || plies.length !== state.opening.plies.length) return;
-    void behind("learned", (x) => { put({ seamCp: x.cp, scored: true }); stage?.eval(x.cp); });
-    void behind(state.opp, (x) => put({ cp: x.cp, best: x.san ?? "" }));
-  };
+  // once the engine runs, it moves first if it is to play (as Black at the start, or after an opening)
+  const scoreOrPlay = () => { if (!yourTurn()) void next(); };
 
   // the hand: press lifts, the dots show; drop on a dot plays, anywhere else goes home; click-click works too
   const at = (e: PointerEvent) => { const b = pin.getBoundingClientRect(); return { x: e.clientX - b.left, y: e.clientY - b.top }; };
@@ -173,15 +167,16 @@ export function mountPlay(pin: HTMLElement, reduced: boolean): { start(): void; 
 
   // switching opponent or side slides the pieces home and starts over (600 ms, seam, 10 ms stagger)
   const reset = async () => {
-    const g = ++game; from = null; busy = sliding = true; stage?.lift(null, [], []); home(); put({ sans: sansOf() }); // the moves line at once; the pieces follow
+    const g = ++game; from = null; busy = sliding = true; stage?.lift(null, [], []); home();
+    // the moves, the scores and the seam change at once, the pieces follow. The position's scores are known ahead:
+    // the start's (lab-data.json), or the opening's (scripts/openings.ts)
+    const o = state.opening, k = o ? o.scores[state.opp] : known(state.opp), seamCp = o ? o.scores.learned.cp : START_CP;
+    put({ sans: sansOf(), cp: k.cp, best: k.best, seamCp, why: null, phase: state.started ? "you" : "idle" }); // the board answers once the pieces are home (busy)
+    stage?.eval(seamCp);
     stage?.orient(state.white);
     await stage?.slide(rowsOf(pos), null, ms(RESET));
     if (g !== game) return;
     busy = sliding = false;
-    // the start position's scores are known (lab-data.json); an opening's are found once the engine is running
-    const k = state.opening ? { cp: NaN, best: "" } : known(state.opp);
-    put({ sans: sansOf(), cp: k.cp, best: k.best, phase: state.started ? "you" : "idle", why: null, ...(state.opening ? { scored: false } : { seamCp: START_CP, scored: true }) });
-    if (!state.opening) stage?.eval(START_CP);
     if (state.started) scoreOrPlay();
   };
 
@@ -210,18 +205,29 @@ export function mountPlay(pin: HTMLElement, reduced: boolean): { start(): void; 
 }
 
 /**
- * The opening search. The list (`public/engine/openings.json`: ECO, name, moves) is fetched the first time the search
+ * The opening search. The list (`public/engine/openings.json`: ECO, name, moves, scores) is fetched the first time the search
  * opens. A line matches when every word typed is in its name or is its ECO code; the shortest names come first, so
- * "sicilian" finds the Sicilian Defence before its variations.
+ * "sicilian" finds the Sicilian Defense before its variations, and under one name the shortest line.
  */
 let openings: Promise<Opening[]> | null = null;
-const load = () => (openings ??= fetch("/engine/openings.json").then((r) => r.json()).then((rows: [string, string, string][]) =>
-  rows.map(([eco, name, line]) => ({ eco, name, plies: line.split(" ").map((m) => ({ from: m.slice(0, 2), to: m.slice(2, 4) })) }))));
+const load = () => (openings ??= fetch("/engine/openings.json").then((r) => r.json()).then((rows: [string, string, string, number, string, number, string][]) =>
+  rows.map(([eco, name, line, lc, lb, hc, hb]) => ({ eco, name, plies: line.split(" ").map((m) => ({ from: m.slice(0, 2), to: m.slice(2, 4) })),
+    scores: { learned: { cp: lc, best: lb }, handcrafted: { cp: hc, best: hb } } }))));
 export const HITS = 6;
+/** nothing typed yet: five of the openings played most, each as its main line (the shortest under its name) */
+const FIRST = ["Sicilian Defense", "French Defense", "Caro-Kann Defense", "Italian Game", "Queen's Gambit"];
 export function findOpenings(list: Opening[], query: string): Opening[] {
   const words = query.toLowerCase().split(/\s+/).filter(Boolean);
+  if (!words.length) return FIRST.map((n) => list.filter((o) => o.name === n).sort((a, b) => a.plies.length - b.plies.length)[0]).filter(Boolean);
   return list.filter((o) => { const n = o.name.toLowerCase(); return words.every((w) => n.includes(w) || o.eco.toLowerCase() === w); })
-    .sort((a, b) => a.name.length - b.name.length || a.name.localeCompare(b.name)).slice(0, HITS);
+    .sort((a, b) => a.name.length - b.name.length || a.name.localeCompare(b.name) || a.plies.length - b.plies.length).slice(0, HITS);
+}
+/** a line's last move as the moves line writes it ("6. Bg5", "6… e6"): what tells apart lines filed under one name */
+export function lastMove(o: Opening): string {
+  const q = startPos(); let san = "";
+  o.plies.forEach((p) => { san = sanOf(q, p); playPly(q, p); });
+  const n = o.plies.length;
+  return n ? `${Math.ceil(n / 2)}${n % 2 ? "." : "…"} ${san}` : "";
 }
 export const picker = {
   open() { put({ picking: true, query: "", active: 0 }); void load().then((l) => { if (state.picking) put({ hits: findOpenings(l, state.query) }); }); },

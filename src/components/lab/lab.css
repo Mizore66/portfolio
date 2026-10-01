@@ -143,6 +143,7 @@
 .lab .play .opening .hits li { display: grid; cursor: pointer; pointer-events: auto; grid-template-columns: 34px 1fr; gap: 10px; width: 100%; box-sizing: border-box; padding: 6px 0; font-size: 15px; font-weight: 500; line-height: 1.3; color: var(--fg2); }
 .lab .play .opening .hits li.on, .lab .play .opening .hits li:hover { color: var(--fg); }
 .lab .play .opening .hits li.on .nm { box-shadow: 0 1.5px 0 var(--move); }
+.lab .play .opening .last { font-family: var(--font-mono); font-size: .8em; color: var(--fg2); white-space: nowrap; }
 .lab .play .opening .eco { font-family: var(--font-mono); font-size: 11px; padding-top: 3px; color: var(--fg2); }
 .lab .play .opening .hits li.none { display: block; cursor: default; }
 .lab .play .moves { font-family: var(--font-mono); font-size: 14px; line-height: 1.8; }
@@ -203,7 +204,8 @@
   .lab .play .opening .field { font-size: 14px; padding-bottom: 4px; }
   .lab .play .opening .hits { margin-top: 6px; }
   .lab .play .opening .hits li { grid-template-columns: 30px 1fr; padding: 5px 0; font-size: 13px; }
-  .lab .play .opening .eco { font-size: 10px; padding-top: 2px; }
+  .lab .play .opening .last { font-family: var(--font-mono); font-size: .8em; color: var(--fg2); white-space: nowrap; }
+.lab .play .opening .eco { font-size: 10px; padding-top: 2px; }
   .lab .play .ev-ph { display: block; color: var(--fg2); margin-bottom: 6px; }
   .lab .play .status { margin-top: 10px; font-size: 14px; line-height: 1.4; }
   .lab .play .start { margin-top: 14px; font-size: 15px; padding-bottom: 3px; }

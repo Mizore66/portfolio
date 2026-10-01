@@ -2961,7 +2961,6 @@
           "startPosition": "Start position",
           "openingSearch": "Search openings",
           "openingNone": "No opening by that name.",
-          "openingIdle": "Press Start to play on from here.",
           "openingWait": "The {net} net moves next. Press Start.",
           "again": "Play again",
           "seamLabel": "seam",

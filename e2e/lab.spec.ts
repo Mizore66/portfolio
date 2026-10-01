@@ -78,13 +78,17 @@ test.describe("the Lab", () => {
     const field = play.getByRole("combobox", { name: "Opening" });
     await expect(field).toBeFocused();
     await field.fill("najdorf");
-    await expect(play.getByRole("option")).toHaveText([/B90\s*Sicilian Defense: Najdorf Variation/]);
+    // six matches: Lichess files five lines under this one name, each told apart by its last move, the shortest first
+    await expect(play.getByRole("option")).toHaveCount(6);
+    await expect(play.getByRole("option").first()).toHaveText(/^B90\s*Sicilian Defense: Najdorf Variation 5… a6$/);
     const a11y = await new AxeBuilder({ page }).include('[data-ch="7"]').analyze();
     expect(a11y.violations.map((v) => v.id)).toEqual([]);
     await field.press("Enter");
     await expect(play.locator(".opening button")).toHaveText("Sicilian Defense: Najdorf Variation");
     await expect(play.locator(".moves:not(.ev-ph)")).toHaveText("1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6");
-    await expect(play.locator(".status .wide")).toHaveText("Press Start to play on from here.");
+    // scored ahead (scripts/openings.ts), so before Start it reads as the start position does, with this position's numbers
+    await expect(play.locator(".status .wide")).toHaveText(/^Your move\. At 50,000 nodes the learned net rates this [+−]\d\.\d\d for White, and would play \S+\.$/);
+    await expect(play.locator(".status .wide")).not.toContainText("+0.31");
   });
 
   test("is accessible", async ({ page }) => {
