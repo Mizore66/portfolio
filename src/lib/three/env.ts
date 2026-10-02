@@ -12,12 +12,20 @@ import { trace } from "@/lib/perf/trace";
  */
 const MAX = 14;
 const live = new Set<THREE.WebGLRenderer>();
+let made: THREE.WebGLRenderer[] | null = null;
+
+/** The renderers `fn` made, for its caller to dispose of should it not go on with them. */
+export function madeDuring(fn: () => void): THREE.WebGLRenderer[] {
+  const outer = made, mine: THREE.WebGLRenderer[] = (made = []);
+  try { fn(); } finally { made = outer; outer?.push(...mine); }
+  return mine;
+}
 
 export function renderer(canvas: HTMLCanvasElement, exposure: number) {
   for (let room = MAX - live.size, n = 1; room <= 0 && n; room += n) n = evictKept();
   if (live.size >= MAX) trace(`webgl: ${live.size} contexts live, making another (${location.pathname}, ${[...live].map((x) => x.domElement.closest("[data-ch], section, main")?.getAttribute("data-ch") ?? x.domElement.closest("section, main")?.className.split(" ")[0] ?? "detached").join(" ")})`);
   const r = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
-  live.add(r);
+  live.add(r); made?.push(r);
   canvas.addEventListener("webglcontextlost", () => { if (live.delete(r)) trace("webgl: a context was lost"); });
   const dispose = r.dispose.bind(r);
   r.dispose = () => { if (!live.delete(r)) return dispose(); dispose(); r.forceContextLoss(); };

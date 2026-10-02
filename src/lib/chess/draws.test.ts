@@ -20,7 +20,8 @@ describe("draw by repetition", () => {
   });
 });
 
-describe("the fifty-move rule", () => {
+// each walk searches for 150 quiet moves in a row: 2.4-4.6 s alone, past the 5 s default with the suite running
+describe("the fifty-move rule", { timeout: 30_000 }, () => {
   // a walk of quiet moves (no pawn moved, nothing taken) that never repeats a position three times
   function quietWalk(n: number, pawnAt = -1): Ply[] {
     const base = line("e2e4 e7e5 d2d4 d7d5 c2c3 c7c6");

@@ -104,7 +104,7 @@ export function beginNav(to: string, from: string, { restoreScroll = false } = {
   pending = current = { plan: p, page: r ? { x: r.left, y: r.top } : null, lines, reduced, started, start };
 }
 
-export interface Arrival { reduced: boolean; /** runs `fn(delay)` when the seam starts: delay is seconds until the type should rise */ rise: (fn: (delay: number) => void) => () => void }
+export interface Arrival { reduced: boolean; /** where it lands: the path, and on the one page its section ("/#contact") */ to: string; /** runs `fn(delay)` when the seam starts: delay is seconds until the type should rise */ rise: (fn: (delay: number) => void) => () => void }
 
 /**
  * The arriving page asks when its own type should rise, or gets null when nothing is arriving. Ask from a
@@ -117,6 +117,7 @@ export function arrival(path: string): Arrival | null {
   if (!job || pathOf(job.plan.to) !== path) return null;
   return {
     reduced: job.reduced,
+    to: job.plan.to,
     rise: (fn) => {
       let live = true;
       job.started.then((t0) => { if (live) fn(job.reduced ? 0 : Math.max(0, job.plan.rise - (now() - t0) / 1000)); });

@@ -16,6 +16,19 @@ export function run<T>(g: Steps<T>): T {
   for (;;) { const r = g.next(); if (r.done) return r.value; }
 }
 
+/** Its first `n` steps now (a scene's renderers, made while the page change can still make room for them, env.ts),
+ * the rest as a build that carries on from there: a promise the last of them yielded is yielded first. */
+export function ahead<T>(g: Steps<T>, n: number): Steps<T> {
+  let r: IteratorResult<unknown, T> | null = null;
+  for (let i = 0; i < n && !(r = g.next()).done; i++) if (r.value instanceof Promise) break;
+  const last = r;
+  return (function* () {
+    if (last?.done) return last.value;
+    if (last?.value instanceof Promise) yield last.value;
+    return yield* g;
+  })();
+}
+
 const channel = typeof MessageChannel === "function" ? new MessageChannel() : null, queue: (() => void)[] = [];
 if (channel) channel.port1.onmessage = () => queue.shift()?.();
 /** The next slice runs once the next frame has been drawn: a task posted at the frame's start runs after its paint.

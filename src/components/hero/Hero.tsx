@@ -9,7 +9,8 @@ import { gsap } from "gsap";
 import { registerEases, share, perLayer } from "@/lib/motion/ease";
 import { stageSteps, T, type Stage } from "./stage";
 import { claim, keep, sleeper } from "@/lib/three/keep";
-import { run, sliced } from "@/lib/three/steps";
+import { ahead, run, sliced } from "@/lib/three/steps";
+import { madeDuring } from "@/lib/three/env";
 import { cue } from "@/lib/sound/sound";
 import "./hero.css";
 import { timed, trace } from "@/lib/perf/trace";
@@ -71,9 +72,12 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
     const key = `hero-${mobile}`, got = claim<Stage>(key, [day.current!, night.current!]);
     const make = () => stageSteps(got.canvases[0], got.canvases[1], mobile);
     let dead = false, end = () => {};
-    // Arriving from another page the stage is needed now, under the sweep; on a first load it is built in slices
-    // (steps.ts) while the page is still black, so no frame waits on it for long, and the opening starts once it is in.
-    if (got.stage || arrival("/")) {
+    // Arriving from another page at the top, the stage is needed now, under the sweep; on a first load it is built in
+    // slices (steps.ts) while the page is still black, so no frame waits on it for long, and the opening starts once it
+    // is in. Arriving lower down (/#contact) it is off screen: in slices too, its programs compiled off the main thread
+    // (built and drawn at once it held the page change from /lab to Contact 0.3 s, 0.6 s in development).
+    const to = arrival("/")?.to, below = to != null && /#(?!top$)./.test(to);
+    if (got.stage || (to != null && !below)) {
       try { end = begin(got.stage ?? timed("hero: built", () => run(make()))); }
       catch { el.dataset.intro = "done"; } // no WebGL: the CSS end state stands in
     } else {
@@ -83,7 +87,12 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
       const early = () => { if (!plays()) el.dataset.intro = "done"; };
       early(); window.addEventListener("scroll", early, { passive: true });
       const t0 = performance.now();
-      const b = sliced(make(), 8, "hero");
+      // arriving lower down, its two renderers are made now, as the Lab's are let go: made later, past the Lab's lost
+      // contexts, they were over WebKit's count (it keeps lost ones until they are collected) and it lost Play's
+      let g!: ReturnType<typeof make>, mine: { dispose(): void }[] = [];
+      try { mine = madeDuring(() => { g = below ? ahead(make(), 2) : make(); }); }
+      catch { el.dataset.intro = "done"; return () => {}; } // no WebGL
+      const b = sliced(g, 8, "hero");
       b.done.then((stage) => {
         window.removeEventListener("scroll", early);
         if (dead) { stage.dispose(); return; }
@@ -91,7 +100,7 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
       }, () => { window.removeEventListener("scroll", early); el.dataset.intro = "done"; });
       // gone before a slice ran (React mounts twice in development): no renderer is made for it, so it takes no WebGL
       // context (WebKit counts even lost ones until they are collected, and loses the oldest live one past 16)
-      end = () => { window.removeEventListener("scroll", early); b.cancel(); };
+      end = () => { window.removeEventListener("scroll", early); if (b.cancel()) mine.forEach((r) => r.dispose()); };
     }
     return () => { dead = true; end(); };
 

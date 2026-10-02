@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { run, sliced, staged, type Steps } from "./steps";
+import { ahead, run, sliced, staged, type Steps } from "./steps";
 
 // a build of five parts, each spinning for `ms`, recording the order it ran in
 function* parts(log: string[], ms = 0, wait?: Promise<void>): Steps<string> {
@@ -30,6 +30,18 @@ describe("scenes built in steps", () => {
     expect(log).toEqual([]); // nothing runs before its first slice
     expect(b.finish()).toBe("part 0,part 1,part 2,part 3,part 4");
     expect(await b.done).toBe(b.finish());
+  });
+  test("ahead(): its first steps now, then the same build from there, a promise among them still waited for", async () => {
+    const log: string[] = [], g = ahead(parts(log), 2);
+    expect(log).toEqual(["part 0", "part 1"]);
+    expect(run(g)).toBe(run(parts([])));
+    let open!: () => void; const wait = new Promise<void>((r) => { open = r; });
+    const log2: string[] = [], b = sliced(ahead(parts(log2, 0, wait), 3));
+    expect(log2).toEqual(["part 0", "part 1", "part 2"]); // the third step yielded the promise
+    await new Promise((r) => setTimeout(r, 20));
+    expect(log2).toHaveLength(3);
+    open(); expect(await b.done).toBe("part 0,part 1,part 2,part 3,part 4");
+    expect(run(ahead(parts([]), 99))).toBe("part 0,part 1,part 2,part 3,part 4"); // more steps than it has
   });
   test("cancel() before a slice ran: nothing of it runs; once under way it is not cancelled", async () => {
     const log: string[] = [], b = sliced(parts(log), 4);
