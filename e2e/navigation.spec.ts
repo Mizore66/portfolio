@@ -102,6 +102,28 @@ test.describe("the one page", () => {
     await expect.poll(() => seam(page), { timeout: 60_000 }).toBe(REST.work);
   });
 
+  // on a phone a tapped nav link kept its focus, and the ink copy of the nav stayed, dark over the dark sections, while
+  // the paper copy stepped away; keyboard focus brings both back
+  test("on a phone the nav steps away as one, a tapped link or not, and keyboard focus brings it back", async ({ browser }) => {
+    test.setTimeout(120_000);
+    const ctx = await browser.newContext({ viewport: { width: 412, height: 915 }, isMobile: true, hasTouch: true });
+    await ctx.addInitScript(() => sessionStorage.setItem("hero-opening-seen", "1"));
+    const page = await ctx.newPage();
+    const op = (layer: string) => page.locator(`.chrome [data-layer=${layer}] .nav`).evaluate((e) => getComputedStyle(e).opacity);
+    await page.goto("/#roles");
+    const bb = (await nav(page, "Work").boundingBox())!;
+    await page.touchscreen.tap(bb.x + bb.width / 2, bb.y + bb.height / 2); // a tap leaves the link focused, not focus-visible
+    await expect(page).toHaveURL(/\/#work$/, { timeout: 60_000 });
+    for (let i = 0; i < 6; i++) { await page.mouse.wheel(0, 120); await page.waitForTimeout(150); }
+    await expect(page.locator(".site")).toHaveAttribute("data-nav-away", "");
+    await expect.poll(() => op("ink")).toBe("0");
+    await expect.poll(() => op("inv")).toBe("0");
+    await page.keyboard.press("Shift+Tab"); await page.keyboard.press("Tab"); // focus from the keyboard
+    await expect.poll(() => op("ink")).toBe("1");
+    await expect.poll(() => op("inv")).toBe("1");
+    await ctx.close();
+  });
+
   test("résumé mode is a plain page: no chrome, no seam", async ({ page }) => {
     await page.goto("/#work");
     await page.locator(".chrome [data-layer=ink] a.resume-link").click();

@@ -51,8 +51,10 @@ function Open({ copy, tree, more }: { copy: LabCopy["open"]; tree: TreeNode; mor
   }, [tree]);
   const type = (inv: boolean) => (
     <div className={`lab-type${inv ? " seam-dark" : ""}`} data-layer={inv ? "inv" : "ink"} aria-hidden={inv || undefined} inert={inv || undefined}>
-      {inv ? <p className="op-num display"><span className="ln" data-vt-line=""><span data-rise="">{copy.num}</span></span></p>
-        : more ? <h2 className="op-num display"><span className="ln" data-vt-line=""><span data-rise="">{copy.num}</span></span></h2>
+      {/* the one page's section is titled, as Work is; the score is its first line. Seen on phones, read on desktop (lab.css) */}
+      {more ? (inv ? <p className="op-title display"><span className="ln" data-vt-line=""><span data-rise="">Lab</span></span></p>
+        : <h2 className="op-title display"><span className="ln" data-vt-line=""><span data-rise="">Lab</span></span></h2>) : null}
+      {inv || more ? <p className="op-num display"><span className="ln" data-vt-line=""><span data-rise="">{copy.num}</span></span></p>
         : <h1 className="op-num display"><span className="ln" data-vt-line=""><span data-rise="">{copy.num}</span></span></h1>}
       <div className="op-pm"><span className="ln" data-vt-line=""><span data-rise="">{copy.pm}</span></span><span className="ln q" data-vt-line=""><span data-rise=""><span className="wide">{copy.qualifier}</span><span className="narrow">{copy.qualifierPhone}</span></span></span></div>
       <p className="op-lede"><span className="ln" data-vt-line=""><span data-rise="">{copy.lede}</span></span></p>
@@ -64,7 +66,7 @@ function Open({ copy, tree, more }: { copy: LabCopy["open"]; tree: TreeNode; mor
     </div>
   );
   return (
-    <section className="lab-open" data-ch="0">
+    <section className="lab-open" data-ch="0" data-titled={more ? "" : undefined}>
       <div className="lab-dark seam-dark" />
       <svg ref={svg} className="op-tree" aria-hidden="true" viewBox={g ? `0 0 ${g.W} ${g.H}` : undefined}>
         {g ? (<>

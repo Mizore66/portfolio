@@ -33,8 +33,10 @@
 }
 /* the one page: the nav steps up and away while the page scrolls down beneath it (OnePage.tsx); focus brings it back */
 .chrome .nav { transition: opacity .25s cubic-bezier(.16, .84, .3, 1), transform .25s cubic-bezier(.16, .84, .3, 1); }
-.site[data-nav-away] .chrome .nav:not(:focus-within) { opacity: 0; transform: translateY(calc(-10 * var(--u))); pointer-events: none; }
-@media (prefers-reduced-motion: reduce) { .chrome .nav { transition: none; } .site[data-nav-away] .chrome .nav:not(:focus-within) { transform: none; } }
+/* keyboard focus brings it back, in both copies at once. Not any focus: a tapped link keeps its focus, and the ink copy alone
+   stayed, dark over the dark sections, while the paper copy left */
+.site[data-nav-away]:not(:has(.chrome .nav :focus-visible)) .chrome .nav { opacity: 0; transform: translateY(calc(-10 * var(--u))); pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .chrome .nav { transition: none; } .site[data-nav-away]:not(:has(.chrome .nav :focus-visible)) .chrome .nav { transform: none; } }
 /* the hero's loader holds the nav back until the name has arrived */
 .site:has(.hero[data-intro="pending"]):not(:has(.home > :target)) .chrome :is(.nav, .sound-toggle) { visibility: hidden; }
 

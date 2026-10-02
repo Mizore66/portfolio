@@ -41,6 +41,10 @@
   :is(.work, .others) .piece b, :is(.work, .others) .piece[data-on] b { font-size: calc(16 * var(--u)); }
   .work[data-gl="off"] .work-pieces { left: calc(20 * var(--u)); top: calc(180 * var(--u)); }
 }
+/* a phone's room is cut to the board under its title (gallery.ts CROP: .51 of the screen-high frame) */
+@media (max-width: 600px) {
+  .work { height: max(51vh, calc(285.6 * var(--u))); height: max(51dvh, calc(285.6 * var(--u))); min-height: 0; }
+}
 
 /* Other Projects (step 4a, comp A: design/keyframes/side-a.html). The seven others on the second board,
    below the gallery; the paper edge runs on down the page. */
