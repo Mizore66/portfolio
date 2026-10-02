@@ -1,5 +1,8 @@
 /* The hero (key frame hero-a, opening approved at Gate 3). The seam position is --seam. */
-.hero { position: relative; height: 100vh; height: 100dvh; min-height: calc(560 * var(--u)); overflow: hidden; background: linear-gradient(90deg, var(--paper) var(--seam), var(--gallery) var(--seam)); }
+.hero { position: relative; height: 100vh; height: 100dvh; min-height: calc(560 * var(--u)); overflow: hidden; background: var(--gallery); }
+/* the paper side is a solid panel, not a gradient: a browser's forced dark mode (Samsung Internet's ignores color-scheme)
+   darkens solid colours with the type but leaves gradients light, which put white type on paper */
+.hero::before { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: var(--seam); background: var(--paper); }
 /* the loader starts in the dark; script takes the seam from there (the site seam is on .site) */
 /* the opening waits in the dark, except on a section's address (/#work), where it never plays */
 .site:has(.hero[data-intro="pending"]):not(:has(.home > :target)) { --seam: 0% !important; }
@@ -21,7 +24,7 @@
 .hero .ply { position: absolute; left: 50%; bottom: 6.8vh; transform: translateX(-50%); font-size: calc(13 * var(--u)); white-space: nowrap; }
 
 @media (max-width: 600px), (min-width: 601px) and (max-width: 1199px) and (orientation: portrait) {
-  .hero { background: linear-gradient(180deg, var(--paper) var(--seam), var(--gallery) var(--seam)); }
+  .hero::before { right: 0; bottom: auto; width: auto; height: var(--seam); }
   .hero .night, .hero-layer[data-layer="inv"] { clip-path: polygon(0 calc(var(--seam) - var(--seam-o)), 100% calc(var(--seam) + var(--seam-o)), 100% calc(100% + calc(400 * var(--u))), 0 calc(100% + calc(400 * var(--u)))); }
   .hero .name { left: calc(18 * var(--u)); top: calc(55.9% - 1.3em); font-size: 29.5vw; }
   .hero .l2 { font-size: .56em; margin-top: .08em; }

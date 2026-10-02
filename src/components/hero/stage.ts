@@ -162,7 +162,7 @@ export function* stageSteps(dayCanvas: HTMLCanvasElement, nightCanvas: HTMLCanva
   const lerp3 = (a: V3, b: V3, u: number): V3 => [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, a[2] + (b[2] - a[2]) * u];
   const arc = (u: number) => Math.sin(Math.PI * u) * 0.6, clamp = (x: number) => Math.min(1, Math.max(0, x));
   const knightYaw = (o: Obj) => (o.type === "N" ? (o.white ? Math.PI / 2 : -Math.PI / 2) : 0);
-  const paper = new THREE.Color(0xf3f3f1), black = new THREE.Color(0x09090a), fogDay = new THREE.Fog(0xf3f3f1, 16, 44), fogNight = new THREE.Fog(0x09090a, 18, 48);
+  const black = new THREE.Color(0x09090a), fogDay = new THREE.Fog(0xf3f3f1, 16, 44), fogNight = new THREE.Fog(0x09090a, 18, 48);
   let lastHl = "";
 
   const moving = (t: number) => { let k = -1, f = 0; for (let i = 0; i < PLIES.length; i++) if (t >= T_AT[i]) { k = i; f = Math.min(1, (t - T_AT[i]) / (D[i] * 0.85)); } return { k, f }; };
@@ -197,7 +197,9 @@ export function* stageSteps(dayCanvas: HTMLCanvasElement, nightCanvas: HTMLCanva
     spot.intensity = 140 * lit * (1 - after2 * 0.7); spot.angle = 0.5 - 0.16 * push;
     amber.intensity = t > T_END - 0.05 ? 60 * Math.exp(-Math.max(0, t - T_END + 0.05) * 4) : 0;
     floatKey.intensity = 1.6 * after2; rim.intensity = 1.1 * after2; nightHemi.intensity = 0.5 + 0.1 * after2;
-    day.visible = true; night.visible = false; scene.background = paper; scene.fog = fogDay; rDay.render(scene, cam);
+    // the day draws on no background: its paper is the hero's (hero.css), which a browser's forced dark mode can darken
+    // with the type. A canvas it cannot repaint, so painted paper here stayed light under type it turned white.
+    day.visible = true; night.visible = false; scene.background = null; scene.fog = fogDay; rDay.render(scene, cam);
     day.visible = false; night.visible = true; scene.background = black; scene.fog = t > T.blast ? fogNight : null; rNight.render(scene, cam);
   }
 
@@ -211,7 +213,7 @@ export function* stageSteps(dayCanvas: HTMLCanvasElement, nightCanvas: HTMLCanva
   // each side draws them (render, below): the day with its lights and fog, the night with its own, before and after
   // the blast turns its fog on. Compiled with both sides' lights at once, every program was compiled again on the
   // spot: 127 ms on the first frame, and 87 ms at the blast. Built straight through, this does not wait.
-  const as = (d: boolean, fog: THREE.Fog | null) => { day.visible = d; night.visible = !d; scene.background = d ? paper : black; scene.fog = fog; };
+  const as = (d: boolean, fog: THREE.Fog | null) => { day.visible = d; night.visible = !d; scene.background = d ? null : black; scene.fog = fog; };
   as(true, fogDay); const a = rDay.compileAsync(scene, cam);
   as(false, null); const b = rNight.compileAsync(scene, cam);
   as(false, fogNight); const c = rNight.compileAsync(scene, cam);
