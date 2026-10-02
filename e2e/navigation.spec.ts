@@ -66,7 +66,12 @@ test.describe("the one page", () => {
     await page.goto("/#work");
     await expect.poll(() => top(page, "work"), { timeout: 60_000 }).toBeLessThan(3);
     const y = await page.evaluate(() => scrollY);
-    await page.locator("#work .work-pieces a").first().click();
+    // the labels are placed once the room is drawn, then rise: a click before that lands where the label was, and
+    // Playwright's retry scrolls the page to find it (the page was then left on Other Projects, and Back went there)
+    const piece = page.locator("#work .work-pieces li").first();
+    await expect(piece).toHaveAttribute("data-placed", "", { timeout: 60_000 });
+    await expect(piece).toHaveCSS("opacity", "1");
+    await piece.locator("a").click();
     await expect(page).toHaveURL(/\/work\/[\w-]+$/, { timeout: 60_000 });
     await page.goBack();
     await expect(page).toHaveURL(/\/#work$/);
