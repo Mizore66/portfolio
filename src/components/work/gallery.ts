@@ -16,6 +16,9 @@ import { type Steps } from "@/lib/three/steps";
 const TILE = 2.2, PLINTH = 0.7, SCALE = 1.9, SPOT = 150;
 type V3 = [number, number, number];
 
+/** phones: the room is cut to the band the board stands in, as shares of the screen-high frame (work.css's height is h) */
+export const CUT = "(max-width: 600px)";
+const CROP = { top: 0.22, h: 0.51 };
 export interface View { pos: V3; look: V3; fov: number; /** where on screen the look point sits (0..1 across, or down on phones); .5 is the centre */ shift?: number }
 
 /** work-c's framing; on phones (and upright tablets) the camera looks along the floor from the g-file side, so the pieces stack. */
@@ -89,6 +92,9 @@ export function* gallerySteps(canvas: HTMLCanvasElement, slugs: { slug: string; 
   }
 
   const W = () => canvas.clientWidth || 1, H = () => canvas.clientHeight || 1; // 1, not 0, in a window with no size: a 0/0 aspect made every label NaN
+  // on a phone the room is cut to the board (work.css): the camera frames the screen-high room it was framed for, and
+  // draws only the band the board stands in, so the pieces keep their size and the empty floor above and below goes
+  const cut = () => (window.matchMedia(CUT).matches ? CROP : null);
   const cam = new THREE.PerspectiveCamera(38, 1, 0.1, 150);
   const view = { pos: new THREE.Vector3(), look: new THREE.Vector3(), fov: 38, shift: 0.5, phone: false };
   const lights: Record<string, number> = Object.fromEntries(slugs.map((s) => [s.slug, 0]));
@@ -96,13 +102,14 @@ export function* gallerySteps(canvas: HTMLCanvasElement, slugs: { slug: string; 
   const place = () => {
     // The room is framed at 16:10 (work-c). In a narrower window the vertical field widens so the three pieces keep
     // their width on screen; the widening fades out as the camera steps down to a project (fov 22), whose page it cuts to.
-    const aspect = W() / H(), k = view.phone ? 0 : Math.min(1, Math.max(0, (view.fov - 22) / 16)), fit = Math.max(1, 1.6 / aspect);
+    const c = cut(), F = c ? H() / c.h : H(), y0 = c ? c.top * F : 0; // the full frame's height, and where the band starts in it
+    const aspect = W() / F, k = view.phone ? 0 : Math.min(1, Math.max(0, (view.fov - 22) / 16)), fit = Math.max(1, 1.6 / aspect);
     const fov = fit > 1 ? (2 * Math.atan(Math.tan((view.fov * Math.PI) / 360) * fit) * 180) / Math.PI : view.fov;
     cam.position.copy(view.pos); cam.fov = view.fov + (fov - view.fov) * k; cam.aspect = aspect;
     const d = 0.5 - view.shift;
-    if (Math.abs(d) < 1e-4) cam.clearViewOffset();
-    else if (view.phone) cam.setViewOffset(W(), H(), 0, d * H(), W(), H());
-    else cam.setViewOffset(W(), H(), d * W(), 0, W(), H());
+    if (Math.abs(d) < 1e-4 && !c) cam.clearViewOffset();
+    else if (view.phone) cam.setViewOffset(W(), F, 0, y0 + d * F, W(), H());
+    else cam.setViewOffset(W(), F, d * W(), y0, W(), H());
     cam.updateProjectionMatrix(); cam.lookAt(view.look); cam.updateMatrixWorld();
   };
   const ray = new THREE.Raycaster();
