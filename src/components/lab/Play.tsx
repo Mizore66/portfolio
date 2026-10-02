@@ -91,6 +91,10 @@ function OpeningPick({ inv, c, s, game }: { inv: boolean; c: ChapterCopy; s: Pla
   );
 }
 
+function Opt({ label, items }: { label: string; items: [string, boolean, () => void][] }) {
+  return <div className="opt">{label}<div>{items.map(([t, on, go]) => <button key={t} type="button" className={on ? "on" : ""} aria-pressed={on} onClick={go}>{t}</button>)}</div></div>;
+}
+
 export function Play({ inv, copy: c }: { inv: boolean; copy: ChapterCopy }) {
   const s = useSyncExternalStore(store.sub, store.get, store.server);
   const ref = useRef<HTMLDivElement>(null), game = useRef<Game | null>(null);
@@ -105,18 +109,15 @@ export function Play({ inv, copy: c }: { inv: boolean; copy: ChapterCopy }) {
     // `store` too: in development a reload of game.ts gives it a new store, and the game must be mounted on that one
   }, [inv, store]);
 
-  const opt = (label: string, items: [string, boolean, () => void][]) => (
-    <div className="opt">{label}<div>{items.map(([t, on, go]) => <button key={t} type="button" className={on ? "on" : ""} aria-pressed={on} onClick={go}>{t}</button>)}</div></div>
-  );
-  const setOpp = (o: EvalMode) => () => game.current?.setOpp(o), setWhite = (w: boolean) => () => game.current?.setWhite(w);
+  const setOpp = (o: EvalMode) => game.current?.setOpp(o), setWhite = (w: boolean) => game.current?.setWhite(w);
   const over = s.phase === "won" || s.phase === "lost" || s.phase === "drawn";
   const ev = `${pawns(s.seamCp, true)} · ${seamPct(s.seamCp)}`;
   return (
     <div ref={ref} className="play" data-picking={s.picking || undefined}>
       <div className="ctl">
         <div className="opts">
-          {opt(c.opponent as string, [[c.learned as string, s.opp === "learned", setOpp("learned")], [c.handcrafted as string, s.opp === "handcrafted", setOpp("handcrafted")]])}
-          {opt(c.youPlay as string, [[c.white as string, s.white, setWhite(true)], [c.black as string, !s.white, setWhite(false)]])}
+          <Opt label={c.opponent as string} items={[[c.learned as string, s.opp === "learned", () => setOpp("learned")], [c.handcrafted as string, s.opp === "handcrafted", () => setOpp("handcrafted")]]} />
+          <Opt label={c.youPlay as string} items={[[c.white as string, s.white, () => setWhite(true)], [c.black as string, !s.white, () => setWhite(false)]]} />
         </div>
         <div className="bot">
           <OpeningPick inv={inv} c={c} s={s} game={game} />
