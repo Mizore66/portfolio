@@ -37,7 +37,7 @@ export const metadata: Metadata = {
 
 // "only light": the design is paper and ink, and a browser's forced dark mode (Samsung Internet's, Chrome's) would turn the
 // type white while the 3D scenes, which it cannot repaint, stay light: white on white in the Roles hall.
-export const viewport: Viewport = { themeColor: "#f3f3f1", colorScheme: "light dark" };
+export const viewport: Viewport = { themeColor: "#f3f3f1", colorScheme: "only light" };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // Every page carries a per-request CSP nonce (src/proxy.ts), which only dynamic rendering can apply.

@@ -2,9 +2,11 @@
    2026-10-02: built on the phone's frames). Every length in the site's CSS is a multiple of --u: one pixel, except here. */
 :root { --u: 1px; }
 @media (min-width: 601px) and (max-width: 1199px) and (orientation: portrait) { :root { --u: calc(100vw / 600); } }
+/* Samsung Internet forces its dark mode unless the page answers a dark preference itself: this answer is light */
+@media (prefers-color-scheme: dark) { :root { color-scheme: only light; } }
 /* Design tokens, from the approved key frames (design/keyframes/_shared/tokens.css). */
 :root {
-  color-scheme: light dark; /* see layout.tsx: no forced dark mode */
+  color-scheme: only light; /* see layout.tsx: no forced dark mode */
   --paper: #f3f3f1;
   --ink: #0d0d0c;
   --pencil: #57534c;
