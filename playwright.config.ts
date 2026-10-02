@@ -3,6 +3,9 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
+  // four at once: six (the default here, half the cores) left three or four of the 89 timing out in each full run,
+  // each passing alone; the scenes are drawn in software, so more at once only queues them
+  workers: 4,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   // the test browser has no GPU: every shader compiles on the main thread, seconds a scene, and the page can be busy
