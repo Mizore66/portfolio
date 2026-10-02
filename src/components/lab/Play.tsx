@@ -120,6 +120,8 @@ export function Play({ inv, copy: c }: { inv: boolean; copy: ChapterCopy }) {
         </div>
         <div className="bot">
           <OpeningPick inv={inv} c={c} s={s} game={game} />
+          {/* the game's account: a column of its own beside the options on a tablet (lab.css) */}
+          <div className="say">
           <div className="moves ev-ph">{c.seamLabel as string} · {ev}</div>
           <div className="moves">{movesText(s.sans)}</div>
           <p className="status" aria-live={inv ? undefined : "polite"}><span className="wide">{status(c, s, false)}</span><span className="narrow">{status(c, s, true)}</span></p>
@@ -127,6 +129,7 @@ export function Play({ inv, copy: c }: { inv: boolean; copy: ChapterCopy }) {
             <button type="button" className="start" disabled={s.phase === "loading"} onClick={() => (over ? game.current?.again() : game.current?.start())}>{(over ? c.again : c.start) as string}</button>
           ) : null}
           {!s.started ? <p className="note start-note">{c.startNote as string}</p> : null}
+          </div>
         </div>
       </div>
       {/* the label rides the seam; it steps above the note when the seam runs left of it, and flips at the right edge */}

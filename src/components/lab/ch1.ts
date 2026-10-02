@@ -9,20 +9,24 @@ import { learnedKnight } from "@/lib/three/sculptures";
 import DATA from "@/content/lab-data.json";
 import { stage, frame, size, toScreen, compile, disposeStage, span, arrive, type ChapterFactory, type Frame, type Tag } from "./kit";
 import { piecesReady } from "@/lib/three/pieces";
+import { TABLET } from "@/lib/seam/seam";
 
 const V = DATA.pestoKnightMg as number[], LO = Math.min(...V), HI = Math.max(...V);
 const hgt = (x: number) => 0.14 + ((x - LO) / (HI - LO)) * 2.4;
 const DAY: Record<string, Frame> = {
   desk: { pos: [-14.2, 15.6, 22.4], look: [0, 0.9, 0], fov: 30, off: [0.255, -0.13] },
   phone: { pos: [-27, 29.5, 42.5], look: [0, 0.9, 0], fov: 30, off: [0.02, 0.178] },
+  // a tablet held upright is wider for its height than a phone: nearer, so the terrain fills the paper side
+  tablet: { pos: [-18.3, 20.3, 28.9], look: [0, 0.9, 0], fov: 30, off: [0.02, 0.25] },
 };
 const NIGHT: Record<string, Frame> = {
   desk: { pos: [1.2, 3.3, 13.5], look: [0, 2.05, 0], fov: 26, off: [-0.23, -0.1] },
   phone: { pos: [1.2, 3, 25], look: [0, 1.7, 0], fov: 26, off: [0, -0.19] },
+  tablet: { pos: [1.2, 3, 25], look: [0, 1.7, 0], fov: 26, off: [0, -0.19] },
 };
 
 export const chapter1: ChapterFactory = function* (dayCanvas, nightCanvas, o) {
-  const k = o.phone ? "phone" : "desk";
+  const k = o.phone ? (window.matchMedia(TABLET).matches ? "tablet" : "phone") : "desk";
   // day: the terrain
   const d = yield* stage(dayCanvas, { exposure: 1, env: 0.5, bg: 0xf3f3f1 });
   d.scene.add(new THREE.HemisphereLight(0xffffff, 0xd8d5ce, 0.9));

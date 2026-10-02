@@ -7,7 +7,7 @@ import { gsap } from "gsap";
 import { registerEases, perLayer } from "@/lib/motion/ease";
 import { beginNav } from "@/lib/seam/sweep";
 import { buildAhead, firstView, nearScreen } from "@/lib/motion/firstView";
-import { PHONE, restFor } from "@/lib/seam/seam";
+import { PHONE, restFor, TABLET } from "@/lib/seam/seam";
 import { after } from "@/lib/motion/slowmo";
 import { gallerySteps, VIEW, type Gallery, type View } from "./gallery";
 import { staged } from "@/lib/three/steps";
@@ -47,7 +47,7 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
   useLayoutEffect(() => {
     const el = root.current!, got = claim<Gallery>("work", [canvas.current!]), c = got.canvases[0];
     registerEases();
-    const view = () => (window.matchMedia(PHONE).matches ? VIEW.phone : VIEW.desk);
+    const view = () => (window.matchMedia(TABLET).matches ? VIEW.tablet : window.matchMedia(PHONE).matches ? VIEW.phone : VIEW.desk);
     const arriving = !window.matchMedia("(prefers-reduced-motion: reduce)").matches; // its entrance, the first time it is seen
     const rise = el.querySelectorAll("[data-rise]"), labels = el.querySelectorAll(".piece");
     let gal: Gallery | null = null, failed = false, dead = false, tl: gsap.core.Timeline | undefined;

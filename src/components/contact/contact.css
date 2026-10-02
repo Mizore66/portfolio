@@ -52,3 +52,19 @@
   .contact .clock { left: calc(20 * var(--u)); top: calc(55.9% + calc(48 * var(--u))); bottom: auto; width: calc(260 * var(--u)); }
   .contact .clock b { font-size: calc(22 * var(--u)); }
 }
+
+/* A tablet held upright (the phone composition at tablet scale, globals.css): the move fills more of the paper side,
+   and the links stand beside the clock rather than under it, so the dark side is not two short columns of one */
+@media (min-width: 601px) and (max-width: 1199px) and (orientation: portrait) {
+  .contact { --mv: min(46vw, 25svh); }
+  .contact .ct-links { left: calc(20 * var(--u) + calc(260 * var(--u)) + calc(56 * var(--u))); top: calc(55.9% + calc(40 * var(--u))); }
+}
+
+/* A narrow landscape screen (a tablet on its side, a small laptop): the clock, a fixed 300 px across the seam, ran
+   into the links (13vw past the seam) and, below 1000 px, over "Copy email". It is the phone's size here, and the links
+   start clear of it */
+@media (min-width: 601px) and (max-width: 1279px) and (orientation: landscape) {
+  .contact .clock { left: calc(55.9% - 120px); width: 240px; }
+  .contact .clock b { font-size: 22px; }
+  .contact .ct-links { left: calc(55.9% + 160px); }
+}

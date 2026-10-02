@@ -204,10 +204,44 @@
   .lab .play .opening .field { font-size: calc(14 * var(--u)); padding-bottom: calc(4 * var(--u)); }
   .lab .play .opening .hits { margin-top: calc(6 * var(--u)); }
   .lab .play .opening .hits li { grid-template-columns: calc(30 * var(--u)) 1fr; padding: calc(5 * var(--u)) 0; font-size: calc(13 * var(--u)); }
-  .lab .play .opening .last { font-family: var(--font-mono); font-size: .8em; color: var(--fg2); white-space: nowrap; }
-.lab .play .opening .eco { font-size: calc(10 * var(--u)); padding-top: calc(2 * var(--u)); }
+  .lab .play .opening .eco { font-size: calc(10 * var(--u)); padding-top: calc(2 * var(--u)); }
   .lab .play .ev-ph { display: block; color: var(--fg2); margin-bottom: calc(6 * var(--u)); }
   .lab .play .status { margin-top: calc(10 * var(--u)); font-size: calc(14 * var(--u)); line-height: 1.4; }
   .lab .play .start { margin-top: calc(14 * var(--u)); font-size: calc(15 * var(--u)); padding-bottom: calc(3 * var(--u)); }
   .lab .play .start-note, .lab .play .ev { display: none; }
+}
+
+/* Play on a tablet held upright: the options and the game's account gather under the board in two columns, the
+   options (opponent, side, opening) on the left and the moves, the status and Start on the right, rather than spread
+   to the screen's top and foot as on a phone. Searching for an opening, the options make way for the matches. */
+@media (min-width: 601px) and (max-width: 1199px) and (orientation: portrait) {
+  .lab .play .ctl { position: absolute; left: calc(20 * var(--u)); right: calc(20 * var(--u)); top: auto; bottom: calc(24 * var(--u)); width: auto; display: grid; grid-template-columns: 1fr 1.25fr; column-gap: calc(28 * var(--u)); align-items: end; }
+  .lab .play .bot { display: contents; }
+  .lab .play .opts { position: static; display: block; grid-column: 1; grid-row: 1; }
+  .lab .play .opt { margin-bottom: calc(14 * var(--u)); }
+  .lab .play .opt + .opt { text-align: left; }
+  .lab .play .opening { grid-column: 1; grid-row: 2; margin-bottom: 0; }
+  .lab .play .say { grid-column: 2; grid-row: 1 / span 2; }
+  .lab .play[data-picking] .opts { display: none; }
+  .lab .play[data-picking] .opening { grid-column: 1 / -1; grid-row: 1 / span 2; }
+}
+
+/* 01 on a tablet held upright: the terrain is framed nearer (ch1.ts), and its note hangs from the seam rather than
+   from the top, since a tablet's height in phone pixels varies (768 × 1024 put it across the seam) */
+@media (min-width: 601px) and (max-width: 1199px) and (orientation: portrait) {
+  .lab .ch[data-ch="1"] .p1 { top: auto; bottom: calc(100% - var(--seam) + calc(14 * var(--u))); }
+}
+
+/* Play on a narrow landscape screen (a tablet on its side, a small laptop): the board was sized by the height, as at
+   1440, and ran into the title and the controls. The title takes one line across the top, the controls a narrower
+   column, and the board the column between the note and the controls (ch7.ts) */
+@media (min-width: 601px) and (max-width: 1279px) and (orientation: landscape) {
+  .lab .ch[data-ch="7"] .ttl { top: 84px; font-size: 64px; }
+  .lab .ch[data-ch="7"] .ttl .ln { display: inline-block; }
+  .lab .ch[data-ch="7"] .ttl .ln + .ln { margin-left: .25em; }
+  .lab .play .ctl { right: 32px; top: 168px; width: 270px; }
+  .lab .play .opt { margin-bottom: 20px; }
+  .lab .play .opt div { font-size: 16px; gap: 16px; }
+  .lab .play .status { font-size: 15px; }
+  .lab .play .start { font-size: 16px; }
 }

@@ -11,6 +11,7 @@ import DATA from "@/content/lab-data.json";
 import { stage, frame, size, compile, disposeStage, share, type Chapter, type ChapterFactory, type Frame, type Stage } from "./kit";
 import { run, type Steps } from "@/lib/three/steps";
 import { piecesReady } from "@/lib/three/pieces";
+import { NARROW, TABLET } from "@/lib/seam/seam";
 
 export const START = "rnbqkbnr/pppppppp/......../......../......../......../PPPPPPPP/RNBQKBNR";
 const LIFT = 0.35;
@@ -50,7 +51,15 @@ export const playStage = {
 
 export const chapter7: ChapterFactory = function* (dayCanvas, nightCanvas, o) {
   const phone = o.phone, at0 = share(43); // the key frames' seam: the learned net's +0.43 after 3…Bc5
-  const F: Frame = phone ? { pos: [0, 36, 7], look: [0, 0, 0.2], fov: 30, off: [0, 0.5 - at0 + 0.045] } : { pos: [0, 24, 6.4], look: [0, 0, 0.3], fov: 28, off: [0.056, 0.01] };
+  // a tablet held upright has the controls under the board, not above it too, so the camera comes down and the board
+  // takes the room (lab.css)
+  // and a narrow landscape screen (a tablet on its side, a small laptop) sets the board in the column between the note
+  // and the controls, under a one-line title (lab.css). Read at each placing, so a resized window is framed anew.
+  const frameNow = (): Frame => {
+    if (phone) { const tablet = window.matchMedia(TABLET).matches; return { pos: [0, tablet ? 30 : 36, tablet ? 5.8 : 7], look: [0, 0, 0.2], fov: 30, off: [0, 0.5 - at0 + 0.045] }; }
+    if (window.matchMedia(NARROW).matches) return { pos: [0, 31.5, 8.4], look: [0, 0, 0.3], fov: 28, off: [0.045, -0.1] };
+    return { pos: [0, 24, 6.4], look: [0, 0, 0.3], fov: 28, off: [0.056, 0.01] };
+  };
   const side = function* (canvas: HTMLCanvasElement, day: boolean): Steps<Side> {
     const s = yield* stage(canvas, { exposure: day ? 1 : 1.08, env: day ? 0.45 : 0.1, bg: day ? 0xf3f3f1 : 0x0b0e14 });
     s.scene.add(new THREE.HemisphereLight(day ? 0xffffff : 0x9aa4b8, day ? 0xd8d5ce : 0x0b0e14, day ? 0.8 : 0.25));
@@ -72,7 +81,7 @@ export const chapter7: ChapterFactory = function* (dayCanvas, nightCanvas, o) {
   const dotM = new THREE.MeshBasicMaterial({ color: 0x0d0d0c, transparent: true, opacity: 0.32 });
   const dotG = new THREE.CircleGeometry(0.14, 40), ringG = new THREE.RingGeometry(0.36, 0.44, 48);
 
-  const place = () => sides.forEach((x) => { size(x.s); frame(x.s, white ? F : { ...F, pos: [-F.pos[0], F.pos[1], -F.pos[2]], look: [-F.look[0], F.look[1], -F.look[2]] }); });
+  const place = () => { const F = frameNow(); sides.forEach((x) => { size(x.s); frame(x.s, white ? F : { ...F, pos: [-F.pos[0], F.pos[1], -F.pos[2]], look: [-F.look[0], F.look[1], -F.look[2]] }); }); };
   let raf = 0;
   // It draws itself as the game moves, while it is on screen: off it, the Lab draws it as it comes on (its warm and
   // its first frame), and a sleeping one is drawn as it is woken (keep.ts). Drawn off screen as it was built, it

@@ -31,3 +31,29 @@ Needs its own tablet composition:
   side, half the screen empty between; on a tablet the links can sit beside the clock.
 - **Play:** fits, but the controls are spread to the corners (opponent and side at the top, the rest at the foot); on a
   tablet they can sit together under the board.
+
+## Built: the base, and the four tablet compositions (gate)
+
+The base is in: a tablet held upright now takes the phone composition at tablet scale (it reproduces the frames above
+to within 1.42%, text antialiasing). The four sections that needed their own tablet composition, at an iPad Air's
+834 × 1194 and pixel density, before (the phone composition scaled) and after:
+
+| | Before | After |
+|---|---|---|
+| **Work:** the camera comes in, so the pieces fill the screen, the names beside them | ![](tablet/p-02.jpg) | ![](tablet/k-work.jpg) |
+| **Lab 01:** the camera comes down, so the terrain fills the paper side; its note hangs from the seam | ![](tablet/p-07.jpg) | ![](tablet/k-lab01.jpg) |
+| **Contact:** the move fills more of the paper side, and the links stand beside the clock | ![](tablet/p-06.jpg) | ![](tablet/k-contact.jpg) |
+| **Play:** the controls gather under the board in two columns (options left, the game's account right), so the board takes the room above | ![](tablet/p-05.jpg) | ![](tablet/k-play.jpg) |
+| Play, searching for an opening: the matches take both columns | | ![](tablet/k-play-search.jpg) |
+
+Also checked at 768 × 1024 and 1024 × 1366.
+
+## A tablet on its side, a small laptop (601-1279 px wide, landscape): the desktop composition, two fixes
+
+| | Before | After |
+|---|---|---|
+| **Play:** the title on one line, the board in the column between the note and the controls | ![](narrow/sv-1024-05.jpg) | ![](tablet/k-l-play.jpg) |
+| **Contact:** the clock at the phone's size, the links clear of it | ![](narrow/sv-1024-06.jpg) | ![](tablet/k-l-contact.jpg) |
+
+Also checked at 900 × 600, 1180 × 820 and 1279 × 800. From 1280 up, and on phones, nothing changed: every desktop and
+phone frame is pixel-identical to before.
