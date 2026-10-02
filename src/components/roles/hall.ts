@@ -133,7 +133,7 @@ export function* hallSteps(canvas: HTMLCanvasElement, list: { slug: string; fen:
   yield;
   scene.updateMatrixWorld(true);
 
-  const W = () => canvas.clientWidth, H = () => canvas.clientHeight;
+  const W = () => canvas.clientWidth || 1, H = () => canvas.clientHeight || 1; // 1, not 0, in a window with no size: a 0/0 aspect made every label NaN
   const cam = new THREE.PerspectiveCamera(30, 1, 0.1, 200);
   const view: Frame = { ...FRAME.desk, pos: [...FRAME.desk.pos], look: [...FRAME.desk.look] };
   const aim = (c: THREE.PerspectiveCamera, v: Frame) => {

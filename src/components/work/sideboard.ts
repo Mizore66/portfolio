@@ -118,7 +118,7 @@ export function* sideboardSteps(canvas: HTMLCanvasElement, list: { slug: string;
   RectAreaLightUniformsLib.init();
   const panel = new THREE.RectAreaLight(0xfff4e6, 2.2, 10, 2); panel.position.set(0, 6, -7); panel.lookAt(0, 1, 0); scene.add(panel);
 
-  const W = () => canvas.clientWidth, H = () => canvas.clientHeight;
+  const W = () => canvas.clientWidth || 1, H = () => canvas.clientHeight || 1; // 1, not 0, in a window with no size: a 0/0 aspect made every label NaN
   const cam = new THREE.PerspectiveCamera(30, 1, 0.1, 200);
   const view: Frame = { ...FRAME.desk, pos: [...FRAME.desk.pos], look: [...FRAME.desk.look] };
   const place = () => {

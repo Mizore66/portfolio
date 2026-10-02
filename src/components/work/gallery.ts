@@ -86,7 +86,7 @@ export function* gallerySteps(canvas: HTMLCanvasElement, slugs: { slug: string; 
     side[slug] = new THREE.Vector3(x, PLINTH + 1.3, z); // phones: the label sits beside the piece, at its middle
   }
 
-  const W = () => canvas.clientWidth, H = () => canvas.clientHeight;
+  const W = () => canvas.clientWidth || 1, H = () => canvas.clientHeight || 1; // 1, not 0, in a window with no size: a 0/0 aspect made every label NaN
   const cam = new THREE.PerspectiveCamera(38, 1, 0.1, 150);
   const view = { pos: new THREE.Vector3(), look: new THREE.Vector3(), fov: 38, shift: 0.5, phone: false };
   const lights: Record<string, number> = Object.fromEntries(slugs.map((s) => [s.slug, 0]));

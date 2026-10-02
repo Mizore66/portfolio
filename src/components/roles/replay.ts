@@ -59,7 +59,7 @@ export function createReplay(canvas: HTMLCanvasElement, plies: GamePly[]): Repla
   }
   at.push(now);
 
-  const W = () => canvas.clientWidth, H = () => canvas.clientHeight;
+  const W = () => canvas.clientWidth || 1, H = () => canvas.clientHeight || 1; // 1, not 0, in a window with no size: a 0/0 aspect made every label NaN
   const cam = new THREE.PerspectiveCamera(38, 1, 0.1, 200);
   const st = { orbit: 0, phone: false };
   const seam = gsap.parseEase("seam");

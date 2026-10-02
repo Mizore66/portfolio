@@ -119,7 +119,7 @@ export function* stageSteps(dayCanvas: HTMLCanvasElement, nightCanvas: HTMLCanva
   };
 
   // cameras
-  let W = dayCanvas.clientWidth, H = dayCanvas.clientHeight;
+  let W = dayCanvas.clientWidth || 1, H = dayCanvas.clientHeight || 1; // as kit.ts: a window with no size gives no 0/0 aspect
   const cam = new THREE.PerspectiveCamera(mobile ? 46 : 34, W / H, 0.1, 200);
   const C0: [V3, V3] = mobile ? [[0, 25, 13], [0, 0, 0.4]] : [[0, 17, 10.5], [0, 0, 0.2]];
   const C1: [V3, V3] = mobile ? [[5.6, 6.8, 9.8], [1.8, 0.3, 0]] : [[4.6, 4.3, 7.8], [1.5, 0.3, -0.2]];
@@ -202,7 +202,7 @@ export function* stageSteps(dayCanvas: HTMLCanvasElement, nightCanvas: HTMLCanva
   }
 
   function resize() {
-    W = dayCanvas.clientWidth; H = dayCanvas.clientHeight;
+    W = dayCanvas.clientWidth || 1; H = dayCanvas.clientHeight || 1;
     for (const r of [rDay, rNight]) r.setSize(W, H, false);
     cam.aspect = W / H; cam.updateProjectionMatrix();
   }

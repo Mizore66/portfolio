@@ -54,7 +54,7 @@ export function createProjectStage(canvas: HTMLCanvasElement, slug: string): Pro
   const Y = new THREE.Vector3(0, 1, 0);
 
   function frame() {
-    const W = canvas.clientWidth, H = canvas.clientHeight;
+    const W = canvas.clientWidth || 1, H = canvas.clientHeight || 1; // as kit.ts: a window with no size gives no 0/0 aspect
     cam.aspect = W / H;
     // on phones the piece is smaller against the tall frame, and stands across the horizontal seam
     cam.fov = seat.phone ? 30 : 22;
