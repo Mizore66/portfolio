@@ -2,7 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { restColours, setSeam } from "@/lib/seam/seam";
+import { PHONE, restColours, setSeam } from "@/lib/seam/seam";
 import { arrival } from "@/lib/seam/sweep";
 import { lockScroll } from "@/lib/motion/scroll";
 import { gsap } from "gsap";
@@ -47,12 +47,12 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
   const root = useRef<HTMLElement>(null);
   const day = useRef<HTMLDivElement>(null), night = useRef<HTMLDivElement>(null); // the canvases' slots (keep.ts)
   // Known at once on the client, so an arriving hero builds its stage at commit (null only on the server).
-  const [mobile, setMobile] = useState<boolean | null>(() => (typeof window === "undefined" ? null : window.matchMedia("(max-width: 600px)").matches));
+  const [mobile, setMobile] = useState<boolean | null>(() => (typeof window === "undefined" ? null : window.matchMedia(PHONE).matches));
   // Arriving from another page, there is no opening: the seam is already on its way here.
   const [arriving] = useState(() => typeof window !== "undefined" && arrival("/") != null);
 
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 600px)");
+    const mq = window.matchMedia(PHONE);
     const on = () => setMobile(mq.matches);
     on(); mq.addEventListener("change", on);
     return () => mq.removeEventListener("change", on);

@@ -3,6 +3,7 @@
 import { useLayoutEffect, useRef } from "react";
 import { driveBlocks, registerBlock } from "@/lib/seam/blocks";
 import { section } from "@/lib/seam/section";
+import { PHONE } from "@/lib/seam/seam";
 import { glideTo } from "@/lib/motion/scroll";
 import "./home.css";
 
@@ -20,7 +21,7 @@ export function OnePage() {
     const main = mark.current!.closest("main")!, site = main.closest<HTMLElement>(".site")!;
     const parts = [...main.querySelectorAll<HTMLElement>(":scope > [data-rest]")];
     const stop = driveBlocks(site);
-    const unblock = parts.map((el) => registerBlock(el, () => Number(window.matchMedia("(max-width: 600px)").matches ? el.dataset.restPhone : el.dataset.rest)));
+    const unblock = parts.map((el) => registerBlock(el, () => Number(window.matchMedia(PHONE).matches ? el.dataset.restPhone : el.dataset.rest)));
     const tops = () => [...main.querySelectorAll<HTMLElement>(":scope > section[id]")];
     const at = (id: string) => { const el = document.getElementById(id); return el ? el.getBoundingClientRect().top + window.scrollY : null; };
 

@@ -1,12 +1,12 @@
 /* Contact, the ending (contact-a; design/motion/contact.html for the phone). The seam rests at 55.9%. */
-.contact { position: relative; height: 100vh; height: 100dvh; min-height: 560px; overflow: hidden; background: var(--paper); }
+.contact { position: relative; height: 100vh; height: 100dvh; min-height: calc(560 * var(--u)); overflow: hidden; background: var(--paper); }
 .contact .ct-dark { position: absolute; inset: 0; background: var(--dark); pointer-events: none; }
 .contact .ct-layer { position: absolute; inset: 0; z-index: 2; --fg: var(--ink); --fg2: var(--pencil); color: var(--fg); pointer-events: none; }
 .contact .ct-layer[data-layer="inv"] { --fg: var(--paper); --fg2: #b9b5ad; }
 .contact .ln { display: block; overflow: hidden; padding-bottom: .16em; margin-bottom: -.16em; }
 .contact .ln > span { display: block; }
 .contact a { color: inherit; text-decoration: none; pointer-events: auto; }
-.contact a:focus-visible { outline: 2px solid var(--move); outline-offset: 4px; }
+.contact a:focus-visible { outline: calc(2 * var(--u)) solid var(--move); outline-offset: calc(4 * var(--u)); }
 
 /* 11. and its caret share one size: 30vw as in contact-a, capped by the height so short screens keep the move clear */
 .contact { --mv: min(30vw, 58vh); --mv-x: 15vw; --mv-y: 8vh; }
@@ -18,37 +18,37 @@
 @media (prefers-reduced-motion: reduce) { .contact[data-caret] .caret { animation: none; } }
 
 .contact .ct-line { position: absolute; left: 4vw; margin: 0; }
-.contact .ct-yours { bottom: 18vh; font-size: 40px; }
-.contact .ct-mail { bottom: 12vh; font-size: 20px; font-weight: 600; }
-.contact .ct-reply { bottom: 8vh; font-size: 13px; color: var(--fg2); }
+.contact .ct-yours { bottom: 18vh; font-size: calc(40 * var(--u)); }
+.contact .ct-mail { bottom: 12vh; font-size: calc(20 * var(--u)); font-weight: 600; }
+.contact .ct-reply { bottom: 8vh; font-size: calc(13 * var(--u)); color: var(--fg2); }
 /* the address underlines left to right on hover, like a move being written (350 ms, arrive) */
-.contact .ct-mail a { background: linear-gradient(currentColor, currentColor) 0 100% / 0% 2px no-repeat; padding-bottom: 2px; transition: background-size .35s cubic-bezier(.16, .84, .3, 1); }
-.contact .ct-mail a:hover, .contact .ct-mail a:focus-visible { background-size: 100% 2px; }
+.contact .ct-mail a { background: linear-gradient(currentColor, currentColor) 0 100% / 0% calc(2 * var(--u)) no-repeat; padding-bottom: calc(2 * var(--u)); transition: background-size .35s cubic-bezier(.16, .84, .3, 1); }
+.contact .ct-mail a:hover, .contact .ct-mail a:focus-visible { background-size: 100% calc(2 * var(--u)); }
 /* Copy email: beside the address, in the reply line's voice, underlined on hover like the address */
-.contact .ct-copy { all: unset; margin-left: 16px; font-size: 13px; font-weight: 400; color: var(--fg2); cursor: pointer; pointer-events: auto; background: linear-gradient(currentColor, currentColor) 0 100% / 0% 1px no-repeat; padding-bottom: 1px; transition: background-size .35s cubic-bezier(.16, .84, .3, 1), color .2s; }
-.contact .ct-copy:hover, .contact .ct-copy:focus-visible { color: var(--fg); background-size: 100% 1px; }
-.contact .ct-copy:focus-visible { outline: 2px solid var(--move); outline-offset: 4px; }
-.contact .ct-links { position: absolute; left: calc(55.9% + 13vw); bottom: 10vh; margin: 0; padding: 0; list-style: none; font-size: 20px; font-weight: 500; line-height: 1.7; }
+.contact .ct-copy { all: unset; margin-left: calc(16 * var(--u)); font-size: calc(13 * var(--u)); font-weight: 400; color: var(--fg2); cursor: pointer; pointer-events: auto; background: linear-gradient(currentColor, currentColor) 0 100% / 0% calc(1 * var(--u)) no-repeat; padding-bottom: calc(1 * var(--u)); transition: background-size .35s cubic-bezier(.16, .84, .3, 1), color .2s; }
+.contact .ct-copy:hover, .contact .ct-copy:focus-visible { color: var(--fg); background-size: 100% calc(1 * var(--u)); }
+.contact .ct-copy:focus-visible { outline: calc(2 * var(--u)) solid var(--move); outline-offset: calc(4 * var(--u)); }
+.contact .ct-links { position: absolute; left: calc(55.9% + 13vw); bottom: 10vh; margin: 0; padding: 0; list-style: none; font-size: calc(20 * var(--u)); font-weight: 500; line-height: 1.7; }
 .contact .ct-links a:hover { color: var(--move); }
 
-.contact .clock { position: absolute; left: calc(55.9% - 150px); bottom: 8vh; z-index: 3; width: 300px; display: flex; gap: 10px; padding: 10px; border-radius: 10px; background: #2a2826; transform-origin: 50% 100%; }
-.contact .clock .face { position: relative; flex: 1; background: #f3f3f1; color: #0d0d0c; border-radius: 5px; padding: 8px 10px; }
-.contact .clock small { display: block; font-size: 11px; color: #66625b; }
-.contact .clock b { font-size: 26px; font-weight: 500; }
-.contact .clock sup { position: relative; top: 4px; margin-left: 3px; font-size: 12px; color: #66625b; vertical-align: top; }
-.contact .clock .flag { position: absolute; right: 8px; top: 9px; width: 6px; height: 6px; border-radius: 50%; background: var(--move); }
+.contact .clock { position: absolute; left: calc(55.9% - calc(150 * var(--u))); bottom: 8vh; z-index: 3; width: calc(300 * var(--u)); display: flex; gap: calc(10 * var(--u)); padding: calc(10 * var(--u)); border-radius: calc(10 * var(--u)); background: #2a2826; transform-origin: 50% 100%; }
+.contact .clock .face { position: relative; flex: 1; background: #f3f3f1; color: #0d0d0c; border-radius: calc(5 * var(--u)); padding: calc(8 * var(--u)) calc(10 * var(--u)); }
+.contact .clock small { display: block; font-size: calc(11 * var(--u)); color: #66625b; }
+.contact .clock b { font-size: calc(26 * var(--u)); font-weight: 500; }
+.contact .clock sup { position: relative; top: calc(4 * var(--u)); margin-left: calc(3 * var(--u)); font-size: calc(12 * var(--u)); color: #66625b; vertical-align: top; }
+.contact .clock .flag { position: absolute; right: calc(8 * var(--u)); top: calc(9 * var(--u)); width: calc(6 * var(--u)); height: calc(6 * var(--u)); border-radius: 50%; background: var(--move); }
 
-@media (max-width: 600px) {
-  .contact { --mv: min(42vw, 20svh); --mv-x: 16px; --mv-y: 80px; }
-  .contact .caret { width: 5px; }
+@media (max-width: 600px), (min-width: 601px) and (max-width: 1199px) and (orientation: portrait) {
+  .contact { --mv: min(42vw, 20svh); --mv-x: calc(16 * var(--u)); --mv-y: calc(80 * var(--u)); }
+  .contact .caret { width: calc(5 * var(--u)); }
   /* the seam is horizontal at 55.9%: the move and the address sit above it, the clock and the links below, placed
      from the seam as the prototype places them at 844 px, so shorter phones keep them on their sides */
-  .contact .ct-line { left: 20px; }
-  .contact .ct-yours { bottom: calc(44.1% + 136px); font-size: 34px; }
-  .contact .ct-mail { bottom: calc(44.1% + 97px); font-size: 17px; }
-  .contact .ct-reply { bottom: calc(44.1% + 75px); font-size: 12px; }
-  .contact .ct-copy { margin-left: 12px; font-size: 12px; }
-  .contact .ct-links { left: 20px; top: calc(55.9% + 148px); bottom: auto; font-size: 17px; }
-  .contact .clock { left: 20px; top: calc(55.9% + 48px); bottom: auto; width: 260px; }
-  .contact .clock b { font-size: 22px; }
+  .contact .ct-line { left: calc(20 * var(--u)); }
+  .contact .ct-yours { bottom: calc(44.1% + calc(136 * var(--u))); font-size: calc(34 * var(--u)); }
+  .contact .ct-mail { bottom: calc(44.1% + calc(97 * var(--u))); font-size: calc(17 * var(--u)); }
+  .contact .ct-reply { bottom: calc(44.1% + calc(75 * var(--u))); font-size: calc(12 * var(--u)); }
+  .contact .ct-copy { margin-left: calc(12 * var(--u)); font-size: calc(12 * var(--u)); }
+  .contact .ct-links { left: calc(20 * var(--u)); top: calc(55.9% + calc(148 * var(--u))); bottom: auto; font-size: calc(17 * var(--u)); }
+  .contact .clock { left: calc(20 * var(--u)); top: calc(55.9% + calc(48 * var(--u))); bottom: auto; width: calc(260 * var(--u)); }
+  .contact .clock b { font-size: calc(22 * var(--u)); }
 }

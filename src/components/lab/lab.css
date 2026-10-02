@@ -1,7 +1,7 @@
 /* The Lab (Gate 2, "the engine from the inside"): the opening (lab-a) and seven pinned chapters (lab2-1 to lab2-7),
    each drawn twice, in ink and in paper on the dark side. The dark side is search ink, except in 06 (gallery black). */
 .lab { position: relative; background: var(--paper); --lab-dark: var(--search); }
-.lab-open { position: relative; height: 100vh; height: 100dvh; min-height: 600px; overflow: hidden; }
+.lab-open { position: relative; height: 100vh; height: 100dvh; min-height: calc(600 * var(--u)); overflow: hidden; }
 .lab-dark { position: absolute; inset: 0; background: var(--lab-dark); z-index: 0; pointer-events: none; }
 .lab .ch[data-ch="6"] { --lab-dark: var(--gallery); }
 .lab-type { position: absolute; inset: 0; z-index: 3; pointer-events: none; --fg: var(--ink); --fg2: var(--pencil); color: var(--fg); }
@@ -20,194 +20,194 @@
 .lab-open[data-grow] .op-tree line { stroke-dasharray: 1; stroke-dashoffset: 1; }
 .lab-open[data-grow] .op-tree :is(.pv, .pv-end) { opacity: 0; }
 .lab .op-num { position: absolute; left: 3vw; top: 14vh; font-size: 14vw; }
-.lab .op-pm { position: absolute; left: 3.4vw; top: calc(14vh + 13vw); font-size: 22px; font-weight: 700; }
-.lab .op-pm .q { margin-top: 6px; font-size: 13px; font-weight: 400; color: var(--fg2); }
+.lab .op-pm { position: absolute; left: 3.4vw; top: calc(14vh + 13vw); font-size: calc(22 * var(--u)); font-weight: 700; }
+.lab .op-pm .q { margin-top: calc(6 * var(--u)); font-size: calc(13 * var(--u)); font-weight: 400; color: var(--fg2); }
 .lab .op-lede { display: none; }
-.lab .op-body { position: absolute; left: 3.4vw; bottom: 14vh; font-size: 19px; line-height: 1.35; max-width: 13ch; }
-.lab .op-voice { position: absolute; left: 3.4vw; bottom: 8vh; font-size: 16px; font-family: var(--font-italic); font-style: italic; color: var(--fg2); }
+.lab .op-body { position: absolute; left: 3.4vw; bottom: 14vh; font-size: calc(19 * var(--u)); line-height: 1.35; max-width: 13ch; }
+.lab .op-voice { position: absolute; left: 3.4vw; bottom: 8vh; font-size: calc(16 * var(--u)); font-family: var(--font-italic); font-style: italic; color: var(--fg2); }
 .lab .tag i { font-family: var(--font-italic); } /* the labels' second lines (ch3, ch6): the italic is its own family (layout.tsx) */
-.lab .op-sc { position: absolute; left: calc(30.5% + 14px); bottom: 8vh; font-size: 13px; color: var(--fg2); }
-.lab .op-rec { position: absolute; right: 48px; bottom: 8vh; font-size: 14px; }
+.lab .op-sc { position: absolute; left: calc(30.5% + calc(14 * var(--u))); bottom: 8vh; font-size: calc(13 * var(--u)); color: var(--fg2); }
+.lab .op-rec { position: absolute; right: calc(48 * var(--u)); bottom: 8vh; font-size: calc(14 * var(--u)); }
 .lab-type .op-rec { color: var(--move); }
 /* the one page's Lab section: the way into the six chapters, on /lab */
-.lab .op-more { position: absolute; left: 3.4vw; bottom: 3.2vh; margin: 0; font-size: 14px; font-weight: 600; }
-.lab .op-more .ln { padding-bottom: 6px; margin-bottom: -6px; }
-.lab .op-more a { display: inline-block; color: inherit; text-decoration: none; padding-bottom: 2px; border-bottom: 1.5px solid currentColor; pointer-events: auto; }
+.lab .op-more { position: absolute; left: 3.4vw; bottom: 3.2vh; margin: 0; font-size: calc(14 * var(--u)); font-weight: 600; }
+.lab .op-more .ln { padding-bottom: calc(6 * var(--u)); margin-bottom: calc(-6 * var(--u)); }
+.lab .op-more a { display: inline-block; color: inherit; text-decoration: none; padding-bottom: calc(2 * var(--u)); border-bottom: calc(1.5 * var(--u)) solid currentColor; pointer-events: auto; }
 .lab .op-more a:hover { color: var(--move); }
 
 /* a chapter: pinned while its object builds (motion.md §11) */
 .lab .ch { position: relative; height: calc(var(--screens, 1.5) * 100vh + 100vh); height: calc(var(--screens, 1.5) * 100dvh + 100dvh); }
-.lab .ch-pin { position: sticky; top: 0; height: 100vh; height: 100dvh; min-height: 600px; overflow: hidden; }
+.lab .ch-pin { position: sticky; top: 0; height: 100vh; height: 100dvh; min-height: calc(600 * var(--u)); overflow: hidden; }
 .lab .ch-pin canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; z-index: 1; }
 .lab .ch[data-gl="off"] canvas { display: none; }
-.lab .chap { position: absolute; left: 48px; top: 80px; font-size: 12px; color: var(--fg2); }
-.lab .ttl { position: absolute; left: 48px; top: 104px; font-size: 96px; }
-.lab .big { position: absolute; font-size: 96px; }
-.lab .note { position: absolute; font-family: var(--font-mono); font-size: 12px; line-height: 1.6; color: var(--fg2); max-width: 36ch; }
-.lab .note b { display: block; color: var(--fg); font-weight: 500; letter-spacing: .06em; font-size: 11px; margin-bottom: 4px; }
+.lab .chap { position: absolute; left: calc(48 * var(--u)); top: calc(80 * var(--u)); font-size: calc(12 * var(--u)); color: var(--fg2); }
+.lab .ttl { position: absolute; left: calc(48 * var(--u)); top: calc(104 * var(--u)); font-size: calc(96 * var(--u)); }
+.lab .big { position: absolute; font-size: calc(96 * var(--u)); }
+.lab .note { position: absolute; font-family: var(--font-mono); font-size: calc(12 * var(--u)); line-height: 1.6; color: var(--fg2); max-width: 36ch; }
+.lab .note b { display: block; color: var(--fg); font-weight: 500; letter-spacing: .06em; font-size: calc(11 * var(--u)); margin-bottom: calc(4 * var(--u)); }
 .lab .tags { position: absolute; inset: 0; }
-.lab .tag { position: absolute; font-family: var(--font-mono); font-size: 12px; white-space: nowrap; color: var(--fg); transform: translate(-50%, -100%); }
-.lab .tag::after { content: ""; position: absolute; left: 50%; top: 100%; height: 18px; border-left: 1px solid currentColor; opacity: .5; }
+.lab .tag { position: absolute; font-family: var(--font-mono); font-size: calc(12 * var(--u)); white-space: nowrap; color: var(--fg); transform: translate(-50%, -100%); }
+.lab .tag::after { content: ""; position: absolute; left: 50%; top: 100%; height: calc(18 * var(--u)); border-left: calc(1 * var(--u)) solid currentColor; opacity: .5; }
 .lab .tag.r { transform: translate(-100%, -50%); }
 .lab .tag.r::after { display: none; }
-.lab .tag.r span { display: inline-block; width: 22px; border-top: 1px solid currentColor; opacity: .5; margin-left: 8px; vertical-align: middle; }
+.lab .tag.r span { display: inline-block; width: calc(22 * var(--u)); border-top: calc(1 * var(--u)) solid currentColor; opacity: .5; margin-left: calc(8 * var(--u)); vertical-align: middle; }
 .lab .tag.p { transform: translate(-50%, 0); text-align: center; line-height: 1.5; }
 .lab .tag.p::after { display: none; }
 .lab .tag.p i { font-style: normal; color: var(--fg2); }
 
 /* 01 (lab2-1) */
-.lab .ch[data-ch="1"] .ttl { font-size: 94px; }
-.lab .ch[data-ch="1"] .n1 { left: 48px; top: 318px; }
-.lab .ch[data-ch="1"] .n2 { right: 48px; top: 318px; text-align: right; }
-.lab .ch[data-ch="1"] .n3 { left: 48px; bottom: 44px; }
+.lab .ch[data-ch="1"] .ttl { font-size: calc(94 * var(--u)); }
+.lab .ch[data-ch="1"] .n1 { left: calc(48 * var(--u)); top: calc(318 * var(--u)); }
+.lab .ch[data-ch="1"] .n2 { right: calc(48 * var(--u)); top: calc(318 * var(--u)); text-align: right; }
+.lab .ch[data-ch="1"] .n3 { left: calc(48 * var(--u)); bottom: calc(44 * var(--u)); }
 
-@media (max-width: 600px) {
+@media (max-width: 600px), (min-width: 601px) and (max-width: 1199px) and (orientation: portrait) {
   .lab .wide { display: none; }
   .lab .narrow { display: inline; }
   .lab .note.dk { display: none; }
   .lab .note.ph { display: block; }
-  .lab .op-num { left: 14px; top: 212px; font-size: 24.5vw; }
-  .lab .op-pm { left: 18px; top: 312px; font-size: 18px; }
-  .lab .op-pm .q { font-size: 12px; margin-top: 4px; }
-  .lab .op-lede { display: block; position: absolute; left: 18px; top: 92px; font-size: 15px; line-height: 1.35; max-width: 24ch; }
-  .lab .op-body { left: 18px; bottom: 124px; font-size: 17px; line-height: 1.3; max-width: 16ch; }
-  .lab .op-voice { left: 18px; bottom: 92px; font-size: 14px; }
-  .lab .op-rec { left: 18px; right: auto; bottom: 26px; font-size: 12px; }
-  .lab .op-more { left: 18px; bottom: 58px; font-size: 13px; }
-  .lab .op-sc { left: auto; right: 18px; top: 318px; bottom: auto; font-size: 12px; }
+  .lab .op-num { left: calc(14 * var(--u)); top: calc(212 * var(--u)); font-size: 24.5vw; }
+  .lab .op-pm { left: calc(18 * var(--u)); top: calc(312 * var(--u)); font-size: calc(18 * var(--u)); }
+  .lab .op-pm .q { font-size: calc(12 * var(--u)); margin-top: calc(4 * var(--u)); }
+  .lab .op-lede { display: block; position: absolute; left: calc(18 * var(--u)); top: calc(92 * var(--u)); font-size: calc(15 * var(--u)); line-height: 1.35; max-width: 24ch; }
+  .lab .op-body { left: calc(18 * var(--u)); bottom: calc(124 * var(--u)); font-size: calc(17 * var(--u)); line-height: 1.3; max-width: 16ch; }
+  .lab .op-voice { left: calc(18 * var(--u)); bottom: calc(92 * var(--u)); font-size: calc(14 * var(--u)); }
+  .lab .op-rec { left: calc(18 * var(--u)); right: auto; bottom: calc(26 * var(--u)); font-size: calc(12 * var(--u)); }
+  .lab .op-more { left: calc(18 * var(--u)); bottom: calc(58 * var(--u)); font-size: calc(13 * var(--u)); }
+  .lab .op-sc { left: auto; right: calc(18 * var(--u)); top: calc(318 * var(--u)); bottom: auto; font-size: calc(12 * var(--u)); }
   .lab .ch { height: calc(var(--screens-phone, 1) * 100svh + 100svh); }
-  .lab .chap { left: 20px; top: 62px; font-size: 11px; }
-  .lab .ttl { left: 18px; top: 84px; font-size: 35px; }
-  .lab .note { font-size: 11px; max-width: none; }
-  .lab .tag { font-size: 11px; }
-  .lab .tag.side { transform: translate(22px, -50%); }
+  .lab .chap { left: calc(20 * var(--u)); top: calc(62 * var(--u)); font-size: calc(11 * var(--u)); }
+  .lab .ttl { left: calc(18 * var(--u)); top: calc(84 * var(--u)); font-size: calc(35 * var(--u)); }
+  .lab .note { font-size: calc(11 * var(--u)); max-width: none; }
+  .lab .tag { font-size: calc(11 * var(--u)); }
+  .lab .tag.side { transform: translate(calc(22 * var(--u)), -50%); }
   .lab .tag.side::after { display: none; }
-  .lab .ch[data-ch="1"] .ttl { font-size: 35px; }
-  .lab .ch[data-ch="1"] .p1 { left: 20px; right: 20px; top: 366px; }
-  .lab .ch[data-ch="1"] .p2 { left: 20px; right: 20px; bottom: 24px; }
+  .lab .ch[data-ch="1"] .ttl { font-size: calc(35 * var(--u)); }
+  .lab .ch[data-ch="1"] .p1 { left: calc(20 * var(--u)); right: calc(20 * var(--u)); top: calc(366 * var(--u)); }
+  .lab .ch[data-ch="1"] .p2 { left: calc(20 * var(--u)); right: calc(20 * var(--u)); bottom: calc(24 * var(--u)); }
 }
 
 /* 02 (lab2-2) */
-.lab .ch[data-ch="2"] .n1 { left: 48px; top: 112px; }
-.lab .ch[data-ch="2"] .n2 { left: 48px; top: 226px; }
-.lab .ch[data-ch="2"] .n3 { right: 48px; top: 200px; text-align: right; max-width: 24ch; }
-.lab .ch[data-ch="2"] .big { left: 40px; bottom: 28px; font-size: 150px; }
+.lab .ch[data-ch="2"] .n1 { left: calc(48 * var(--u)); top: calc(112 * var(--u)); }
+.lab .ch[data-ch="2"] .n2 { left: calc(48 * var(--u)); top: calc(226 * var(--u)); }
+.lab .ch[data-ch="2"] .n3 { right: calc(48 * var(--u)); top: calc(200 * var(--u)); text-align: right; max-width: 24ch; }
+.lab .ch[data-ch="2"] .big { left: calc(40 * var(--u)); bottom: calc(28 * var(--u)); font-size: calc(150 * var(--u)); }
 /* 03 (lab2-3): all white */
-.lab .ch[data-ch="3"] .ttl { font-size: 112px; }
-.lab .ch[data-ch="3"] .n1 { left: 48px; top: 318px; }
-.lab .ch[data-ch="3"] .n2 { right: 48px; top: 112px; text-align: right; max-width: 34ch; }
-.lab .ch[data-ch="3"] .n3 { right: 48px; top: 232px; text-align: right; max-width: 34ch; }
-.lab .ch[data-ch="3"] .tag .r { display: block; margin-bottom: 8px; font-family: var(--font-display); font-weight: 900; font-variation-settings: "wdth" 112; font-size: 44px; letter-spacing: -.03em; line-height: 1; color: var(--fg); }
+.lab .ch[data-ch="3"] .ttl { font-size: calc(112 * var(--u)); }
+.lab .ch[data-ch="3"] .n1 { left: calc(48 * var(--u)); top: calc(318 * var(--u)); }
+.lab .ch[data-ch="3"] .n2 { right: calc(48 * var(--u)); top: calc(112 * var(--u)); text-align: right; max-width: 34ch; }
+.lab .ch[data-ch="3"] .n3 { right: calc(48 * var(--u)); top: calc(232 * var(--u)); text-align: right; max-width: 34ch; }
+.lab .ch[data-ch="3"] .tag .r { display: block; margin-bottom: calc(8 * var(--u)); font-family: var(--font-display); font-weight: 900; font-variation-settings: "wdth" 112; font-size: calc(44 * var(--u)); letter-spacing: -.03em; line-height: 1; color: var(--fg); }
 /* 04 (lab2-4) */
-.lab .ch[data-ch="4"] .n1 { left: 48px; top: 112px; max-width: 40ch; }
-.lab .ch[data-ch="4"] .n2 { right: 48px; top: 112px; text-align: right; max-width: 34ch; }
-.lab .ch[data-ch="4"] .big { left: 44px; bottom: 22px; font-size: 230px; white-space: nowrap; }
-.lab .ch[data-ch="4"] .half { position: absolute; left: 50%; top: 112px; transform: translateX(12px); font-family: var(--font-mono); font-size: 12px; }
+.lab .ch[data-ch="4"] .n1 { left: calc(48 * var(--u)); top: calc(112 * var(--u)); max-width: 40ch; }
+.lab .ch[data-ch="4"] .n2 { right: calc(48 * var(--u)); top: calc(112 * var(--u)); text-align: right; max-width: 34ch; }
+.lab .ch[data-ch="4"] .big { left: calc(44 * var(--u)); bottom: calc(22 * var(--u)); font-size: calc(230 * var(--u)); white-space: nowrap; }
+.lab .ch[data-ch="4"] .half { position: absolute; left: 50%; top: calc(112 * var(--u)); transform: translateX(calc(12 * var(--u))); font-family: var(--font-mono); font-size: calc(12 * var(--u)); }
 /* 05 (lab2-5a, then lab2-5b once the last game has landed) */
-.lab .ch[data-ch="5"] .ttl { font-size: 112px; }
-.lab .ch[data-ch="5"] .n1 { left: 48px; top: 370px; max-width: 38ch; }
-.lab .ch[data-ch="5"] .n2 { left: 48px; bottom: 48px; max-width: 30ch; }
-.lab .ch[data-ch="5"] .result { position: absolute; left: 48px; top: 96px; font-size: 180px; }
-.lab .ch[data-ch="5"] .pm { position: absolute; left: 52px; top: 270px; font-size: 22px; font-weight: 700; }
-.lab .ch[data-ch="5"] .pm span { display: block; margin-top: 6px; font-size: 13px; font-weight: 400; color: var(--fg2); }
-.lab .ch[data-ch="5"] .ctr { position: absolute; bottom: 48px; left: calc(var(--seam) + 12px); font-family: var(--font-mono); font-size: 12px; white-space: nowrap; }
+.lab .ch[data-ch="5"] .ttl { font-size: calc(112 * var(--u)); }
+.lab .ch[data-ch="5"] .n1 { left: calc(48 * var(--u)); top: calc(370 * var(--u)); max-width: 38ch; }
+.lab .ch[data-ch="5"] .n2 { left: calc(48 * var(--u)); bottom: calc(48 * var(--u)); max-width: 30ch; }
+.lab .ch[data-ch="5"] .result { position: absolute; left: calc(48 * var(--u)); top: calc(96 * var(--u)); font-size: calc(180 * var(--u)); }
+.lab .ch[data-ch="5"] .pm { position: absolute; left: calc(52 * var(--u)); top: calc(270 * var(--u)); font-size: calc(22 * var(--u)); font-weight: 700; }
+.lab .ch[data-ch="5"] .pm span { display: block; margin-top: calc(6 * var(--u)); font-size: calc(13 * var(--u)); font-weight: 400; color: var(--fg2); }
+.lab .ch[data-ch="5"] .ctr { position: absolute; bottom: calc(48 * var(--u)); left: calc(var(--seam) + calc(12 * var(--u))); font-family: var(--font-mono); font-size: calc(12 * var(--u)); white-space: nowrap; }
 .lab .ch[data-ch="5"] :is(.ttl, .n1, .result, .pm, .n2) { transition: opacity .5s cubic-bezier(.7, 0, .13, 1), transform .6s cubic-bezier(.16, .84, .3, 1); }
-.lab .ch[data-ch="5"]:not([data-done]) :is(.result, .pm, .n2) { opacity: 0; transform: translateY(24px); }
-.lab .ch[data-ch="5"][data-done] :is(.ttl, .n1) { opacity: 0; transform: translateY(-24px); }
+.lab .ch[data-ch="5"]:not([data-done]) :is(.result, .pm, .n2) { opacity: 0; transform: translateY(calc(24 * var(--u))); }
+.lab .ch[data-ch="5"][data-done] :is(.ttl, .n1) { opacity: 0; transform: translateY(calc(-24 * var(--u))); }
 /* 06 (lab2-6): all gallery black */
-.lab .ch[data-ch="6"] .big { top: 96px; right: 44px; font-size: 210px; }
-.lab .ch[data-ch="6"] .n1 { right: 48px; top: 300px; max-width: 34ch; text-align: right; }
-.lab .ch[data-ch="6"] .n2 { left: 48px; top: 160px; max-width: 30ch; }
-.lab .ch[data-ch="6"] .n3 { left: 48px; top: 266px; max-width: 30ch; }
-.lab .ch[data-ch="6"] .voice { position: absolute; right: 48px; top: 448px; text-align: right; font-size: 22px; font-family: var(--font-italic); font-style: italic; }
-.lab .ch[data-ch="6"] .scale { left: 48px; bottom: 48px; }
+.lab .ch[data-ch="6"] .big { top: calc(96 * var(--u)); right: calc(44 * var(--u)); font-size: calc(210 * var(--u)); }
+.lab .ch[data-ch="6"] .n1 { right: calc(48 * var(--u)); top: calc(300 * var(--u)); max-width: 34ch; text-align: right; }
+.lab .ch[data-ch="6"] .n2 { left: calc(48 * var(--u)); top: calc(160 * var(--u)); max-width: 30ch; }
+.lab .ch[data-ch="6"] .n3 { left: calc(48 * var(--u)); top: calc(266 * var(--u)); max-width: 30ch; }
+.lab .ch[data-ch="6"] .voice { position: absolute; right: calc(48 * var(--u)); top: calc(448 * var(--u)); text-align: right; font-size: calc(22 * var(--u)); font-family: var(--font-italic); font-style: italic; }
+.lab .ch[data-ch="6"] .scale { left: calc(48 * var(--u)); bottom: calc(48 * var(--u)); }
 
 /* 07 (lab2-7): the board, the controls at the right, and the eval riding the seam */
-.lab .ch[data-ch="7"] .ttl { font-size: 104px; }
-.lab .ch[data-ch="7"] .n1 { left: 48px; bottom: 48px; max-width: 26ch; }
-.lab .play .ctl { position: absolute; right: 48px; top: 150px; width: 330px; }
+.lab .ch[data-ch="7"] .ttl { font-size: calc(104 * var(--u)); }
+.lab .ch[data-ch="7"] .n1 { left: calc(48 * var(--u)); bottom: calc(48 * var(--u)); max-width: 26ch; }
+.lab .play .ctl { position: absolute; right: calc(48 * var(--u)); top: calc(150 * var(--u)); width: calc(330 * var(--u)); }
 .lab .play button { all: unset; cursor: pointer; pointer-events: auto; }
-.lab .play button:focus-visible { outline: 2px solid var(--move); outline-offset: 4px; }
-.lab .play .opt { font-family: var(--font-mono); font-size: 12px; color: var(--fg2); margin-bottom: 26px; }
-.lab .play .opt div { margin-top: 8px; display: flex; gap: 20px; font-family: var(--font-display); font-size: 18px; font-weight: 600; }
+.lab .play button:focus-visible { outline: calc(2 * var(--u)) solid var(--move); outline-offset: calc(4 * var(--u)); }
+.lab .play .opt { font-family: var(--font-mono); font-size: calc(12 * var(--u)); color: var(--fg2); margin-bottom: calc(26 * var(--u)); }
+.lab .play .opt div { margin-top: calc(8 * var(--u)); display: flex; gap: calc(20 * var(--u)); font-family: var(--font-display); font-size: calc(18 * var(--u)); font-weight: 600; }
 .lab .play .opt button { color: var(--fg2); }
-.lab .play .opt button.on { color: var(--fg); box-shadow: 0 2px 0 var(--move); }
+.lab .play .opt button.on { color: var(--fg); box-shadow: 0 calc(2 * var(--u)) 0 var(--move); }
 /* the opening: closed it reads like the options above it; open, a search field and its matches */
-.lab .play .opening div button.on { box-shadow: none; text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 5px; text-decoration-color: var(--move); }
-.lab .play .opening .find { display: block; margin-top: 8px; }
-.lab .play .opening .field { all: unset; box-sizing: border-box; display: block; width: 100%; pointer-events: auto; font-family: var(--font-display); font-size: 18px; font-weight: 600; color: var(--fg); padding-bottom: 6px; border-bottom: 1.5px solid var(--move); white-space: pre; overflow: hidden; caret-color: var(--move); }
+.lab .play .opening div button.on { box-shadow: none; text-decoration: underline; text-decoration-thickness: calc(1.5 * var(--u)); text-underline-offset: calc(5 * var(--u)); text-decoration-color: var(--move); }
+.lab .play .opening .find { display: block; margin-top: calc(8 * var(--u)); }
+.lab .play .opening .field { all: unset; box-sizing: border-box; display: block; width: 100%; pointer-events: auto; font-family: var(--font-display); font-size: calc(18 * var(--u)); font-weight: 600; color: var(--fg); padding-bottom: calc(6 * var(--u)); border-bottom: calc(1.5 * var(--u)) solid var(--move); white-space: pre; overflow: hidden; caret-color: var(--move); }
 .lab .play .opening .field::placeholder, .lab .play .opening .ph { color: var(--fg2); font-weight: 500; }
-.lab .play .opening .caret { display: inline-block; width: 1.5px; height: 1.05em; margin: 0 -0.75px -0.18em; background: var(--move); animation: lab-caret 1.06s steps(1) infinite; }
+.lab .play .opening .caret { display: inline-block; width: calc(1.5 * var(--u)); height: 1.05em; margin: 0 calc(-0.75 * var(--u)) -0.18em; background: var(--move); animation: lab-caret 1.06s steps(1) infinite; }
 @keyframes lab-caret { 50% { opacity: 0; } }
-.lab .play .opening .hits { list-style: none; margin: 10px 0 0; padding: 0; display: block; font-family: var(--font-display); }
-.lab .play .opening .hits li { display: grid; cursor: pointer; pointer-events: auto; grid-template-columns: 34px 1fr; gap: 10px; width: 100%; box-sizing: border-box; padding: 6px 0; font-size: 15px; font-weight: 500; line-height: 1.3; color: var(--fg2); }
+.lab .play .opening .hits { list-style: none; margin: calc(10 * var(--u)) 0 0; padding: 0; display: block; font-family: var(--font-display); }
+.lab .play .opening .hits li { display: grid; cursor: pointer; pointer-events: auto; grid-template-columns: calc(34 * var(--u)) 1fr; gap: calc(10 * var(--u)); width: 100%; box-sizing: border-box; padding: calc(6 * var(--u)) 0; font-size: calc(15 * var(--u)); font-weight: 500; line-height: 1.3; color: var(--fg2); }
 .lab .play .opening .hits li.on, .lab .play .opening .hits li:hover { color: var(--fg); }
-.lab .play .opening .hits li.on .nm { box-shadow: 0 1.5px 0 var(--move); }
+.lab .play .opening .hits li.on .nm { box-shadow: 0 calc(1.5 * var(--u)) 0 var(--move); }
 .lab .play .opening .last { font-family: var(--font-mono); font-size: .8em; color: var(--fg2); white-space: nowrap; }
-.lab .play .opening .eco { font-family: var(--font-mono); font-size: 11px; padding-top: 3px; color: var(--fg2); }
+.lab .play .opening .eco { font-family: var(--font-mono); font-size: calc(11 * var(--u)); padding-top: calc(3 * var(--u)); color: var(--fg2); }
 .lab .play .opening .hits li.none { display: block; cursor: default; }
-.lab .play .moves { font-family: var(--font-mono); font-size: 14px; line-height: 1.8; }
+.lab .play .moves { font-family: var(--font-mono); font-size: calc(14 * var(--u)); line-height: 1.8; }
 .lab .play .ev-ph { display: none; }
-.lab .play .status { margin-top: 18px; font-size: 17px; line-height: 1.45; }
-.lab .play .start { margin-top: 26px; display: inline-block; font-size: 17px; font-weight: 700; padding-bottom: 4px; border-bottom: 2px solid currentColor; }
+.lab .play .status { margin-top: calc(18 * var(--u)); font-size: calc(17 * var(--u)); line-height: 1.45; }
+.lab .play .start { margin-top: calc(26 * var(--u)); display: inline-block; font-size: calc(17 * var(--u)); font-weight: 700; padding-bottom: calc(4 * var(--u)); border-bottom: calc(2 * var(--u)) solid currentColor; }
 .lab .play .start:disabled { opacity: .5; cursor: progress; }
-.lab .play .start-note { position: static; margin-top: 20px; }
-.lab .play .ev { position: absolute; bottom: 48px; left: var(--seam); transform: translateX(12px); font-size: 12px; white-space: nowrap; }
-.lab .play .ev.low { bottom: 200px; }
-.lab .play .ev.end { transform: translateX(calc(-100% - 12px)); bottom: 72px; } /* clear of the sound toggle */
+.lab .play .start-note { position: static; margin-top: calc(20 * var(--u)); }
+.lab .play .ev { position: absolute; bottom: calc(48 * var(--u)); left: var(--seam); transform: translateX(calc(12 * var(--u))); font-size: calc(12 * var(--u)); white-space: nowrap; }
+.lab .play .ev.low { bottom: calc(200 * var(--u)); }
+.lab .play .ev.end { transform: translateX(calc(-100% - calc(12 * var(--u)))); bottom: calc(72 * var(--u)); } /* clear of the sound toggle */
 
-@media (max-width: 600px) {
-  .lab .ch[data-ch="2"] .p1 { left: 20px; right: 20px; top: 86px; max-width: 32ch; }
-  .lab .ch[data-ch="2"] .p2 { left: 20px; right: 20px; bottom: 50px; } /* one line above the sound toggle */
-  .lab .ch[data-ch="2"] .big { left: 16px; bottom: 94px; font-size: 57px; }
-  .lab .ch[data-ch="2"] .tag { font-size: 10px; }
-  .lab .ch[data-ch="2"] .tag.r span { width: 14px; margin-left: 6px; }
-  .lab .ch[data-ch="3"] .ttl { left: 18px; top: 84px; font-size: 44px; }
-  .lab .ch[data-ch="3"] .p1 { left: 20px; right: 20px; top: 186px; }
-  .lab .ch[data-ch="3"] .tag { font-size: 10px; }
-  .lab .ch[data-ch="3"] .tag .r { font-size: 34px; }
+@media (max-width: 600px), (min-width: 601px) and (max-width: 1199px) and (orientation: portrait) {
+  .lab .ch[data-ch="2"] .p1 { left: calc(20 * var(--u)); right: calc(20 * var(--u)); top: calc(86 * var(--u)); max-width: 32ch; }
+  .lab .ch[data-ch="2"] .p2 { left: calc(20 * var(--u)); right: calc(20 * var(--u)); bottom: calc(50 * var(--u)); } /* one line above the sound toggle */
+  .lab .ch[data-ch="2"] .big { left: calc(16 * var(--u)); bottom: calc(94 * var(--u)); font-size: calc(57 * var(--u)); }
+  .lab .ch[data-ch="2"] .tag { font-size: calc(10 * var(--u)); }
+  .lab .ch[data-ch="2"] .tag.r span { width: calc(14 * var(--u)); margin-left: calc(6 * var(--u)); }
+  .lab .ch[data-ch="3"] .ttl { left: calc(18 * var(--u)); top: calc(84 * var(--u)); font-size: calc(44 * var(--u)); }
+  .lab .ch[data-ch="3"] .p1 { left: calc(20 * var(--u)); right: calc(20 * var(--u)); top: calc(186 * var(--u)); }
+  .lab .ch[data-ch="3"] .tag { font-size: calc(10 * var(--u)); }
+  .lab .ch[data-ch="3"] .tag .r { font-size: calc(34 * var(--u)); }
   .lab .tag.p.left { transform: none; text-align: left; }
   .lab .tag.p.right { transform: translate(-100%, 0); text-align: right; }
-  .lab .ch[data-ch="4"] .p1 { left: 20px; right: 20px; top: 86px; }
-  .lab .ch[data-ch="4"] .p2 { left: 20px; right: 20px; bottom: 24px; z-index: 3; }
-  .lab .ch[data-ch="4"] .big { left: 14px; top: calc(50% - 38px); bottom: auto; font-size: 84px; }
-  .lab .ch[data-ch="4"] .half { left: auto; right: 20px; top: calc(50% + 50px); transform: none; font-size: 11px; }
-  .lab .ch[data-ch="4"] .fade { position: absolute; left: 0; right: 0; bottom: 0; height: 190px; z-index: 2; background: linear-gradient(to top, var(--search) 58%, rgba(11, 14, 20, 0)); }
-  .lab .ch[data-ch="5"] .ttl { left: 18px; top: 84px; font-size: 52px; }
-  .lab .ch[data-ch="5"] .p1 { left: 20px; right: 20px; top: 208px; }
-  .lab .ch[data-ch="5"] .p2 { left: 20px; right: 20px; top: 376px; }
-  .lab .ch[data-ch="5"] .result { left: 14px; top: 212px; font-size: 24.5vw; }
-  .lab .ch[data-ch="5"] .pm { left: 18px; top: 312px; font-size: 18px; }
-  .lab .ch[data-ch="5"] .pm span { font-size: 12px; margin-top: 4px; }
-  .lab .ch[data-ch="5"] .ctr { left: 20px; bottom: 24px; font-size: 11px; }
+  .lab .ch[data-ch="4"] .p1 { left: calc(20 * var(--u)); right: calc(20 * var(--u)); top: calc(86 * var(--u)); }
+  .lab .ch[data-ch="4"] .p2 { left: calc(20 * var(--u)); right: calc(20 * var(--u)); bottom: calc(24 * var(--u)); z-index: 3; }
+  .lab .ch[data-ch="4"] .big { left: calc(14 * var(--u)); top: calc(50% - calc(38 * var(--u))); bottom: auto; font-size: calc(84 * var(--u)); }
+  .lab .ch[data-ch="4"] .half { left: auto; right: calc(20 * var(--u)); top: calc(50% + calc(50 * var(--u))); transform: none; font-size: calc(11 * var(--u)); }
+  .lab .ch[data-ch="4"] .fade { position: absolute; left: 0; right: 0; bottom: 0; height: calc(190 * var(--u)); z-index: 2; background: linear-gradient(to top, var(--search) 58%, rgba(11, 14, 20, 0)); }
+  .lab .ch[data-ch="5"] .ttl { left: calc(18 * var(--u)); top: calc(84 * var(--u)); font-size: calc(52 * var(--u)); }
+  .lab .ch[data-ch="5"] .p1 { left: calc(20 * var(--u)); right: calc(20 * var(--u)); top: calc(208 * var(--u)); }
+  .lab .ch[data-ch="5"] .p2 { left: calc(20 * var(--u)); right: calc(20 * var(--u)); top: calc(376 * var(--u)); }
+  .lab .ch[data-ch="5"] .result { left: calc(14 * var(--u)); top: calc(212 * var(--u)); font-size: 24.5vw; }
+  .lab .ch[data-ch="5"] .pm { left: calc(18 * var(--u)); top: calc(312 * var(--u)); font-size: calc(18 * var(--u)); }
+  .lab .ch[data-ch="5"] .pm span { font-size: calc(12 * var(--u)); margin-top: calc(4 * var(--u)); }
+  .lab .ch[data-ch="5"] .ctr { left: calc(20 * var(--u)); bottom: calc(24 * var(--u)); font-size: calc(11 * var(--u)); }
   .lab .ch[data-ch="5"]:not([data-done]) .p2, .lab .ch[data-ch="5"][data-done] .p1 { opacity: 0; }
-  .lab .ch[data-ch="6"] .big { left: 14px; right: auto; top: 84px; font-size: 150px; }
-  .lab .ch[data-ch="6"] .p1 { left: 20px; right: 20px; top: 236px; }
-  .lab .ch[data-ch="6"] .p2 { left: 20px; right: 20px; bottom: 92px; }
-  .lab .ch[data-ch="6"] .voice { left: 20px; right: auto; top: auto; bottom: 40px; text-align: left; font-size: 16px; }
-  .lab .ch[data-ch="6"] .scale { left: auto; right: 20px; top: 392px; bottom: auto; }
-  .lab .ch[data-ch="6"] .tag { font-size: 10px; }
-  .lab .ch[data-ch="7"] .ttl { left: 18px; top: 74px; font-size: 50px; }
+  .lab .ch[data-ch="6"] .big { left: calc(14 * var(--u)); right: auto; top: calc(84 * var(--u)); font-size: calc(150 * var(--u)); }
+  .lab .ch[data-ch="6"] .p1 { left: calc(20 * var(--u)); right: calc(20 * var(--u)); top: calc(236 * var(--u)); }
+  .lab .ch[data-ch="6"] .p2 { left: calc(20 * var(--u)); right: calc(20 * var(--u)); bottom: calc(92 * var(--u)); }
+  .lab .ch[data-ch="6"] .voice { left: calc(20 * var(--u)); right: auto; top: auto; bottom: calc(40 * var(--u)); text-align: left; font-size: calc(16 * var(--u)); }
+  .lab .ch[data-ch="6"] .scale { left: auto; right: calc(20 * var(--u)); top: calc(392 * var(--u)); bottom: auto; }
+  .lab .ch[data-ch="6"] .tag { font-size: calc(10 * var(--u)); }
+  .lab .ch[data-ch="7"] .ttl { left: calc(18 * var(--u)); top: calc(74 * var(--u)); font-size: calc(50 * var(--u)); }
   .lab .ch[data-ch="7"] .ttl .ln { display: inline-block; }
   .lab .ch[data-ch="7"] .ttl .ln + .ln { margin-left: .25em; }
   .lab .play .ctl { position: static; width: auto; }
-  .lab .play .opts { position: absolute; left: 20px; right: 20px; top: 136px; display: flex; justify-content: space-between; }
-  .lab .play .opt { font-size: 10px; margin-bottom: 0; }
+  .lab .play .opts { position: absolute; left: calc(20 * var(--u)); right: calc(20 * var(--u)); top: calc(136 * var(--u)); display: flex; justify-content: space-between; }
+  .lab .play .opt { font-size: calc(10 * var(--u)); margin-bottom: 0; }
   .lab .play .opt + .opt { text-align: right; }
-  .lab .play .opt div { margin-top: 5px; gap: 12px; font-size: 14px; }
-  .lab .play .bot { position: absolute; left: 20px; right: 20px; bottom: 24px; }
-  .lab .play .moves { font-size: 12px; line-height: 1.6; }
-  .lab .play .opening { margin-bottom: 14px; }
+  .lab .play .opt div { margin-top: calc(5 * var(--u)); gap: calc(12 * var(--u)); font-size: calc(14 * var(--u)); }
+  .lab .play .bot { position: absolute; left: calc(20 * var(--u)); right: calc(20 * var(--u)); bottom: calc(24 * var(--u)); }
+  .lab .play .moves { font-size: calc(12 * var(--u)); line-height: 1.6; }
+  .lab .play .opening { margin-bottom: calc(14 * var(--u)); }
   /* searching, the rest of the controls step aside so the matches stay on the dark side, clear of the board */
   .lab .play[data-picking] .bot > :not(.opening) { display: none; }
   .lab .play .opening .hits li:nth-child(n+6) { display: none; }
-  .lab .play .opening .field { font-size: 14px; padding-bottom: 4px; }
-  .lab .play .opening .hits { margin-top: 6px; }
-  .lab .play .opening .hits li { grid-template-columns: 30px 1fr; padding: 5px 0; font-size: 13px; }
+  .lab .play .opening .field { font-size: calc(14 * var(--u)); padding-bottom: calc(4 * var(--u)); }
+  .lab .play .opening .hits { margin-top: calc(6 * var(--u)); }
+  .lab .play .opening .hits li { grid-template-columns: calc(30 * var(--u)) 1fr; padding: calc(5 * var(--u)) 0; font-size: calc(13 * var(--u)); }
   .lab .play .opening .last { font-family: var(--font-mono); font-size: .8em; color: var(--fg2); white-space: nowrap; }
-.lab .play .opening .eco { font-size: 10px; padding-top: 2px; }
-  .lab .play .ev-ph { display: block; color: var(--fg2); margin-bottom: 6px; }
-  .lab .play .status { margin-top: 10px; font-size: 14px; line-height: 1.4; }
-  .lab .play .start { margin-top: 14px; font-size: 15px; padding-bottom: 3px; }
+.lab .play .opening .eco { font-size: calc(10 * var(--u)); padding-top: calc(2 * var(--u)); }
+  .lab .play .ev-ph { display: block; color: var(--fg2); margin-bottom: calc(6 * var(--u)); }
+  .lab .play .status { margin-top: calc(10 * var(--u)); font-size: calc(14 * var(--u)); line-height: 1.4; }
+  .lab .play .start { margin-top: calc(14 * var(--u)); font-size: calc(15 * var(--u)); padding-bottom: calc(3 * var(--u)); }
   .lab .play .start-note, .lab .play .ev { display: none; }
 }

@@ -16,6 +16,7 @@ import { warmScenes } from "@/lib/three/warm";
 import { stageScale, stageTurn } from "@/components/project/stage";
 import { piecesReady } from "@/lib/three/pieces";
 import { type Steps } from "@/lib/three/steps";
+import { PHONE } from "@/lib/seam/seam";
 
 type V3 = [number, number, number];
 /** A framing: `sx`, `sy` place the look point on screen (0..1 across and down; .5 is the centre). */
@@ -124,7 +125,7 @@ export function* sideboardSteps(canvas: HTMLCanvasElement, list: { slug: string;
   const place = () => {
     // framed at 16:10 (side-a); in a narrower desktop window the field widens so the board stays clear of the list,
     // fading out as the camera steps down to a project (fov 22). Phones have their own frame.
-    const aspect = W() / H(), fit = Math.max(1, 1.6 / aspect), desk = !window.matchMedia("(max-width: 600px)").matches;
+    const aspect = W() / H(), fit = Math.max(1, 1.6 / aspect), desk = !window.matchMedia(PHONE).matches;
     const k = desk ? Math.min(1, Math.max(0, (view.fov - 22) / 8)) : 0, wide = (2 * Math.atan(Math.tan((view.fov * Math.PI) / 360) * fit) * 180) / Math.PI;
     cam.position.set(...view.pos); cam.fov = view.fov + (wide - view.fov) * k; cam.aspect = aspect;
     cam.setViewOffset(W(), H(), (0.5 - view.sx) * W(), (0.5 - view.sy) * H(), W(), H());

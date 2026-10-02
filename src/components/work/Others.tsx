@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
 import { registerEases, perLayer } from "@/lib/motion/ease";
 import { beginNav, navigating } from "@/lib/seam/sweep";
-import { PHONE, restFor } from "@/lib/seam/seam";
+import { PHONE, restFor, unit } from "@/lib/seam/seam";
 import { after } from "@/lib/motion/slowmo";
 import { buildAhead, nearScreen } from "@/lib/motion/firstView";
 import { sideboardSteps, FRAME, type Frame, type Sideboard } from "./sideboard";
@@ -175,7 +175,7 @@ export function Others({ list, copy }: { list: Other[]; copy: OthersCopy }) {
             const at = pos[o.slug];
             if (!at) return null;
             return (
-              <div key={o.slug} className="tag mono" data-on={o.slug === focus || undefined} style={{ left: at.x, top: at.y + 6 }}>
+              <div key={o.slug} className="tag mono" data-on={o.slug === focus || undefined} style={{ left: at.x, top: at.y + 6 * unit() }}>
                 <span>{o.move ?? copy.noMove}</span>
                 {o.aside && o.move ? <span className="aside">{copy.aside}</span> : null}
               </div>

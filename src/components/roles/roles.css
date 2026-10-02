@@ -1,92 +1,92 @@
 /* The Roles hall (key frame roles-b) and the role pages (role-a). The white side is the window: the hall sits
    beneath the paper, which floods the screen (the owner's call at step 4b, over the key frames' ink edge). */
-.roles { position: relative; height: 100vh; height: 100dvh; min-height: 600px; overflow: hidden; background: var(--paper); }
+.roles { position: relative; height: 100vh; height: 100dvh; min-height: calc(600 * var(--u)); overflow: hidden; background: var(--paper); }
 .roles-canvas, .role-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .roles-canvas[data-hot] { cursor: pointer; }
 /* at rest the ink edge is laid out (audits see the real background); it tilts only while the seam moves */
 .roles-dark, .role-dark { position: absolute; inset: 0 0 0 var(--seam); background: var(--gallery); z-index: 1; pointer-events: none; }
-.site[data-seam-moving] :is(.roles-dark, .role-dark) { inset: 0; clip-path: polygon(calc(var(--seam) - var(--seam-o)) 0, calc(100% + 400px) 0, calc(100% + 400px) 100%, calc(var(--seam) + var(--seam-o)) 100%); }
+.site[data-seam-moving] :is(.roles-dark, .role-dark) { inset: 0; clip-path: polygon(calc(var(--seam) - var(--seam-o)) 0, calc(100% + calc(400 * var(--u))) 0, calc(100% + calc(400 * var(--u))) 100%, calc(var(--seam) + var(--seam-o)) 100%); }
 .roles-layer, .role-layer { position: absolute; inset: 0; z-index: 2; pointer-events: none; --fg: var(--ink); --fg2: var(--pencil); color: var(--fg); }
 .roles .ln, .role .ln { display: block; overflow: hidden; padding-bottom: .16em; margin-bottom: -.16em; }
 .roles .ln > span, .role .ln > span { display: block; }
 
-.roles-title { position: absolute; left: 48px; top: 54vh; font-size: 5.4vw; }
-.roles-sub { position: absolute; left: 52px; top: calc(54vh + 6vw); font-size: 15px; color: var(--pencil); max-width: 44ch; line-height: 1.4; }
-:is(.roles, .role) .names { position: absolute; left: 52px; top: calc(54vh + 6vw + 62px); list-style: none; pointer-events: auto; }
-:is(.roles, .role) .names a { display: flex; gap: 12px; align-items: baseline; padding: 4px 0; color: inherit; text-decoration: none; }
-:is(.roles, .role) .names b { font-size: 15px; font-weight: 600; min-width: 170px; transition: box-shadow .4s cubic-bezier(.16, .84, .3, 1); }
-:is(.roles, .role) .names .when { font-size: 13px; color: var(--graphite); opacity: 0; transition: opacity .4s cubic-bezier(.16, .84, .3, 1); }
+.roles-title { position: absolute; left: calc(48 * var(--u)); top: 54vh; font-size: 5.4vw; }
+.roles-sub { position: absolute; left: calc(52 * var(--u)); top: calc(54vh + 6vw); font-size: calc(15 * var(--u)); color: var(--pencil); max-width: 44ch; line-height: 1.4; }
+:is(.roles, .role) .names { position: absolute; left: calc(52 * var(--u)); top: calc(54vh + 6vw + calc(62 * var(--u))); list-style: none; pointer-events: auto; }
+:is(.roles, .role) .names a { display: flex; gap: calc(12 * var(--u)); align-items: baseline; padding: calc(4 * var(--u)) 0; color: inherit; text-decoration: none; }
+:is(.roles, .role) .names b { font-size: calc(15 * var(--u)); font-weight: 600; min-width: calc(170 * var(--u)); transition: box-shadow .4s cubic-bezier(.16, .84, .3, 1); }
+:is(.roles, .role) .names .when { font-size: calc(13 * var(--u)); color: var(--graphite); opacity: 0; transition: opacity .4s cubic-bezier(.16, .84, .3, 1); }
 /* names only; the dates come on hover and on the role pages; "now" stays on Deriv (Gate 2, roles-b) */
 :is(.roles, .role) .names li[data-on] .when, :is(.roles, .role) .names li[data-now] .when { opacity: 1; }
-:is(.roles, .role) .names li[data-now] b, :is(.roles, .role) .names li[data-on] b { box-shadow: 0 2px 0 var(--move); }
-:is(.roles, .role) .names li[data-now]:not([data-on]) b { box-shadow: 0 2px 0 var(--move); }
-:is(.roles, .role) .names a:focus-visible { outline-offset: 2px; }
+:is(.roles, .role) .names li[data-now] b, :is(.roles, .role) .names li[data-on] b { box-shadow: 0 calc(2 * var(--u)) 0 var(--move); }
+:is(.roles, .role) .names li[data-now]:not([data-on]) b { box-shadow: 0 calc(2 * var(--u)) 0 var(--move); }
+:is(.roles, .role) .names a:focus-visible { outline-offset: calc(2 * var(--u)); }
 
 /* A role page: the first screen is pinned while the game replays (motion.md §10). */
 .role { position: relative; background: var(--paper); }
 .role-top { position: relative; height: calc(var(--screens, 5) * 100vh + 100vh); height: calc(var(--screens, 5) * 100dvh + 100dvh); }
-.role-pin { position: sticky; top: 0; height: 100vh; height: 100dvh; min-height: 600px; overflow: hidden; }
-.role-head { position: absolute; left: 52px; top: 13vh; }
+.role-pin { position: sticky; top: 0; height: 100vh; height: 100dvh; min-height: calc(600 * var(--u)); overflow: hidden; }
+.role-head { position: absolute; left: calc(52 * var(--u)); top: 13vh; }
 .role-head h1 { font-size: 6.6vw; white-space: nowrap; }
-.role-head p { margin-top: 10px; font-size: 15px; color: var(--pencil); }
-.role .count { position: absolute; left: 52px; top: calc(13vh + 6.6vw + 40px); font-size: 12px; color: var(--graphite); }
-:is(.roles, .role) .facts { position: absolute; left: 52px; top: calc(13vh + 6.6vw + 70px); width: 330px; list-style: none; }
-:is(.roles, .role) .fact { position: absolute; left: 0; top: 0; width: 330px; }
-:is(.roles, .role) .fact hr { border: 0; height: 2px; background: var(--ink); margin-bottom: 22px; width: 260px; transform-origin: left; }
-:is(.roles, .role) .fact p { font-size: 17px; line-height: 1.45; }
-:is(.roles, .role) .fact b { display: block; margin-top: 22px; font-size: 24px; font-weight: 700; letter-spacing: -.015em; }
-:is(.roles, .role) .fact .q { display: block; margin-top: 6px; font-size: 12px; color: var(--graphite); }
+.role-head p { margin-top: calc(10 * var(--u)); font-size: calc(15 * var(--u)); color: var(--pencil); }
+.role .count { position: absolute; left: calc(52 * var(--u)); top: calc(13vh + 6.6vw + calc(40 * var(--u))); font-size: calc(12 * var(--u)); color: var(--graphite); }
+:is(.roles, .role) .facts { position: absolute; left: calc(52 * var(--u)); top: calc(13vh + 6.6vw + calc(70 * var(--u))); width: calc(330 * var(--u)); list-style: none; }
+:is(.roles, .role) .fact { position: absolute; left: 0; top: 0; width: calc(330 * var(--u)); }
+:is(.roles, .role) .fact hr { border: 0; height: calc(2 * var(--u)); background: var(--ink); margin-bottom: calc(22 * var(--u)); width: calc(260 * var(--u)); transform-origin: left; }
+:is(.roles, .role) .fact p { font-size: calc(17 * var(--u)); line-height: 1.45; }
+:is(.roles, .role) .fact b { display: block; margin-top: calc(22 * var(--u)); font-size: calc(24 * var(--u)); font-weight: 700; letter-spacing: -.015em; }
+:is(.roles, .role) .fact .q { display: block; margin-top: calc(6 * var(--u)); font-size: calc(12 * var(--u)); color: var(--graphite); }
 /* reduced motion: every fact, listed, the page as long as they need; the scrubber stays at the foot */
 .role[data-still] .role-top, .role[data-still] .role-pin { position: relative; height: auto; min-height: 100vh; min-height: 100dvh; }
 .role[data-still] .role-canvas { height: 100vh; height: 100dvh; } /* the board stays a screen's size; the list runs on below it */
-.role[data-still] .role-layer { position: relative; inset: auto; padding: calc(13vh + 6.6vw + 70px) 0 calc(6vh + 110px) 52px; }
-.role[data-still] .facts { position: relative; left: 0; top: 0; width: 360px; display: grid; gap: 26px; }
+.role[data-still] .role-layer { position: relative; inset: auto; padding: calc(13vh + 6.6vw + calc(70 * var(--u))) 0 calc(6vh + calc(110 * var(--u))) calc(52 * var(--u)); }
+.role[data-still] .facts { position: relative; left: 0; top: 0; width: calc(360 * var(--u)); display: grid; gap: calc(26 * var(--u)); }
 .role[data-still] .fact { position: relative; }
-.role[data-still] .fact hr { margin-bottom: 12px; }
-.role[data-still] .fact b { margin-top: 10px; font-size: 20px; }
-:is(.roles, .role) .scrub { position: absolute; left: 52px; bottom: 6vh; pointer-events: auto; }
-:is(.roles, .role) .scrub .mv { font-size: 14px; }
-:is(.roles, .role) .ticks { display: flex; gap: 5px; margin: 10px 0 8px; align-items: flex-end; list-style: none; }
-:is(.roles, .role) .ticks button { display: block; width: 1px; height: 9px; padding: 0; border: 0; color: var(--ink); background: #aaa59c; cursor: pointer; position: relative; }
-:is(.roles, .role) .ticks button::after { content: ""; position: absolute; inset: -8px -2px; } /* a finger's width to click */
+.role[data-still] .fact hr { margin-bottom: calc(12 * var(--u)); }
+.role[data-still] .fact b { margin-top: calc(10 * var(--u)); font-size: calc(20 * var(--u)); }
+:is(.roles, .role) .scrub { position: absolute; left: calc(52 * var(--u)); bottom: 6vh; pointer-events: auto; }
+:is(.roles, .role) .scrub .mv { font-size: calc(14 * var(--u)); }
+:is(.roles, .role) .ticks { display: flex; gap: calc(5 * var(--u)); margin: calc(10 * var(--u)) 0 calc(8 * var(--u)); align-items: flex-end; list-style: none; }
+:is(.roles, .role) .ticks button { display: block; width: calc(1 * var(--u)); height: calc(9 * var(--u)); padding: 0; border: 0; color: var(--ink); background: #aaa59c; cursor: pointer; position: relative; }
+:is(.roles, .role) .ticks button::after { content: ""; position: absolute; inset: calc(-8 * var(--u)) calc(-2 * var(--u)); } /* a finger's width to click */
 :is(.roles, .role) .ticks button.p { background: var(--ink); }
-:is(.roles, .role) .ticks button.c { width: 2px; height: 16px; background: var(--ink); }
-:is(.roles, .role) .ticks button:focus-visible { outline-offset: 4px; }
-:is(.roles, .role) .scrub .g { font-size: 12px; color: var(--graphite); }
+:is(.roles, .role) .ticks button.c { width: calc(2 * var(--u)); height: calc(16 * var(--u)); background: var(--ink); }
+:is(.roles, .role) .ticks button:focus-visible { outline-offset: calc(4 * var(--u)); }
+:is(.roles, .role) .scrub .g { font-size: calc(12 * var(--u)); color: var(--graphite); }
 
-.role-end { position: relative; padding: 18vh 52px 16vh; display: grid; gap: 40px; }
+.role-end { position: relative; padding: 18vh calc(52 * var(--u)) 16vh; display: grid; gap: calc(40 * var(--u)); }
 .role-next { text-decoration: none; color: inherit; }
-.role-next .mono { display: block; font-size: 13px; color: var(--graphite); }
-.role-next .display { display: block; margin-top: 10px; font-size: 8vw; text-wrap: balance; }
-.role-next .sub { display: block; margin-top: 12px; font-size: 15px; color: var(--pencil); }
+.role-next .mono { display: block; font-size: calc(13 * var(--u)); color: var(--graphite); }
+.role-next .display { display: block; margin-top: calc(10 * var(--u)); font-size: 8vw; text-wrap: balance; }
+.role-next .sub { display: block; margin-top: calc(12 * var(--u)); font-size: calc(15 * var(--u)); color: var(--pencil); }
 .role-next:hover .display { text-decoration: underline; text-decoration-thickness: .06em; text-underline-offset: .1em; }
-.role-back { font-size: 15px; color: inherit; }
+.role-back { font-size: calc(15 * var(--u)); color: inherit; }
 
-@media (max-width: 600px) {
+@media (max-width: 600px), (min-width: 601px) and (max-width: 1199px) and (orientation: portrait) {
   .roles-dark, .role-dark { inset: var(--seam) 0 0 0; }
-  .roles-title { left: 18px; top: 86px; font-size: 17vw; }
-  .roles-sub { left: 20px; top: calc(86px + 20vw); font-size: 14px; max-width: calc(100% - 40px); }
+  .roles-title { left: calc(18 * var(--u)); top: calc(86 * var(--u)); font-size: 17vw; }
+  .roles-sub { left: calc(20 * var(--u)); top: calc(calc(86 * var(--u)) + 20vw); font-size: calc(14 * var(--u)); max-width: calc(100% - calc(40 * var(--u))); }
   /* the row becomes a list over the hall (motion.md §9) */
-  :is(.roles, .role) .names { left: 20px; right: 20px; top: auto; bottom: 28px; }
-  :is(.roles, .role) .names a { padding: 7px 0; }
+  :is(.roles, .role) .names { left: calc(20 * var(--u)); right: calc(20 * var(--u)); top: auto; bottom: calc(28 * var(--u)); }
+  :is(.roles, .role) .names a { padding: calc(7 * var(--u)) 0; }
   :is(.roles, .role) .names b { min-width: 0; }
   :is(.roles, .role) .names .when { opacity: 1; }
   :is(.roles, .role) .names li:not([data-now]) .when { display: none; }
-  .role-head { left: 20px; top: 76px; }
+  .role-head { left: calc(20 * var(--u)); top: calc(76 * var(--u)); }
   .role-head h1 { font-size: 11vw; }
   /* "Monash University" is the longest name: it fits the width at 8.6vw */
   .role:is([data-role="education"], [data-role="monash-university"]) .role-head h1 { font-size: 8.6vw; }
-  .role-head p { font-size: 13px; margin-top: 6px; }
-  .role .count { left: 20px; top: calc(76px + 11vw + 40px); }
-  :is(.roles, .role) .facts { left: 20px; top: calc(76px + 11vw + 64px); width: calc(100% - 50px); }
+  .role-head p { font-size: calc(13 * var(--u)); margin-top: calc(6 * var(--u)); }
+  .role .count { left: calc(20 * var(--u)); top: calc(calc(76 * var(--u)) + 11vw + calc(40 * var(--u))); }
+  :is(.roles, .role) .facts { left: calc(20 * var(--u)); top: calc(calc(76 * var(--u)) + 11vw + calc(64 * var(--u))); width: calc(100% - calc(50 * var(--u))); }
   :is(.roles, .role) .fact { width: 100%; }
-  :is(.roles, .role) .fact hr { width: 180px; margin-bottom: 14px; }
-  :is(.roles, .role) .fact p { font-size: 15px; }
-  :is(.roles, .role) .fact b { font-size: 21px; margin-top: 14px; }
-  .role[data-still] .role-layer { padding: calc(76px + 11vw + 64px) 20px calc(28px + 110px); }
-  .role[data-still] .facts { width: auto; gap: 16px; }
-  :is(.roles, .role) .scrub { left: 20px; right: 20px; bottom: 28px; }
-  :is(.roles, .role) .ticks { gap: 4px; flex-wrap: wrap; }
-  .role-end { padding: 14vh 20px 12vh; }
+  :is(.roles, .role) .fact hr { width: calc(180 * var(--u)); margin-bottom: calc(14 * var(--u)); }
+  :is(.roles, .role) .fact p { font-size: calc(15 * var(--u)); }
+  :is(.roles, .role) .fact b { font-size: calc(21 * var(--u)); margin-top: calc(14 * var(--u)); }
+  .role[data-still] .role-layer { padding: calc(calc(76 * var(--u)) + 11vw + calc(64 * var(--u))) calc(20 * var(--u)) calc(calc(28 * var(--u)) + calc(110 * var(--u))); }
+  .role[data-still] .facts { width: auto; gap: calc(16 * var(--u)); }
+  :is(.roles, .role) .scrub { left: calc(20 * var(--u)); right: calc(20 * var(--u)); bottom: calc(28 * var(--u)); }
+  :is(.roles, .role) .ticks { gap: calc(4 * var(--u)); flex-wrap: wrap; }
+  .role-end { padding: 14vh calc(20 * var(--u)) 12vh; }
   .role-next .display { font-size: 12vw; }
 }

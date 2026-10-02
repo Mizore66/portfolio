@@ -2,38 +2,38 @@
 .site { position: relative; min-height: 100vh; }
 
 /* The two sides, for any full-viewport layer. On phones the seam is horizontal: white on top. */
-.seam-dark { clip-path: polygon(calc(var(--seam) - var(--seam-o)) 0, calc(100% + 400px) 0, calc(100% + 400px) 100%, calc(var(--seam) + var(--seam-o)) 100%); }
-@media (max-width: 600px) {
-  .seam-dark { clip-path: polygon(0 calc(var(--seam) - var(--seam-o)), 100% calc(var(--seam) + var(--seam-o)), 100% calc(100% + 400px), 0 calc(100% + 400px)); }
+.seam-dark { clip-path: polygon(calc(var(--seam) - var(--seam-o)) 0, calc(100% + calc(400 * var(--u))) 0, calc(100% + calc(400 * var(--u))) 100%, calc(var(--seam) + var(--seam-o)) 100%); }
+@media (max-width: 600px), (min-width: 601px) and (max-width: 1199px) and (orientation: portrait) {
+  .seam-dark { clip-path: polygon(0 calc(var(--seam) - var(--seam-o)), 100% calc(var(--seam) + var(--seam-o)), 100% calc(100% + calc(400 * var(--u))), 0 calc(100% + calc(400 * var(--u)))); }
 }
 
 /* Chrome: the nav in ink, and again in paper on the dark side. */
 .chrome-frame { position: fixed; inset: 0; z-index: 40; pointer-events: none; }
 .chrome-layer { position: absolute; inset: 0; pointer-events: none; --fg: var(--ink); color: var(--fg); }
 .chrome-layer[data-layer="inv"] { --fg: var(--paper); }
-.chrome-layer[data-layer="inv"] { clip-path: polygon(calc(var(--seam) - var(--seam-o)) 0, calc(100% + 400px) 0, calc(100% + 400px) 100%, calc(var(--seam) + var(--seam-o)) 100%); }
-.chrome .nav { position: absolute; top: 40px; left: 48px; display: flex; gap: 28px; font-size: 14px; font-weight: 500; list-style: none; pointer-events: auto; }
-.chrome .nav a { position: relative; text-decoration: none; display: inline-block; padding-bottom: 3px; }
+.chrome-layer[data-layer="inv"] { clip-path: polygon(calc(var(--seam) - var(--seam-o)) 0, calc(100% + calc(400 * var(--u))) 0, calc(100% + calc(400 * var(--u))) 100%, calc(var(--seam) + var(--seam-o)) 100%); }
+.chrome .nav { position: absolute; top: calc(40 * var(--u)); left: calc(48 * var(--u)); display: flex; gap: calc(28 * var(--u)); font-size: calc(14 * var(--u)); font-weight: 500; list-style: none; pointer-events: auto; }
+.chrome .nav a { position: relative; text-decoration: none; display: inline-block; padding-bottom: calc(3 * var(--u)); }
 /* the underline moves at once: the old one shrinks as the new one grows (150 ms) */
-.chrome .nav a::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 1.5px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform .15s cubic-bezier(.16, .84, .3, 1); }
+.chrome .nav a::after { content: ""; position: absolute; left: 0; right: 0; bottom: calc(-1 * var(--u)); height: calc(1.5 * var(--u)); background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform .15s cubic-bezier(.16, .84, .3, 1); }
 .chrome .nav a:hover::after, .chrome .nav a[aria-current="page"]::after { transform: scaleX(1); }
 .chrome .skip { pointer-events: auto; }
 /* inside the chrome the résumé link inverts with the seam, like the nav, instead of blending */
 .chrome .resume-link { position: absolute; z-index: auto; mix-blend-mode: normal; color: var(--fg); pointer-events: auto; }
 /* the sound toggle: bottom right on every page, quiet until it is on */
-.chrome .sound-toggle { all: unset; position: absolute; right: 48px; bottom: 40px; font-size: 13px; color: var(--fg); opacity: .62; cursor: pointer; pointer-events: auto; transition: opacity .2s; }
+.chrome .sound-toggle { all: unset; position: absolute; right: calc(48 * var(--u)); bottom: calc(40 * var(--u)); font-size: calc(13 * var(--u)); color: var(--fg); opacity: .62; cursor: pointer; pointer-events: auto; transition: opacity .2s; }
 .chrome .sound-toggle:hover, .chrome .sound-toggle[aria-pressed="true"] { opacity: 1; }
-.chrome .sound-toggle:focus-visible { outline: 2px solid var(--move); outline-offset: 4px; opacity: 1; }
-@media (max-width: 600px) {
-  .chrome .sound-toggle { right: 20px; bottom: 24px; font-size: 12px; }
+.chrome .sound-toggle:focus-visible { outline: calc(2 * var(--u)) solid var(--move); outline-offset: calc(4 * var(--u)); opacity: 1; }
+@media (max-width: 600px), (min-width: 601px) and (max-width: 1199px) and (orientation: portrait) {
+  .chrome .sound-toggle { right: calc(20 * var(--u)); bottom: calc(24 * var(--u)); font-size: calc(12 * var(--u)); }
   /* the one page: each section carries its own split, so the paper copy is clipped to the dark bands on screen (blocks.ts) */
   .site[data-blocks]:not([data-seam-moving]) .chrome-layer[data-layer="inv"] { clip-path: var(--chrome-dark); }
-  .chrome-layer[data-layer="inv"] { clip-path: polygon(0 calc(var(--seam) - var(--seam-o)), 100% calc(var(--seam) + var(--seam-o)), 100% calc(100% + 400px), 0 calc(100% + 400px)); }
-  .chrome .nav { top: 24px; left: 20px; gap: 16px; font-size: 13px; }
+  .chrome-layer[data-layer="inv"] { clip-path: polygon(0 calc(var(--seam) - var(--seam-o)), 100% calc(var(--seam) + var(--seam-o)), 100% calc(100% + calc(400 * var(--u))), 0 calc(100% + calc(400 * var(--u)))); }
+  .chrome .nav { top: calc(24 * var(--u)); left: calc(20 * var(--u)); gap: calc(16 * var(--u)); font-size: calc(13 * var(--u)); }
 }
 /* the one page: the nav steps up and away while the page scrolls down beneath it (OnePage.tsx); focus brings it back */
 .chrome .nav { transition: opacity .25s cubic-bezier(.16, .84, .3, 1), transform .25s cubic-bezier(.16, .84, .3, 1); }
-.site[data-nav-away] .chrome .nav:not(:focus-within) { opacity: 0; transform: translateY(-10px); pointer-events: none; }
+.site[data-nav-away] .chrome .nav:not(:focus-within) { opacity: 0; transform: translateY(calc(-10 * var(--u))); pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .chrome .nav { transition: none; } .site[data-nav-away] .chrome .nav:not(:focus-within) { transform: none; } }
 /* the hero's loader holds the nav back until the name has arrived */
 .site:has(.hero[data-intro="pending"]):not(:has(.home > :target)) .chrome :is(.nav, .sound-toggle) { visibility: hidden; }
@@ -42,8 +42,8 @@
 html.has-cursor, html.has-cursor * { cursor: none; }
 html.has-cursor :is(p, li, dd, blockquote):not(nav *), html.has-cursor :is(p, li, dd, blockquote):not(nav *) * { cursor: auto; }
 .cursor { position: fixed; left: 0; top: 0; z-index: 60; pointer-events: none; width: 0; height: 0; }
-.cursor::before { content: ""; position: absolute; left: -4px; top: -4px; width: 8px; height: 8px; border-radius: 50%; background: var(--move); box-shadow: 0 0 0 0 var(--move); transition: transform .15s cubic-bezier(.16, .84, .3, 1), background-color .15s, box-shadow .15s; }
-.cursor[data-state="ring"]::before { transform: scale(3); background: transparent; box-shadow: inset 0 0 0 .5px var(--move); }
+.cursor::before { content: ""; position: absolute; left: calc(-4 * var(--u)); top: calc(-4 * var(--u)); width: calc(8 * var(--u)); height: calc(8 * var(--u)); border-radius: 50%; background: var(--move); box-shadow: 0 0 0 0 var(--move); transition: transform .15s cubic-bezier(.16, .84, .3, 1), background-color .15s, box-shadow .15s; }
+.cursor[data-state="ring"]::before { transform: scale(3); background: transparent; box-shadow: inset 0 0 0 calc(.5 * var(--u)) var(--move); }
 .cursor[data-state="off"]::before { opacity: 0; }
 
 /* View transitions. The root is not captured, so the arriving page is live beneath the leaving snapshot;
@@ -58,7 +58,7 @@ html.has-cursor :is(p, li, dd, blockquote):not(nav *), html.has-cursor :is(p, li
 .cursor { view-transition-name: cursor; }
 
 /* Rooms not yet built (Phase 5, step 4): the resting seam, the title, and a note. */
-.room { position: relative; height: 100vh; height: 100dvh; min-height: 520px; overflow: hidden; background: var(--paper); }
+.room { position: relative; height: 100vh; height: 100dvh; min-height: calc(520 * var(--u)); overflow: hidden; background: var(--paper); }
 /* at rest the dark side is laid out, not clipped, so audits see the real background; it tilts only while moving */
 .room-dark { position: absolute; inset: 0 0 0 var(--seam); background: var(--dark); }
 .site[data-seam-moving] .room-dark { inset: 0; }
@@ -68,28 +68,28 @@ html.has-cursor :is(p, li, dd, blockquote):not(nav *), html.has-cursor :is(p, li
 .room .ln { display: block; overflow: hidden; padding-bottom: .16em; margin-bottom: -.16em; }
 .room .ln > span { display: block; }
 .room-title { position: absolute; font-size: 12vw; }
-.room-note { position: absolute; font-size: 13px; color: var(--fg2); max-width: 36ch; line-height: 1.5; }
+.room-note { position: absolute; font-size: calc(13 * var(--u)); color: var(--fg2); max-width: 36ch; line-height: 1.5; }
 .room[data-room="work"] .room-title { left: 4.2vw; top: 16vh; }
 .room[data-room="work"] .room-note { left: 4.4vw; bottom: 6.8vh; }
 .room[data-room="roles"] .room-title { left: 4.2vw; top: 16vh; }
 .room[data-room="roles"] .room-note { left: 4.4vw; bottom: 6.8vh; }
 .room[data-room="lab"] .room-title { left: 3.2vw; top: 15vh; font-size: 9vw; }
-.room[data-room="lab"] .room-note { left: calc(30.5% + 24px); bottom: 6.8vh; }
+.room[data-room="lab"] .room-note { left: calc(30.5% + calc(24 * var(--u))); bottom: 6.8vh; }
 .room[data-room="contact"] .room-title { left: 4.2vw; top: 16vh; }
-.room[data-room="contact"] .room-note { left: calc(55.9% + 24px); bottom: 6.8vh; }
-@media (max-width: 600px) {
+.room[data-room="contact"] .room-note { left: calc(55.9% + calc(24 * var(--u))); bottom: 6.8vh; }
+@media (max-width: 600px), (min-width: 601px) and (max-width: 1199px) and (orientation: portrait) {
   .room-dark { inset: var(--seam) 0 0 0; }
   .site[data-seam-moving] .room-dark { inset: 0; }
   .room-title { font-size: 21vw; }
-  .room .room-title, .room[data-room] .room-title { left: 18px; top: 92px; }
+  .room .room-title, .room[data-room] .room-title { left: calc(18 * var(--u)); top: calc(92 * var(--u)); }
   .room[data-room="lab"] .room-title { font-size: 17vw; }
-  .room .room-note, .room[data-room] .room-note { left: 20px; bottom: 26px; font-size: 12px; max-width: calc(100% - 40px); }
+  .room .room-note, .room[data-room] .room-note { left: calc(20 * var(--u)); bottom: calc(26 * var(--u)); font-size: calc(12 * var(--u)); max-width: calc(100% - calc(40 * var(--u))); }
 }
 
 /* the frame-rate readout (?fps, phase 6 step 5): a test tool, off for every visitor */
-.frame-meter { position: fixed; left: 12px; top: 84px; z-index: 70; display: grid; gap: 4px; max-width: min(360px, calc(100vw - 24px)); padding: 10px 12px; border-radius: 6px; background: rgb(13 13 12 / .88); color: #f3f3f1; font-size: 11px; line-height: 1.35; pointer-events: auto; }
-.frame-meter b { font-size: 18px; font-weight: 500; } .frame-meter .fm-where { color: #b9b5ad; overflow-wrap: anywhere; }
-.frame-meter .fm-buttons { display: flex; gap: 6px; margin-top: 4px; }
-.frame-meter button { all: unset; cursor: pointer; padding: 3px 7px; border: 1px solid #57534c; border-radius: 4px; }
-.frame-meter button:focus-visible { outline: 2px solid var(--move); }
-.frame-meter textarea { width: 100%; height: 140px; font: 10px/1.3 var(--font-mono); color: #f3f3f1; background: #000; border: 1px solid #57534c; }
+.frame-meter { position: fixed; left: calc(12 * var(--u)); top: calc(84 * var(--u)); z-index: 70; display: grid; gap: calc(4 * var(--u)); max-width: min(calc(360 * var(--u)), calc(100vw - calc(24 * var(--u)))); padding: calc(10 * var(--u)) calc(12 * var(--u)); border-radius: calc(6 * var(--u)); background: rgb(13 13 12 / .88); color: #f3f3f1; font-size: calc(11 * var(--u)); line-height: 1.35; pointer-events: auto; }
+.frame-meter b { font-size: calc(18 * var(--u)); font-weight: 500; } .frame-meter .fm-where { color: #b9b5ad; overflow-wrap: anywhere; }
+.frame-meter .fm-buttons { display: flex; gap: calc(6 * var(--u)); margin-top: calc(4 * var(--u)); }
+.frame-meter button { all: unset; cursor: pointer; padding: calc(3 * var(--u)) calc(7 * var(--u)); border: calc(1 * var(--u)) solid #57534c; border-radius: calc(4 * var(--u)); }
+.frame-meter button:focus-visible { outline: calc(2 * var(--u)) solid var(--move); }
+.frame-meter textarea { width: 100%; height: calc(140 * var(--u)); font: calc(10 * var(--u))/1.3 var(--font-mono); color: #f3f3f1; background: #000; border: calc(1 * var(--u)) solid #57534c; }

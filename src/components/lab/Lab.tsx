@@ -4,7 +4,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { gsap } from "gsap";
 import { registerEases, perLayer } from "@/lib/motion/ease";
-import { PHONE, restColours, restFor, seam as live, setSeam } from "@/lib/seam/seam";
+import { PHONE, restColours, restFor, seam as live, setSeam, unit } from "@/lib/seam/seam";
 import { arrival, navigating } from "@/lib/seam/sweep";
 import { registerBlock, refresh } from "@/lib/seam/blocks";
 import { firstView } from "@/lib/motion/firstView";
@@ -38,10 +38,10 @@ function Open({ copy, tree, more }: { copy: LabCopy["open"]; tree: TreeNode; mor
   const [g, setG] = useState<{ W: number; H: number; lines: Line[]; pv: [number, number][] } | null>(null);
   useLayoutEffect(() => {
     const draw = () => {
-      const el = svg.current!, W = el.clientWidth, H = el.clientHeight, phone = window.matchMedia(PHONE).matches;
+      const el = svg.current!, W = el.clientWidth, H = el.clientHeight, phone = window.matchMedia(PHONE).matches, u = unit();
       // on phones the seam is horizontal and the tree grows down from a root below it, at the right (lab-a-m)
       const t = phone
-        ? layout(tree, { x: 0.72 * W, y: OPEN_AT * H + 92, dir: Math.PI / 2 + 0.12, len: 0.09 * H, bounds: [150, OPEN_AT * H + 92, W - 6, H - 160] })
+        ? layout(tree, { x: 0.72 * W, y: OPEN_AT * H + 92 * u, dir: Math.PI / 2 + 0.12, len: 0.09 * H, bounds: [150 * u, OPEN_AT * H + 92 * u, W - 6 * u, H - 160 * u] })
         : layout(tree, { x: OPEN_AT * W, y: 0.66 * H, len: 0.1 * W, bounds: [OPEN_AT * W, 0.34 * H, W - 30, H - 40] });
       setG({ W, H, ...t });
     };

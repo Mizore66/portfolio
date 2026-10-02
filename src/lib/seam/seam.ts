@@ -42,7 +42,13 @@ export function roomFor(path: string): Room | null {
   return { at: HERO, atPhone: HERO, dark: "var(--gallery)" }; // hero and contact
 }
 
-export const PHONE = "(max-width: 600px)";
+/** The phone composition: phones, and tablets held upright (scaled from it, globals.css). Keep in step with the CSS. */
+export const PHONE = "(max-width: 600px), (min-width: 601px) and (max-width: 1199px) and (orientation: portrait)"; // phones, and TABLET
+/** A tablet held upright: the phone composition, laid out as at 600 px wide and scaled to the screen. */
+export const TABLET = "(min-width: 601px) and (max-width: 1199px) and (orientation: portrait)";
+/** One CSS pixel of the layout (--u, globals.css): 1, or on a portrait tablet its width over 600. A length in px written
+ * in script is multiplied by it, as the stylesheet's are. (Read from the query: the custom property reads back as text.) */
+export const unit = () => (typeof window !== "undefined" && window.matchMedia(TABLET).matches ? innerWidth / 600 : 1);
 export const isPhone = () => typeof window !== "undefined" && window.matchMedia(PHONE).matches;
 export const restFor = (path: string) => {
   // a page the path cannot name (the 404) declares its own rest on its main
