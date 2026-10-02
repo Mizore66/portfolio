@@ -83,12 +83,15 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
       const early = () => { if (!plays()) el.dataset.intro = "done"; };
       early(); window.addEventListener("scroll", early, { passive: true });
       const t0 = performance.now();
-      sliced(make(), 8, "hero").done.then((stage) => {
+      const b = sliced(make(), 8, "hero");
+      b.done.then((stage) => {
         window.removeEventListener("scroll", early);
         if (dead) { stage.dispose(); return; }
         trace(`hero: built in slices, ${Math.round(performance.now() - t0)} ms`); end = begin(stage);
       }, () => { window.removeEventListener("scroll", early); el.dataset.intro = "done"; });
-      end = () => window.removeEventListener("scroll", early);
+      // gone before a slice ran (React mounts twice in development): no renderer is made for it, so it takes no WebGL
+      // context (WebKit counts even lost ones until they are collected, and loses the oldest live one past 16)
+      end = () => { window.removeEventListener("scroll", early); b.cancel(); };
     }
     return () => { dead = true; end(); };
 
@@ -120,7 +123,7 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
         last = now; st.t = T.total + (now - idleFrom) / 1000; draw(); drew = true;
       };
       const startIdle = () => { if (reduced) return; idleFrom = 0; raf = requestAnimationFrame(idle); };
-      const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; }); io.observe(el);
+      const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; }, { rootMargin: "-1px 0px" }); io.observe(el); // touching the screen's edge (at /#roles) is not on it
 
       const finish = () => {
         st.t = T.total; st.at = share(SETTLE_CP);

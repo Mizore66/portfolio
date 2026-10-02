@@ -34,18 +34,21 @@ export interface Building<T> {
   readonly done: Promise<T>;
   /** the rest of it now, and the result */
   finish(): T;
+  /** not wanted after all: stops it if none of it has run yet (true), and `done` never settles; once under way it runs
+   * to its end, for its owner to dispose of (a renderer half made would stay counted against the budget, env.ts) */
+  cancel(): boolean;
 }
 
 /** A slice at a time, `budget` ms each. A step over 30 ms is logged under `name` (trace.ts): it wants splitting. */
 export function sliced<T>(g: Steps<T>, budget = 8, name = "a build"): Building<T> {
-  let n = 0;
+  let n = 0, off = false;
   let state: { v: T } | { e: unknown } | null = null;
   let res!: (v: T) => void, rej!: (e: unknown) => void;
   const done = new Promise<T>((a, b) => { res = a; rej = b; });
   done.catch(() => {}); // a failure is read through finish() or done; neither need be listening
   const end = (r: IteratorResult<unknown, T>) => { state = { v: r.value as T }; res(r.value as T); };
   const step = () => {
-    if (state) return;
+    if (state || off) return;
     const t0 = performance.now();
     try {
       for (;;) {
@@ -69,6 +72,7 @@ export function sliced<T>(g: Steps<T>, budget = 8, name = "a build"): Building<T
       if ("e" in state!) throw state.e;
       return (state as { v: T }).v;
     },
+    cancel() { if (n || state) return false; off = true; return true; },
   };
 }
 

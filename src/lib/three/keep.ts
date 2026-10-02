@@ -81,7 +81,7 @@ export function sleeper(el: Element, canvases: HTMLCanvasElement[], wake: () => 
     settle() { const d = away(); return s.asleep && d < 2 ? s.wake : !s.asleep && d > 2 ? s.sleep : null; },
     stop() { io.disconnect(); all.delete(s); onScreen.delete(canvases[0]); if (!all.size) { removeEventListener("scroll", onScroll); removeEventListener("resize", onScroll); } },
   };
-  const io = new IntersectionObserver((es) => { visible = es.some((e) => e.isIntersecting); });
+  const io = new IntersectionObserver((es) => { visible = es.some((e) => e.isIntersecting); }, { rootMargin: "-1px 0px" }); // an edge touching the screen's is not on it
   io.observe(el);
   if (canvases[0]) onScreen.set(canvases[0], () => visible);
   if (!all.size) { addEventListener("scroll", onScroll, { passive: true }); addEventListener("resize", onScroll); }

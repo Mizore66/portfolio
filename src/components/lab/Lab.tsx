@@ -152,7 +152,7 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
     const seen = new IntersectionObserver((es) => {
       for (const e of es) { const id = +(e.target as HTMLElement).dataset.ch!; if (e.isIntersecting) { onScreen.add(id); if (pending.has(id)) build(id, true); } else onScreen.delete(id); }
       drawAll(true);
-    });
+    }, { rootMargin: "-1px 0px" }); // a section whose edge only touches the screen's is not on it (it reported so on arriving at /#contact, and Play was built at once mid-sweep)
 
     const progressOf = (s: HTMLElement) => { const run = s.offsetHeight - innerHeight, t = top(s); return run > 0 ? Math.min(1, Math.max(0, (window.scrollY - t) / run)) : window.scrollY >= t ? 1 : 0; };
     // the chapter in charge: the last one whose top has reached the middle of the screen

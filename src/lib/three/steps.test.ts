@@ -31,6 +31,16 @@ describe("scenes built in steps", () => {
     expect(b.finish()).toBe("part 0,part 1,part 2,part 3,part 4");
     expect(await b.done).toBe(b.finish());
   });
+  test("cancel() before a slice ran: nothing of it runs; once under way it is not cancelled", async () => {
+    const log: string[] = [], b = sliced(parts(log), 4);
+    expect(b.cancel()).toBe(true);
+    await new Promise((r) => setTimeout(r, 30));
+    expect(log).toEqual([]);
+    const log2: string[] = [], c = sliced(parts(log2, 3), 4);
+    await new Promise((r) => setTimeout(r, 5));
+    expect(c.cancel()).toBe(false);
+    expect(await c.done).toBe("part 0,part 1,part 2,part 3,part 4");
+  });
   test("a yielded promise holds the slices, and not a build run straight through", async () => {
     let open!: () => void; const wait = new Promise<void>((r) => { open = r; });
     const log: string[] = [], b = sliced(parts(log, 0, wait));
