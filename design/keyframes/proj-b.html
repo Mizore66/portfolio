@@ -1,0 +1,13 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Project B: the crack, close</title>
+<link rel="stylesheet" href="_shared/tokens.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>canvas { z-index: 1; } .nm { position:absolute; left:4vw; top:15vh; font-size:40px; } .meta { position:absolute; left:4vw; top:calc(15vh + 52px); font-size:15px; color:var(--fg2); } .num { position:absolute; left:3.4vw; bottom:5vh; font-size:17vw; } .claim { position:absolute; left:4vw; bottom:calc(5vh + 17.6vw); font-size:20px; font-weight:500; } .q { position:absolute; left:calc(55.9% + 24px); bottom:calc(5vh + 17.6vw); font-size:13px; }</style></head><body>
+<div class="frame"><canvas id="c"></canvas><div id="ink">
+  <nav class="nav"><span>Roles</span><span aria-current="page">Work</span><span>Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
+  <h1 class="nm display">FaultLine</h1><div class="meta">Regression and leak-evidence CLI</div><div class="claim">First PASS→FAIL commit in</div><div class="num display">1-5 min</div><div class="q dim">Controlled evaluation</div>
+</div></div>
+<script type="module">
+import { seam } from "./_shared/seam.js"; import { onSeam } from "./_shared/project.js"; import { faultline } from "./_shared/sculptures.js"; import { done } from "./_shared/chess3d.js";
+await document.fonts.ready; seam({ at: .559 });
+const p = onSeam(document.getElementById("c"), faultline, { scale: 1.9, cam: [0.9, 2.35, 3.4], look: [0, 2.05, 0], fov: 30, rot: -.35 }); done(p.r, p.scene, p.cam);
+</script></body></html>

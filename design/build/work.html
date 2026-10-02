@@ -1,0 +1,100 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><title>Gate 5: the Work room and the project pages</title><link rel="stylesheet" href="/design/keyframes/_shared/fonts.css">
+<style>* { box-sizing: border-box; margin: 0; padding: 0; } body { font-family: "Archivo", sans-serif; background: #1b1b1a; color: #f3f3f1; padding: 48px 48px 120px; }
+h1 { font-size: 44px; font-weight: 900; font-variation-settings: "wdth" 112; letter-spacing: -.03em; } .lede { margin-top: 10px; color: #a9a59c; max-width: 88ch; line-height: 1.5; }
+code { font-family: "JetBrains Mono", monospace; font-size: .92em; color: #e8a33d; } a { color: #f3f3f1; }
+section { margin-top: 56px; } h2 { font-size: 26px; font-weight: 800; letter-spacing: -.02em; } h3 { font-size: 17px; font-weight: 700; margin-top: 26px; } .n { font-family: "JetBrains Mono", monospace; font-size: 13px; color: #e8a33d; }
+.note { margin-top: 8px; color: #b9b5ad; font-size: 14px; max-width: 92ch; line-height: 1.5; }
+table { margin-top: 14px; border-collapse: collapse; font-size: 14px; max-width: 1280px; } td, th { text-align: left; vertical-align: top; padding: 8px 18px 8px 0; border-top: 1px solid #333; line-height: 1.45; } th { font: 11px "JetBrains Mono", monospace; color: #77726a; font-weight: 400; } td:first-child { color: #e8a33d; font: 12px "JetBrains Mono", monospace; padding-top: 10px; white-space: nowrap; }
+.pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin-top: 12px; max-width: 1400px; } .trio { display: grid; grid-template-columns: repeat(3, minmax(0, 220px)); gap: 12px; margin-top: 12px; } .quad { display: grid; grid-template-columns: repeat(4, minmax(0, 220px)); gap: 12px; margin-top: 12px; }
+figure { font: 11px "JetBrains Mono", monospace; color: #77726a; } figure img { display: block; width: 100%; border-radius: 6px; margin-bottom: 4px; background: #000; }
+.strip { margin-top: 14px; overflow-x: auto; } .strip img { display: block; height: 200px; width: auto; max-width: none; border-radius: 4px; } .strip.m img { height: 300px; } .t { font: 11px "JetBrains Mono", monospace; color: #77726a; margin-top: 4px; }
+ol.q { margin: 12px 0 0 20px; max-width: 92ch; line-height: 1.55; color: #d8d4cc; font-size: 15px; } ol.q li { margin-top: 10px; } ol.q b { color: #f3f3f1; }
+ul.c { margin: 12px 0 0 20px; max-width: 92ch; line-height: 1.55; color: #d8d4cc; font-size: 14px; } ul.c li { margin-top: 4px; }</style>
+<script>if (location.protocol === "file:") addEventListener("DOMContentLoaded", () => { document.body.innerHTML = '<div style="font:16px/1.5 system-ui;padding:48px;max-width:60ch">This page needs the local server. From the portfolio folder run <code>python3 design/serve.py</code>, then open <a href="http://127.0.0.1:4173/design/build/work.html">http://127.0.0.1:4173/design/build/work.html</a>.</div>'; });</script></head><body>
+<h1>Gate 5: the Work room and the project pages</h1>
+<p class="lede">Phase 5, step 4, first part. The brief asks for one Gate 5 per page, so step 4 is reviewed page by page: this gate covers the Work index (<code>/work</code>, key frame work-c) and the three project pages (<code>/work/faultline</code>, <code>/work/gemini-teleportal</code>, <code>/work/circuitmindai</code>, key frame proj-a). The roles index, role pages, Lab chapters and contact follow once you approve this one. Build: <code>src/components/work/</code>, <code>src/components/project/</code>, <code>src/app/work/</code>.</p>
+<p class="note"><b>How the evidence was made.</b> This session ran in a cloud container with no GPU, so WebGL is drawn on the CPU (one hero frame takes about 2.4 s). Real-time recordings would show the CPU, not the design. Instead, page changes were run in slow motion (30×: GSAP, the page-change clocks and WAAPI together, development only, <code>src/lib/motion/slowmo.ts</code>) and a frame was taken at each listed instant of animation time (<code>design/build/_frames.cjs</code>). The stills are 2× like the key frames (<code>design/build/_stills.cjs</code>). Real-time recordings on a GPU (<code>design/build/_record.cjs</code>) are still to do on your machine.</p>
+
+<section><div class="n">Against the key frame</div><h2>Work: work-c, and the build</h2>
+<div class="pair"><figure><img src="/design/keyframes/png/work-c.png" alt="">key frame work-c (approved)</figure><figure><img src="work/work-0.webp" alt="">build, 1440×900</figure></div>
+<p class="note">The floor is the board; each piece stands on the square its move landed on: FaultLine on g4 (10…Bg4), Gemini Teleportal on e4 (7…Ne4), CircuitMindAI on c5 (3…Bc5). FaultLine is lit; hovering or focusing another piece passes the light to it and shows its number.</p>
+<h3>Phone, 390×844 (no approved key frame: composed from motion.md §13)</h3>
+<div class="trio"><figure><img src="work/work-m-0.webp" alt="">build: the camera looks along the floor from the g-file side, so the pieces stack; each label sits level with its piece</figure></div>
+</section>
+
+<section><div class="n">Against the key frame</div><h2>A project page: proj-a, and the build</h2>
+<div class="pair"><figure><img src="/design/keyframes/png/proj-a.png" alt="">key frame proj-a (approved)</figure><figure><img src="work/faultline-0.webp" alt="">build, FaultLine, 1440×900</figure></div>
+<h3>The other two (no approved key frames: proj-a's composition, each at its own move's eval)</h3>
+<div class="pair"><figure><img src="work/gemini-teleportal-0.webp" alt="">Gemini Teleportal: the seam at 7…Ne4, −0.18 (48.3%)</figure><figure><img src="work/circuitmindai-0.webp" alt="">CircuitMindAI: the seam at 3…Bc5, +0.49 (54.5%)</figure></div>
+<h3>Phones</h3>
+<div class="trio"><figure><img src="work/faultline-m-0.webp" alt="">FaultLine</figure><figure><img src="work/gemini-teleportal-m-0.webp" alt="">Gemini Teleportal (two lines)</figure><figure><img src="work/circuitmindai-m-0.webp" alt="">CircuitMindAI</figure></div>
+</section>
+
+<section><div class="n">Scroll</div><h2>The piece turns, the seam narrows to a hairline, the case study rises</h2>
+<p class="note">Scrolled 0, 0.55, 0.75, 1.2, 2, 3.2 and 4.4 screens. The first screen is pinned: the piece turns 20° over it; from 0.45 to 1 screen the seam travels to a 3 px hairline at the left edge, so the name and the claim invert as it passes. The case study opens with the move at poster size, its eval, and the move's annotation in italic (voice), then the Phase 4 cover, the numbers with their qualifiers, the case, the architecture, what was built, limitations, links, and the next project. The hairline carries the move and its eval as a vertical mono label (desktop).</p>
+<div class="quad"><figure><img src="work/faultline-0.55.webp" alt="">0.55</figure><figure><img src="work/faultline-0.75.webp" alt="">0.75</figure><figure><img src="work/faultline-1.2.webp" alt="">1.2</figure><figure><img src="work/faultline-2.webp" alt="">2</figure><figure><img src="work/faultline-3.2.webp" alt="">3.2</figure><figure><img src="work/faultline-4.4.webp" alt="">4.4</figure><figure><img src="work/gemini-teleportal-2.webp" alt="">Teleportal, 2</figure><figure><img src="work/circuitmindai-2.webp" alt="">CircuitMindAI, 2</figure></div>
+<h3>Phone: the seam rises to a hairline at the top</h3>
+<div class="quad"><figure><img src="work/faultline-m-0.webp" alt="">0</figure><figure><img src="work/faultline-m-0.75.webp" alt="">0.75</figure><figure><img src="work/faultline-m-1.5.webp" alt="">1.5</figure><figure><img src="work/faultline-m-3.webp" alt="">3</figure></div>
+</section>
+
+<section><div class="n">Page changes</div><h2>Frames at known instants of animation time</h2>
+<p class="t">each strip, left to right: 0, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9, 1.05, 1.2, 1.4, 1.7, 2.2 s (and 2.6, 3.1, 3.6 s where a piece is opened). Scroll sideways.</p>
+<h3>Hero to Work (motion.md §3): the room comes up behind the black</h3>
+<div class="strip"><img src="work/strip-hero-work.webp" alt=""></div>
+<p class="note">The seam sweeps left with its lean; behind the black the gallery is dark, then the lights come up (FaultLine's first) as the camera settles from above; the name leaves upward; "Work" rises, then the labels. Compare the approved prototype <a href="/design/motion/to-work.html">to-work.html</a>.</p>
+<div class="strip m"><img src="work/strip-hero-work-m.webp" alt=""></div>
+<h3>Work to a project, by opening FaultLine (motion.md §7)</h3>
+<div class="strip"><img src="work/strip-work-project.webp" alt=""></div>
+<p class="note">The type leaves and the other lights go out as the camera steps down to the piece and turns to face it, ending on exactly the project page's framing, on its seam. At 1 s the page changes: the paper sweeps in from the left edge to 55.9%, what is left rises away, and the name rises across the seam.</p>
+<div class="strip m"><img src="work/strip-work-project-m.webp" alt=""></div>
+<h3>A project to the next, from deep in the case study</h3>
+<div class="strip"><img src="work/strip-project-next.webp" alt=""></div>
+<h3>Back, from FaultLine to Work</h3>
+<div class="strip"><img src="work/strip-project-back.webp" alt=""></div>
+<p class="note">To try it: <code>npm run build &amp;&amp; npx next start -p 3100</code>, open <a href="http://localhost:3100/work">localhost:3100/work</a>.</p>
+</section>
+
+<section><div class="n">Differences</div><h2>Everything that differs from the key frames and the storyboard</h2>
+<table>
+<tr><th>What</th><th>Approved</th><th>Build</th></tr>
+<tr><td>work: labels</td><td>"First PASS→FAIL commit / in 1-5 min"</td><td>balanced wrapping: "First PASS→FAIL commit in / 1-5 min" at 1440. The break is not hand-placed, so it holds for every project.</td></tr>
+<tr><td>work: light</td><td>work-c used a neutral room environment; Phase 4 added a gallery environment</td><td>work-c's. With the Phase 4 gallery environment the floor's squares disappeared and the aluminium knight read black. Question 5.</td></tr>
+<tr><td>work: phone</td><td>no key frame; §13: "the camera looks along the floor from the g-file side"</td><td>as described; the labels sit in a column beside the stacked pieces rather than under them, which collided with the pieces below.</td></tr>
+<tr><td>work: arrival</td><td>camera settles "from 4.8 units higher and further out"</td><td>4.8 higher and 3.2 further out (the storyboard gives no figure for "further").</td></tr>
+<tr><td>opening a piece</td><td>descent 1.4 s; the paper starts at 0.9 s</td><td>descent 1 s, then the page change (1.15 s sweep): 2.15 s in all, against about 1.8 s. The leaving page is a snapshot, frozen when the page changes, so the descent must finish first. The type leaves upward and the room's fill falls to 15% during the descent (not specified).</td></tr>
+<tr><td>what is left</td><td>step 3: what the old page still covers rises out of its own region</td><td>kept, but here the old image is the same bishop on its plinth, so for a moment two bishops show. Question 1.</td></tr>
+<tr><td>project seams</td><td>step 3 rested every project page at 55.9%; §7 says "the project's evaluation (55.9% for FaultLine)"</td><td>each at its own move's eval: FaultLine 55.9%, Gemini Teleportal 48.3%, CircuitMindAI 54.5% (<code>content.json</code> career evals).</td></tr>
+<tr><td>project: names</td><td>proj-a: FaultLine at 13.4vw</td><td>FaultLine as approved; Gemini Teleportal 8.2vw on one line (two lines ran into the knight's ears); CircuitMindAI 10.6vw. On phones each name fits the width; Gemini Teleportal takes two lines.</td></tr>
+<tr><td>project: knight</td><td>only the bishop was framed in proj-a</td><td>the aluminium knight gets more environment light (0.3 against 0.025), because metal with nothing to reflect reads black. It inverts less strongly than the porcelain.</td></tr>
+<tr><td>scroll</td><td>"the seam narrows to a hairline at the left edge… its position still marks the evaluation"</td><td>a 3 px hairline; the move and its eval run along it as a vertical mono label, and open the case study at poster size. Phones: the hairline is at the top and there is no vertical label.</td></tr>
+<tr><td>case study</td><td>not in the key frames</td><td>one column on gallery black: every field of the case study in <code>content.json</code>, in the v2 section names. New copy of mine: "The case", "Beside the path", "Around it", "Next, 7…Ne4", and the eval line under the move. A band of gallery black keeps the fixed nav clear of the scrolling column.</td></tr>
+<tr><td>imagery</td><td>§4: no raw product screenshots as project imagery</td><td>only the approved Phase 4 covers. The five screenshots and their captions are not shown. Question 3.</td></tr>
+<tr><td>annotations</td><td>"Roman is fact; italic is voice"</td><td>each page carries its move's line from <code>voice.md</code>. FaultLine's and Teleportal's are marked there as agent drafts. Question 4.</td></tr>
+<tr><td>other projects</td><td>work-c shows three</td><td>only the three featured projects have pages; the other seven are in résumé mode only; <code>/work/&lt;other&gt;</code> is a 404. Question 2.</td></tr>
+<tr><td>scrolling</td><td>Lenis at lerp .1, "step 4, when a page first scrolls"</td><td>on, site-wide: wheel only, touch native, off under reduced motion.</td></tr>
+<tr><td>slow devices</td><td>not specified</td><td>each room builds its 3D on the frame after the page commits and compiles its shaders asynchronously; built inside the commit, a slow device outlasted the browser's view-transition timeout and lost the snapshot.</td></tr>
+<tr><td>hero to Work here</td><td>–</td><td>in this container, hero to Work sometimes hits Chrome's "timeout in DOM update" (the CPU-drawn hero takes seconds per frame); the step-3 build does the same here. The fallback sweep still runs. It needs checking on a real device.</td></tr>
+</table>
+</section>
+
+<section><div class="n">Checks</div><h2>What was verified</h2>
+<ul class="c">
+<li>Types, lint and unit tests: <code>tsc</code>, <code>eslint src e2e</code> clean; <code>vitest</code> 63 pass (new: every project page rests at its move's eval, kept in step with <code>content.json</code>).</li>
+<li>New e2e, <code>e2e/work.spec.ts</code>, 10 pass: every label is a link carrying its number, qualifier and square; the three project pages show every claim, qualifier and built line, and the source link; the seam rests at the eval, reaches the hairline when scrolled, and returns; axe finds nothing on /work, at rest on a project or in its case study; reduced motion opens a piece as a cut; without JavaScript the Work labels are a list; no sideways scroll at 320 px; <code>/work/rexcheck</code> is a 404; every project page carries a CSP nonce.</li>
+<li>The existing e2e: 13 of 17 pass here. The 4 that fail (the nav sweep and URL tests, Back and Forward, without View Transitions) time out waiting on the CPU-drawn hero, and fail in the same way here on the untouched step-3 build. They passed on your machine at step 3.</li>
+<li>No text leaves the viewport or its box at 320, 390, 1024 or 1440 px on /work and the three project pages, scrolled top to bottom.</li>
+<li>No errors in any capture above; each change lands on its resting seam (1.5%, 0% on phones, 55.9%, 48.3%).</li>
+<li>The CSP gap from step 3 is closed: pages under <code>/work/</code> get their nonce; images there still match as assets by extension.</li>
+</ul>
+</section>
+
+<section><div class="n">Questions</div><h2>For the owner</h2>
+<ol class="q">
+<li><b>Work to a project, what is left.</b> The step-3 rule (what the old page still covers rises away) briefly shows two bishops here, because the room has already placed the piece where the page will stand it. Keep the rule, or cut the leftover on landing for this pair only (the piece doesn't move, so the cut shows only the plinth going and the light changing)?</li>
+<li><b>The other seven projects.</b> Only the three featured projects have pages; RexCheck, Veridian, Multi-Agent GraphRAG, MirrorFi, Financial Risk Predictor, Distributed Lead Scorer and the SLM Distillation Engine are in résumé mode only, as in the approved frames. Keep it that way, or add one quiet line to the Work room ("Seven more in the résumé") linking there?</li>
+<li><b>Screenshots.</b> Brief §4 rules out raw product screenshots as project imagery, so the case studies use only the Phase 4 covers. The proof page, Codex session, sign-in, live session and inspection screenshots have captions that are evidence, not decoration. Leave them out, or add them near the end of each case study as captioned evidence?</li>
+<li><b>Copy.</b> (a) The FaultLine and Teleportal move annotations are agent drafts in <code>voice.md</code>: approve, rewrite, or drop? (b) CircuitMindAI's "decision" in <code>content.json</code> contains "…" mid-sentence ("voice for the operator … results are cached"), which reads like a gap. Shall I replace it with a semicolon, or will you rewrite it?</li>
+<li><b>The gallery's light.</b> The build uses work-c's neutral environment rather than the Phase 4 gallery one, which hid the floor and blackened the aluminium. Keep work-c's?</li>
+</ol>
+</section>
+</body></html>

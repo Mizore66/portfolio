@@ -1,0 +1,35 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Colophon A: the last page</title>
+<link rel="stylesheet" href="_shared/tokens.css"><style>
+  /* A: the last page of a printed book. Paper floods; the title and a type specimen on the left, the notes set in two
+     columns on the right, the credits as a printer's imprint along the foot. */
+  .t { position:absolute; left:4vw; top:15vh; font-size:5.5vw; white-space:nowrap; }
+  .lede { position:absolute; left:4.2vw; top:calc(15vh + 10.4vw); width:30vw; font-size:19px; line-height:1.42; color:var(--fg2); }
+  .spec { position:absolute; left:4vw; bottom:12vh; display:flex; align-items:flex-end; gap:36px; }
+  .spec .aa { font-size:15vw; line-height:.74; }
+  .spec .aa i { font-style:italic; font-weight:300; font-variation-settings:"wdth" 80; }
+  .spec dl { font-size:12px; line-height:1.6; color:var(--fg2); padding-bottom:4px; } .spec dt { color:var(--fg); font-weight:600; }
+  .col { position:absolute; left:52vw; top:15vh; width:43vw; } .notes { columns:2; column-gap:36px; font-size:13.5px; line-height:1.5; }
+  .notes section { break-inside:avoid; margin-bottom:22px; } .notes h2 { font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; margin-bottom:6px; }
+  .notes .perft { font-size:12px; margin-top:6px; } .notes .perft span { display:inline-block; min-width:64px; }
+  .imprint { margin-top:10px; border-top:1px solid var(--fg); padding-top:12px; display:grid; grid-template-columns:1fr 1fr; gap:6px 36px; font-size:12px; line-height:1.45; }
+  .imprint b { font-weight:600; } .by { margin-top:18px; font-size:12px; color:var(--fg2); }
+  @media (max-width:600px) {
+    .t { left:20px; top:92px; right:20px; font-size:14.4vw; white-space:normal; } .t br { display:none; }
+    .lede { left:20px; top:calc(92px + 42vw); width:auto; right:20px; font-size:16px; }
+    .spec { left:20px; bottom:auto; top:calc(92px + 40vw + 118px); gap:18px; } .spec .aa { font-size:34vw; }
+    .col { left:20px; right:20px; width:auto; top:calc(92px + 40vw + 118px + 34vw + 36px); } .notes { columns:1; }
+    .imprint { grid-template-columns:1fr; }
+  }
+</style></head><body><div class="frame"><div id="ink"><nav class="nav"><span>Roles</span><span>Work</span><span>Lab</span><span>Contact</span></nav><div class="resume">Résumé</div><div class="sound dim">Sound off</div>
+<h1 class="t display"></h1><p class="lede"></p>
+<div class="spec"><div class="aa display">A<i>a</i></div><dl><dt>Archivo</dt><dd>900, width 112: the words</dd><dt class="mono" style="margin-top:8px">JetBrains Mono</dt><dd>500: moves and numbers</dd><dd class="mono" style="color:var(--fg);margin-top:4px">10…Bg4 +0.64</dd></dl></div>
+<div class="col"><div class="notes"></div><div class="imprint"></div><p class="by"></p></div></div></div>
+<script type="module">
+import { COPY } from "./_shared/colophon.js"; import { seam } from "./_shared/seam.js";
+const $ = (s) => document.querySelector(s);
+$(".t").innerHTML = COPY.title.replace("site ", "site <br>"); $(".lede").textContent = COPY.lede; $(".by").textContent = COPY.by;
+$(".notes").innerHTML = COPY.sections.map((s) => `<section><h2>${s.k}</h2><p>${s.body}</p>${s.k === "The engine" ? `<p class="perft mono">${COPY.perft.rows.map(([d, n]) => `<span>depth ${d}</span>${n}`).join("<br>")}</p>` : ""}</section>`).join("")
+  + `<section><h2>Tested</h2><p>${COPY.tests.join(" ")}</p></section>`;
+$(".imprint").innerHTML = COPY.credits.map(([k, v]) => `<p><b>${k}.</b> ${v}</p>`).join("");
+await document.fonts.ready; seam({ at: 1 });
+</script></body></html>

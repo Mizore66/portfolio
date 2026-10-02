@@ -1,0 +1,13 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Project A: FaultLine on the seam</title>
+<link rel="stylesheet" href="_shared/tokens.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>canvas { z-index: 1; } .nm { position:absolute; left:3.6vw; top:10vh; font-size:13.4vw; } .meta { position:absolute; left:4vw; top:calc(10vh + 13.4vw); font-size:15px; } .claim { position:absolute; left:4vw; bottom:8vh; } .claim b { display:block; font-size:30px; font-weight:700; letter-spacing:-.02em; line-height:1.1; } .claim .q { margin-top:10px; font-size:13px; color:var(--fg2); } .sub { position:absolute; left:4vw; bottom:calc(8vh + 108px); font-size:16px; color:var(--fg2); } .ev { position:absolute; right:48px; bottom:8vh; font-size:14px; }</style></head><body>
+<div class="frame"><canvas id="c"></canvas><div id="ink">
+  <nav class="nav"><span>Roles</span><span aria-current="page">Work</span><span>Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
+  <h1 class="nm display">FaultLine</h1><div class="meta">Solo, Jul 2026</div><div class="sub">Regression and leak-evidence CLI</div><div class="claim"><b>First PASS→FAIL commit<br>in 1-5 min</b><div class="q">Controlled evaluation</div></div><div class="ev mono">10…Bg4 +0.64</div>
+</div></div>
+<script type="module">
+import { seam } from "./_shared/seam.js"; import { onSeam } from "./_shared/project.js"; import { faultline } from "./_shared/sculptures.js"; import { done } from "./_shared/chess3d.js";
+await document.fonts.ready; seam({ at: .559 });
+const p = onSeam(document.getElementById("c"), faultline, { scale: 1.9, cam: [0, 1.25, 11.5], look: [0, 1.3, 0], fov: 22 }); done(p.r, p.scene, p.cam);
+</script></body></html>

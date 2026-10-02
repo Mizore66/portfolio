@@ -1,0 +1,19 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Roles B: along the row</title>
+<link rel="stylesheet" href="_shared/tokens.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>
+  body { background: var(--hall-wall); } .edge { position:absolute; inset:0 0 0 auto; width:22px; background:var(--ink); z-index:4; } .resume { right: 64px; }
+  .t { position:absolute; transform:translateX(-50%); text-align:center; white-space:nowrap; z-index:3; }
+  .t b { display:block; font-size:14px; font-weight:600; letter-spacing:-.01em; } .t span { display:block; margin-top:3px; font-size:12px; color:var(--graphite); }
+  .t.now b { font-size:16px; } .ttl { position:absolute; left:48px; top:54vh; font-size:5.4vw; z-index:3; } .sub { position:absolute; left:52px; top:calc(54vh + 6vw); font-size:15px; color:var(--pencil); z-index:3; max-width: 44ch; line-height: 1.4; }
+  .list { position:absolute; left:52px; top:calc(54vh + 6vw + 62px); list-style:none; z-index:3; } .list { display:block; } .list li { display:flex; gap:12px; align-items:baseline; padding:4px 0; } .list b { font-size:15px; font-weight:600; min-width:170px; } .list span { font-size:13px; color:var(--graphite); } .list li.now b { box-shadow: 0 2px 0 var(--move); }
+</style></head><body>
+<div class="frame"><canvas id="c"></canvas><div class="edge"></div>
+  <nav class="nav"><span aria-current="page">Roles</span><span>Work</span><span>Lab</span><span>Contact</span></nav><div class="resume">Résumé</div><h1 class="ttl display">Roles</h1><div class="sub">Seven famous games, one per role.</div><ol class="list"><li><b>Monash, degree</b></li><li><b>Petronas</b></li><li><b>Western Digital</b></li><li><b>Setel</b></li><li><b>Monash, contract</b></li><li><b>Skribble Lab</b></li><li class="now"><b>Deriv</b><span>now</span></li></ol>
+</div>
+<script type="module">
+import { hall, TABLES } from "./_shared/hall.js"; import { done } from "./_shared/chess3d.js";
+await document.fonts.ready;
+const h = await hall(document.getElementById("c"), { view: "eye" });
+done(h.r, h.scene, h.cam);
+</script></body></html>

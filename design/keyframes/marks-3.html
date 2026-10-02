@@ -1,0 +1,31 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><title>The mark, round 3</title>
+<link rel="stylesheet" href="_shared/tokens.css"><style>
+  .frame { background: var(--paper); }
+  h1 { position: absolute; left: 64px; top: 44px; font-size: 40px; letter-spacing: -.04em; }
+  .row { position: absolute; left: 64px; right: 64px; display: grid; grid-template-columns: 330px 360px 1fr; align-items: center; gap: 40px; height: 180px; border-top: 1px solid #dad9d3; }
+  .row .k { font-size: 12px; color: var(--graphite); } .row h2 { font-size: 26px; letter-spacing: -.03em; margin-top: 4px; } .row p { margin-top: 8px; font-size: 14px; line-height: 1.45; color: var(--pencil); }
+  .sizes { display: flex; align-items: flex-end; gap: 26px; } .sizes figure { display: flex; flex-direction: column; align-items: center; gap: 8px; } .sizes figcaption { font-size: 10px; color: var(--graphite); }
+  .touch svg { border-radius: 20px; }
+  .tabs { display: grid; gap: 10px; }
+  .strip { display: flex; gap: 2px; padding: 6px 6px 0; background: #dee1e6; border-radius: 9px 9px 0 0; } .strip.dark { background: #202124; }
+  .tab { display: flex; align-items: center; gap: 8px; width: 150px; height: 30px; padding: 0 10px; border-radius: 7px 7px 0 0; font: 12px/1 system-ui, sans-serif; color: #3c4043; }
+  .tab.on { background: #fff; } .dark .tab { color: #bdc1c6; } .dark .tab.on { background: #35363a; color: #e8eaed; } .tab svg { flex: none; }
+</style></head><body><div class="frame" id="f"><h1 class="display">The mark, round 3</h1></div>
+<script type="module">
+  import { MARKS3 as MARKS2 } from "./_shared/mark3.js";
+  const other = (c) => `<svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="3" fill="${c}"/></svg>`;
+  const tab = (icon, t, on) => `<div class="tab${on ? " on" : ""}">${icon}<span>${t}</span></div>`;
+  const strip = (m, dark) => `<div class="strip${dark ? " dark" : ""}">${tab(other(dark ? "#5f6368" : "#9aa0a6"), "Inbox (3)")}${tab(m(16), "Anas Qumhiyeh", true)}${tab(other(dark ? "#8ab4f8" : "#1a73e8"), "Docs")}</div>`;
+  const ROWS = [["h", "AQ", "His initials, set tight in the display face, as the hero sets his name. Ink on paper."],
+    ["i", "A.", "His initial and a full stop, in the voice of Contact's “11.”, the stop in the move's amber."],
+    ["j", "aq, and the caret", "His initials in the mono face with Contact's caret, in amber: an engineer's prompt, paper on ink."],
+    ["k", "Q", "His surname's initial, the most legible at 16 px, which a chess player also reads as the queen."]];
+  ROWS.forEach(([k, name, why], i) => {
+    const m = MARKS2[k], el = document.createElement("section"); el.className = "row"; el.style.top = `${120 + i * 190}px`;
+    el.innerHTML = `<div><p class="k mono">Mark ${k.toUpperCase()}</p><h2 class="display">${name}</h2><p>${why}</p></div>
+      <div class="sizes">${[16, 32, 48].map((s) => `<figure>${m(s)}<figcaption class="mono">${s} px</figcaption></figure>`).join("")}<figure class="touch">${m(96)}<figcaption class="mono">home screen</figcaption></figure></div>
+      <div class="tabs">${strip(m, false)}${strip(m, true)}</div>`;
+    document.getElementById("f").append(el);
+  });
+  await Promise.all([document.fonts.load("700 15px 'JetBrains Mono'"), document.fonts.load("900 20px Archivo")]); await document.fonts.ready; await new Promise((r) => setTimeout(r, 300)); window.__ready = true;
+</script></body></html>

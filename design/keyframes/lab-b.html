@@ -1,0 +1,33 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Lab B: inside the search</title>
+<link rel="stylesheet" href="_shared/tokens.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>
+  body { background: var(--search); color: #e9ecf2; } .edge { position:absolute; inset:0 auto 0 0; width:22px; background:var(--paper); z-index:4; } .nav { left:64px; color:#7d8594; } .nav span[aria-current] { color:#e9ecf2; } .resume { color:#e9ecf2; }
+  .num { position:absolute; right:4vw; bottom:12vh; font-size:9.4vw; color:#e9ecf2; z-index:3; text-align:right; } .pm { position:absolute; right:4vw; bottom:6vh; font-size:14px; color:#7d8594; z-index:3; }
+  .head { position:absolute; left:64px; top:15vh; max-width:22ch; font-size:30px; font-weight:700; letter-spacing:-.02em; line-height:1.1; z-index:3; } .voice { position:absolute; left:64px; top:calc(15vh + 118px); font-size:16px; font-style:italic; color:#9aa3b2; z-index:3; }
+  .rd { position:absolute; left:64px; bottom:6vh; font-size:13px; color:var(--move); z-index:3; }
+</style></head><body><div class="frame"><canvas id="c"></canvas><div class="edge"></div>
+<nav class="nav"><span>Roles</span><span>Work</span><span aria-current="page">Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
+<p class="head">The learned evaluator lost to handcrafted PeSTO.</p><p class="voice">I published the loss, the confidence interval, and what failed.</p>
+<div class="num display">−143.3</div><div class="pm">±35.4 Elo · Controlled benchmark · 2 wins, 74 draws, 52 losses</div>
+<div class="rd mono">50,000 nodes a move · 128 games</div></div>
+<script type="module">
+import { THREE, renderer, done } from "./_shared/chess3d.js";
+const { r } = renderer(document.getElementById("c"), { exposure: 1 });
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0x0b0e14); scene.fog = new THREE.Fog(0x0b0e14, 9, 24);
+let s = 23; const rnd = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646;
+const pos = [], pv = [new THREE.Vector3(0, 0, 0)];
+(function grow(p, dir, len, d, isPv) {
+  if (!d) return; const q = p.clone().addScaledVector(dir, len);
+  if (isPv) pv.push(q); else pos.push(p.x, p.y, p.z, q.x, q.y, q.z);
+  const n = d > 6 ? 3 : 2, k = isPv ? Math.floor(rnd() * n) : -1;
+  for (let i = 0; i < n; i++) { const sp = d > 6 ? .75 : .45, nd = dir.clone().add(new THREE.Vector3((i - (n - 1) / 2) * sp + (rnd() - .5) * .2, (rnd() - .5) * sp, (rnd() - .5) * .15)).normalize(); grow(q, nd, len * (.8 + rnd() * .08), d - 1, i === k); }
+})(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -1), 2.6, 9, true);
+const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+scene.add(new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: 0xe9ecf2, transparent: true, opacity: .5 })));
+const tube = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pv, false, "catmullrom", 0), 300, .03, 8, false), new THREE.MeshBasicMaterial({ color: 0xe8a33d }));
+scene.add(tube); const root = new THREE.Mesh(new THREE.SphereGeometry(.09, 24, 16), new THREE.MeshBasicMaterial({ color: 0xe9ecf2 })); scene.add(root);
+const tip = new THREE.Mesh(new THREE.SphereGeometry(.11, 24, 16), new THREE.MeshBasicMaterial({ color: 0xe8a33d })); tip.position.copy(pv.at(-1)); scene.add(tip);
+const cam = new THREE.PerspectiveCamera(48, innerWidth / innerHeight, .1, 200); cam.position.set(-6.5, 4.2, 6.5); cam.lookAt(pv[3].clone().add(new THREE.Vector3(2.4, -1.4, 0))); cam.setViewOffset(innerWidth, innerHeight, .1 * innerWidth, 0, innerWidth, innerHeight);
+done(r, scene, cam);
+</script></body></html>

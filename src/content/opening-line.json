@@ -1,0 +1,125 @@
+{
+ "note": "The career line (content.json chess.line), resolved to squares by the kept engine. Checked by opening-line.test.ts.",
+ "plies": [
+  {
+   "from": "e2",
+   "to": "e4",
+   "cap": null,
+   "label": "1. e4"
+  },
+  {
+   "from": "e7",
+   "to": "e5",
+   "cap": null,
+   "label": "1…e5"
+  },
+  {
+   "from": "g1",
+   "to": "f3",
+   "cap": null,
+   "label": "2. Nf3"
+  },
+  {
+   "from": "b8",
+   "to": "c6",
+   "cap": null,
+   "label": "2…Nc6"
+  },
+  {
+   "from": "f1",
+   "to": "c4",
+   "cap": null,
+   "label": "3. Bc4"
+  },
+  {
+   "from": "f8",
+   "to": "c5",
+   "cap": null,
+   "label": "3…Bc5"
+  },
+  {
+   "from": "c2",
+   "to": "c3",
+   "cap": null,
+   "label": "4. c3"
+  },
+  {
+   "from": "g8",
+   "to": "f6",
+   "cap": null,
+   "label": "4…Nf6"
+  },
+  {
+   "from": "d2",
+   "to": "d4",
+   "cap": null,
+   "label": "5. d4"
+  },
+  {
+   "from": "e5",
+   "to": "d4",
+   "cap": "d4",
+   "label": "5…exd4"
+  },
+  {
+   "from": "e4",
+   "to": "e5",
+   "cap": null,
+   "label": "6. e5"
+  },
+  {
+   "from": "d7",
+   "to": "d5",
+   "cap": null,
+   "label": "6…d5"
+  },
+  {
+   "from": "c4",
+   "to": "b5",
+   "cap": null,
+   "label": "7. Bb5"
+  },
+  {
+   "from": "f6",
+   "to": "e4",
+   "cap": null,
+   "label": "7…Ne4"
+  },
+  {
+   "from": "c3",
+   "to": "d4",
+   "cap": "d4",
+   "label": "8. cxd4"
+  },
+  {
+   "from": "c5",
+   "to": "b4",
+   "cap": null,
+   "label": "8…Bb4+"
+  },
+  {
+   "from": "c1",
+   "to": "d2",
+   "cap": null,
+   "label": "9. Bd2"
+  },
+  {
+   "from": "b4",
+   "to": "d2",
+   "cap": "d2",
+   "label": "9…Bxd2+"
+  },
+  {
+   "from": "b1",
+   "to": "d2",
+   "cap": "d2",
+   "label": "10. Nbxd2"
+  },
+  {
+   "from": "c8",
+   "to": "g4",
+   "cap": null,
+   "label": "10…Bg4"
+  }
+ ]
+}

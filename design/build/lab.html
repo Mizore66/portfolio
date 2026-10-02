@@ -1,0 +1,49 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gate 5: the Lab</title><link rel="stylesheet" href="/design/keyframes/_shared/fonts.css"><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:"Archivo",sans-serif;background:#1b1b1a;color:#f3f3f1;padding:48px 48px 120px;max-width:1500px}h1{font-size:40px;font-weight:900;letter-spacing:-.03em}h2{font-size:24px;font-weight:800;margin-top:52px}p,li{margin-top:10px;color:#b9b5ad;max-width:90ch;line-height:1.5}ul{margin-left:20px}img{display:inline-block;max-width:100%;border-radius:6px;margin:12px 8px 0 0;vertical-align:top}code{font-family:"JetBrains Mono",monospace;color:#e8a33d}@media(max-width:700px){body{padding:24px 16px}}</style></head><body>
+<h1>Gate 5, step 4c: the Lab</h1>
+<p>The Lab (key frames lab-a and lab2-1 to lab2-7, motion <code>design/motion.md</code> §5, §11 and §12) is built: the opening, six pinned chapters and Play. Stills are from the dev build at 2×. The questions are in the review doc.</p>
+<h2>The opening, against its key frame</h2>
+<p>The tree is the engine's own search from the Gate match's position, grown depth by depth from its root on the seam (60 ms a depth). Then the principal variation lights amber, and then −143.3, ±35.4 Elo and the record rise.</p>
+<div><img src="lab/open.webp" alt="The opening at 1440"></div>
+<div><img src="lab/key-open.webp" alt="lab-a, approved"></div>
+<div><img src="lab/grow.webp" alt="The tree growing, 0 to 1.7 s"></div>
+<h2>The six chapters at the end of their scroll, against their key frames</h2>
+<p>Each chapter is pinned while its object builds with the scroll, and the seam eases to the chapter's share as it takes over (1.1 s).</p>
+<div><img src="lab/ch1.webp" alt="01 Two evaluators"></div>
+<div><img src="lab/key-lab2-1.webp" alt="lab2-1"></div>
+<div><img src="lab/ch2.webp" alt="02 The data"></div>
+<div><img src="lab/key-lab2-2.webp" alt="lab2-2"></div>
+<div><img src="lab/ch3.webp" alt="03 Trained twice"></div>
+<div><img src="lab/key-lab2-3.webp" alt="lab2-3"></div>
+<div><img src="lab/ch4.webp" alt="04 The referee"></div>
+<div><img src="lab/key-lab2-4.webp" alt="lab2-4"></div>
+<div><img src="lab/ch5.webp" alt="05 The match"></div>
+<div><img src="lab/key-lab2-5b.webp" alt="lab2-5b"></div>
+<div><img src="lab/ch6.webp" alt="06 What failed"></div>
+<div><img src="lab/key-lab2-6.webp" alt="lab2-6"></div>
+<p>Halfway through each chapter's scroll:</p>
+<div><img src="lab/mid.webp" alt="Mid-scroll, 1440"></div>
+<h2>Play</h2>
+<p>The board is the key frame's. Press a piece and it lifts, with its moves as dots (captures as rings). Drag it, or click it and then its square. The engine thinks in a worker at 50,000 nodes and plays at hand speed. After every move the seam steps to the learned net's score.</p>
+<div><img src="lab/ch7.webp" alt="07 Play, before Start"></div>
+<div><img src="lab/key-lab2-7.webp" alt="lab2-7"></div>
+<div><img src="lab/play-drag.webp" alt="Dragging the knight to g5"></div>
+<div><img src="lab/play-reply.webp" alt="After 4. Ng5 Qxg5, the seam falls to 19.8%"></div>
+<div><img src="lab/play-lift.webp" alt="Choosing d2: its moves as dots"></div>
+<div><img src="lab/play-black.webp" alt="Playing Black: the board turns and the engine opens with 4. c3"></div>
+<h2>On a phone (390 × 844)</h2>
+<p>The site, then the key frames:</p>
+<div><img src="lab/phone-a.webp" alt="The opening and chapters 1 to 3"></div>
+<div><img src="lab/key-phone-a.webp" alt="Key frames"></div>
+<div><img src="lab/phone-b.webp" alt="Chapters 4 to 7"></div>
+<div><img src="lab/key-phone-b.webp" alt="Key frames"></div>
+<p>Halfway through each chapter:</p>
+<div><img src="lab/mid-phone.webp" alt="Mid-scroll on a phone"></div>
+<p>Play on a phone, tap and tap (d2, then d3; the engine answers Nf6):</p>
+<div><img src="lab/play-phone.webp" alt="Play on a phone"></div>
+<h2>Checks</h2>
+<ul>
+<li>No sideways scrolling at 1440, 390 and 320 px.</li>
+<li>Reduced motion: every chapter is its key frame without scrubbing, moves are instant and the seam jumps.</li>
+<li>Unit tests 70/70, end-to-end 58/58, lint (src) and the production build pass. Play works in the production build.</li>
+</ul>
+</body></html>

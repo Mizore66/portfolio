@@ -1,0 +1,35 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>404 C: taken</title>
+<link rel="stylesheet" href="_shared/tokens.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>
+  /* the gallery, nearly all black (Work's 22 px paper edge), and one captured pawn on its side under a spot */
+  body { background: var(--gallery); }
+  canvas { position:absolute; inset:0; width:100%; height:100%; }
+  .ttl { position:absolute; left:60px; bottom:24vh; font-size:12vw; color:#ece6da; }
+  .why { position:absolute; left:64px; bottom:17vh; font-size:16px; color:#c9c2b5; }
+  .q { position:absolute; left:64px; bottom:13.5vh; font-size:12px; color:#77726a; }
+  .back { position:absolute; left:64px; bottom:7vh; font-size:18px; font-weight:600; color:#ece6da; padding-bottom:3px; border-bottom:2px solid currentColor; }
+  @media (max-width:600px) {
+    .ttl { left:18px; top:auto; bottom:200px; font-size:23vw; } .why { left:20px; bottom:160px; font-size:14px; } .q { left:20px; bottom:136px; font-size:11px; }
+    .back { left:20px; bottom:70px; font-size:16px; } .sound { bottom:24px; right:20px; font-size:12px; } .nav { top:24px; left:20px; gap:16px; font-size:13px; } .resume { top:24px; right:20px; font-size:13px; }
+  }
+</style></head><body><div class="frame"><canvas id="c"></canvas><div id="ink">
+  <nav class="nav"><span>Roles</span><span>Work</span><span>Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
+  <h1 class="ttl display">Taken.</h1>
+  <p class="why">There is nothing at /notes/2019 any more.</p><p class="q mono">404 · set beside the board</p>
+  <div class="back">Back to the start</div><div class="sound dim">Sound off</div>
+</div></div>
+<script type="module">
+import { seam } from "./_shared/seam.js"; import { THREE, renderer, applyEnv, piece, MAT, spot, done } from "./_shared/chess3d.js";
+await document.fonts.ready; const ph = matchMedia("(max-width:600px)").matches, W = innerWidth, H = innerHeight;
+const { r, envTex } = renderer(document.getElementById("c"), { exposure: 1.05 }), scene = new THREE.Scene();
+scene.background = new THREE.Color(0x09090a); applyEnv(scene, envTex, .08);
+scene.add(new THREE.HemisphereLight(0x9aa4b8, 0x09090a, .18));
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), new THREE.MeshStandardMaterial({ color: 0x0e0e10, roughness: .9 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const p = piece("P", MAT.ivory()); p.rotation.z = Math.PI / 2 - .06; p.rotation.y = .55; p.position.set(0, .285, 0); scene.add(p);
+spot(scene, { intensity: 90, pos: [-2.2, 7.5, 2.6], target: [0, 0, 0], angle: .22, penumbra: .75 });
+const cam = new THREE.PerspectiveCamera(ph ? 34 : 26, W / H, .1, 100); cam.position.set(2.6, 2.3, 5.2); cam.lookAt(0, .25, 0);
+cam.setViewOffset(W, H, (ph ? -.14 : -.2) * W, (ph ? .16 : .02) * H, W, H);
+seam({ at: ph ? 0 : .015, dir: ph ? "h" : "v", under: true });
+done(r, scene, cam);
+</script></body></html>

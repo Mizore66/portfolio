@@ -5,7 +5,8 @@ import { contentSecurityPolicy, createNonce } from "@/lib/csp";
 import { applySecurityHeaders } from "@/lib/security-headers";
 
 /** Files that carry no nonce and may be cached normally. */
-const ASSET = /^\/(?:_next\/|engine\/|work\/)|\/(?:opengraph-image|icon)[^/]*$|\.(?:png|jpe?g|webp|avif|gif|svg|ico|woff2?|wasm|bin|json|txt|xml)$/i;
+// Project pages live under /work/, so its images are matched by extension, not by folder.
+const ASSET = /^\/(?:_next\/|engine\/)|\/(?:opengraph-image|icon)[^/]*$|\.(?:png|jpe?g|webp|avif|gif|svg|ico|woff2?|wasm|bin|json|txt|xml)$/i;
 
 /**
  * Brief §4.7 and §5: a per-request CSP nonce, the security headers, and permanent redirects from

@@ -1,0 +1,25 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>One page</title><link rel="stylesheet" href="/design/keyframes/_shared/fonts.css"><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:"Archivo",sans-serif;background:#1b1b1a;color:#f3f3f1;padding:48px 48px 120px;max-width:1500px}h1{font-size:40px;font-weight:900;letter-spacing:-.03em}h2{font-size:24px;font-weight:800;margin-top:52px}p,li{margin-top:10px;color:#b9b5ad;max-width:90ch;line-height:1.5}ul{margin-left:20px}img{display:inline-block;max-width:100%;border-radius:6px;margin:12px 8px 0 0;vertical-align:top}code{font-family:"JetBrains Mono",monospace;color:#e8a33d}@media(max-width:700px){body{padding:24px 16px}}</style></head><body>
+<h1>One page, the 404, and Play's board</h1>
+<p>Built from the owner's direction (2026-09-29) and the step 5 answers. The questions are in the review doc.</p>
+<h2>One scrolling page (commits fc81dd8, ce51e1d, 51c59c6)</h2>
+<p>Hero, Roles, Work and Other Projects, the Lab's opening and Play, then Contact, on <code>/</code>. The nav glides to each section; scrolling gets there too.</p>
+<ul>
+<li><b>The seam follows the scroll.</b> On desktop it is one line, eased from one section's resting place to the next as the boundary crosses the middle of the screen: 55.9% → 100% → 1.5% → 30.5% → Play's eval → 55.9%. On phones each section carries its own split, so the black bands scroll with their sections.</li>
+<li><b>The address follows the section in view:</b> <code>/#roles</code>, <code>/#work</code>, <code>/#lab</code>, <code>/#contact</code>. The old <code>/roles</code>, <code>/work</code> and <code>/contact</code> open on their sections. <code>/lab</code> is still the whole Lab, and the Lab section links to it: "Six chapters: how it was built, trained and tested".</li>
+<li><b>Project and role pages</b> still sweep in. Back, and their back links, return to the same place on the page.</li>
+<li><b>Each section makes its entrance the first time it is seen.</b> The hero's opening plays only at the top of the page, on a first visit, and holds the scroll while it plays.</li>
+<li><b>The nav steps away while the page scrolls down</b> under it, so titles never run into it, and comes back on the way up, when you land on a section, and on keyboard focus. The résumé link never moves.</li>
+<li>Seven 3D canvases in all; the hall and the gallery are built only when they come near.</li>
+</ul>
+<p>Desktop, a frame every half screen from the top:</p>
+<div><img src="onepage/desk.webp" alt="The one page at 1440"></div>
+<p>Phone, a frame every half screen:</p>
+<div><img src="onepage/phone.webp" alt="The one page at 390"></div>
+<h2>The 404: Taken (commit 319704a)</h2>
+<div><img src="onepage/404.webp" alt="404 at 1440"></div>
+<div><img src="onepage/404-m.webp" width="260" alt="404 on a phone"></div>
+<h2>Play's board (commit 6e720fa)</h2>
+<p>After the engine moved, the board ignored clicks for 2 to 3 seconds while a second search ran. The engine's own search already scores the position and names your best reply, so the board is yours the moment its move lands.</p>
+<h2>Checks</h2>
+<p>71 of 71 end-to-end and 70 of 70 unit tests, lint and types pass. axe finds nothing on the page. No sideways scrolling at 1440, 390 or 320 px.</p>
+</body></html>

@@ -1,0 +1,23 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><title>Asset: the three project sculptures</title><link rel="stylesheet" href="/design/keyframes/_shared/tokens.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>body { background: var(--gallery); } .lab { position:absolute; bottom:48px; transform:translateX(-50%); z-index:3; text-align:center; color: var(--gallery-text); } .lab b { display:block; font-size:18px; font-weight:600; } .lab span { display:block; margin-top:6px; font:12px var(--font-mono); color: var(--gallery-dim); }</style></head><body>
+<div class="frame" id="f"><div id="labs"></div></div>
+<script type="module">
+import { THREE, renderer, done } from "/design/keyframes/_shared/chess3d.js"; import { faultline, teleportal, circuitmind } from "/design/keyframes/_shared/sculptures.js"; import { gallery } from "./env.js";
+const f = document.getElementById("f"), W = innerWidth, H = innerHeight, N = [["FaultLine", "porcelain, one hairline crack, fired shut", faultline], ["Gemini Teleportal", "machined, anodised aluminium", teleportal], ["CircuitMindAI", "basalt, with a copper trace inlaid", circuitmind]];
+const labs = [];
+N.forEach(([name, mat, make], i) => {
+  const c = document.createElement("canvas"); c.style.cssText = `position:absolute;left:${i * 100 / 3}%;top:0;width:${100 / 3}%;height:100%`; f.prepend(c);
+  const w = W / 3, { r } = renderer(c, { width: w, height: H, exposure: 1.05 }), scene = new THREE.Scene(); scene.background = new THREE.Color(0x09090a);
+  scene.environment = gallery(r); scene.environmentIntensity = i === 1 ? .55 : .35;
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshStandardMaterial({ color: 0x0e0e0f, roughness: .85 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+  const plinth = new THREE.Mesh(new THREE.BoxGeometry(1.9, 1.1, 1.9), new THREE.MeshStandardMaterial({ color: 0x161617, roughness: .7 })); plinth.position.y = .55; plinth.castShadow = plinth.receiveShadow = true; scene.add(plinth);
+  const s = make(); s.scale.setScalar(2); s.position.y = 1.1; s.rotation.y = [-.35, .6, .5][i]; scene.add(s);
+  const key = new THREE.SpotLight(0xffe6c4, 180, 0, .3, .75, 1.5); key.position.set(-3.5, 8, 4.5); key.target.position.set(0, 2.2, 0); key.castShadow = true; key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 6; key.shadow.bias = -.0003; scene.add(key, key.target);
+  const rim = new THREE.SpotLight(0x9fb4d8, 90, 0, .35, .8, 1.5); rim.position.set(4, 5, -5); rim.target.position.set(0, 2.2, 0); scene.add(rim, rim.target);
+  const cam = new THREE.PerspectiveCamera(24, w / H, .1, 100); cam.position.set(0, 2.9, 10); cam.lookAt(0, 2.35, 0);
+  done(r, scene, cam);
+  labs.push(`<div class="lab" style="left:${(i + .5) * 100 / 3}%"><b>${name}</b><span>${mat}</span></div>`);
+});
+document.getElementById("labs").innerHTML = labs.join("");
+</script></body></html>

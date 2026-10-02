@@ -23,21 +23,41 @@ jobs:
       - name: Lint
         run: npm run lint
       - name: Typecheck
-        run: npx tsc --noEmit
+        run: npx next typegen && npx tsc --noEmit
       - name: Unit tests
         run: npm test
+      - name: Build
+        run: npm run build
+
+  # The runner has four cores and no GPU: every scene is drawn in software, so four browsers on one runner starve each
+  # other and the scenes miss their waits (every test passes alone). One browser per runner, the suite in four shards.
+  e2e:
+    name: e2e (${{ matrix.shard }}/4)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
       - name: Build
         run: npm run build
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: End-to-end tests (production build)
-        run: npx playwright test
+        run: npx playwright test --shard=${{ matrix.shard }}/4 --workers=1
         env:
           CI: "true"
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.shard }}
           path: |
             playwright-report/
             test-results/

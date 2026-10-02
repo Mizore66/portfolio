@@ -1,0 +1,23 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>404 A: an illegal move</title>
+<link rel="stylesheet" href="_shared/tokens.css"><style>
+  /* the seam is level (0.00): nothing to play for */
+  .sq { position:absolute; left:27vw; top:9vh; font-size:34vw; letter-spacing:-.06em; }
+  .ttl { position:absolute; left:4vw; bottom:24vh; font-size:40px; }
+  .why { position:absolute; left:4vw; bottom:17vh; font-size:14px; line-height:1.5; color:var(--fg2); max-width:44ch; }
+  .back { position:absolute; left:4vw; bottom:9vh; font-size:20px; font-weight:600; padding-bottom:3px; border-bottom:2px solid currentColor; }
+  .ev { position:absolute; left:calc(50% + 20px); bottom:6.8vh; font-size:14px; }
+  @media (max-width:600px) {
+    .sq { left:14px; top:96px; font-size:50vw; } .ttl { left:20px; top:calc(50% - 132px); bottom:auto; font-size:34px; }
+    .why { left:20px; right:20px; top:calc(50% - 84px); bottom:auto; font-size:12px; } .back { left:20px; top:calc(50% + 40px); bottom:auto; font-size:17px; }
+    .ev { left:20px; bottom:26px; font-size:12px; } .sound { bottom:24px; right:20px; font-size:12px; } .nav { top:24px; left:20px; gap:16px; font-size:13px; } .resume { top:24px; right:20px; font-size:13px; }
+  }
+</style></head><body><div class="frame"><div id="ink">
+  <nav class="nav"><span>Roles</span><span>Work</span><span>Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
+  <div class="sq display">i9</div>
+  <h1 class="ttl display">Illegal move.</h1>
+  <p class="why mono">/notes/2019 is not a square on this board. It runs from a1 to h8.</p>
+  <div class="back">Back to the start</div>
+  <div class="ev mono">404 · 0.00 · 50.0%</div><div class="sound dim">Sound off</div>
+</div></div>
+<script type="module">import { seam } from "./_shared/seam.js"; await document.fonts.ready; seam({ at: .5, dir: matchMedia("(max-width:600px)").matches ? "h" : "v" }); window.__ready = true;</script>
+</body></html>

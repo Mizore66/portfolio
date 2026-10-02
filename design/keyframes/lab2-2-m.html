@@ -1,0 +1,53 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Lab 2.2 mobile</title>
+<link rel="stylesheet" href="_shared/tokens.css"><link rel="stylesheet" href="_shared/lab2.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>.chap { left:20px; top:62px; font-size:11px; } .note { font-size:11px; } .big { position:absolute; left:16px; bottom:70px; font-size:57px; z-index:3; }
+.tag { font-size:10px; } .tag.r { transform: translate(-100%, -50%); } .tag.r::after { display:none; } .tag.r span { display:inline-block; width:14px; border-top:1px solid currentColor; opacity:.5; margin-left:6px; vertical-align:middle; }</style>
+</head><body><div class="frame">
+<div id="ink"><nav class="nav"><span>Roles</span><span>Work</span><span aria-current="page">Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
+  <div class="chap">02 / 06</div>
+  <p class="note" style="left:20px;right:20px;top:86px;max-width:32ch"><b>THE DATA</b>Positions labelled with public Stockfish evaluations from the Lichess database (CC0). No Stockfish weights are copied. 15.4 million fell away through the eight filters below.</p>
+  <h1 class="big display">20,000,000</h1>
+  <p class="note" style="left:20px;right:20px;bottom:26px">35,405,130 read · 20,040,000 kept · 40,000 held out</p>
+  <div id="tags"></div>
+</div></div>
+<script type="module">
+import { seam } from "./_shared/seam.js"; import { twin } from "./_shared/twin.js"; import { rng } from "./_shared/rng.js";
+import { THREE, renderer, applyEnv } from "./_shared/chess3d.js";
+await document.fonts.ready;
+const root = document.querySelector(".frame"), W = innerWidth, H = innerHeight, AT = 20040000 / 35405130;
+const FULL = 9.2, KEPT = FULL * AT, N = 420, T = KEPT / N, X = 1.9;
+const FILTERS = ["duplicates", "before move 10", "en passant possible", "side in check", "best move a capture", "forced mates", "beyond ±1500 cp", "below depth 12"];
+// the seam sits exactly on the top of the kept stack
+const cam = new THREE.PerspectiveCamera(30, W / H, .1, 200); cam.position.set(X - 1, 7.4, 34); cam.lookAt(X, 4.6, 0); cam.setViewOffset(W, H, -.16 * W, -.045 * H, W, H); cam.updateMatrixWorld();
+const topY = (1 - new THREE.Vector3(X, KEPT, .95).project(cam).y) / 2, { dark } = seam({ at: topY, dir: "h", root });
+const tags = [];
+twin(root, dark, (theme, canvas) => {
+  const day = theme === "day", R = rng(7);
+  const { r, envTex } = renderer(canvas, { exposure: day ? 1 : 1.05 }), scene = new THREE.Scene();
+  scene.background = new THREE.Color(day ? 0xf3f3f1 : 0x0b0e14); applyEnv(scene, envTex, day ? .5 : .05);
+  scene.add(new THREE.HemisphereLight(day ? 0xffffff : 0x1c2433, day ? 0xd8d5ce : 0x05070a, day ? .55 : .4));
+  const key = day ? new THREE.DirectionalLight(0xfff8ee, 3.2) : new THREE.SpotLight(0xfff0dc, 420, 0, .5, .75, 1.3);
+  key.position.set(day ? -12 : 7, day ? 9 : 13, day ? 10 : 7); key.target.position.set(X, 2.5, 0); scene.add(key.target);
+  key.castShadow = true; key.shadow.mapSize.set(4096, 4096); key.shadow.bias = -.0004; if (day) Object.assign(key.shadow.camera, { left: -14, right: 14, top: 14, bottom: -14, near: 1, far: 50 }); scene.add(key);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.MeshStandardMaterial({ color: day ? 0xcdcac2 : 0x0d1118, roughness: .9 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+  scene.fog = day ? new THREE.Fog(0xf3f3f1, 26, 48) : new THREE.Fog(0x0b0e14, 45, 95);
+  const face = new THREE.MeshStandardMaterial({ color: 0xfbfaf6, roughness: .85 }), edge = new THREE.MeshStandardMaterial({ color: 0x9c978d, roughness: .9 }), paper = day ? [edge, edge, face, face, edge, edge] : face;
+  const sheet = new THREE.BoxGeometry(2.6, T * .8, 1.9), M = new THREE.Matrix4(), Q = new THREE.Quaternion(), E = new THREE.Euler();
+  const kept = new THREE.InstancedMesh(sheet, paper, N);
+  for (let i = 0; i < N; i++) { M.compose(new THREE.Vector3(X + (R() - .5) * .05, T * (i + .5), (R() - .5) * .05), Q.setFromEuler(E.set(0, (R() - .5) * .025, 0)), new THREE.Vector3(1, 1, 1)); kept.setMatrixAt(i, M); }
+  kept.castShadow = kept.receiveShadow = true; scene.add(kept);
+  const ho = new THREE.Mesh(new THREE.BoxGeometry(2.6, T * .8, 1.9), paper); ho.position.set(X - 3.6, T * .4, 1.4); ho.rotation.y = .5; ho.castShadow = ho.receiveShadow = true; scene.add(ho);
+  const lc = day ? 0x57534c : 0xb9c0cc;
+  const ghost = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(2.62, FULL - KEPT, 1.92)), new THREE.LineDashedMaterial({ color: lc, dashSize: .12, gapSize: .1, transparent: true, opacity: .6 }));
+  ghost.position.set(X, KEPT + (FULL - KEPT) / 2, 0); ghost.computeLineDistances(); scene.add(ghost);
+  const glass = new THREE.MeshStandardMaterial({ color: day ? 0x9fb0bf : 0x8fa6c8, transparent: true, opacity: .14, roughness: .1, side: THREE.DoubleSide, depthWrite: false });
+  FILTERS.forEach((f, i) => { const y = KEPT + (FULL - KEPT) * (i + .5) / FILTERS.length;
+    const g = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 2.6), glass); g.rotation.x = -Math.PI / 2; g.position.set(X, y, 0); scene.add(g);
+    const e = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(3.4, 2.6)), new THREE.LineBasicMaterial({ color: lc, transparent: true, opacity: .45 })); e.rotation.x = -Math.PI / 2; e.position.copy(g.position); scene.add(e);
+    if (day) { const p = new THREE.Vector3(X - 1.7, y, 1.3).project(cam); tags.push(`<div class="tag r" style="left:${(p.x + 1) / 2 * W}px;top:${(1 - p.y) / 2 * H}px">${f}<span></span></div>`); } });
+  if (day) { const p = new THREE.Vector3(X - 3.6, T * 2, 1.4).project(cam); tags.push(`<div class="tag" style="left:${(p.x + 1) / 2 * W}px;top:${(1 - p.y) / 2 * H - 14}px">held out</div>`); }
+  return { r, scene, cam };
+});
+document.querySelectorAll("#tags").forEach((t) => t.innerHTML = tags.join(""));
+</script></body></html>

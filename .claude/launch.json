@@ -1,0 +1,22 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
+      "port": 3000
+    },
+    {
+      "name": "keyframes",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "design/serve.py"
+      ],
+      "port": 4173
+    }
+  ]
+}

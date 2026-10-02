@@ -1,0 +1,43 @@
+/* Tablets held upright take the phone composition, laid out as at 600 px wide and scaled to the screen (the owner,
+   2026-10-02: built on the phone's frames). Every length in the site's CSS is a multiple of --u: one pixel, except here. */
+:root { --u: 1px; }
+@media (min-width: 601px) and (max-width: 1199px) and (orientation: portrait) { :root { --u: calc(100vw / 600); } }
+/* Design tokens, from the approved key frames (design/keyframes/_shared/tokens.css). */
+:root {
+  color-scheme: light dark; /* see layout.tsx: no forced dark mode */
+  --paper: #f3f3f1;
+  --ink: #0d0d0c;
+  --pencil: #57534c;
+  --graphite: #6d6860; /* 4.97:1 on paper; the key frames used #77726a (4.3:1), below AA for small text */
+  --rule: #d9d7d0;
+  --gallery: #09090a;
+  --gallery-text: #ece6da;
+  --gallery-dim: #8c877e;
+  --search: #0b0e14;
+  --move: #e8a33d;
+  --font-display: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
+  --font-italic: var(--font-archivo-italic), var(--font-display); /* its own family, loaded when used (layout.tsx) */
+  --font-mono: var(--font-jetbrains), ui-monospace, Menlo, monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body { background: var(--paper); color: var(--ink); font-family: var(--font-display); font-variation-settings: "wdth" 100; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+a { color: inherit; }
+:focus-visible { outline: calc(2 * var(--u)) solid var(--move); outline-offset: calc(3 * var(--u)); }
+
+.mono { font-family: var(--font-mono); letter-spacing: 0; }
+.display { font-weight: 900; font-variation-settings: "wdth" 112; line-height: .86; letter-spacing: -.035em; }
+
+/* The résumé link: same corner on every screen. */
+.resume-link { position: fixed; top: calc(40 * var(--u)); right: calc(48 * var(--u)); z-index: 50; font-size: calc(14 * var(--u)); font-weight: 500; text-decoration: none; mix-blend-mode: difference; color: #fff; }
+.resume-link:hover { text-decoration: underline; text-underline-offset: calc(4 * var(--u)); }
+@media (max-width: 600px), (min-width: 601px) and (max-width: 1199px) and (orientation: portrait) { .resume-link { top: calc(24 * var(--u)); right: calc(20 * var(--u)); font-size: calc(13 * var(--u)); } }
+
+.skip { position: absolute; left: calc(-9999 * var(--u)); top: 0; }
+.skip:focus { left: calc(16 * var(--u)); top: calc(16 * var(--u)); z-index: 100; background: var(--ink); color: var(--paper); padding: calc(8 * var(--u)) calc(12 * var(--u)); }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+/* a scene's canvas in its slot (src/lib/three/keep.ts): the slot is placed, the canvas fills it */
+.keep-slot > canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }

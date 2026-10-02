@@ -1,0 +1,37 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Lab 2.6 mobile</title>
+<link rel="stylesheet" href="_shared/tokens.css"><link rel="stylesheet" href="_shared/lab2.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>.frame { background: var(--gallery); } #ink { --fg: var(--gallery-text); --fg2: var(--gallery-dim); } .tag.p { transform: translate(-50%, 0); text-align:center; line-height:1.5; } .tag.p::after { display:none; } .tag.p i { font-style:normal; color: var(--fg2); } .chap { left:20px; top:62px; font-size:11px; } .note { font-size:11px; } .tag { font-size:10px; }</style>
+</head><body><div class="frame">
+<div id="ink"><nav class="nav"><span>Roles</span><span>Work</span><span aria-current="page">Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
+  <div class="chap">06 / 06</div>
+  <h1 class="ttl display" style="font-size:150px;top:84px;left:14px">±60</h1>
+  <p class="note" style="left:20px;right:20px;top:236px"><b>WHAT FAILED</b>"Learned" was the material count plus the net, clamped to ±60 centipawns: never more than 0.6 of a pawn.</p>
+  <p class="note" style="left:20px;right:20px;bottom:92px"><b>TWO CAUSES, NEITHER ISOLATED</b>The training data, or this integration. Next: no rematch; a new net passes the data and progress gates first.</p>
+  <p style="position:absolute;left:20px;bottom:40px;font-size:16px;font-style:italic;color:var(--fg)">A loss at the spec cap is still a result.</p>
+  <p class="note" style="right:20px;top:392px">plinths to scale</p>
+  <div id="tags"></div>
+</div></div>
+<script type="module">
+import { THREE, renderer, applyEnv, piece, MAT, done } from "./_shared/chess3d.js"; import { learnedKnight } from "./_shared/sculptures.js";
+await document.fonts.ready;
+const W = innerWidth, H = innerHeight, K = .0052;
+const { r, envTex } = renderer(document.createElement("canvas"), { exposure: 1.08 }), cv = r.domElement; cv.style.zIndex = 1; document.getElementById("ink").before(cv);
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0x09090a); scene.fog = new THREE.Fog(0x09090a, 170, 260); applyEnv(scene, envTex, .07);
+scene.add(new THREE.HemisphereLight(0x2a2a30, 0x050505, .45));
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0x0e0e0f, roughness: .9 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const plinthM = new THREE.MeshStandardMaterial({ color: 0x19191b, roughness: .7 });
+const ROW = [["Q", 900, "queen"], ["R", 500, "rook"], ["B", 330, "bishop"], ["N", 320, "knight"], ["P", 100, "pawn"], ["net", 60, "the net"]];
+const cam = new THREE.PerspectiveCamera(10.5, W / H, .1, 400); cam.position.set(0, 16, 150); cam.lookAt(0, 2.4, 0); cam.setViewOffset(W, H, 0, -.085 * H, W, H); cam.updateMatrixWorld();
+const tags = [];
+ROW.forEach(([t, v, name], i) => {
+  const x = -4.3 + i * 1.72, h = v * K, net = t === "net";
+  const pl = new THREE.Mesh(new THREE.BoxGeometry(1.3, h, 1.3), net ? MAT.copper() : plinthM); pl.position.set(x, h / 2, 0); pl.castShadow = pl.receiveShadow = true; scene.add(pl);
+  const p = net ? learnedKnight() : piece(t, MAT.basalt()); p.position.set(x, h, 0); p.rotation.y = t === "N" || net ? -.3 : 0; p.scale.setScalar(1.05); scene.add(p);
+  const s = new THREE.SpotLight(0xffe2b8, net ? 520 : 360, 0, .19, .75, 1.5); s.position.set(x - 3, h + 9, 5); s.target.position.set(x, h + .6, 0); s.castShadow = true; s.shadow.mapSize.set(2048, 2048); s.shadow.radius = 5; s.shadow.bias = -.0003; scene.add(s.target, s);
+  const q = new THREE.Vector3(x, 0, 1).project(cam);
+  tags.push(`<div class="tag p" style="left:${(q.x + 1) / 2 * W}px;top:${(1 - q.y) / 2 * H + 10}px">${net ? "±" + v : v}<br><i>${name}</i></div>`);
+});
+document.getElementById("tags").innerHTML = tags.join("");
+done(r, scene, cam);
+</script></body></html>

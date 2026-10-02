@@ -1,0 +1,52 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Lab 2.3: trained twice</title>
+<link rel="stylesheet" href="_shared/tokens.css"><link rel="stylesheet" href="_shared/lab2.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>.frame { background: var(--paper); } .tag { text-align: center; line-height: 1.5; transform: translate(-50%, 0); } .tag::after { display: none; } .tag .r { font-family: var(--font-display); font-weight: 900; font-variation-settings: "wdth" 112; font-size: 44px; letter-spacing: -.03em; display: block; line-height: 1; margin-bottom: 8px; } .tag .d { color: var(--fg2); }</style>
+</head><body><div class="frame">
+<div id="ink"><nav class="nav"><span>Roles</span><span>Work</span><span aria-current="page">Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
+  <div class="chap">03 / 06</div>
+  <h1 class="ttl display" style="font-size:112px">Trained<br>twice.</h1>
+  <p class="note" style="left:48px;top:318px"><b>THE SCORE UNDER EACH</b>How closely the net's judgement matches Stockfish on 40,000 positions it never saw. 1.0 would be perfect.</p>
+  <p class="note" style="right:48px;top:112px;text-align:right;max-width:34ch"><b>HOW</b>PyTorch. Quantisation-aware from the second epoch, exported to int8, run in WebAssembly inside a worker. 410 KB.</p>
+  <p class="note" style="right:48px;top:232px;text-align:right;max-width:34ch"><b>NOT A COPY</b>A net that copies PeSTO can never beat it. This one agrees with PeSTO at 0.70, well short of 1.0.</p>
+  <div id="tags"></div>
+</div></div>
+<script type="module">
+import { THREE, renderer, applyEnv, piece, MAT, done } from "./_shared/chess3d.js";
+import { TessellateModifier } from "three/addons/modifiers/TessellateModifier.js"; import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
+await document.fonts.ready;
+const W = innerWidth, H = innerHeight;
+const { r, envTex } = renderer(document.createElement("canvas")), cv = r.domElement; cv.style.zIndex = 1; document.getElementById("ink").before(cv);
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0xf3f3f1); scene.fog = new THREE.Fog(0xf3f3f1, 26, 48); applyEnv(scene, envTex, .45);
+scene.add(new THREE.HemisphereLight(0xffffff, 0xd9d6cf, .55));
+const key = new THREE.DirectionalLight(0xfff6ea, 3.2); key.position.set(-8, 9, 7); key.castShadow = true; key.shadow.mapSize.set(4096, 4096); key.shadow.radius = 9; key.shadow.bias = -.0004;
+Object.assign(key.shadow.camera, { left: -10, right: 10, top: 10, bottom: -10, near: 1, far: 40 }); scene.add(key);
+const fill = new THREE.DirectionalLight(0xffffff, .5); fill.position.set(8, 4, 6); scene.add(fill);
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0xe9e7e1, roughness: .95 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+// rough casts: displace every vertex along its normal by a position-seeded noise, so seams stay closed
+const DIRS = Array.from({ length: 7 }, (_, i) => { const a = i * 2.39996, b = Math.acos(1 - 2 * (i + .5) / 7); return [Math.sin(b) * Math.cos(a), Math.cos(b), Math.sin(b) * Math.sin(a), 1 + i * .37]; });
+const noise = (x, y, z, f) => DIRS.reduce((s, [a, b, c, k], i) => s + Math.sin((x * a + y * b + z * c) * f * k + i * 1.7) / (1 + i * .35), 0) / 3;
+function cast(mat, amp, freq) {
+  const g = piece("N", mat);
+  if (amp) g.traverse((o) => { if (!o.isMesh) return; let geo = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry; geo.deleteAttribute("uv"); geo.deleteAttribute("normal");
+    geo = new TessellateModifier(.02, 10).modify(geo); geo = mergeVertices(geo, 1e-4); geo.computeVertexNormals(); o.geometry = geo; const p = geo.attributes.position, n = geo.attributes.normal;
+    for (let i = 0; i < p.count; i++) { const d = amp * noise(p.getX(i), p.getY(i), p.getZ(i), freq); p.setXYZ(i, p.getX(i) + n.getX(i) * d, p.getY(i) + n.getY(i) * d, p.getZ(i) + n.getZ(i) * d); }
+    p.needsUpdate = true; geo.computeVertexNormals(); });
+  return g;
+}
+const NETS = [
+  { mat: new THREE.MeshStandardMaterial({ color: 0x8e8a83, roughness: 1 }), amp: .022, freq: 23, x: -4.4, r: "0.31", a: "768 × 2 × 128", b: "3 million positions · depth 8", c: "first playing net" },
+  { mat: new THREE.MeshStandardMaterial({ color: 0xe6e2d9, roughness: .78 }), amp: .005, freq: 47, x: 0, r: "0.50", a: "768 × 2 × 256", b: "6 million positions · depth 8", c: "comparison, never played" },
+  { mat: MAT.porcelain(), amp: 0, freq: 0, x: 4.4, r: "0.64", a: "768 × 2 × 256", b: "20 million positions · depth 12", c: "the net you can play" },
+];
+const cam = new THREE.PerspectiveCamera(24, W / H, .1, 100); cam.position.set(1.2, 3.1, 19); cam.lookAt(.9, 1.55, 0); cam.setViewOffset(W, H, -.08 * W, -.13 * H, W, H);
+const pl = new THREE.MeshStandardMaterial({ color: 0xf1efea, roughness: .9 }), tags = [];
+NETS.forEach((n, i) => {
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(1.05, 1.05, .5, 96), pl); base.position.set(n.x, .25, 0); base.castShadow = base.receiveShadow = true; scene.add(base);
+  const k = cast(n.mat, n.amp, n.freq); k.scale.setScalar(1.8); k.position.set(n.x, .5, 0); k.rotation.y = -.22; scene.add(k);
+  cam.updateMatrixWorld(); const p = new THREE.Vector3(n.x, 0, 1.3).project(cam);
+  tags.push(`<div class="tag" style="left:${(p.x + 1) / 2 * W}px;top:${(1 - p.y) / 2 * H + 22}px"><span class="r">${n.r}</span>${n.a}<br><span class="d">${n.b}<br>${n.c}</span></div>`);
+});
+document.getElementById("tags").innerHTML = tags.join("");
+done(r, scene, cam);
+</script></body></html>

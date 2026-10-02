@@ -1,0 +1,19 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Lab 2.5a mobile</title>
+<link rel="stylesheet" href="_shared/tokens.css"><link rel="stylesheet" href="_shared/lab2.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>.chap { left:20px; top:62px; font-size:11px; } .note { font-size:11px; } .tag { font-size:11px; } .tag.p { transform: translate(-50%, 0); } .tag.p::after { display:none; } .ctr { position:absolute; left:20px; bottom:24px; font-family: var(--font-mono); font-size:11px; }</style>
+</head><body><div class="frame">
+<div id="ink"><nav class="nav"><span>Roles</span><span>Work</span><span aria-current="page">Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
+  <div class="chap">05 / 06</div><h1 class="ttl display" style="font-size:52px;left:18px;top:84px">Then the<br>match.</h1><p class="note" style="left:20px;right:20px;top:208px"><b>LEARNED AGAINST HANDCRAFTED</b>Same search, 50,000 nodes a move, the same 50 openings from both sides. Set to stop once the evidence was decisive.</p>
+  <div class="ctr">game 1 of 128 · 50.0%</div>
+  <div id="tags"></div>
+</div></div>
+<script type="module">
+import { seam } from "./_shared/seam.js"; import { twin } from "./_shared/twin.js"; import { matchScene, pileTags } from "./_shared/match.js";
+await document.fonts.ready;
+const root = document.querySelector(".frame"), { dark } = seam({ at: .5, dir: "h", root });
+const piles = [{ key: "w", x: -2.95, z: 3.6, seed: 3 }, { key: "d", x: 0, z: -3.4, seed: 5 }, { key: "l", x: 2.45, z: 3.8, seed: 9 }];
+let tags = "";
+twin(root, dark, (theme, canvas) => { const s = matchScene(canvas, theme, { counts: { w: 0, d: 0, l: 0 }, falling: { key: "d", y: 3.2 }, view: [0, -.235], piles, camera: { pos: [0, 27, 31], look: [0, 0, .2], fov: 36 } }); tags = pileTags(s.cam, { w: "wins", d: "draws", l: "losses" }, piles); return s; });
+document.querySelectorAll("#tags").forEach((t) => t.innerHTML = tags);
+</script></body></html>

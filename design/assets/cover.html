@@ -1,0 +1,43 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><title>Asset: project cover</title><link rel="stylesheet" href="/design/keyframes/_shared/tokens.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script></head><body style="background:#09090a"><div class="frame"><canvas id="c"></canvas></div>
+<script type="module">
+// Project covers: each product's own screenshot made into a physical object, beside the project's sculpture, in gallery light.
+import { THREE, renderer, done } from "/design/keyframes/_shared/chess3d.js"; import { faultline, teleportal, circuitmind } from "/design/keyframes/_shared/sculptures.js";
+import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js"; import { gallery } from "./env.js";
+const P = new URLSearchParams(location.search).get("p") || "faultline", W = innerWidth, H = innerHeight;
+const { r } = renderer(document.getElementById("c"), { exposure: 1.05 }), scene = new THREE.Scene(); scene.background = new THREE.Color(0x09090a); scene.environment = gallery(r); scene.environmentIntensity = .35;
+const tex = async (f) => { const t = await new THREE.TextureLoader().loadAsync(`./covers/${f}`); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 16; return t; };
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), new THREE.MeshStandardMaterial({ color: 0x0e0e0f, roughness: .85 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const spot = (c, i, pos, tgt, ang = .32) => { const s = new THREE.SpotLight(c, i, 0, ang, .7, 1.5); s.position.set(...pos); s.target.position.set(...tgt); s.castShadow = true; s.shadow.mapSize.set(4096, 4096); s.shadow.radius = 6; s.shadow.bias = -.0002; scene.add(s, s.target); return s; };
+const cam = new THREE.PerspectiveCamera(26, W / H, .1, 100), shade = (m) => { m.traverse((o) => { if (o.isMesh) o.castShadow = o.receiveShadow = true; }); return m; };
+if (P === "faultline") {
+  // the proof page as a printed sheet on the floor; the cracked bishop standing at its edge
+  const t = await tex("src-proof.png"), w = 4.2, h = w * 992 / 1600;
+  const sheet = new THREE.Mesh(new THREE.BoxGeometry(w, .012, h), [0, 0, new THREE.MeshStandardMaterial({ map: t, roughness: .92 }), 0, 0, 0].map((m) => m || new THREE.MeshStandardMaterial({ color: 0xf1efe9, roughness: .95 })));
+  sheet.position.set(-.4, .006, .2); sheet.rotation.y = .12; sheet.receiveShadow = true; scene.add(sheet);
+  const b = shade(faultline()); b.scale.setScalar(1.9); b.position.set(2.45, 0, -.7); b.rotation.y = -.3; scene.add(b);
+  spot(0xfff0dc, 95, [-3, 8.5, 5], [.3, 0, 0], .42); spot(0xffe2b8, 90, [5, 6, 1], [2.3, 1.2, -.5], .22); spot(0x9fb4d8, 40, [1, 5, -7], [2.3, 1.2, -.5], .3);
+  cam.position.set(.2, 6.4, 7.9); cam.lookAt(.55, .6, -.25);
+} else if (P === "teleportal") {
+  // the live session on a phone standing on the floor, the aluminium knight beside it
+  const t = await tex("src-phone.png"), pw = 1.25, ph = pw * 1234 / 616;
+  const body = new THREE.Mesh(new RoundedBoxGeometry(pw + .12, ph + .14, .085, 6, .07), new THREE.MeshStandardMaterial({ color: 0x2a2c30, metalness: 1, roughness: .35 }));
+  const screen = new THREE.Mesh(new THREE.PlaneGeometry(pw, ph), new THREE.MeshBasicMaterial({ map: t, toneMapped: false })); screen.position.z = .044;
+  const phone = shade(new THREE.Group().add(body, screen)); phone.position.set(-.85, (ph + .14) / 2 + .02, 0); phone.rotation.set(-.08, .38, 0); scene.add(phone);
+  const glow = new THREE.PointLight(0x8f86ff, 2.5, 4, 1.8); glow.position.set(-.6, 1.4, .6); scene.add(glow);
+  const k = shade(teleportal()); k.scale.setScalar(1.7); k.position.set(1.2, 0, .35); k.rotation.y = Math.PI + .55; scene.add(k);
+  spot(0xdfe8ff, 150, [4, 8, 5], [.8, 1, 0], .38); spot(0x9fb4d8, 70, [-4, 5, -5], [.8, 1.2, 0], .3);
+  scene.environmentIntensity = .5; cam.position.set(.4, 2.2, 7.6); cam.lookAt(.2, 1.35, 0);
+} else {
+  // the inspected board as a plate; the basalt bishop standing on it, as a piece on its square
+  const t = await tex("src-pcb.png"), w = 4.4, h = w * 465 / 530;
+  const plate = new THREE.Mesh(new RoundedBoxGeometry(w + .16, .1, h + .16, 4, .04), [0, 0, 0, 0, 0, 0].map(() => new THREE.MeshStandardMaterial({ color: 0x1b1d1a, roughness: .6 })));
+  plate.position.y = .05; plate.receiveShadow = plate.castShadow = true; scene.add(plate);
+  const top = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ map: t, roughness: .5, metalness: .15 })); top.rotation.x = -Math.PI / 2; top.position.y = .101; top.receiveShadow = true; scene.add(top);
+  const g = new THREE.Group(); g.add(plate, top); g.rotation.y = -.28; scene.add(g);
+  const b = shade(circuitmind()); b.scale.setScalar(1.5); b.position.set(.9, .1, .4); b.rotation.y = -.45; scene.add(b);
+  spot(0xffd9a8, 180, [-4, 7, 3], [0, 0, 0], .45); spot(0xb87333, 60, [5, 3, -2], [.9, 1, .4], .3); spot(0x9fb4d8, 40, [0, 5, -7], [.9, 1.2, .4], .3);
+  cam.position.set(-3.2, 5.2, 8.2); cam.lookAt(.3, .75, 0);
+}
+done(r, scene, cam);
+</script></body></html>

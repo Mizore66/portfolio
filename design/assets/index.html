@@ -1,0 +1,22 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><title>Phase 4: assets</title><link rel="stylesheet" href="/design/keyframes/_shared/fonts.css">
+<style>* { box-sizing: border-box; margin: 0; padding: 0; } body { font-family: "Archivo", sans-serif; background: #1b1b1a; color: #f3f3f1; padding: 48px 48px 120px; }
+h1 { font-size: 44px; font-weight: 900; font-variation-settings: "wdth" 112; letter-spacing: -.03em; } .lede { margin-top: 10px; color: #a9a59c; max-width: 76ch; line-height: 1.5; }
+section { margin-top: 60px; } h2 { font-size: 26px; font-weight: 800; letter-spacing: -.02em; } .n { font-family: "JetBrains Mono", monospace; font-size: 13px; color: #e8a33d; }
+.note { margin-top: 8px; color: #b9b5ad; font-size: 14px; max-width: 90ch; line-height: 1.5; } img { display: block; width: 100%; border-radius: 8px; margin-top: 16px; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; } table { margin-top: 16px; border-collapse: collapse; font-size: 14px; } td, th { text-align: left; padding: 8px 18px 8px 0; border-bottom: 1px solid #333; } th { color: #a9a59c; font-weight: 500; }
+audio { display: block; margin-top: 6px; } code { font-family: "JetBrains Mono", monospace; color: #e8a33d; font-size: .9em; }</style></head><body>
+<h1>Assets, Phase 4</h1>
+<p class="lede">Everything the build needs, rendered as stills for review. All of it is procedural and made for this site: no third-party models, HDRIs or samples. Credits and licences are in <code>design/colophon.md</code>.</p>
+<section><div class="n">1 · 3D</div><h2>The set</h2><p class="note">Staunton profiles turned from rounded outlines. The knight is a sculpted head with a mane, eyes and a collar. The rook has six bevelled merlons, the queen a coronet, the king a cross pattée, and every piece has a felt pad. Ivory and ebony are lacquered.</p><img src="renders/pieces.png"></section>
+<section><h2>The three project sculptures</h2><p class="note">Each project's material makes its argument: FaultLine in porcelain with one hairline crack, fired shut; Gemini Teleportal in satin anodised aluminium; CircuitMindAI in pitted basalt with a copper trace. Shown in the gallery environment: a black room with two narrow light strips and a warm softbox.</p><img src="renders/sculptures.png"></section>
+<section><h2>The hero board</h2><p class="note">Maple and walnut squares with a drawn grain, rounded edges and a walnut frame in eight parts. Stills from the approved opening: the start, the tightening game, the blast, and the final hero.</p><div class="two"><img src="renders/board.png"><img src="renders/board-close.png"><img src="renders/blast.png"><img src="renders/hero-final.png"></div></section>
+<section><div class="n">2 · Project covers</div><h2>The product, made physical</h2><p class="note">No raw screenshots. Each project's own screenshot becomes an object: FaultLine's proof page as a printed sheet, Teleportal's live session on a phone, CircuitMindAI's inspected board as a plate the bishop stands on. The crops come from the images in <code>content/assets/work/</code>.</p>
+<img src="renders/cover-faultline.png"><img src="renders/cover-teleportal.png"><img src="renders/cover-circuitmind.png"></section>
+<section><div class="n">3 · Type</div><h2>Licences confirmed</h2><table><tr><th>Font</th><th>Version</th><th>Licence</th><th>Checked in</th></tr><tr><td>Archivo (variable)</td><td>2.001</td><td>SIL OFL 1.1</td><td>the font's name table; <code>licenses/Archivo-OFL.txt</code></td></tr><tr><td>JetBrains Mono</td><td>2.211</td><td>SIL OFL 1.1</td><td>the font's name table; <code>licenses/JetBrainsMono-OFL.txt</code></td></tr></table></section>
+<section><div class="n">4 · Sound</div><h2>Four cues, 51 KB</h2><p class="note">Synthesized by <code>sound/make_sounds.py</code>, AAC. Opt-in: the "Sound off" toggle on every prototype now works. Turning it on replays that page's motion with sound.</p>
+<table><tr><th>Cue</th><th>Used for</th><th></th></tr>
+<tr><td>place</td><td>every move played: replays, the opening, stones in Gate C</td><td><audio controls src="sound/place.m4a"></audio></td></tr>
+<tr><td>break</td><td>the board detonating</td><td><audio controls src="sound/break.m4a"></audio></td></tr>
+<tr><td>seam</td><td>every seam sweep</td><td><audio controls src="sound/seam.m4a"></audio></td></tr>
+<tr><td>tick</td><td>the contact clock, once a second</td><td><audio controls src="sound/tick.m4a"></audio></td></tr></table></section>
+</body></html>

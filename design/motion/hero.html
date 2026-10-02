@@ -1,0 +1,84 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Motion 1: loader, signature moment, drag the seam</title>
+<link rel="stylesheet" href="/design/keyframes/_shared/tokens.css"><style>
+  .name { position: absolute; left: 4.2vw; top: 17vh; font-size: 21.5vw; }
+  .ln { display: block; overflow: hidden; padding-bottom: .16em; margin-bottom: -.16em; } .l2 { font-size: .705em; margin-top: .06em; }
+  .ch { display: inline-block; will-change: transform; }
+  .line { position: absolute; left: 4.4vw; bottom: 6.5vh; font-size: 20px; font-weight: 500; line-height: 1.3; letter-spacing: -.01em; }
+  .line span { display: block; overflow: hidden; } .line i { display: block; font-style: normal; }
+  .ev { position: absolute; bottom: 6.8vh; font-size: 14px; white-space: nowrap; }
+  .skip { position: absolute; left: 4.4vw; bottom: 6.8vh; font-size: 13px; }
+  .hair { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--ink); transform-origin: top; z-index: 3; }
+  .card { position: absolute; bottom: calc(6.8vh + 40px); font-size: 13px; line-height: 1.45; white-space: nowrap; }
+  .card b { display: block; font-family: var(--font-display); font-size: 22px; font-weight: 700; letter-spacing: -.01em; } .card .d { color: var(--fg2); }
+  .grab { position: absolute; top: 62%; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: #e8a33d; z-index: 6; pointer-events: none; opacity: 0; }
+  .t { position: fixed; right: 16px; top: 12px; font: 11px var(--font-mono); color: #e8a33d; z-index: 9; }
+  @media (max-width: 600px) {
+    .name { left: 18px; top: calc(55.9% - 1.3em); font-size: 29.5vw; } .l2 { font-size: .56em; margin-top: .08em; }
+    .line { left: 20px; bottom: 76px; font-size: 17px; } .ev { left: 20px !important; bottom: 26px; font-size: 12px; }
+    .skip { left: 20px; top: 24px; bottom: auto; font-size: 12px; }
+    .hair { left: 0; right: 0; top: 50%; bottom: auto; width: auto; height: 1px; transform-origin: left; }
+    .card { left: 20px !important; bottom: 76px; } .card b { font-size: 19px; } .grab { left: 72% !important; }
+  }
+</style><script>if (location.protocol === "file:") addEventListener("DOMContentLoaded", () => { document.body.innerHTML = '<div style="font:16px/1.5 system-ui;padding:48px;max-width:60ch">This prototype needs the local server, because browsers block its modules on file:// pages. From the portfolio folder run <code>python3 design/serve.py</code>, then open <a href="http://127.0.0.1:4173/design/motion/index.html">http://127.0.0.1:4173/design/motion/index.html</a>.</div>'; });</script></head><body>
+<div class="frame" id="f"><div class="hair" id="hair"></div><div id="ink">
+  <nav class="nav"><span>Roles</span><span>Work</span><span>Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
+  <div class="skip mono">Skip to résumé</div>
+  <h1 class="name display"><span class="ln" data-w="Anas"></span><span class="ln l2" data-w="Qumhiyeh"></span></h1>
+  <p class="line"><span><i>I like systems that have to</i></span><span><i>survive measurement.</i></span></p>
+  <div class="ev mono"></div><div class="card"><b></b><div class="m mono"></div><div class="d"></div></div><div class="sound dim">Sound off</div>
+</div><div class="grab" id="grab"></div></div>
+<div class="t" id="t"></div>
+<script type="module">
+import { gsap, liveSeam, run, evalStep, share, capture, mobile, per, sfx, soundToggle } from "./_kit.js"; import { LINE, LINE_CP, career, fmt } from "./_data.js";
+document.querySelectorAll(".ln").forEach((l) => l.innerHTML = [...l.dataset.w].map((c) => `<span class="ch">${c}</span>`).join(""));
+await document.fonts.ready;
+const demo = new URLSearchParams(location.search).get("demo"), C = await career(), root = document.getElementById("f");
+const S = liveSeam(root, { dir: mobile ? "h" : "v" }), W = () => root.clientWidth, Hh = () => root.clientHeight;
+const q = (s) => document.querySelectorAll(s), st = { at: .5, ply: 0, pull: 0, card: -1 };
+const hair = document.getElementById("hair"), grab = document.getElementById("grab"), tlab = document.getElementById("t");
+let render = function () {
+  S.set(st.at); if (mobile) hair.style.top = st.at * 100 + "%"; else hair.style.left = st.at * 100 + "%";
+  const x = st.at * W();
+  q(".ev").forEach((e) => { e.style.left = x + 20 + "px"; e.textContent = st.card >= 0 ? `${C[st.card].move} ${fmt(C[st.card].evalCp)}` : st.ply > 0 ? `${LINE[st.ply]} ${fmt(LINE_CP[st.ply])}` : ""; });
+  if (!mobile) q(".card").forEach((e) => { e.style.left = x + 20 + "px"; });
+  if (mobile) grab.style.top = st.at * Hh() + "px"; else grab.style.left = x + "px";
+  if (!capture) tlab.textContent = "";
+};
+const tl = gsap.timeline({ paused: true });
+if (demo !== "drag") {
+  // 0: paper, résumé link and skip. The loader is the hero's own first seconds.
+  gsap.set(".ch", { yPercent: 105 }); gsap.set(".line i", { yPercent: 100 }); gsap.set(".nav span, .sound", { opacity: 0 }); gsap.set(hair, mobile ? { scaleX: 0 } : { scaleY: 0 });
+  st.at = 1; S.set(1);
+  tl.to(hair, { ...(mobile ? { scaleX: 1 } : { scaleY: 1 }), duration: .45, ease: "arrive", onUpdate: () => { if (mobile) hair.style.top = "50%"; else hair.style.left = "50%"; } }, 0)
+    .to(st, { at: .5, duration: .62, ease: "seam", onUpdate: render }, .38)
+    .to(".ch", { yPercent: 0, duration: .7, ease: "arrive", stagger: per(.028) }, .5)
+    .set(hair, { opacity: 0 }, 1.02);
+  // the game: 20 plies, each a damped step to the engine's evaluation of that position
+  let t = 1.25;
+  for (let i = 1; i < LINE.length; i++) { const d = i === LINE.length - 1 ? .5 : .105; tl.to(st, { at: share(LINE_CP[i]), duration: d, ease: evalStep, onStart: () => { st.ply = i; }, onUpdate: render, onReverseComplete: () => { st.ply = i - 1; } }, t); t += i === LINE.length - 1 ? .5 : .105; }
+  tl.to(".line i", { yPercent: 0, duration: .6, ease: "arrive", stagger: per(.08) }, t - .1)
+    .to(".skip", { opacity: 0, duration: .25 }, t - .4)
+    .to(".nav span, .sound", { opacity: 1, duration: .4, ease: "arrive", stagger: per(.05) }, t + (mobile ? .4 : .15))
+    .to({}, { duration: .6 });
+} else {
+  // Drag the seam: pull left to go back through the career, right to go forward; every 56 px of pull is one move.
+  // At rest the seam always sits at the true evaluation. While held it leans 30% of the way toward the pointer.
+  q(".nav span, .sound").forEach((e) => e.style.opacity = 1); gsap.set(".skip", { opacity: 0 }); gsap.set(".card", { opacity: 0 });
+  const show = (i) => q(".card").forEach((e) => { e.querySelector("b").textContent = C[i].label; e.querySelector(".m").textContent = `game eval after ${C[i].move}: ${fmt(C[i].evalCp)}`; e.querySelector(".d").textContent = `${C[i].kind} · ${C[i].when}`; });
+  const last = C.length - 1, STEP = mobile ? 40 : 56; st.true = share(C[last].evalCp); st.hold = 0; st.idx = last; show(last);
+  const x0 = st.true * (mobile ? Hh() : W()); st.px = x0; if (mobile) gsap.set(".line", { opacity: 0 });
+  render = () => { st.at = st.true + st.hold * .3 * (st.px / (mobile ? Hh() : W()) - st.true); S.set(st.at); const x = st.at * W();
+    if (!mobile) q(".card").forEach((e) => { e.style.left = x + 20 + "px"; }); q(".ev").forEach((e) => e.textContent = "");
+    if (mobile) grab.style.top = st.px + "px"; else grab.style.left = st.px + "px"; };
+  const move = (a, b, t0, t1) => { tl.to(st, { px: b, duration: t1 - t0, ease: "none", onUpdate: render }, t0);
+    const n = Math.round(Math.abs(b - a) / STEP), dir = b < a ? -1 : 1;
+    for (let k = 1; k <= n; k++) { const tk = t0 + (t1 - t0) * (k * STEP - STEP / 2) / Math.abs(b - a), from = st.idx, to = st.idx + dir; st.idx = to;
+      tl.to(st, { true: share(C[to].evalCp), duration: .34, ease: evalStep, onStart: () => show(to), onReverseComplete: () => show(from), onUpdate: render }, tk); } };
+  tl.to(grab, { opacity: 1, duration: .15 }, .3).to(st, { hold: 1, duration: .3, ease: "arrive", onUpdate: render }, .35).to(".card", { opacity: 1, duration: .2 }, .4);
+  move(x0, x0 - 9 * STEP, .6, 3.6);
+  move(x0 - 9 * STEP, x0, 4.4, 6.2);
+  tl.to(st, { hold: 0, duration: .45, ease: evalStep, onUpdate: render }, 6.35).to(grab, { opacity: 0, duration: .2 }, 6.35).to(".card", { opacity: 0, duration: .3 }, 7.1).to({}, { duration: .4 });
+}
+if (demo !== "drag") tl.call(() => sfx("seam", { gain: .7 }), null, .38);
+run(tl, { render }); soundToggle(() => tl.restart());
+</script></body></html>

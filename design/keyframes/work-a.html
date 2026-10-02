@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Work A: three plinths</title>
+<link rel="stylesheet" href="_shared/tokens.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>
+  body { background: var(--gallery); color: var(--gallery-text); }
+  .seam { position: absolute; inset: 0 auto 0 0; width: 22px; background: var(--paper); z-index: 4; }
+  .nav { left: 64px; color: var(--gallery-dim); } .nav span[aria-current] { color: var(--gallery-text); }
+  .resume { color: var(--gallery-text); }
+  .label { position: absolute; transform: translateX(-50%); text-align: center; z-index: 3; white-space: nowrap; }
+  .label b { display: block; font-size: 16px; font-weight: 600; letter-spacing: -.01em; color: var(--gallery-dim); }
+  .label.on b { color: var(--gallery-text); font-size: 19px; }
+  .label .n { margin-top: 8px; font-size: 14px; color: #c9c2b5; line-height: 1.35; }
+  .label .q { margin-top: 6px; font-size: 12px; color: #77726a; }
+  .label .mv { margin-top: 6px; font-size: 12px; color: #5b574f; }
+</style>
+</head>
+<body>
+<div class="frame">
+  <canvas id="c"></canvas>
+  <div class="seam"></div>
+  <nav class="nav"><span>Roles</span><span aria-current="page">Work</span><span>Lab</span><span>Contact</span></nav>
+  <div class="resume">Résumé</div>
+  <div class="label" data-at="-4.3"><b>Gemini Teleportal</b></div>
+  <div class="label on" data-at="0"><b>FaultLine</b><div class="n">First PASS→FAIL commit<br>in 1-5 min</div><div class="q">Controlled evaluation</div><div class="mv mono">10…Bg4</div></div>
+  <div class="label" data-at="4.3"><b>CircuitMindAI</b></div>
+</div>
+<script type="module">
+import { THREE, renderer, spot, applyEnv, done, piece, MAT } from "./_shared/chess3d.js";
+import { faultline, teleportal, circuitmind } from "./_shared/sculptures.js";
+const canvas = document.getElementById("c");
+const { r, envTex } = renderer(canvas, { exposure: 1.05 });
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x09090a);
+applyEnv(scene, envTex, .18);
+scene.add(new THREE.HemisphereLight(0x2a2a30, 0x050505, .35));
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 40), new THREE.MeshStandardMaterial({ color: 0x0e0e0f, roughness: .9 }));
+floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(60, 20), new THREE.MeshStandardMaterial({ color: 0x0b0b0c, roughness: 1 }));
+wall.position.set(0, 10, -9); wall.receiveShadow = true; scene.add(wall);
+const plinthMat = new THREE.MeshStandardMaterial({ color: 0x151516, roughness: .7 });
+function plinth(x, z, w, h) { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, w), plinthMat); m.position.set(x, h / 2, z); m.castShadow = m.receiveShadow = true; scene.add(m); return h; }
+[[-7, -5.5], [-2.4, -6], [2.4, -6], [7, -5.5]].forEach(([x, z]) => { const h = plinth(x, z, .9, 1.9); const p = piece(["P", "R", "Q", "N"][Math.abs(x | 0) % 4], MAT.basalt()); p.scale.setScalar(.8); p.position.set(x, h, z); scene.add(p); spot(scene, { pos: [x - 3, 9, z + 3], target: [x, h, z], intensity: 14, angle: .16 }); });
+const H = 2.1;
+[[-4.3, teleportal(), 38], [0, faultline(), 95], [4.3, circuitmind(), 44]].forEach(([x, s, I]) => {
+  plinth(x, 0, 1.9, H); s.scale.setScalar(1.8); s.position.set(x, H, 0); scene.add(s);
+  spot(scene, { pos: [x - 4.5, 11, 4.5], target: [x, H + 1.1, 0], intensity: I, angle: .2, penumbra: .8 });
+});
+const cam = new THREE.PerspectiveCamera(30, innerWidth / innerHeight, .1, 100);
+cam.position.set(0, 3.6, 15); cam.lookAt(0, 2.6, 0);
+cam.updateMatrixWorld();
+document.querySelectorAll(".label").forEach((el) => {
+  const v = new THREE.Vector3(+el.dataset.at, H - .15, 0.96).project(cam);
+  el.style.left = ((v.x + 1) / 2 * innerWidth) + "px"; el.style.top = ((1 - v.y) / 2 * innerHeight + 14) + "px";
+});
+done(r, scene, cam);
+</script>
+</body>
+</html>

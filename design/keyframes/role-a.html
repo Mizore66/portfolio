@@ -1,0 +1,31 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Role A: replay with sidebars, low corner</title>
+<link rel="stylesheet" href="_shared/tokens.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>
+  body { background: var(--hall-wall); } .edge { position:absolute; top:0; right:0; bottom:0; width:22px; background:var(--ink); z-index:4; } .resume { right:64px; z-index:6; }
+  .role { position:absolute; left:52px; top:13vh; z-index:3; } .role h1 { font-size:6.6vw; } .role p { margin-top:10px; font-size:15px; color:var(--pencil); }
+  .scrub { position:absolute; left:52px; bottom:6vh; z-index:3; } .scrub .mv { font-size:14px; } .ticks { display:flex; gap:5px; margin:10px 0 8px; align-items:flex-end; }
+  .ticks i { display:block; width:1px; height:9px; background:#aaa59c; } .ticks i.p { background:var(--ink); } .ticks i.c { width:2px; height:16px; background:var(--ink); }
+  .scrub .g { font-size:12px; color:var(--graphite); } .fact { position:absolute; left:52px; top:calc(13vh + 6.6vw + 70px); width:330px; z-index:3; } .fact hr { border:0; height:2px; background:var(--ink); margin-bottom:22px; width:260px; } .fact p { font-size:17px; line-height:1.45; } .fact b { display:block; margin-top:22px; font-size:24px; font-weight:700; letter-spacing:-.015em; } .fact .q { margin-top:6px; }
+</style></head><body>
+<div class="frame"><canvas id="c"></canvas><div class="edge"></div>
+  <nav class="nav"><span aria-current="page">Roles</span><span>Work</span><span>Lab</span><span>Contact</span></nav><div class="resume">Résumé</div>
+  <div class="role"><h1 class="display">Deriv</h1><p>AI Engineer, Jun 2026 to now</p></div>
+  <div class="fact"><hr><p>Built evaluation and debugging harnesses that reproduce failures and capture environment signals.</p><b>~50% faster time-to-fix</b><div class="q qual">Production</div></div>
+  <div class="scrub"><div class="mv mono">16. Nd5</div><div class="ticks"><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="p"></i><i class="c"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="g mono">Tal vs Larsen, Bled 1965</div></div>
+</div>
+<script type="module">
+import { THREE, renderer, applyEnv, board, position, done } from "./_shared/chess3d.js";
+const pos = (await (await fetch("./_shared/positions.json")).json())["Tal-Larsen"];
+const W = innerWidth, H = innerHeight, { r, envTex } = renderer(document.getElementById("c"), { exposure: 1.02 });
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0xf2f2ef); applyEnv(scene, envTex, .5);
+scene.add(new THREE.HemisphereLight(0xffffff, 0xd9d6cf, 1.05));
+const sun = new THREE.DirectionalLight(0xfffaf0, 2.3); sun.position.set(-7, 12, -5); sun.castShadow = true; sun.shadow.mapSize.set(4096, 4096); sun.shadow.radius = 7; sun.shadow.bias = -.0004;
+Object.assign(sun.shadow.camera, { left: -9, right: 9, top: 9, bottom: -9, near: 1, far: 40 }); scene.add(sun);
+scene.add(board({ highlight: pos.last, tableSize: 16, table: 0xdcd4c6 }));
+scene.add(position(pos.fen));
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(90, 30), new THREE.MeshStandardMaterial({ color: 0xf3f3f0, roughness: 1 })); wall.position.set(0, 8, -24); scene.add(wall);
+for (let i = -4; i <= 4; i++) { const w = new THREE.Mesh(new THREE.PlaneGeometry(3, 12), new THREE.MeshBasicMaterial({ color: 0xffffff })); w.position.set(i * 7, 11, -23.9); scene.add(w); }
+const cam = new THREE.PerspectiveCamera(38, W / H, .1, 200); cam.position.set(-8.4, 3.4, 8.6); cam.lookAt(0.9, .2, -.8); cam.setViewOffset(W, H, -.25 * W, 0, W, H);
+done(r, scene, cam);
+</script></body></html>

@@ -731,6 +731,26 @@ function toSan(pos: EnginePos, m: Move, moves: Move[]): string {
   return san;
 }
 
+/** A legal ply in standard notation ("Nf3", "exd5", "O-O", "Qh5+", "Rc2#"), or "" when it is not legal here. */
+export function sanOf(pos: EnginePos, ply: Ply): string {
+  const moves = legalMoves(pos), m = moves.find((mv) => alg(mv.from) === ply.from && alg(mv.to) === ply.to);
+  return m ? toSan(pos, m, moves) : "";
+}
+
+/** The position as board rows, rank 8 first ("rnbqkbnr/pppppppp/......../…", "." for empty). */
+export function rowsOf(pos: EnginePos): string {
+  const rows: string[] = [];
+  for (let r = 7; r >= 0; r--) {
+    let row = "";
+    for (let f = 0; f < 8; f++) {
+      const c = pos.board[f + r * 8];
+      row += c === 0 ? "." : "PNBRQK"[(c & 7) - 1][c & 8 ? "toLowerCase" : "toUpperCase"]();
+    }
+    rows.push(row);
+  }
+  return rows.join("/");
+}
+
 function formatPv(pos: EnginePos, uciList: string[]): string[] {
   const work = clonePos(pos);
   const out: string[] = [];

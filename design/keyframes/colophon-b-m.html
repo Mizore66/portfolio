@@ -1,0 +1,43 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Colophon B: the scoresheet</title>
+<link rel="stylesheet" href="_shared/tokens.css"><style>
+  /* B: the scoresheet. The seam stands at the home page's 55.9%, between a scoresheet's two columns: each note is a
+     row, numbered like a move, its name on the paper side and its text on the dark side. */
+  .t { position:absolute; left:4vw; top:14vh; font-size:4.9vw; white-space:nowrap; }
+  .lede { position:absolute; left:4.2vw; top:calc(14vh + 9.4vw); width:34vw; font-size:17px; line-height:1.45; color:var(--fg2); }
+  .perft { position:absolute; left:calc(55.9% + 4vw); top:14vh; }
+  .perft p { font-size:12px; color:var(--fg2); margin-bottom:12px; }
+  .perft table { border-collapse:collapse; } .perft td { font-size:13px; color:var(--fg2); padding:2px 26px 2px 0; vertical-align:baseline; }
+  .perft td.n { font-size:3.1vw; color:var(--fg); letter-spacing:-.02em; padding-right:0; text-align:right; }
+  .sheet { position:absolute; left:0; right:0; top:48vh; }
+  .row { display:grid; grid-template-columns:4vw 5.4vw calc(55.9vw - 9.4vw) 36vw; border-top:1px solid color-mix(in srgb, var(--fg) 30%, transparent); padding:16px 0 18px; }
+  .row .no { grid-column:2; font-size:13px; padding-top:5px; color:var(--fg2); }
+  .row h2 { grid-column:3; font-size:1.9vw; font-weight:800; font-variation-settings:"wdth" 108; letter-spacing:-.02em; line-height:1; }
+  .row .b { grid-column:4; margin-left:4vw; font-size:14px; line-height:1.5; }
+  .row .b li { list-style:none; margin-bottom:4px; } .row .b li::before { content:"✓ "; color:var(--move); }
+  .row .b dt { font-weight:600; display:inline; } .row .b dd { display:inline; } .row .b dd::after { content:""; display:block; margin-bottom:4px; }
+  .by { position:absolute; left:calc(55.9% + 4vw); bottom:12vh; font-size:12px; color:var(--fg2); }
+  @media (max-width:600px) {
+    .t { left:20px; top:88px; font-size:12vw; white-space:normal; } .t br { display:none; }
+    .lede { left:20px; right:20px; width:auto; top:calc(88px + 26vw); font-size:15px; }
+    .perft { left:20px; right:20px; top:calc(88px + 26vw + 104px); } .perft p { margin-bottom:6px; }
+    .perft table, .perft tbody { display:flex; gap:18px; } .perft tr { display:flex; flex-direction:column-reverse; }
+    .perft td { padding:0; } .perft td.n { font-size:26px; text-align:left; }
+    .sheet { top:calc(55.9vh + 24px); } .row { grid-template-columns:20px 44px 1fr 20px; row-gap:10px; }
+    .row .no { grid-column:2; } .row h2 { grid-column:3; font-size:24px; } .row .b { grid-column:2 / 4; margin-left:0; }
+    .by { display:none; }
+  }
+</style></head><body><div class="frame"><div id="ink"><nav class="nav"><span>Roles</span><span>Work</span><span>Lab</span><span>Contact</span></nav><div class="resume">Résumé</div><div class="sound dim">Sound off</div>
+<h1 class="t display"></h1><p class="lede"></p>
+<div class="perft"><p class="lead"></p><table class="mono"></table></div>
+<div class="sheet"></div></div></div>
+<script type="module">
+import { COPY } from "./_shared/colophon.js"; import { seam } from "./_shared/seam.js";
+const $ = (s) => document.querySelector(s), ph = innerWidth < 600;
+$(".t").innerHTML = COPY.title.replace("site ", "site <br>"); $(".lede").textContent = COPY.lede;
+$(".perft .lead").textContent = COPY.perft.lead;
+$(".perft table").innerHTML = COPY.perft.rows.map(([d, n]) => `<tr><td>depth ${d}</td><td class="n">${n}</td></tr>`).join("");
+const rows = [...COPY.sections.map((s) => [s.k, `<p>${s.body}</p>`]), ["Tested", `<ul>${COPY.tests.map((t) => `<li>${t}</li>`).join("")}</ul>`],
+  ["Credits", `<dl>${COPY.credits.map(([k, v]) => `<dt>${k}.</dt> <dd>${v}</dd>`).join("")}</dl><p style="margin-top:10px;opacity:.7">${COPY.by}</p>`]];
+$(".sheet").innerHTML = rows.map(([k, b], i) => `<div class="row"><span class="no mono">${i + 1}.</span><h2>${k}</h2><div class="b">${b}</div></div>`).join("");
+await document.fonts.ready; seam({ at: .559, dir: ph ? "h" : "v" });
+</script></body></html>

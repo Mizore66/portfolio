@@ -1,0 +1,26 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><title>Asset: the seven other pieces</title><link rel="stylesheet" href="/design/keyframes/_shared/tokens.css">
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<style>body { background: #09090a; } .lab { position:absolute; font:12px var(--font-mono); color:#8c877e; transform:translateX(-50%); text-align:center; z-index:3; white-space:nowrap; line-height:1.5; } .lab b { display:block; font:600 14px var(--font-display); color:#ece6da; }</style></head><body><div class="frame"><canvas id="c"></canvas><div id="labs"></div></div>
+<script type="module">
+import { THREE, renderer, spot, done } from "/design/keyframes/_shared/chess3d.js";
+import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUniformsLib.js";
+import { SIDELINES } from "/design/keyframes/_shared/sidelines.js";
+import { gallery } from "./env.js";
+const { r, envTex } = renderer(document.getElementById("c"), { exposure: 1.05 }), scene = new THREE.Scene(), W = innerWidth, H = innerHeight;
+scene.background = new THREE.Color(0x09090a); scene.environment = envTex; scene.environmentIntensity = .3; // a lit room for the polished pieces to reflect
+scene.add(new THREE.HemisphereLight(0x2a2a30, 0x050505, .5));
+RectAreaLightUniformsLib.init();
+// soft panels for the polished pieces to reflect: one overhead, one behind as a rim
+const panel = (w, h, pos, look, I) => { const l = new THREE.RectAreaLight(0xfff4e6, I, w, h); l.position.set(...pos); l.lookAt(...look); scene.add(l);
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: 0xfff4e6, side: THREE.DoubleSide })); m.position.copy(l.position); m.quaternion.copy(l.quaternion); m.layers.set(1); scene.add(m); };
+panel(16, 3, [0, 7, 3], [0, 0, 0], 2.2); panel(16, 2.2, [0, 3, -5], [0, 1, 0], 3.5);
+const rimL = new THREE.DirectionalLight(0xdfe6ee, 1.4); rimL.position.set(4, 5, -8); scene.add(rimL);
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), new THREE.MeshStandardMaterial({ color: 0x0e0e0f, roughness: .9 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const cam = new THREE.PerspectiveCamera(22, W / H, .1, 100); cam.position.set(0, 2.9, 22); cam.lookAt(0, 1.0, 0); cam.updateMatrixWorld();
+const labs = [];
+SIDELINES.forEach((s, i) => { const x = -5.4 + i * 1.8, p = s.make(); p.scale.setScalar(1.35); p.position.set(x, 0, 0); scene.add(p);
+  spot(scene, { pos: [x - 2.5, 9, 5], target: [x, 1, 0], intensity: 110, angle: .17, penumbra: .8 });
+  const q = new THREE.Vector3(x, 0, 0).project(cam); labs.push(`<div class="lab" style="left:${(q.x + 1) / 2 * W}px;top:${(1 - q.y) / 2 * H + 22}px"><b>${s.name}</b>${s.move ?? "no move yet"}</div>`); });
+document.getElementById("labs").innerHTML = labs.join("");
+done(r, scene, cam);
+</script></body></html>
