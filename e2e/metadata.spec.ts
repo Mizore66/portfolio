@@ -24,11 +24,12 @@ test("each page names its own share card, and the card and the icons are served"
 });
 
 // A phone's forced dark mode (Samsung Internet, Chrome) turned the Roles hall's type white over its white 3D floor. The page
-// declares both schemes, so the browser leaves its colours alone; with the phone in dark mode the type stays ink.
+// declares "only light", and answers a dark preference with it too (Samsung Internet's test), so the browser leaves its
+// colours alone; with the phone in dark mode the type stays ink.
 test("in dark mode the page keeps its own colours: ink type on the paper hall", async ({ browser }) => {
   const page = await (await browser.newContext({ colorScheme: "dark", viewport: { width: 390, height: 844 } })).newPage();
   await page.goto("/roles/deriv");
-  expect(await page.locator('meta[name="color-scheme"]').getAttribute("content")).toBe("light dark");
+  expect(await page.locator('meta[name="color-scheme"]').getAttribute("content")).toBe("only light");
   const ink = await page.getByRole("heading", { level: 1 }).evaluate((e) => getComputedStyle(e).color);
   expect(ink).toBe("rgb(13, 13, 12)");
   await page.context().close();
