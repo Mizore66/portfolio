@@ -18,6 +18,7 @@
 .hero .line i { display: block; font-style: normal; }
 .hero .ev { position: absolute; left: calc(55.9% + calc(20 * var(--u))); bottom: 6.8vh; font-size: calc(14 * var(--u)); white-space: nowrap; }
 .hero .skip-resume { position: absolute; left: 4.4vw; bottom: 6.8vh; font-size: calc(13 * var(--u)); text-decoration: none; }
+.hero[data-intro="done"] .skip-resume { display: none; }
 .hero .ply { position: absolute; left: 50%; bottom: 6.8vh; transform: translateX(-50%); font-size: calc(13 * var(--u)); white-space: nowrap; }
 
 @media (max-width: 600px), (min-width: 601px) and (max-width: 1199px) and (orientation: portrait) {
