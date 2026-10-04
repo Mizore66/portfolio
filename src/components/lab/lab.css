@@ -27,6 +27,9 @@
 .lab .op-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .lab .op-body { position: absolute; left: 3.4vw; bottom: 14vh; font-size: calc(19 * var(--u)); line-height: 1.35; max-width: 13ch; }
 .lab .op-voice { position: absolute; left: 3.4vw; bottom: 8vh; font-size: calc(16 * var(--u)); font-family: var(--font-italic); font-style: italic; color: var(--fg2); }
+/* On the one page this line is screens below the first, and a laid-out line fetches its font: the italic (132 KB) came
+   down with the hero's files on a first load. It takes its family once the page has loaded (OnePage.tsx). */
+html:not([data-italic]) #lab .op-voice { font-family: var(--font-display); }
 .lab .tag i { font-family: var(--font-italic); } /* the labels' second lines (ch3, ch6): the italic is its own family (layout.tsx) */
 .lab .op-sc { position: absolute; left: calc(30.5% + calc(14 * var(--u))); bottom: 8vh; font-size: calc(13 * var(--u)); color: var(--fg2); }
 .lab .op-rec { position: absolute; right: calc(48 * var(--u)); bottom: 8vh; font-size: calc(14 * var(--u)); }

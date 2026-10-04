@@ -174,17 +174,21 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
         }
       } else if (reduced || seen || location.hash || window.scrollY > 8) finish(); // the opening plays only at the top of the page
       else {
-        gsap.set(q(".ch"), { yPercent: 135 }); gsap.set(q(".line i"), { yPercent: 130 }); gsap.set([...q(".ev"), ...toggle], { opacity: 0 }); gsap.set(nav, { opacity: 0 });
+        // on a phone the name is already there (hero.css): the opening plays around it
+        if (!mobile) gsap.set(q(".ch"), { yPercent: 135 });
+        gsap.set(q(".line i"), { yPercent: 130 }); gsap.set([...q(".ev"), ...toggle], { opacity: 0 }); gsap.set(nav, { opacity: 0 });
         el.dataset.intro = "play"; draw(); site?.setAttribute("data-seam-moving", ""); restColours(false); lockScroll(true); // the page waits for its opening
         tl.to(st, { t: T.total, duration: T.total, ease: "none", onUpdate: draw }, 0)
           .to(st, { at: share(SETTLE_CP), duration: 0.9, ease: "seam", onUpdate: draw }, T.paper)
-          .to(q(".ch"), { yPercent: 0, duration: 0.7, ease: "arrive", stagger: perLayer(0.028) }, T.name)
           .to(q(".skip-resume"), { autoAlpha: 0, duration: 0.25 }, T.name) // hidden once faded, so it leaves the tab order
           .to(q(".line i"), { yPercent: 0, duration: 0.6, ease: "arrive", stagger: perLayer(0.08) }, T.name + 0.45)
           .to(q(".ev"), { opacity: 1, duration: 0.4 }, T.name + 0.6)
           .to(nav, { opacity: 1, duration: 0.4, ease: "arrive", stagger: perLayer(0.05), clearProps: "opacity" }, T.name + 0.7).to(toggle, { opacity: 0.62, duration: 0.4, ease: "arrive", clearProps: "opacity" }, T.name + 0.75);
-        // The first 0.7 s is the loader: hold until the fonts are in (at most 2.5 s), then play.
-        const fonts = Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 2500))]);
+        if (!mobile) tl.to(q(".ch"), { yPercent: 0, duration: 0.7, ease: "arrive", stagger: perLayer(0.028) }, T.name); // on a phone it is there already
+        // The first 0.7 s is the loader: hold until the fonts are in (at most 2.5 s), then play. Its own fonts: the italic,
+        // fetched once the page has loaded for a line screens below (OnePage.tsx), is not waited for.
+        const own = [...document.fonts].filter((f) => f.style !== "italic" && f.status === "loading").map((f) => f.loaded.catch(() => {}));
+        const fonts = Promise.race([Promise.all(own), new Promise((r) => setTimeout(r, 2500))]);
         if (process.env.NODE_ENV !== "production" && new URLSearchParams(location.search).has("capture")) {
           // development only: frame-exact seeking for side-by-side checks against the approved prototype
           const w = window as unknown as { __seek: (t: number) => void; __ready: boolean; __total: number };

@@ -33,4 +33,7 @@
   .hero .ev { left: calc(20 * var(--u)); bottom: calc(26 * var(--u)); font-size: calc(12 * var(--u)); }
   .hero .skip-resume { left: calc(20 * var(--u)); top: calc(24 * var(--u)); bottom: auto; font-size: calc(12 * var(--u)); }
   .hero .ply { bottom: calc(26 * var(--u)); font-size: calc(12 * var(--u)); }
+  /* the name is there from the first frame, paper on the black, and the opening plays around it (owner, 2026-10-04:
+     a phone's slow first load showed nothing but black until the name rose, at 14 s in Lighthouse's mobile run) */
+  .site:not(:has(.home > :target)) .hero[data-intro="pending"] .hero-type .name { visibility: visible; }
 }
