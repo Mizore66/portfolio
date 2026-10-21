@@ -9,8 +9,10 @@ import { beginNav, navigating } from "@/lib/seam/sweep";
 import { buildAhead, firstView, nearScreen } from "@/lib/motion/firstView";
 import { PHONE } from "@/lib/seam/seam";
 import { after } from "@/lib/motion/slowmo";
-import { hallSteps, FRAME, type Frame, type Hall } from "./hall";
+import { FRAME, type Frame } from "./frame";
+import type { Hall } from "./hall";
 import { staged } from "@/lib/three/steps";
+import { scenes } from "@/lib/three/code";
 import { claim, keep, sleeper } from "@/lib/three/keep";
 import "./roles.css";
 import { timed, trace } from "@/lib/perf/trace";
@@ -41,7 +43,7 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
     const setView = (s: Hall, f: Frame) => { home.current = f; Object.assign(s.cam, { ...f, pos: [...f.pos], look: [...f.look] }); };
     const arriving = !window.matchMedia("(prefers-reduced-motion: reduce)").matches; // its entrance, the first time it is seen
     const rise = el.querySelectorAll("[data-rise]"), names = el.querySelectorAll(".names li");
-    let hall: Hall | null = null, failed = false, dead = false, tl: gsap.core.Timeline | undefined;
+    let hall: Hall | null = null, failed = false, dead = false, entered = false, tl: gsap.core.Timeline | undefined;
     // its canvas holds its buffers only within a screen of view (keep.ts); a kept hall wakes, and resizes, as it comes near
     const zz = sleeper(el, [c], () => { if (!hall) return; hall.resize(); draw(); });
     const adopt = (made: Hall) => {
@@ -50,12 +52,12 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
       // back from a detail page, the hall built last time: only its view and its lamps are set again
       if (got.stage) for (const k in hall.lamps) hall.lamps[k] = 0;
       h.current = hall; setView(hall, phone() ? FRAME.phone : FRAME.desk);
-      if (arriving) { const f = home.current; hall.cam.pos = [f.pos[0], f.pos[1] + 3, f.pos[2]]; } // from 3 units higher (motion.md §4)
+      if (arriving && !entered) { const f = home.current; hall.cam.pos = [f.pos[0], f.pos[1] + 3, f.pos[2]]; } // from 3 units higher (motion.md §4); in after its entrance (its code still downloading then), it stands where it ends
       hall.ready.then(() => { trace("roles: compiled"); return got.stage ? undefined : h.current?.warm(); }).then(() => { trace("roles: warmed"); timed("roles: first draw", () => h.current?.render()); }); // its first frame, drawn ahead wherever the page is
       zz.built(); // one built far off gives its buffers up; a kept one wakes once the page has its scroll (keep.ts)
     };
     // built ahead in slices (steps.ts); reached before it is in, the rest of it at once
-    const scene = staged(() => hallSteps(c, list), adopt, () => { failed = true; el.dataset.gl = "off"; }, "roles");
+    const scene = staged(() => scenes.steps((m) => m.hallSteps(c, list)), adopt, () => { failed = true; el.dataset.gl = "off"; }, "roles");
     const build = () => { if (!hall && !failed && !dead) { if (got.stage) adopt(got.stage); else scene.now(); } return hall; };
     const start = () => { if (got.stage) build(); else if (!dead) scene.start(); };
     // on the one page the hall is built when it comes within a screen, not at load
@@ -66,7 +68,7 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
       gsap.set(rise, { yPercent: 135 }); gsap.set(names, { opacity: 0, y: 10 });
       cancel = firstView(el, () => {
         const delay = 0.15;
-        const s = build();
+        const s = build(); entered = true;
         tl = gsap.timeline({ onUpdate: draw });
         if (s) { const f = home.current; tl.to(s.cam.pos, { 1: f.pos[1], duration: 1.8, ease: "arrive" }, 0); }
         tl.to(rise, { yPercent: 0, duration: 0.7, ease: "arrive", stagger: perLayer(0.08) }, delay)
@@ -130,31 +132,12 @@ export function RolesIndex({ list, copy }: { list: HallTable[]; copy: { title: s
       .to(el.querySelectorAll(".names li"), { opacity: 0, y: -10, duration: 0.3, ease: "seam", stagger: 0.03 }, 0);
   };
 
-  // A table is read from where the camera rests, and becomes the one read once the pointer has stayed on it (or off every
-  // table) for a moment: at a table's edge a hand's tremor, and the camera easing toward the table, would otherwise flip
-  // the focus back and forth, the camera with it.
-  const hover = useRef({ to: null as string | null, t: 0 }), now = useRef<string | null>(null);
-  useEffect(() => { now.current = focus; }, [focus]);
-  useEffect(() => () => clearTimeout(hover.current.t), []);
-  const onPointer = (e: React.PointerEvent) => {
-    if (e.pointerType === "touch" || leaving.current || !h.current) return;
-    const r = canvas.current!.getBoundingClientRect(), s = h.current.pick(e.clientX - r.left, e.clientY - r.top, home.current);
-    canvas.current!.toggleAttribute("data-hot", !!s);
-    const v = hover.current;
-    if (s === now.current) { clearTimeout(v.t); v.to = s; return; } // back on the one being read
-    if (s === v.to) return; // already waiting to read it
-    v.to = s; clearTimeout(v.t);
-    v.t = window.setTimeout(() => { if (!leaving.current) setFocus(s); }, 120);
-  };
-  const onCanvasClick = (e: React.MouseEvent) => {
-    const r = canvas.current!.getBoundingClientRect(), s = h.current?.pick(e.clientX - r.left, e.clientY - r.top, home.current);
-    if (s) open(s);
-  };
   const read = (slug: string | null) => () => { if (!leaving.current) setFocus(slug); };
 
   return (
     <section ref={root} id="roles" className="roles" data-rest="1" data-rest-phone="1" aria-labelledby="roles-title">
-      <div ref={canvas} className="roles-canvas keep-slot" aria-hidden="true" onPointerMove={onPointer} onPointerLeave={() => { clearTimeout(hover.current.t); hover.current.to = null; read(null)(); }} onClick={onCanvasClick} />
+      {/* not pointed at: a ray through every table and piece on each pointer move was the hall's lag; the names open them */}
+      <div ref={canvas} className="roles-canvas keep-slot" aria-hidden="true" />
       <div className="roles-dark" />
       <div className="roles-layer">
         <h2 id="roles-title" className="roles-title display"><span className="ln" data-vt-line=""><span data-rise="">{copy.title}</span></span></h2>

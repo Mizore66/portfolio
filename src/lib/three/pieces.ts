@@ -3,7 +3,7 @@
 import * as THREE from "three";
 import { run, type Steps } from "./steps";
 export type { PieceType };
-import { mergeGeometries, mergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
 
 type Pt = [number, number];
@@ -77,14 +77,33 @@ function* knightHeadSteps(lod = false): Steps<THREE.BufferGeometry> {
   // 420 points of the outline (the head was 195 ms of the hero's first build; now the same numbers, a tenth the work)
   const at: [number, number, number][] = [];
   const pt = (k: number, i: number) => { const j = k * n + (i % n); if (!at[j]) { const [x, y] = ring(k, i); at[j] = [x, y, knightHalfDepth(x, y)]; } return at[j]; };
-  const pos: number[] = [], push = (side: number, pts: [number, number, number][]) => { for (const [x, y, z] of side > 0 ? pts : [pts[0], pts[2], pts[1]]) pos.push(x, y, side * z); };
+  // indexed as it is built, the normals summed as it goes: the same mesh mergeVertices (1e-5) and computeVertexNormals
+  // gave, but welding each shared point once, not 140k loose corners (those two were 220 ms of the hero's build on a phone)
+  const pos: number[] = [], nrm: number[] = [], index: number[] = [], weld = new Map<string, number>(), ids = [new Map<number, number>(), new Map<number, number>()];
+  const h = (v: number) => ~~(v * 1e5 + 0.5);
+  const id = (side: number, j: number, [x, y, z]: [number, number, number]) => {
+    const memo = ids[side > 0 ? 0 : 1], had = memo.get(j); if (had !== undefined) return had;
+    const key = `${h(x)},${h(y)},${h(side * z)}`; let v = weld.get(key);
+    if (v === undefined) { v = pos.length / 3; weld.set(key, v); pos.push(x, y, side * z); nrm.push(0, 0, 0); }
+    memo.set(j, v); return v;
+  };
+  const vtx = (side: number, k: number, i: number) => id(side, k * n + (i % n), pt(k, i));
+  const tri = (a: number, b: number, c: number) => {
+    index.push(a, b, c);
+    const ax = pos[a * 3], ay = pos[a * 3 + 1], az = pos[a * 3 + 2], bx = pos[b * 3], by = pos[b * 3 + 1], bz = pos[b * 3 + 2];
+    const cbx = pos[c * 3] - bx, cby = pos[c * 3 + 1] - by, cbz = pos[c * 3 + 2] - bz, abx = ax - bx, aby = ay - by, abz = az - bz;
+    const nx = cby * abz - cbz * aby, ny = cbz * abx - cbx * abz, nz = cbx * aby - cby * abx;
+    for (const v of [a, b, c]) { nrm[v * 3] += nx; nrm[v * 3 + 1] += ny; nrm[v * 3 + 2] += nz; }
+  };
+  const push = (side: number, [a, b, c]: number[]) => (side > 0 ? tri(a, b, c) : tri(a, c, b));
   for (const side of [1, -1]) for (let k = 0; k < K; k++) for (let i = 0; i < n; i++) {
-    const a = pt(k, i), b = pt(k + 1, i), c = pt(k + 1, i + 1), d = pt(k, i + 1);
+    const a = vtx(side, k, i), b = vtx(side, k + 1, i), c = vtx(side, k + 1, i + 1), d = vtx(side, k, i + 1);
     push(side, [a, b, c]); if (k > 0) push(side, [a, c, d]);
     if (i === n - 1 && k % 4 === 3) yield;
   }
-  const both = new THREE.BufferGeometry(); both.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
-  yield; const m = mergeVertices(both, 1e-5); yield; m.computeVertexNormals();
+  for (let v = 0; v < nrm.length; v += 3) { const l = Math.hypot(nrm[v], nrm[v + 1], nrm[v + 2]) || 1; nrm[v] /= l; nrm[v + 1] /= l; nrm[v + 2] /= l; }
+  const m = new THREE.BufferGeometry(); m.setIndex(new THREE.BufferAttribute(new Uint32Array(index), 1));
+  m.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); m.setAttribute("normal", new THREE.Float32BufferAttribute(nrm, 3));
   return lod ? (KNIGHT_LOD = m) : (KNIGHT_GEO = m);
 }
 /** Everything a set of pieces shares, built ahead in steps: so the first piece() call costs no more than any other. */
@@ -115,6 +134,8 @@ function stone() {
   for (let k = 0; k < 260; k++) { const x = r() * 512, y = r() * 512, rad = .6 + r() ** 3 * 4; g.fillStyle = `rgba(20,20,20,${.5 + r() * .4})`; g.beginPath(); g.arc(x, y, rad, 0, 7); g.fill(); }
   STONE = new THREE.CanvasTexture(c); STONE.wrapS = STONE.wrapT = THREE.RepeatWrapping; STONE.repeat.set(3, 3); return STONE;
 }
+/** The basalt's texture, drawn ahead as a step of its own (sculptures.ts materialsReady). */
+export const stoneTexture = stone;
 export const MAT = {
   ivory: () => new THREE.MeshPhysicalMaterial({ color: 0xeee7d8, roughness: .38, clearcoat: .5, clearcoatRoughness: .3 }),
   ebony: () => new THREE.MeshPhysicalMaterial({ color: 0x1d1a17, roughness: .32, clearcoat: .7, clearcoatRoughness: .2 }),

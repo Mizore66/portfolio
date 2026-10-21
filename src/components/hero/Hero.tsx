@@ -7,10 +7,11 @@ import { arrival } from "@/lib/seam/sweep";
 import { lockScroll } from "@/lib/motion/scroll";
 import { gsap } from "gsap";
 import { registerEases, share, perLayer } from "@/lib/motion/ease";
-import { stageSteps, T, type Stage } from "./stage";
+import { T } from "./timing";
+import type { Stage } from "./stage";
 import { claim, keep, sleeper } from "@/lib/three/keep";
 import { ahead, run, sliced } from "@/lib/three/steps";
-import { madeDuring } from "@/lib/three/env";
+import { scenes } from "@/lib/three/code";
 import { cue } from "@/lib/sound/sound";
 import "./hero.css";
 import { timed, trace } from "@/lib/perf/trace";
@@ -18,6 +19,7 @@ import { timed, trace } from "@/lib/perf/trace";
 /** The eval after 10…Bg4, where the hero settles (content.json chess.careerEvals.faultline). */
 const SETTLE_CP = 64;
 const SEEN = "hero-opening-seen";
+if (typeof window !== "undefined") scenes.get(); // the stage's code, asked for now and fetched once the page has painted (code.ts)
 
 function Letters({ word }: { word: string }) {
   return <>{[...word].map((c, i) => <span key={i} className="ch" aria-hidden="true">{c}</span>)}</>;
@@ -70,14 +72,14 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
     registerEases();
     // back from a detail page, the stage built last time (keep.ts): nothing to build, no shader to compile
     const key = `hero-${mobile}`, got = claim<Stage>(key, [day.current!, night.current!]);
-    const make = () => stageSteps(got.canvases[0], got.canvases[1], mobile);
+    const make = () => scenes.steps((m) => m.stageSteps(got.canvases[0], got.canvases[1], mobile));
     let dead = false, end = () => {};
     // Arriving from another page at the top, the stage is needed now, under the sweep; on a first load it is built in
     // slices (steps.ts) while the page is still black, so no frame waits on it for long, and the opening starts once it
     // is in. Arriving lower down (/#contact) it is off screen: in slices too, its programs compiled off the main thread
     // (built and drawn at once it held the page change from /lab to Contact 0.3 s, 0.6 s in development).
     const to = arrival("/")?.to, below = to != null && /#(?!top$)./.test(to);
-    if (got.stage || (to != null && !below)) {
+    if (got.stage || (to != null && !below && scenes.now)) {
       try { end = begin(got.stage ?? timed("hero: built", () => run(make()))); }
       catch { el.dataset.intro = "done"; } // no WebGL: the CSS end state stands in
     } else {
@@ -90,7 +92,7 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
       // arriving lower down, its two renderers are made now, as the Lab's are let go: made later, past the Lab's lost
       // contexts, they were over WebKit's count (it keeps lost ones until they are collected) and it lost Play's
       let g!: ReturnType<typeof make>, mine: { dispose(): void }[] = [];
-      try { mine = madeDuring(() => { g = below ? ahead(make(), 2) : make(); }); }
+      try { const made = () => { g = below ? ahead(make(), 2) : make(); }; if (scenes.now) mine = scenes.now.madeDuring(made); else made(); }
       catch { el.dataset.intro = "done"; return () => {}; } // no WebGL
       const b = sliced(g, 8, "hero");
       b.done.then((stage) => {
@@ -172,7 +174,7 @@ export function Hero({ first, last, headline }: { first: string; last: string; h
               .to(q(".ev"), { opacity: 1, duration: 0.4 }, d + 0.5).to(toggle, { opacity: 0.62, duration: 0.4, clearProps: "opacity" }, d + 0.5);
           });
         }
-      } else if (reduced || seen || location.hash || window.scrollY > 8) finish(); // the opening plays only at the top of the page
+      } else if (reduced || seen || to != null || location.hash || window.scrollY > 8) finish(); // the opening plays only at the top of the page, and not after a page change whose sweep was over before the stage was in
       else {
         // on a phone the name is already there (hero.css): the opening plays around it
         if (!mobile) gsap.set(q(".ch"), { yPercent: 135 });

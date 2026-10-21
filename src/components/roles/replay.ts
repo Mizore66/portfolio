@@ -5,10 +5,9 @@
  * last move stay lit amber. Rendered only when something changes.
  */
 import * as THREE from "three";
-import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { gsap } from "gsap";
 import { disposeScene } from "@/lib/three/sculptures";
-import { renderer } from "@/lib/three/env";
+import { renderer, roomEnvNow } from "@/lib/three/env";
 import { sq } from "@/lib/three/pieces";
 import { board, position, ROLE } from "@/lib/three/board";
 import type { GamePly } from "@/content/roles";
@@ -31,7 +30,7 @@ const clamp = (v: number) => Math.min(1, Math.max(0, v));
 export function createReplay(canvas: HTMLCanvasElement, plies: GamePly[]): Replay {
   const r = renderer(canvas, 1.02);
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0xf2f2ef);
-  const pm = new THREE.PMREMGenerator(r), env = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose();
+  const env = roomEnvNow(r);
   scene.environment = env; scene.environmentIntensity = 0.5;
   scene.add(new THREE.HemisphereLight(0xffffff, 0xd9d6cf, 1.05));
   const sun = new THREE.DirectionalLight(0xfffaf0, 2.3); sun.position.set(-7, 12, -5); sun.castShadow = true;

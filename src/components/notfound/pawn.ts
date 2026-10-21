@@ -1,16 +1,15 @@
 // The 404's scene, loaded only when a 404 is shown (NotFound.tsx): Next loads the not-found page's scripts on every
 // page, and importing three.js here put a second copy of it into every page's first load (phase 6, the load budget).
 import * as THREE from "three";
-import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { PHONE } from "@/lib/seam/seam";
-import { renderer } from "@/lib/three/env";
+import { renderer, roomEnvNow } from "@/lib/three/env";
 import { piece, MAT } from "@/lib/three/pieces";
 import { disposeScene } from "@/lib/three/sculptures";
 
 /** One captured pawn on its side under a spot, set beside the board (key frame 404-c). Drawn once, and on resize. */
 export function pawn(canvas: HTMLCanvasElement) {
   const r = renderer(canvas, 1.05), scene = new THREE.Scene();
-  const pm = new THREE.PMREMGenerator(r), env = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose();
+  const env = roomEnvNow(r);
   scene.background = new THREE.Color(0x09090a); scene.environment = env; scene.environmentIntensity = 0.08;
   scene.add(new THREE.HemisphereLight(0x9aa4b8, 0x09090a, 0.18));
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), new THREE.MeshStandardMaterial({ color: 0x0e0e10, roughness: 0.9 }));

@@ -9,8 +9,8 @@ export function firstView(el: Element, fn: () => void, { threshold = 0.3 } = {})
 }
 
 /**
- * Build a scene ahead of need: when the page is idle after load (never during the hero's opening, which owns the main
- * thread), or when the element comes within `margin` of the screen, whichever is first. A scene built as it scrolls
+ * Build a scene ahead of need: when the page is idle after load (the hero's opening included), or when the element
+ * comes within `margin` of the screen, whichever is first. A scene built as it scrolls
  * in costs the scroll a hitch. `order` staggers several scenes so each has an idle slot of its own. Returns the cancel.
  */
 // the hero's opening, or the one about to play while its stage is built (the page is held still for both)
@@ -23,10 +23,10 @@ export function buildAhead(el: Element, build: () => void, { order = 0, margin =
   // below the hero, were built in the opening's first second (a 400 ms freeze while it drew its first moves)
   const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting) && !opening()) go(); }, { rootMargin: margin });
   io.observe(el);
-  const wait = () => {
-    if (opening()) { t = window.setTimeout(wait, 600); return; }
-    idle = typeof requestIdleCallback === "function" ? requestIdleCallback(go, { timeout: 4000 }) : window.setTimeout(go, 200);
-  };
+  // In idle time during the hero's opening too: it holds the page still for about 8 s, and a scene left to build until
+  // it ended was built as the visitor first scrolled (the hall finished at once, a frame of 133-205 ms; 81% of the first
+  // scroll's slow frames, docs/perf-audit/01-runtime-trace.md). Builds go a slice a frame, one build at a time (steps.ts).
+  const wait = () => { idle = typeof requestIdleCallback === "function" ? requestIdleCallback(go, { timeout: 4000 }) : window.setTimeout(go, 200); };
   t = window.setTimeout(wait, 800 + order * 450);
   function stop() { io.disconnect(); clearTimeout(t); if (typeof cancelIdleCallback === "function") cancelIdleCallback(idle); else clearTimeout(idle); }
   return () => { done = true; stop(); };

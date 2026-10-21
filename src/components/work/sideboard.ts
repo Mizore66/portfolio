@@ -6,27 +6,20 @@
  * Rendered only when something changes (design/motion.md, Performance).
  */
 import * as THREE from "three";
-import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { patchSpots } from "@/lib/three/lights";
 import { RectAreaLightUniformsLib } from "three/examples/jsm/lights/RectAreaLightUniformsLib.js";
 import { sq } from "@/lib/three/pieces";
-import { SCULPTURE, disposeScene } from "@/lib/three/sculptures";
-import { renderer } from "@/lib/three/env";
+import { SCULPTURE, disposeScene, materialsReady } from "@/lib/three/sculptures";
+import { renderer, roomEnv } from "@/lib/three/env";
 import { warmScenes } from "@/lib/three/warm";
 import { stageScale, stageTurn } from "@/components/project/stage";
 import { piecesReady } from "@/lib/three/pieces";
 import { type Steps } from "@/lib/three/steps";
 import { PHONE } from "@/lib/seam/seam";
 
-type V3 = [number, number, number];
-/** A framing: `sx`, `sy` place the look point on screen (0..1 across and down; .5 is the centre). */
-export interface Frame { pos: V3; look: V3; fov: number; sx: number; sy: number }
+import { FRAME, type Frame } from "./sideframe";
 
-/** side-a's framing; on phones the board sits at the top and the scoresheet runs below it (side-a-m). */
-export const FRAME = {
-  desk: { pos: [3.6, 9.2, 8.6], look: [-1.3, 0.3, -0.9], fov: 30, sx: 0.715, sy: 0.52 } as Frame,
-  phone: { pos: [0, 13.6, 6.6], look: [-0.8, 0, -2.3], fov: 52, sx: 0.5, sy: 0.441 } as Frame,
-};
+export { FRAME, type Frame };
 
 /** where the pieces set aside stand: on the table, behind rank 8 */
 const ASIDE: Record<string, { x: number; z: number }> = { rexcheck: { x: -1.2, z: -5.2 }, "financial-risk-predictor": { x: -3.2, z: -5.2 } };
@@ -77,7 +70,7 @@ function board(highlight: string[]) {
 export function* sideboardSteps(canvas: HTMLCanvasElement, list: { slug: string; square: string | null }[], aside: Set<string>): Steps<Sideboard> {
   const r = renderer(canvas, 1.02); yield;
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x09090a);
-  const pm = new THREE.PMREMGenerator(r), env = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose();
+  const env = yield* roomEnv(r);
   scene.environment = env; yield;
   const hemi = new THREE.HemisphereLight(0x2a2a30, 0x050505, 0.35); scene.add(hemi);
 
@@ -89,7 +82,7 @@ export function* sideboardSteps(canvas: HTMLCanvasElement, list: { slug: string;
 
   const hit: THREE.Object3D[] = [], figure: Record<string, THREE.Group> = {}, at: Record<string, THREE.Vector3> = {}, tag: Record<string, THREE.Vector3> = {};
   const spots: Record<string, THREE.SpotLight> = {}, mats: Record<string, THREE.Material[]> = {}, felts: Record<string, THREE.Object3D[]> = {}, meshes: Record<string, THREE.Mesh[]> = {}, turn0: Record<string, number> = {};
-  yield* piecesReady();
+  yield* piecesReady(); yield* materialsReady();
   for (const e of list) {
     yield;
     const p = SCULPTURE[e.slug]();

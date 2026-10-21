@@ -62,15 +62,18 @@ const onScreen = new WeakMap<HTMLCanvasElement, () => boolean>();
  *
  * Resizing a canvas waits for the GPU to finish what it has queued: 5-30 ms with the page still, but up to 190 ms in
  * the middle of a scroll through the Lab's heaviest chapters. So a scene changes only once the scroll has been still
- * for a moment, one per task: it wakes within two screens and sleeps beyond three (between, it stays as it is). Only
- * one caught asleep within half a screen (a fast scroll, a jump) wakes at once. After building, which sizes the
+ * for a moment, one per task: it wakes within two screens and sleeps beyond three (between, it stays as it is); ahead
+ * of the scroll, within four and beyond six (AHEAD). Only one caught asleep within half a screen (a fast scroll, a
+ * jump) wakes at once. After building, which sizes the
  * canvases, a section calls `built()`: a scene built beyond two screens sleeps. Asleep is read from the canvas
  * itself, so a build or a resize never leaves it stale.
  */
 export function sleeper(el: Element, canvases: HTMLCanvasElement[], wake: () => void): Sleeper {
   const name = () => el.id || ((el as HTMLElement).dataset.ch ? `lab chapter ${(el as HTMLElement).dataset.ch}` : el.className.split(" ")[0]);
-  /** how many screens away the section is: 0 on screen */
-  const away = () => { const r = el.getBoundingClientRect(), h = innerHeight; return r.bottom < 0 ? -r.bottom / h : r.top > h ? (r.top - h) / h : 0; };
+  /** how many screens away the section is: 0 on screen. Ahead of the scroll (below it) counts for less: a scene ahead
+   * is kept awake further out, so going down the page the first time reaches it already awake. Woken under the scroll
+   * itself, its resize was a frame of 25-65 ms in the middle of it (docs/perf-audit/01-runtime-trace.md). */
+  const away = () => { const r = el.getBoundingClientRect(), h = innerHeight; return r.bottom < 0 ? -r.bottom / h : r.top > h ? (r.top - h) / h / AHEAD : 0; };
   let visible = away() === 0;
   const s: Sleeper & { check(): void; settle(): (() => void) | null } = {
     get asleep() { return canvases.length > 0 && canvases[0].width <= 1; },
@@ -89,6 +92,9 @@ export function sleeper(el: Element, canvases: HTMLCanvasElement[], wake: () => 
   return s;
 }
 
+/** ahead of the scroll, a scene wakes within AHEAD × 2 screens and sleeps beyond AHEAD × 3: on the one page, two
+ * screens ahead of what is in view are already awake when the scroll comes down to them */
+const AHEAD = 2;
 const all = new Set<{ check(): void; settle(): (() => void) | null }>();
 /** kept scenes' canvases (keep()) still to give up their buffers */
 const later = new Set<HTMLCanvasElement[]>();

@@ -4,24 +4,18 @@
  * Rendered only when something changes (design/motion.md, Performance).
  */
 import * as THREE from "three";
-import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { disposeScene } from "@/lib/three/sculptures";
-import { renderer } from "@/lib/three/env";
+import { renderer, roomEnv } from "@/lib/three/env";
 import { warmScenes } from "@/lib/three/warm";
 import { board, positionSteps, HALL } from "@/lib/three/board";
 import { MAT, piecesReady } from "@/lib/three/pieces";
 import { type Steps } from "@/lib/three/steps";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
-type V3 = [number, number, number];
-/** `sx`, `sy`: where the look point sits on screen (0..1 across and down; .5 is the centre) */
-export interface Frame { pos: V3; look: V3; fov: number; sx: number; sy: number }
+import { FRAME, type Frame } from "./frame";
 
-/** roles-b's eye-level view along the row, Deriv's table in front; on phones the row is seen from higher up. */
-export const FRAME = {
-  desk: { pos: [9.6, 3.6, 4.8], look: [1.4, 0.1, -3.4], fov: 30, sx: 0.7, sy: 0.5 } as Frame,
-  phone: { pos: [10.4, 5.2, 7.4], look: [0.4, 0.2, -2.6], fov: 50, sx: 0.34, sy: 0.42 } as Frame,
-};
+export { FRAME, type Frame };
+type V3 = [number, number, number];
 
 /**
  * The role page's camera around its board (role-a, design/motion/role.html): it looks at LOOK from R0 away and
@@ -50,8 +44,6 @@ export interface Hall {
    * (.9, .2, -.8), fov 38, the board a quarter screen right), as it stands at this table: where "sitting down" ends.
    */
   seat(slug: string, phone: boolean): Frame;
-  /** the table under a point, as seen from `from` (default: the camera as it stands) */
-  pick(x: number, y: number, from?: Frame): string | null;
   ready: Promise<void>;
   render(): void; resize(): void; dispose(): void;
   /** one draw of everything in it, into a pixel, so its first real frame is like any other (warmScenes) */
@@ -86,8 +78,15 @@ function* bake(g: THREE.Group): Steps<THREE.Group> {
   g.traverse((o) => { if ((o as THREE.Mesh).isMesh) meshes.push(o as THREE.Mesh); });
   for (const [i, m] of meshes.entries()) {
     if (i && i % 16 === 0) yield;
-    const mat = m.material as THREE.Material, geo = (m.geometry.index ? m.geometry.toNonIndexed() : m.geometry.clone()).applyMatrix4(m.matrixWorld);
-    for (const k of Object.keys(geo.attributes)) if (k !== "position" && k !== "normal") geo.deleteAttribute(k);
+    // kept indexed: unrolled (toNonIndexed) the hall was 5-6 times the vertices, and unrolling and moving them was a
+    // frame of 133-205 ms when the hall was finished at once (docs/perf-audit/01-runtime-trace.md). mergeGeometries
+    // wants all indexed or none, so one without an index is given the trivial one, as a typed array (a plain array of
+    // indices cost a phone 270 ms in setIndex)
+    const mat = m.material as THREE.Material, geo = new THREE.BufferGeometry(), n = m.geometry.attributes.position.count;
+    geo.setAttribute("position", m.geometry.attributes.position.clone()); geo.setAttribute("normal", m.geometry.attributes.normal.clone());
+    if (m.geometry.index) geo.setIndex(m.geometry.index.clone());
+    else { const ix = new Uint32Array(n); for (let k = 0; k < n; k++) ix[k] = k; geo.setIndex(new THREE.BufferAttribute(ix, 1)); }
+    geo.applyMatrix4(m.matrixWorld);
     const e = by.get(mat) ?? { geo: [], cast: false }; e.geo.push(geo); e.cast ||= m.castShadow; by.set(mat, e);
   }
   const out = new THREE.Group();
@@ -105,7 +104,7 @@ const disposeGeometries = (g: THREE.Object3D) => g.traverse((o) => (o as THREE.M
 export function* hallSteps(canvas: HTMLCanvasElement, list: { slug: string; fen: string; last: string[]; current: boolean }[]): Steps<Hall> {
   const r = renderer(canvas, 1.02); yield;
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0xf2f2ef);
-  const pm = new THREE.PMREMGenerator(r), env = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose();
+  const env = yield* roomEnv(r);
   scene.environment = env; scene.environmentIntensity = 0.55; yield;
   const hemi = new THREE.HemisphereLight(0xffffff, 0xd9d6cf, 1.1); scene.add(hemi);
   const sun = new THREE.DirectionalLight(0xfffaf0, 2.2); sun.position.set(-6, 14, -6); sun.castShadow = true;
@@ -117,15 +116,14 @@ export function* hallSteps(canvas: HTMLCanvasElement, list: { slug: string; fen:
   const glass = new THREE.MeshBasicMaterial({ color: 0xffffff }), pane = new THREE.PlaneGeometry(1.6, 6);
   for (let i = -3; i <= 3; i++) { const w = new THREE.Mesh(pane, glass); w.position.set(i * 3.4, 6.2, -10.98); scene.add(w); }
 
-  const groups: Record<string, THREE.Group> = {}, lampOf: Record<string, THREE.SpotLight> = {}, hit: THREE.Object3D[] = [];
+  const groups: Record<string, THREE.Group> = {}, lampOf: Record<string, THREE.SpotLight> = {};
   yield* piecesReady(true);
   for (const [i, t] of list.entries()) {
     yield;
     const a = Math.PI * (0.12 + (0.76 * i) / 6), R = 7.2, x = -Math.cos(a) * R, z = -Math.sin(a) * R * 0.72 + 2.2;
     const g = yield* table(t.fen, t.last, t.current);
     g.position.set(x, 0, z); g.rotation.y = Math.atan2(-x, 2.2 - z);
-    g.traverse((o) => { o.userData.slug = t.slug; });
-    scene.add(g); groups[t.slug] = g; hit.push(g);
+    scene.add(g); groups[t.slug] = g;
     // each table's lamp, for when its name is read (motion.md §9)
     const l = new THREE.SpotLight(0xfff1dc, 0, 0, 0.32, 0.6, 1.4);
     l.position.set(x, 5.4, z + 0.4); l.target.position.set(x, TOP, z); scene.add(l, l.target); lampOf[t.slug] = l;
@@ -142,10 +140,8 @@ export function* hallSteps(canvas: HTMLCanvasElement, list: { slug: string; fen:
     c.updateProjectionMatrix(); c.lookAt(...v.look); c.updateMatrixWorld();
   };
   const place = () => aim(cam, view);
-  const pickCam = new THREE.PerspectiveCamera(30, 1, 0.1, 200);
   const lamps: Record<string, number> = Object.fromEntries(list.map((t) => [t.slug, 0]));
   const room = { k: 1 };
-  const ray = new THREE.Raycaster();
   function resize() { r.setSize(W(), H(), false); place(); }
   resize();
   // nothing in the hall moves but the camera and the lamps (which cast no shadow): the sun's shadow is drawn once
@@ -162,12 +158,6 @@ export function* hallSteps(canvas: HTMLCanvasElement, list: { slug: string; fen:
       const g = groups[slug], o = (x: number, y: number, z: number) => new THREE.Vector3(x * S, TOP + y * S, z * S).applyMatrix4(g.matrixWorld);
       const [px, py, pz] = seatPos(0, phone), p = o(px, py, pz), l = o(...LOOK);
       return { pos: [p.x, p.y, p.z], look: [l.x, l.y, l.z], fov: phone ? 40 : 38, sx: phone ? 0.51 : 0.75, sy: phone ? 0.66 : 0.5 };
-    },
-    pick(x, y, from) {
-      // judged in `from` when given (the resting view), so the camera easing toward a table cannot change what is under a still pointer
-      if (from) aim(pickCam, from); else place();
-      ray.setFromCamera(new THREE.Vector2((x / W()) * 2 - 1, 1 - (y / H()) * 2), from ? pickCam : cam);
-      return (ray.intersectObjects(hit, true)[0]?.object.userData.slug as string) ?? null;
     },
     warm() { return compiled && !gone ? warmScenes([{ r, scene }], () => this.render(), { name: "roles: warm" }) : Promise.resolve(); },
     render() {

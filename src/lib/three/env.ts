@@ -1,6 +1,8 @@
 // The renderer every 3D room shares: ACES tone mapping, sRGB output, soft shadows, pixel ratio at most 2.
 import * as THREE from "three";
+import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { evictKept } from "./keep";
+import { run, type Steps } from "./steps";
 import { trace } from "@/lib/perf/trace";
 
 /**
@@ -35,6 +37,25 @@ export function renderer(canvas: HTMLCanvasElement, exposure: number) {
   r.outputColorSpace = THREE.SRGBColorSpace; r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
   return r;
 }
+
+/**
+ * The room every scene is lit by (three's RoomEnvironment at a 0.04 blur), in steps: its programs compiled in the
+ * background (where the browser can), then drawn. Drawn cold, the drawing compiled them: 20-30 ms a scene, 50-80 ms on
+ * a phone (4x CPU), the slowest step of the hero, the hall, the gallery, the sideboard and the Lab's chapters; compiled
+ * first, 6-7 ms. Built straight through, it does not wait: the same programs, compiled as it draws.
+ */
+export function* roomEnv(r: THREE.WebGLRenderer): Steps<THREE.Texture> {
+  const pm = new THREE.PMREMGenerator(r), room = new RoomEnvironment();
+  // compiled as fromScene draws it: into a target (so linear and untoned, the programs it will look up)
+  const target = new THREE.WebGLRenderTarget(16, 16, { type: THREE.HalfFloatType }), was = r.getRenderTarget();
+  r.setRenderTarget(target); const ready = r.compileAsync(room, new THREE.PerspectiveCamera(90, 1, 0.1, 100));
+  r.setRenderTarget(was); target.dispose();
+  yield ready;
+  const env = pm.fromScene(room, 0.04).texture; pm.dispose(); room.dispose();
+  return env;
+}
+/** The same, at once (a scene built in one go). */
+export const roomEnvNow = (r: THREE.WebGLRenderer) => run(roomEnv(r));
 
 /**
  * three's compileAsync, except that a material disposed of while it compiles, or a context lost meanwhile, counts as

@@ -4,9 +4,8 @@
  * Ported from design/keyframes/_shared/project.js.
  */
 import * as THREE from "three";
-import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { SCULPTURE, disposeScene } from "@/lib/three/sculptures";
-import { renderer } from "@/lib/three/env";
+import { renderer, roomEnvNow } from "@/lib/three/env";
 
 const SCALE = 1.9, HEIGHT = 1.45;
 /** the king stands taller than the bishops, and the glass bishop sits under a two-line name: both are scaled down so they clear it */
@@ -35,7 +34,7 @@ export function createProjectStage(canvas: HTMLCanvasElement, slug: string): Pro
   const r = renderer(canvas, 1.1);
   r.setClearColor(0x000000, 0);
   const scene = new THREE.Scene();
-  const pm = new THREE.PMREMGenerator(r), env = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose();
+  const env = roomEnvNow(r);
   scene.environment = env; scene.environmentIntensity = ENV[slug] ?? 0.025;
   const s = SCULPTURE[slug](), base = ROT[slug] ?? 0;
   s.scale.setScalar(stageScale(slug)); s.traverse((o) => { if ((o as THREE.Mesh).isMesh) { o.castShadow = true; o.receiveShadow = true; } });

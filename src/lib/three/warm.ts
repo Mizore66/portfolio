@@ -26,14 +26,16 @@ const what = (o: THREE.Object3D) => {
   return `${m.geometry?.type ?? o.type}${(o as THREE.InstancedMesh).isInstancedMesh ? " ×" + (o as THREE.InstancedMesh).count : ""} (${mat?.type ?? "?"})`;
 };
 
+const programs = (scenes: Scenes) => scenes.reduce((n, { r }) => n + (r.info.programs?.length ?? 0), 0);
+
 function* warmSteps(scenes: Scenes, draw: () => void, before?: () => void, after?: () => void): Steps<void> {
   const things: THREE.Object3D[] = [];
   for (const { scene } of scenes) scene.traverse((o) => { if ((o as THREE.Mesh).isMesh || (o as THREE.Line).isLine || (o as THREE.Points).isPoints) things.push(o); });
   for (let i = 0; i < things.length; i += PER_PASS) {
-    const these = things.slice(i, i + PER_PASS), t0 = performance.now();
+    const these = things.slice(i, i + PER_PASS), t0 = performance.now(), p0 = programs(scenes);
     pass(scenes, draw, new Set(these), before, after);
     const ms = performance.now() - t0;
-    if (ms > 30) trace(`warm: ${Math.round(ms)} ms for ${these.map(what).join(", ")}`);
+    if (ms > 12) trace(`warm: ${Math.round(ms)} ms (${programs(scenes) - p0} programs made) for ${these.map(what).join(", ")}`);
     yield;
   }
 }

@@ -5,16 +5,15 @@
  * paper, by night under the black. Ported from design/motion/hero-3d.html.
  */
 import * as THREE from "three";
-import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { gsap } from "gsap";
 import { piece, piecesReady, MAT, sq, type PieceType } from "@/lib/three/pieces";
 import { type Steps } from "@/lib/three/steps";
 import { rng } from "@/lib/three/rng";
-import { renderer } from "@/lib/three/env";
-import line from "@/content/opening-line.json";
+import { renderer, roomEnv } from "@/lib/three/env";
+import { PLIES, T_PLAY, D, T_AT, T_END, T } from "./timing";
 
-export const PLIES = line.plies;
+export { PLIES, T };
 type V3 = [number, number, number];
 
 interface Obj {
@@ -24,12 +23,6 @@ interface Obj {
   type?: PieceType; white?: boolean; dark?: boolean;
 }
 
-// ---- timing: the game accelerates 7% a move ----
-const T_PLAY = 0.75;
-const D = PLIES.map((_, i) => 0.21 * Math.pow(0.93, i));
-const T_AT: number[] = []; { let t = T_PLAY; for (const d of D) { T_AT.push(t); t += d; } }
-const T_END = T_AT[T_AT.length - 1] + D[D.length - 1];
-export const T = { play: T_PLAY, blast: T_END + 0.28, paper: T_END + 1.13, name: T_END + 1.53, total: T_END + 4.73 };
 const CHECKS = [15, 17].map((i) => T_AT[i] + D[i]); // 8…Bb4+ and 9…Bxd2+
 
 
@@ -56,7 +49,7 @@ export function* stageSteps(dayCanvas: HTMLCanvasElement, nightCanvas: HTMLCanva
   const R = rng(11), scene = new THREE.Scene();
   const rDay = renderer(dayCanvas, 1); yield;
   const rNight = renderer(nightCanvas, 1.1); yield;
-  const pm = new THREE.PMREMGenerator(rDay), env = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose(); yield;
+  const env = yield* roomEnv(rDay); yield;
   scene.environment = env; scene.environmentIntensity = 0.3;
 
   // lights: day under the paper, night under the black
@@ -97,14 +90,16 @@ export function* stageSteps(dayCanvas: HTMLCanvasElement, nightCanvas: HTMLCanva
 
   // the pieces, and where each stands after every ply ("x…" = taken, set beside the board)
   const pieces: Obj[] = [];
+  // a piece a step, not a row: a row of eight was a step of 105-165 ms on a phone (4x CPU); the slices take several
+  // at once where they are quick, and the first rook and knight (the shared shapes made on first use) go alone
   for (const [i, row] of "rnbqkbnr/pppppppp/......../......../......../......../PPPPPPPP/RNBQKBNR".split("/").entries()) {
-    [...row].forEach((ch, f) => {
-      if (ch === ".") return;
+    for (const [f, ch] of [...row].entries()) {
+      if (ch === ".") continue;
       const w = ch === ch.toUpperCase(), t = ch.toUpperCase() as PieceType, m = piece(t, w ? MAT.ivory() : MAT.ebony());
       const o = add(m, "piece", t === "P" ? 0.6 : 1.4); o.type = t; o.white = w; pieces.push(o);
       (o as Obj & { sq: string }).sq = "abcdefgh"[f] + (8 - i);
-    });
-    if (row !== "........") yield;
+      yield;
+    }
   }
   const state: string[][] = [pieces.map((o) => (o as Obj & { sq: string }).sq)];
   { const where = new Map(pieces.map((o) => [(o as Obj & { sq: string }).sq, o])), taken = { w: 0, b: 0 };
@@ -142,12 +137,14 @@ export function* stageSteps(dayCanvas: HTMLCanvasElement, nightCanvas: HTMLCanva
   const used = new Set<Obj>();
   for (const [t, w, u, v, d] of named) { const o = pieces.find((x) => x.type === t && x.white === w && !used.has(x))!; used.add(o); o.pf = placeAt(u, v, d); }
   yield;
+  let placed = 0;
   for (const o of objs) {
     if (o.pf) continue;
     let u = 0, v = 0, d = 0, tries = 0;
     do { u = R() * 1.1 - 0.05; v = R() * 1.1 - 0.05; d = o.kind === "piece" ? 10 + R() * 12 : o.kind === "frame" && o.size > 1 ? 24 + R() * 14 : 13 + R() * 22; tries++; }
     while (tries < 400 && hits(u, v, Math.min(0.12, (o.size / d) * 0.9), d));
     o.pf = placeAt(u, v, d);
+    if (++placed % 24 === 0) yield; // up to 400 tries an object: the whole set at once was a 78 ms step on a phone
   }
   for (const o of objs) {
     o.axis = new THREE.Vector3(R() - 0.5, R() - 0.5, R() - 0.5).normalize();
@@ -156,6 +153,7 @@ export function* stageSteps(dayCanvas: HTMLCanvasElement, nightCanvas: HTMLCanva
     o.tilt = new THREE.Quaternion().setFromEuler(new THREE.Euler((R() - 0.5) * k, R() * 6.3, (R() - 0.5) * k));
     o.lift = 2 + R() * 3; o.bob = [0.05 + R() * 0.12, 0.35 + R() * 0.45, R() * 6.3];
   }
+  yield; // the placing and the first compile together were a step of 17-22 ms (70-90 ms on a phone)
 
   const G4 = new THREE.Vector3(g4.x, 0, g4.z), UP = new THREE.Vector3(0, 1, 0), tmpQ = new THREE.Quaternion();
   const ease = gsap.parseEase("seam"), arrive = gsap.parseEase("arrive");
@@ -208,14 +206,15 @@ export function* stageSteps(dayCanvas: HTMLCanvasElement, nightCanvas: HTMLCanva
     for (const r of [rDay, rNight]) r.setSize(W, H, false);
     cam.aspect = W / H; cam.updateProjectionMatrix();
   }
-  resize();
+  resize(); yield;
   // Its programs, compiled in the background (where the browser can) before the opening draws its first frame, as
   // each side draws them (render, below): the day with its lights and fog, the night with its own, before and after
   // the blast turns its fog on. Compiled with both sides' lights at once, every program was compiled again on the
   // spot: 127 ms on the first frame, and 87 ms at the blast. Built straight through, this does not wait.
   const as = (d: boolean, fog: THREE.Fog | null) => { day.visible = d; night.visible = !d; scene.background = d ? null : black; scene.fog = fog; };
-  as(true, fogDay); const a = rDay.compileAsync(scene, cam);
-  as(false, null); const b = rNight.compileAsync(scene, cam);
+  // A step each: the three at once were a step of 80 ms on a phone. Nothing draws the scene until it is built.
+  as(true, fogDay); const a = rDay.compileAsync(scene, cam); yield;
+  as(false, null); const b = rNight.compileAsync(scene, cam); yield;
   as(false, fogNight); const c = rNight.compileAsync(scene, cam);
   day.visible = night.visible = true; scene.background = null; scene.fog = null;
   yield Promise.all([a, b, c]).catch(() => {});

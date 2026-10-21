@@ -12,12 +12,13 @@ import { claim, keep, sleeper, type Sleeper } from "@/lib/three/keep";
 import Link from "next/link";
 import type { TreeNode } from "@/content/lab-tree.gen";
 import { layout, type Line } from "./tree";
-import { warm, type Chapter, type ChapterFactory, type Tag } from "./kit";
+import type { Chapter, ChapterFactory, Tag } from "./kit";
 import type { PlayStage } from "./ch7";
 import { SPECS as specs, EXTRAS as extras } from "./chapters";
 import "./lab.css";
 import { trace } from "@/lib/perf/trace";
-import { sliced, type Building } from "@/lib/three/steps";
+import { NotYet, sliced, type Building } from "@/lib/three/steps";
+import { scenes } from "@/lib/three/code";
 
 export interface Note { head: string; text: string }
 export interface ChapterCopy { n: string; title?: string[]; big?: string; notes: Note[]; notesPhone?: Note[]; [k: string]: unknown }
@@ -177,7 +178,8 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
         // warm it: its end state, with everything in it, drawn through warm() (one instance each, one pixel), so shadow
         // programs and buffers are ready before it is first seen (that first draw cost the scroll up to 270 ms)
         if (live3d.get(id) !== c || onScreen.has(id) || kept) return;
-        return warm([...s.querySelectorAll("canvas")], () => c.render(), { before: () => c.progress(1), after: () => c.progress(progressOf(s)), name: `lab chapter ${id}: warm` }).then(() => trace(`lab chapter ${id}: warmed`));
+        // the scenes' code came in with the chapter: this only finds it
+        return scenes.load().then((k) => k.warm([...s.querySelectorAll("canvas")], () => c.render(), { before: () => c.progress(1), after: () => c.progress(progressOf(s)), name: `lab chapter ${id}: warm` })).then(() => trace(`lab chapter ${id}: warmed`));
       }).then(() => { if (live3d.get(id) !== c) return; zz.built(); hud(s, c); place(); drawAll(true); if (!blend) tick(); });
     };
     const build = (id: number, now = false) => {
@@ -196,7 +198,7 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
       }
       if (now) {
         try { const c = b.finish(); if (!live3d.has(id)) { pending.delete(id); trace(`lab chapter ${id}: finished at once`); adopt(id, s, c, false); } }
-        catch { pending.delete(id); s.dataset.gl = "off"; }
+        catch (e) { if (!(e instanceof NotYet)) { pending.delete(id); s.dataset.gl = "off"; } } // its code still downloading: it comes in from its slices
       }
     };
     const near = new IntersectionObserver((es) => {
@@ -206,12 +208,12 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
 
       }
     }, { rootMargin: "150% 0px" });
-    // Scenes are built ahead, one per idle slot (never during the hero's opening), nearest first: a chapter built as it
+    // Scenes are built ahead, one per idle slot, nearest first: a chapter built as it
     // came near cost the scroll up to 600 ms. On /lab desktop builds all seven while the opening is read, and keeps them;
     // phones build two ahead and let go of one more than three away (their WebGL contexts are fewer). A build
     // waits until the scroll has been still for 300 ms; the queue runs again as the
     // chapter in charge changes. A chapter reached before its turn is built at once. On the one page, Play is kept.
-    const AHEAD = phone ? 2 : Infinity, KEEP = phone ? 3 : Infinity; // desktop builds all seven and keeps them
+    const AHEAD = phone && !section ? 2 : Infinity, KEEP = phone && !section ? 3 : Infinity; // desktop builds all seven and keeps them; the one page has only Play, built ahead on phones too (built as it came near, it was a frame of 100-124 ms in a phone's first scroll)
     let idle = 0, queued = false;
     const again = () => { if (queued) return; queued = true; idle = window.setTimeout(() => { queued = false; queue(); }, 120); };
     const release = () => {
@@ -220,8 +222,9 @@ export function Lab({ copy, tree, section = false }: { copy: LabCopy; tree: Tree
       for (const [id, c] of live3d) if (Math.abs(id - at) > KEEP) { c.dispose(); live3d.delete(id); sleepers.get(id)?.stop(); sleepers.delete(id); }
     };
     const queue = () => {
-      // not during the hero's opening, nor a page change (a chapter's build is a long task; it held a sweep 130-520 ms)
-      if (document.querySelector('.hero:is([data-intro="play"], [data-intro="pending"])') || navigating()) { idle = window.setTimeout(queue, 600); return; }
+      // not during a page change (a chapter's build is a long task; it held a sweep 130-520 ms). During the hero's opening
+      // it does build: left until the opening ended, Play was built under the first scroll (firstView.ts, buildAhead)
+      if (navigating()) { idle = window.setTimeout(queue, 600); return; }
       const mid = window.scrollY + innerHeight / 2, at = active();
       if (pending.size) return; // one at a time: the one in slices queues the next when it is in
       const next = sections.filter((x) => { const id = +x.dataset.ch!, sp = specs.find((q) => q.id === id); return sp?.make && !live3d.has(id) && x.dataset.gl !== "off" && Math.abs(id - at) <= AHEAD; })
