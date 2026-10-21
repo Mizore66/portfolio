@@ -47,6 +47,7 @@ html.has-cursor :is(p, li, dd, blockquote):not(nav *), html.has-cursor :is(p, li
 .cursor::before { content: ""; position: absolute; left: calc(-4 * var(--u)); top: calc(-4 * var(--u)); width: calc(8 * var(--u)); height: calc(8 * var(--u)); border-radius: 50%; background: var(--move); box-shadow: 0 0 0 0 var(--move); transition: transform .15s cubic-bezier(.16, .84, .3, 1), background-color .15s, box-shadow .15s; }
 .cursor[data-state="ring"]::before { transform: scale(3); background: transparent; box-shadow: inset 0 0 0 calc(.5 * var(--u)) var(--move); }
 .cursor[data-state="off"]::before { opacity: 0; }
+@media print { .cursor { display: none; } } /* the dot is where the pointer was, and printed with the page (the Print button left a ring on the résumé) */
 
 /* View transitions. The root is not captured, so the arriving page is live beneath the leaving snapshot;
    the snapshot never takes the pointer. Every animation is scripted (sweep.ts): the defaults are off. */
