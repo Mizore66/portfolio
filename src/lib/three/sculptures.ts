@@ -1,7 +1,8 @@
 // The three featured project pieces, each in the material that argues for it (Phase 4, approved at Gate 4).
 // Ported from design/keyframes/_shared/sculptures.js.
 import * as THREE from "three";
-import { piece, profileRadius, knightHalfDepth, MAT, type PieceType } from "./pieces";
+import { piece, profileRadius, knightHalfDepth, MAT, stoneTexture, type PieceType } from "./pieces";
+import type { Steps } from "./steps";
 
 function surfaceTube(type: PieceType, pts: [number, number][], radius: number, mat: THREE.Material, lift = 0.004) {
   const v = pts.map(([y, a]) => { const r = profileRadius(type, y) + lift; return new THREE.Vector3(Math.sin(a) * r, y, Math.cos(a) * r); });
@@ -76,17 +77,33 @@ function ash() {
   }
   ASH = new THREE.CanvasTexture(c); ASH.colorSpace = THREE.SRGBColorSpace; ASH.wrapS = ASH.wrapT = THREE.RepeatWrapping; return ASH;
 }
+/** Walnut: a dark oiled wood, grain running up the turned piece (the lathe's v). */
+let WALNUT: THREE.CanvasTexture | null = null;
+function walnut() {
+  if (WALNUT) return WALNUT;
+  const c = document.createElement("canvas"); c.width = 256; c.height = 1024; const g = c.getContext("2d")!;
+  g.fillStyle = "#6a4630"; g.fillRect(0, 0, 256, 1024);
+  let seed = 11; const r = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  for (let i = 0; i < 110; i++) {
+    const x = r() * 256, w = 0.5 + r() * 2.8;
+    g.strokeStyle = `rgba(${30 + r() * 20},${18 + r() * 12},${10 + r() * 8},${0.25 + r() * 0.35})`; g.lineWidth = w;
+    g.beginPath(); g.moveTo(x, 0); for (let y = 0; y <= 1024; y += 32) g.lineTo(x + Math.sin(y / 120 + i) * 7 + (r() - 0.5) * 2, y); g.stroke();
+  }
+  WALNUT = new THREE.CanvasTexture(c); WALNUT.colorSpace = THREE.SRGBColorSpace; WALNUT.wrapS = WALNUT.wrapT = THREE.RepeatWrapping; WALNUT.anisotropy = 8; return WALNUT;
+}
 /** The pawn's silhouette: the turned body, and the ball that sits on it. */
 const pawnR = (y: number) => Math.max(profileRadius("P", y), Math.sqrt(Math.max(0, 0.16 ** 2 - (y - 0.68) ** 2)));
 const isFelt = (o: THREE.Object3D) => (o as THREE.Mesh).geometry?.type === "CylinderGeometry";
 
 export const SMAT = {
   ash: () => new THREE.MeshPhysicalMaterial({ map: ash(), roughness: 0.62, clearcoat: 0.15, clearcoatRoughness: 0.6 }),
-  // black glass: smoked, polished, a little light passing through its edges (owner, step 4a)
-  blackGlass: () => new THREE.MeshPhysicalMaterial({ color: 0x2a2c30, roughness: 0.03, metalness: 0, transmission: 0.82, thickness: 0.9, ior: 1.52, attenuationColor: new THREE.Color(0x0b0c0e), attenuationDistance: 0.35, clearcoat: 1, clearcoatRoughness: 0.02 }),
+  // black glass: smoked and polished; not transmissive (owner, 2026-10-20: a second render of the board every frame, for
+  // light through its edges that hardly showed)
+  blackGlass: () => new THREE.MeshPhysicalMaterial({ color: 0x2a2c30, roughness: 0.03, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.02 }),
   bronze: () => new THREE.MeshStandardMaterial({ color: 0x7a5534, metalness: 1, roughness: 0.38 }),
   brass: () => new THREE.MeshStandardMaterial({ color: 0xc9a45c, metalness: 1, roughness: 0.3 }),
-  glass: () => new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.04, transmission: 1, thickness: 0.6, ior: 1.46, attenuationColor: new THREE.Color(0xd8e6e2), attenuationDistance: 3 }),
+  // walnut, oiled
+  walnut: () => new THREE.MeshStandardMaterial({ map: walnut(), roughness: 0.42 }),
   obsidian: () => new THREE.MeshPhysicalMaterial({ color: 0x0a0a0c, roughness: 0.08, clearcoat: 1, clearcoatRoughness: 0.02, reflectivity: 0.7 }),
 };
 
@@ -128,16 +145,18 @@ export function graphRag() {
   if (felt) { whole.remove(felt); g.add(felt); }
   return g;
 }
-/** SLM Distillation Engine (5…Bb6): a glass bishop with a small solid bishop inside it, 70B around 3B. */
-export function distillation() {
-  const g = piece("B", SMAT.glass());
-  g.children.forEach((m) => { if (!isFelt(m)) m.castShadow = false; });
-  const core = piece("B", MAT.ivory()); core.scale.setScalar(0.34); core.position.y = 0.3; core.traverse((m) => { m.castShadow = false; });
-  g.add(core);
-  return g;
-}
+/**
+ * SLM Distillation Engine (5…Bb6): a bishop turned in walnut. It was a glass bishop with a small one inside it; glass
+ * meant a second render of the whole board every frame (the transmission pass), half the sideboard's GPU time
+ * (docs/perf-audit/01-runtime-trace.md), so the owner chose walnut (2026-10-20).
+ */
+export function distillation() { return piece("B", SMAT.walnut()); }
 /** RexCheck (no move yet; rex, the king): an obsidian king. */
 export function rexCheck() { return piece("K", SMAT.obsidian()); }
+
+/** The drawn textures (basalt, ash, walnut), a step each, before the first piece that wears one: drawn inside that
+ * piece's step, the 512² basalt was a step of 13-16 ms (50-60 ms on a phone). Each is drawn once a visit. */
+export function* materialsReady(): Steps<void> { stoneTexture(); yield; ash(); yield; walnut(); }
 
 export const SCULPTURE: Record<string, () => THREE.Group> = {
   faultline, "gemini-teleportal": teleportal, circuitmindai: circuitmind,

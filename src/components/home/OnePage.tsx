@@ -70,7 +70,11 @@ export function OnePage() {
     follow();
     window.addEventListener("scroll", onScroll, { passive: true });
     document.addEventListener("click", onClick, true);
+    // the Lab's italic line, once the page's own files are in (lab.css): straight away when arriving at a section
+    const italic = () => document.documentElement.setAttribute("data-italic", "");
+    if (hash || document.readyState === "complete") italic(); else window.addEventListener("load", italic, { once: true });
     return () => {
+      window.removeEventListener("load", italic);
       cancelAnimationFrame(raf); clearTimeout(still); away(false); window.removeEventListener("scroll", onScroll); document.removeEventListener("click", onClick, true);
       unblock.forEach((u) => u()); stop(); section.set("top");
     };

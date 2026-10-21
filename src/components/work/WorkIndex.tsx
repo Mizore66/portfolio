@@ -9,8 +9,10 @@ import { beginNav } from "@/lib/seam/sweep";
 import { buildAhead, firstView, nearScreen } from "@/lib/motion/firstView";
 import { PHONE, restFor, TABLET } from "@/lib/seam/seam";
 import { after } from "@/lib/motion/slowmo";
-import { gallerySteps, VIEW, type Gallery, type View } from "./gallery";
+import { VIEW, type View } from "./view";
+import type { Gallery } from "./gallery";
 import { staged } from "@/lib/three/steps";
+import { scenes } from "@/lib/three/code";
 import { claim, keep, sleeper } from "@/lib/three/keep";
 import "./work.css";
 import { timed, trace } from "@/lib/perf/trace";
@@ -50,7 +52,7 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
     const view = () => (window.matchMedia(TABLET).matches ? VIEW.tablet : window.matchMedia(PHONE).matches ? VIEW.phone : VIEW.desk);
     const arriving = !window.matchMedia("(prefers-reduced-motion: reduce)").matches; // its entrance, the first time it is seen
     const rise = el.querySelectorAll("[data-rise]"), labels = el.querySelectorAll(".piece");
-    let gal: Gallery | null = null, failed = false, dead = false, tl: gsap.core.Timeline | undefined;
+    let gal: Gallery | null = null, failed = false, dead = false, entered = false, tl: gsap.core.Timeline | undefined;
     const lit = (G: Gallery, k: number) => { for (const p of pieces) G.lights[p.slug] = (p.slug === FOCUS ? 1 : DIM) * k; };
     const setView = (G: Gallery, v: View) => { G.cam.pos.set(...v.pos); G.cam.look.set(...v.look); G.cam.fov = v.fov; G.cam.shift = 0.5; };
     const place = () => gal && setPos(gal.anchors(window.matchMedia(PHONE).matches));
@@ -62,13 +64,13 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
       // back from a project, the gallery built last time: its view, lights and room are set again below
       if (got.stage) { gal.room.fill = 1; gal.cam.phone = false; } // opening one frames it for phones (open, below)
       g.current = gal; setView(gal, view());
-      if (arriving) { gal.room.k = 0; lit(gal, 0); const v = view(); gal.cam.pos.set(v.pos[0], v.pos[1] + 4.8, v.pos[2] + 3.2); } // lights off, camera high
+      if (arriving && !entered) { gal.room.k = 0; lit(gal, 0); const v = view(); gal.cam.pos.set(v.pos[0], v.pos[1] + 4.8, v.pos[2] + 3.2); } // lights off, camera high
       else { gal.room.k = 1; lit(gal, 1); }
       place(); gal.ready.then(() => { trace("work: compiled"); return got.stage ? undefined : g.current?.warm(); }).then(() => { trace("work: warmed"); timed("work: first draw", () => g.current?.render()); }); // its first frame, drawn ahead wherever the page is
       zz.built(); // one built far off gives its buffers up; a kept one wakes once the page has its scroll (keep.ts)
     };
     // built ahead in slices (steps.ts); reached before it is in, the rest of it at once
-    const scene = staged(() => gallerySteps(c, pieces), adopt, () => { failed = true; el.dataset.gl = "off"; }, "work");
+    const scene = staged(() => scenes.steps((m) => m.gallerySteps(c, pieces)), adopt, () => { failed = true; el.dataset.gl = "off"; }, "work");
     const build = () => { if (!gal && !failed && !dead) { if (got.stage) adopt(got.stage); else scene.now(); } return gal; };
     const start = () => { if (got.stage) build(); else if (!dead) scene.start(); };
     // on the one page the room is built when it comes within a screen, not at load (seven scenes would compile at once)
@@ -81,7 +83,7 @@ export function WorkIndex({ pieces }: { pieces: Piece[] }) {
       // called as the seam starts to move; `delay` is when the type should rise, as it lands
       cancel = firstView(el, () => {
         const delay = 0.15;
-        const G = build();
+        const G = build(); entered = true; // in after this (its code still downloading), it is lit where it ends
         tl = gsap.timeline({ onUpdate: draw });
         if (G) {
           // the camera settles from higher and further out as the lights come up, FaultLine's first (motion.md §3)

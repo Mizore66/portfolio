@@ -104,7 +104,7 @@ test.describe("the one page", () => {
 
   // on a phone a tapped nav link kept its focus, and the ink copy of the nav stayed, dark over the dark sections, while
   // the paper copy stepped away; keyboard focus brings both back
-  test("on a phone the nav steps away as one, a tapped link or not, and keyboard focus brings it back", async ({ browser }) => {
+  test("on a phone the nav steps away as one, a tapped link or not, and keyboard focus brings it back", async ({ browser, browserName }) => {
     test.setTimeout(120_000);
     const ctx = await browser.newContext({ viewport: { width: 412, height: 915 }, isMobile: true, hasTouch: true });
     await ctx.addInitScript(() => sessionStorage.setItem("hero-opening-seen", "1"));
@@ -114,11 +114,14 @@ test.describe("the one page", () => {
     const bb = (await nav(page, "Work").boundingBox())!;
     await page.touchscreen.tap(bb.x + bb.width / 2, bb.y + bb.height / 2); // a tap leaves the link focused, not focus-visible
     await expect(page).toHaveURL(/\/#work$/, { timeout: 60_000 });
-    for (let i = 0; i < 6; i++) { await page.mouse.wheel(0, 120); await page.waitForTimeout(150); }
+    // scrolled in steps, as a finger would (Playwright has no mouse wheel in mobile WebKit); the nav reads the scroll
+    for (let i = 0; i < 6; i++) { await page.evaluate(() => window.scrollBy(0, 120)); await page.waitForTimeout(150); }
     await expect(page.locator(".site")).toHaveAttribute("data-nav-away", "");
     await expect.poll(() => op("ink")).toBe("0");
     await expect.poll(() => op("inv")).toBe("0");
-    await page.keyboard.press("Shift+Tab"); await page.keyboard.press("Tab"); // focus from the keyboard
+    // focus from the keyboard (Safari's Tab skips links; with Option held it stops on them)
+    const tab = browserName === "webkit" ? "Alt+Tab" : "Tab";
+    await page.keyboard.press(`Shift+${tab}`); await page.keyboard.press(tab);
     await expect.poll(() => op("ink")).toBe("1");
     await expect.poll(() => op("inv")).toBe("1");
     await ctx.close();

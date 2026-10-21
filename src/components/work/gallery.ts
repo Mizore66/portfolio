@@ -6,28 +6,20 @@
  */
 import * as THREE from "three";
 import { sq } from "@/lib/three/pieces";
-import { SCULPTURE, disposeScene } from "@/lib/three/sculptures";
-import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import { renderer } from "@/lib/three/env";
+import { SCULPTURE, disposeScene, materialsReady } from "@/lib/three/sculptures";
+import { renderer, roomEnv } from "@/lib/three/env";
 import { warmScenes } from "@/lib/three/warm";
 import { piecesReady } from "@/lib/three/pieces";
 import { type Steps } from "@/lib/three/steps";
 
 const TILE = 2.2, PLINTH = 0.7, SCALE = 1.9, SPOT = 150;
-type V3 = [number, number, number];
 
 /** phones: the room is cut to the band the board stands in, as shares of the screen-high frame (work.css's height is h) */
 export const CUT = "(max-width: 600px)";
 const CROP = { top: 0.22, h: 0.51 };
-export interface View { pos: V3; look: V3; fov: number; /** where on screen the look point sits (0..1 across, or down on phones); .5 is the centre */ shift?: number }
+import { VIEW, type View } from "./view";
 
-/** work-c's framing; on phones (and upright tablets) the camera looks along the floor from the g-file side, so the pieces stack. */
-export const VIEW = {
-  desk: { pos: [1.5, 15.5, 13.5], look: [-0.4, 0, -0.2], fov: 38 } as View,
-  phone: { pos: [17, 12.5, 3.2], look: [0.6, 0.4, -1.4], fov: 44 } as View,
-  /** a tablet held upright: the phone's view, nearer, so the pieces fill a screen that is wider for its height */
-  tablet: { pos: [14.6, 10.7, 2.5], look: [0.6, 0.4, -1.4], fov: 32 } as View,
-};
+export { VIEW, type View };
 
 export interface Gallery {
   /** screen position (css px) of each piece's label anchor, just under its plinth's front edge */
@@ -54,7 +46,7 @@ export function* gallerySteps(canvas: HTMLCanvasElement, slugs: { slug: string; 
   const r = renderer(canvas, 1.05); yield;
   const scene = new THREE.Scene(); scene.background = new THREE.Color(0x09090a);
   // work-c's own environment (a neutral room at .22), which keeps the floor's squares and the aluminium readable
-  const pm = new THREE.PMREMGenerator(r), env = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose();
+  const env = yield* roomEnv(r);
   scene.environment = env; yield;
   const hemi = new THREE.HemisphereLight(0x2a2a30, 0x050505, 0.35), amb = new THREE.AmbientLight(0x3a3a44, 0.6);
   scene.add(hemi, amb);
@@ -72,7 +64,7 @@ export function* gallerySteps(canvas: HTMLCanvasElement, slugs: { slug: string; 
   const spots: Record<string, THREE.SpotLight> = {}, hit: THREE.Object3D[] = [], at: Record<string, THREE.Vector3> = {};
   const anchor: Record<string, THREE.Vector3> = {}, side: Record<string, THREE.Vector3> = {};
   const deskCam = VIEW.desk.pos;
-  yield* piecesReady();
+  yield* piecesReady(); yield* materialsReady();
   for (const { slug, square } of slugs) {
     yield;
     const p = sq(square), x = p.x * TILE, z = p.z * TILE;

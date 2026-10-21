@@ -1,23 +1,25 @@
 // The Lab's chapters, in order (motion.md §11): each one's scene, how many screens it is pinned for, and whether it
 // has a night side. Phones pin for one screen (§13).
 import type { Spec, ChapterCopy } from "./Lab";
-import { chapter1 } from "./ch1";
-import { chapter2 } from "./ch2";
-import { chapter3 } from "./ch3";
-import { chapter4 } from "./ch4";
-import { chapter5 } from "./ch5";
-import { chapter6 } from "./ch6";
-import { chapter7 } from "./ch7";
+import type { ChapterFactory } from "./kit";
+import { lazy } from "@/lib/three/steps";
+import { scenes } from "@/lib/three/code";
 import { Play } from "./Play";
 
+// Each chapter's scene is fetched when it is first built, not with the page, behind the scenes' code (code.ts).
+const later = (id: number): ChapterFactory => {
+  const code = lazy(() => scenes.load().then((m) => m.chapter(id)));
+  return (day, night, o) => code.steps((make) => make(day, night, o));
+};
+
 export const SPECS: Spec[] = [
-  { id: 1, make: chapter1, screens: 1.5, night: true },
-  { id: 2, make: chapter2, screens: 1.5, night: true },
-  { id: 3, make: chapter3, screens: 1.5, night: false },
-  { id: 4, make: chapter4, screens: 1.5, night: true },
-  { id: 5, make: chapter5, screens: 2.5, night: true },
-  { id: 6, make: chapter6, screens: 1.5, night: false },
-  { id: 7, make: chapter7, screens: 1, night: true },
+  { id: 1, make: later(1), screens: 1.5, night: true },
+  { id: 2, make: later(2), screens: 1.5, night: true },
+  { id: 3, make: later(3), screens: 1.5, night: false },
+  { id: 4, make: later(4), screens: 1.5, night: true },
+  { id: 5, make: later(5), screens: 2.5, night: true },
+  { id: 6, make: later(6), screens: 1.5, night: false },
+  { id: 7, make: later(7), screens: 1, night: true },
 ];
 
 /** chapter-specific type beyond the title, notes and big number */

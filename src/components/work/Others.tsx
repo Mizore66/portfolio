@@ -9,8 +9,10 @@ import { beginNav, navigating } from "@/lib/seam/sweep";
 import { PHONE, restFor, unit } from "@/lib/seam/seam";
 import { after } from "@/lib/motion/slowmo";
 import { buildAhead, nearScreen } from "@/lib/motion/firstView";
-import { sideboardSteps, FRAME, type Frame, type Sideboard } from "./sideboard";
+import { FRAME, type Frame } from "./sideframe";
+import type { Sideboard } from "./sideboard";
 import { staged } from "@/lib/three/steps";
+import { scenes } from "@/lib/three/code";
 import { claim, keep, sleeper } from "@/lib/three/keep";
 import { timed, trace } from "@/lib/perf/trace";
 
@@ -63,7 +65,7 @@ export function Others({ list, copy }: { list: Other[]; copy: OthersCopy }) {
       zz.built(); // one built far off gives its buffers up; a kept one wakes once the page has its scroll (keep.ts)
     };
     // built ahead in slices (steps.ts); reached before it is in, the rest of it at once
-    const scene = staged(() => sideboardSteps(c, list, aside), adopt, () => { failed = true; el.dataset.gl = "off"; }, "other projects");
+    const scene = staged(() => scenes.steps((m) => m.sideboardSteps(c, list, aside)), adopt, () => { failed = true; el.dataset.gl = "off"; }, "other projects");
     const build = () => { if (!board && !failed && !dead) { if (got.stage) adopt(got.stage); else scene.now(); } return board; };
     const start = () => { if (got.stage) build(); else if (!dead) scene.start(); };
 

@@ -4,8 +4,7 @@
  * (design/keyframes/_shared/twin.js). A chapter scrubs its object with its own scroll progress.
  */
 import * as THREE from "three";
-import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import { renderer } from "@/lib/three/env";
+import { renderer, roomEnv } from "@/lib/three/env";
 import { type Steps } from "@/lib/three/steps";
 import { warmScenes } from "@/lib/three/warm";
 import { disposeScene } from "@/lib/three/sculptures";
@@ -41,7 +40,7 @@ export function warm(canvases: Element[], draw: () => void, o: Parameters<typeof
 export function* stage(canvas: HTMLCanvasElement, { exposure = 1, env = 0.5, bg = 0xf3f3f1, fov = 30 } = {}): Steps<Stage> {
   const r = renderer(canvas, exposure); yield;
   const scene = new THREE.Scene(); scene.background = new THREE.Color(bg);
-  const pm = new THREE.PMREMGenerator(r), e = pm.fromScene(new RoomEnvironment(), 0.04).texture; pm.dispose(); yield;
+  const e = yield* roomEnv(r); yield;
   scene.environment = e; scene.environmentIntensity = env;
   const cam = new THREE.PerspectiveCamera(fov, 1, 0.1, 400);
   const st = { r, scene, cam, env: e, canvas }; stages.add(st); return st;
@@ -86,4 +85,4 @@ export const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 export const span = (p: number, a: number, b: number) => clamp((p - a) / (b - a));
 /** the house arrival ease (CustomEase "arrive", M0,0 C0.16,0.84 0.3,1 1,1), close enough for scrubbing */
 export const arrive = (t: number) => 1 - Math.pow(1 - clamp(t), 3);
-export const share = (cp: number) => 0.5 + 0.5 * Math.tanh((0.00368208 * cp) / 2);
+export { share } from "@/lib/motion/ease";

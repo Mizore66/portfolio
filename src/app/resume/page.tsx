@@ -44,8 +44,8 @@ export default function ResumePage() {
       <main id="main">
         <section className="head">
           <h1 className="display">{resume.name}</h1>
-          <p className="role">{current.title}, {current.employer}</p>
-          <ul className="contact mono">
+          <p className="post">{current.title}, {current.employer}</p>
+          <ul className="reach mono">
             {resume.contact.map((c) => (
               <li key={c.href}><a href={c.href}>{c.label}</a></li>
             ))}

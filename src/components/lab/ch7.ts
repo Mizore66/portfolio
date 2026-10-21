@@ -12,6 +12,7 @@ import { stage, frame, size, compile, disposeStage, share, type Chapter, type Ch
 import { run, type Steps } from "@/lib/three/steps";
 import { piecesReady } from "@/lib/three/pieces";
 import { NARROW, TABLET } from "@/lib/seam/seam";
+import { playStage } from "./playStage";
 
 export const START = "rnbqkbnr/pppppppp/......../......../......../......../PPPPPPPP/RNBQKBNR";
 const LIFT = 0.35;
@@ -41,14 +42,6 @@ export interface PlayStage extends Chapter {
 
 type Side = { s: Stage; pieces: Map<string, THREE.Group>; b: ReturnType<typeof makeBoard>; dots: THREE.Group };
 
-let current: PlayStage | null = null;
-const listeners = new Set<(p: PlayStage | null) => void>();
-/** Play.tsx finds the stage here once the Lab has built it */
-export const playStage = {
-  get: () => current,
-  on(fn: (p: PlayStage | null) => void) { listeners.add(fn); fn(current); return () => { listeners.delete(fn); }; },
-};
-
 export const chapter7: ChapterFactory = function* (dayCanvas, nightCanvas, o) {
   const phone = o.phone, at0 = share(43); // the key frames' seam: the learned net's +0.43 after 3…Bc5
   // a tablet held upright has the controls under the board, not above it too, so the camera comes down and the board
@@ -70,13 +63,14 @@ export const chapter7: ChapterFactory = function* (dayCanvas, nightCanvas, o) {
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: day ? 0xe9e7e1 : 0x0d1118, roughness: 0.9 }));
     floor.rotation.x = -Math.PI / 2; floor.position.y = -0.18; floor.receiveShadow = true; s.scene.add(floor);
     const b = makeBoard(ROLE); s.scene.add(b.group);
-    const dots = new THREE.Group(); s.scene.add(dots);
+    const dots = new THREE.Group(); s.scene.add(dots); yield; // a side set up and its first pieces were one step of 16-19 ms
     return { s, pieces: new Map(), b, dots };
   };
   const sides = [yield* side(dayCanvas, true)]; if (nightCanvas) sides.push(yield* side(nightCanvas, false));
   yield* piecesReady();
   const mats = { w: MAT.ivory(), b: MAT.ebony() };
-  const c = compile(sides.map((x) => x.s));
+  // eslint-disable-next-line prefer-const -- assigned once the pieces are on the board (below); api reads it after
+  let c!: ReturnType<typeof compile>;
   let white = true, lifted: string | null = null, shown = share(DATA.start.learned.evalCp); // the start position, as game.ts begins
   const dotM = new THREE.MeshBasicMaterial({ color: 0x0d0d0c, transparent: true, opacity: 0.32 });
   const dotG = new THREE.CircleGeometry(0.14, 40), ringG = new THREE.RingGeometry(0.36, 0.44, 48);
@@ -100,7 +94,7 @@ export const chapter7: ChapterFactory = function* (dayCanvas, nightCanvas, o) {
     // waiting held the game busy, with the board answering nothing
     gsap.to(o, { ...to, duration: ms / 1000, delay: delay / 1000, ease: "seam", onUpdate: draw, onComplete: () => res(), onInterrupt: () => res() });
   });
-  // The position, set in steps (eight new pieces at a time) for the build, or at once as the game plays. A piece of
+  // The position, set in steps (four new pieces at a time) for the build, or at once as the game plays. A piece of
   // the same kind already on its square stays, set back to rest there: putting the board back after a page visit,
   // or after a move, made all 64 pieces again (about 100 ms).
   function* setSteps(rows: string, last: [string, string] | null): Steps<void> {
@@ -112,7 +106,7 @@ export const chapter7: ChapterFactory = function* (dayCanvas, nightCanvas, o) {
         const q = sq(name);
         let p = old.get(name);
         if (p && p.userData.kind === ch) { old.delete(name); gsap.killTweensOf([p.position, p.scale]); p.scale.setScalar(1); }
-        else { p = make(ch); x.s.scene.add(p); if (++made % 8 === 0) yield; }
+        else { p = make(ch); x.s.scene.add(p); if (++made % 4 === 0) yield; }
         p.position.set(q.x, 0, q.z); next.set(name, p);
       }
       for (const g of old.values()) { gsap.killTweensOf([g.position, g.scale]); x.s.scene.remove(g); }
@@ -123,7 +117,7 @@ export const chapter7: ChapterFactory = function* (dayCanvas, nightCanvas, o) {
   const set = (rows: string, last: [string, string] | null) => run(setSteps(rows, last));
 
   const api: PlayStage = {
-    ready: c.ready,
+    get ready() { return c.ready; },
     progress() {}, // Play is not scrubbed: the camera is already overhead (motion.md §11, 07)
     still: true,
     seam: () => shown,
@@ -207,17 +201,20 @@ export const chapter7: ChapterFactory = function* (dayCanvas, nightCanvas, o) {
     restore() {
       for (const x of sides) { for (const g of x.pieces.values()) gsap.killTweensOf([g.position, g.scale]); x.dots.clear(); }
       white = true; lifted = null; shown = share(DATA.start.learned.evalCp);
-      place(); if (!listeners.size) set(START, null); // the game sets its own position as it takes the board
-      current = api; listeners.forEach((fn) => fn(api));
+      place(); if (!playStage.taken()) set(START, null); // the game sets its own position as it takes the board
+      playStage.set(api);
     },
     render() { if (!c.done()) return; place(); sides.forEach((x) => x.s.r.render(x.s.scene, x.s.cam)); },
     resize() { place(); draw(); },
     dispose() {
-      if (current === api) { current = null; listeners.forEach((fn) => fn(null)); }
+      if (playStage.get() === api) playStage.set(null);
       cancelAnimationFrame(raf); c.ready.then(() => sides.forEach((x) => disposeStage(x.s)));
     },
   };
   place(); yield* setSteps(START, null);
-  current = api; listeners.forEach((fn) => fn(api));
+  // compiled with the pieces on the board: compiled before them, their programs were linked on the spot by the warm
+  // passes instead, a frame of 31-86 ms each in the first scroll (docs/perf-audit/01-runtime-trace.md)
+  c = compile(sides.map((x) => x.s));
+  playStage.set(api);
   return api;
 };

@@ -4,7 +4,7 @@ import { SECURITY_HEADERS } from "./src/lib/security-headers";
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
   // Page changes are the seam sweeping away a view-transition snapshot (src/lib/seam/sweep.ts).
-  experimental: { viewTransition: true },
+  experimental: { viewTransition: true, inlineCss: true }, // inlineCss: the six small stylesheets in the page, not six requests the first paint waits on (Lighthouse: 890 ms on a phone)
   async headers() {
     return [{ source: "/:path*", headers: SECURITY_HEADERS }];
   },

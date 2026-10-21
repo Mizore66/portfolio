@@ -17,9 +17,9 @@
   --gallery-dim: #8c877e;
   --search: #0b0e14;
   --move: #e8a33d;
-  --font-display: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-archivo-first), var(--font-archivo), "Helvetica Neue", Arial, sans-serif; /* the cut, then the full font (layout.tsx) */
   --font-italic: var(--font-archivo-italic), var(--font-display); /* its own family, loaded when used (layout.tsx) */
-  --font-mono: var(--font-jetbrains), ui-monospace, Menlo, monospace;
+  --font-mono: var(--font-jetbrains-first), var(--font-jetbrains), ui-monospace, Menlo, monospace;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

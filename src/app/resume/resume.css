@@ -1,4 +1,6 @@
 /* Résumé mode: plain, fast, complete. No WebGL, no animation. Prints on A4 and US Letter. */
+/* Its class names are its own (.reach, .post), not the home page's: a page change keeps the one page's stylesheets in
+   the document, and the Contact section's .contact (a screen high) once made the contact list a 900 px gap. */
 .resume { --col: 148px; min-height: 100vh; padding: 0 6vw 96px; border-right: 22px solid var(--ink); }
 .resume .bar { display: flex; justify-content: space-between; align-items: center; padding: 40px 0 0; font-size: 14px; font-weight: 500; }
 .resume .back { text-decoration: none; }
@@ -8,10 +10,10 @@
 .resume main { max-width: 860px; }
 .resume .head { padding: 72px 0 8px; }
 .resume h1 { font-size: clamp(44px, 7vw, 88px); }
-.resume .role { margin-top: 18px; font-size: 20px; font-weight: 600; letter-spacing: -.01em; }
-.resume .contact { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 20px; margin-top: 16px; font-size: 13px; }
-.resume .contact a { text-decoration: none; border-bottom: 1px solid var(--rule); }
-.resume .contact a:hover { border-color: var(--ink); }
+.resume .post { margin-top: 18px; font-size: 20px; font-weight: 600; letter-spacing: -.01em; }
+.resume .reach { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 20px; margin-top: 16px; font-size: 13px; }
+.resume .reach a { text-decoration: none; border-bottom: 1px solid var(--rule); }
+.resume .reach a:hover { border-color: var(--ink); }
 .resume .status { margin-top: 10px; font-size: 14px; color: var(--pencil); }
 .resume section { margin-top: 56px; }
 .resume h2 { font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--graphite); padding-bottom: 10px; border-bottom: 2px solid var(--ink); }
@@ -54,9 +56,9 @@
   .resume main { max-width: none; }
   .resume .head { padding-top: 0; }
   .resume h1 { font-size: 30pt; }
-  .resume .role { font-size: 12pt; margin-top: 8pt; }
-  .resume .contact { font-size: 8.5pt; margin-top: 8pt; }
-  .resume .contact a, .resume .link a { border: 0; }
+  .resume .post { font-size: 12pt; margin-top: 8pt; }
+  .resume .reach { font-size: 8.5pt; margin-top: 8pt; }
+  .resume .reach a, .resume .link a { border: 0; }
   .resume .status { font-size: 9pt; }
   .resume section { margin-top: 11pt; }
   .resume h2 { font-size: 7.5pt; padding-bottom: 4pt; border-bottom-width: 1.5pt; }
